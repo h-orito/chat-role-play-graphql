@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  mysql:
+    container_name: mysql
+    build:
+      context: ./mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - crp-mysql-db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      TZ: Asia/Tokyo
+
+volumes:
+  crp-mysql-db-data:

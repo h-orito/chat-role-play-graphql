@@ -1,0 +1,104 @@
+package db
+
+import (
+	model "chat-role-play/src/domain/model"
+	"chat-role-play/src/util/array"
+	"errors"
+	"fmt"
+
+	"gorm.io/gorm"
+)
+
+type UserRepository struct {
+	db *DB
+}
+
+func NewUserRepository(db *DB) model.UserRepository {
+	return &UserRepository{
+		db: db,
+	}
+}
+
+func (repo *UserRepository) FindByUserName(username string) (_ *model.User, err error) {
+	var rdbPlayerAccount PlayerAccount
+	result := repo.db.Connection.
+		Model(&PlayerAccount{}).
+		Where("user_name = ?", username).
+		First(&rdbPlayerAccount)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	authories := repo.findAuthories(rdbPlayerAccount.PlayerID)
+	return &model.User{
+		UserName: rdbPlayerAccount.UserName,
+		Authorites: array.Map(authories, func(a PlayerAuthority) model.PlayerAuthority {
+			return *model.PlayerAuthorityValueOf(a.AuthorityCode)
+		}),
+	}, nil
+}
+
+func (repo *UserRepository) findAuthories(playerID uint32) []PlayerAuthority {
+	var rdbAuthorities []PlayerAuthority
+	repo.db.Connection.Model(&PlayerAuthority{}).Where("player_id = ?", playerID).Find(&rdbAuthorities)
+	return rdbAuthorities
+}
+
+func (repo *UserRepository) Signup(username string) (_ *model.User, err error) {
+	existing, err := repo.FindByUserName(username)
+	if err != nil {
+		return nil, err
+	}
+	if existing != nil {
+		return nil, fmt.Errorf("user already exists. username: %s \n", username)
+	}
+
+	rdbPlayer := Player{
+		PlayerName: "dummy",
+	}
+	result := repo.db.Connection.Create(&rdbPlayer)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to save: %s \n", result.Error)
+	}
+	pID := rdbPlayer.ID
+
+	err = repo.savePlayerAccount(pID, username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to save: %s \n", result.Error)
+	}
+
+	array.ForEach(model.DefaultAuthorites, func(authority model.PlayerAuthority) {
+		repo.savePlayerAuthority(pID, authority.String())
+	})
+
+	return &model.User{
+		UserName:   username,
+		Authorites: model.DefaultAuthorites,
+	}, nil
+}
+
+func (repo *UserRepository) savePlayerAccount(playerID uint32, username string) error {
+	rdbPlayerAccount := PlayerAccount{
+		PlayerID: playerID,
+		UserName: username,
+	}
+	result := repo.db.Connection.Create(&rdbPlayerAccount)
+	if result.Error != nil {
+		return fmt.Errorf("failed to save: %s \n", result.Error)
+	}
+	return nil
+}
+
+func (repo *UserRepository) savePlayerAuthority(playerID uint32, authority string) error {
+	rdbPlayerAuthority := PlayerAuthority{
+		PlayerID:      playerID,
+		AuthorityCode: authority,
+	}
+	result := repo.db.Connection.Create(&rdbPlayerAuthority)
+	if result.Error != nil {
+		return fmt.Errorf("failed to save: %s \n", result.Error)
+	}
+	return nil
+}
