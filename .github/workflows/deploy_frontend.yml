@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: build
-        run: |
+        run: >
           docker build ghcr.io/h-orito/chat-role-play-frontend .
           docker build
           -t ghcr.io/h-orito/${{ env.IMAGE_NAME }}:latest .
