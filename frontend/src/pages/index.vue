@@ -7,9 +7,12 @@
       <input type="button" value="Login" @click="login" />
       <input type="button" value="Logout" @click="logout" />
       <input type="button" value="お試しpublic" @click="sandbox" />
-      <input type="button" value="お試しprivate" @click="sandboxPrivate" />
+      <input type="button" value="お試しprivate" @click="findGames" />
+      <input v-model="gameName" type="text" />
+      <input type="button" value="ゲーム作成" @click="registerGame" />
     </div>
     <p>{{ authState }}</p>
+    <p>{{ games }}</p>
   </div>
 </template>
 
@@ -19,6 +22,16 @@ import {
   logout as doLogout,
   updateAuth0LoginState
 } from '~/components/auth/auth0'
+import {
+  GameDocument,
+  GamesDocument,
+  RegisterGameDocument,
+  Game,
+  SimpleGame,
+  GameQueryVariables,
+  GamesQueryVariables,
+  RegisterGameMutationVariables
+} from '~/lib/generated/graphql'
 
 const authState = await useAuth()
 const isAuthenticated = computed(() => authState.value.isAuthenticated)
@@ -29,41 +42,34 @@ watch(isAuthenticated, async (_new, _old) => {
 const login = () => doLogin()
 const logout = () => doLogout()
 const sandbox = async () => {
-  // useApi('api/v1/public')
-  await useAsyncQuery(gameQuery, gameValiable)
+  const { data } = await useAsyncQuery<Game>(GameDocument, {
+    id: 'R2FtZTox'
+  } as GameQueryVariables)
+  console.log(data.value)
 }
-const sandboxPrivate = async () => {
-  // useApi('api/v1/private')
-  await useAsyncQuery(gamesQuery, gamesValiable)
+const games = ref<Array<SimpleGame>>([])
+const findGames = async () => {
+  const { data } = await useAsyncQuery<Array<SimpleGame>>(GamesDocument, {
+    pageSize: 10,
+    pageNumber: 1
+  } as GamesQueryVariables)
+  games.value = data.value || []
 }
+
+onMounted(async () => {
+  if (isAuthenticated.value) await findGames()
+})
+
+const gameName = ref('')
+const registerGame = async () => {
+  await useAsyncQuery<Game>(RegisterGameDocument, {
+    input: {
+      name: gameName.value
+    }
+  } as RegisterGameMutationVariables)
+  gameName.value = ''
+  await findGames()
+}
+
 const isLoading = useLoading()
-
-const gamesQuery = gql`
-  query games($pageSize: Int!, $pageNumber: Int!) {
-    games(query: { paging: { pageSize: $pageSize, pageNumber: $pageNumber } }) {
-      id
-      name
-      participantsCount
-    }
-  }
-`
-const gamesValiable = {
-  pageSize: 10,
-  pageNumber: 1
-}
-
-const gameQuery = gql`
-  query game($id: ID!) {
-    game(id: $id) {
-      id
-      name
-      participants(paging: { pageSize: 10, pageNumber: 1 }) {
-        id
-      }
-    }
-  }
-`
-const gameValiable = {
-  id: 'R2FtZTox'
-}
 </script>

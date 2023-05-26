@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   apollo: {
     clients: {
       default: {
-        httpEndpoint: 'http://localhost:8080/query'
+        httpEndpoint: process.env.GRAPHQL_ENDPOINT || 'http://localhost:8080/query'
       }
     }
   }

@@ -13,6 +13,7 @@ type GameUsecase interface {
 		pageSize *int,
 		pageNumber *int,
 	) (participants *model.GameParticipants, err error)
+	Register(game model.Game) (registered *model.Game, err error)
 }
 
 type gameUsecase struct {
@@ -39,4 +40,8 @@ func (s *gameUsecase) FindGameParticipantsByGameID(
 	pageNumber *int,
 ) (participants *model.GameParticipants, err error) {
 	return s.gameService.FindGameParticipantsByGameID(ID, pageSize, pageNumber)
+}
+
+func (s *gameUsecase) Register(game model.Game) (registered *model.Game, err error) {
+	return s.gameService.Register(game)
 }

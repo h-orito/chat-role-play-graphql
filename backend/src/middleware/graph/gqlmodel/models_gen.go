@@ -2,22 +2,159 @@
 
 package gqlmodel
 
-type CreateGamePayload struct {
-	Game *Game `json:"game"`
+import (
+	"fmt"
+	"io"
+	"strconv"
+	"time"
+)
+
+type Pageable interface {
+	IsPageable()
+	GetAllPageCount() int
+	GetHasPrePage() bool
+	GetHasNextPage() bool
+	GetCurrentPageNum() *int
+	GetIsLatest() bool
 }
 
-type CreateParticipantPayload struct {
-	Participant *Participant `json:"participant"`
+type Chara struct {
+	ID     string        `json:"id"`
+	Name   string        `json:"name"`
+	Images []*CharaImage `json:"images"`
 }
 
-type CreatePlayerPayload struct {
-	Player *Player `json:"player"`
+type CharaImage struct {
+	Type string     `json:"type"`
+	Size *CharaSize `json:"size"`
+	URL  string     `json:"url"`
 }
+
+type CharaSize struct {
+	Width  int `json:"width"`
+	Height int `json:"height"`
+}
+
+type Charachip struct {
+	ID       string    `json:"id"`
+	Name     string    `json:"name"`
+	Designer *Designer `json:"designer"`
+	Charas   []*Chara  `json:"charas"`
+}
+
+type CharachipsQuery struct {
+	Ids    []string       `json:"ids,omitempty"`
+	Paging *PageableQuery `json:"paging,omitempty"`
+}
+
+type Designer struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type DirectMessage struct {
+	ID               string                `json:"id"`
+	ParticipantGroup *GameParticipantGroup `json:"participantGroup"`
+	Content          *MessageContent       `json:"content"`
+	Time             *MessageTime          `json:"time"`
+	Sender           *MessageSender        `json:"sender"`
+}
+
+type DirectMessageQuery struct {
+	PeriodID           *string        `json:"periodId,omitempty"`
+	ParticipantGroupID string         `json:"participantGroupId"`
+	Types              []MessageType  `json:"types,omitempty"`
+	Keywords           []string       `json:"keywords,omitempty"`
+	Paging             *PageableQuery `json:"paging,omitempty"`
+}
+
+type DirectMessages struct {
+	List           []*DirectMessage `json:"list"`
+	AllPageCount   int              `json:"allPageCount"`
+	HasPrePage     bool             `json:"hasPrePage"`
+	HasNextPage    bool             `json:"hasNextPage"`
+	CurrentPageNum *int             `json:"currentPageNum,omitempty"`
+	IsLatest       bool             `json:"isLatest"`
+}
+
+func (DirectMessages) IsPageable()                  {}
+func (this DirectMessages) GetAllPageCount() int    { return this.AllPageCount }
+func (this DirectMessages) GetHasPrePage() bool     { return this.HasPrePage }
+func (this DirectMessages) GetHasNextPage() bool    { return this.HasNextPage }
+func (this DirectMessages) GetCurrentPageNum() *int { return this.CurrentPageNum }
+func (this DirectMessages) GetIsLatest() bool       { return this.IsLatest }
 
 type Game struct {
-	ID           string         `json:"id"`
-	Name         string         `json:"name"`
-	Participants []*Participant `json:"participants"`
+	ID           string             `json:"id"`
+	Name         string             `json:"name"`
+	Status       GameStatus         `json:"status"`
+	GameMasters  []*Player          `json:"gameMasters"`
+	Participants []*GameParticipant `json:"participants"`
+	Periods      []*GamePeriod      `json:"periods"`
+	Setting      *GameSetting       `json:"setting"`
+}
+
+type GameCapacity struct {
+	Min int `json:"min"`
+	Max int `json:"max"`
+}
+
+type GameCharaSetting struct {
+	Charachips           []*Charachip `json:"charachips"`
+	CanOriginalCharacter bool         `json:"canOriginalCharacter"`
+}
+
+type GameNotificationCondition struct {
+	Participate bool `json:"participate"`
+	Start       bool `json:"start"`
+}
+
+type GameParticipant struct {
+	ID      string                  `json:"id"`
+	Name    string                  `json:"name"`
+	Player  *Player                 `json:"player"`
+	Chara   *Chara                  `json:"chara"`
+	Setting *GameParticipantSetting `json:"setting"`
+}
+
+type GameParticipantGroup struct {
+	ID           string             `json:"id"`
+	Participants []*GameParticipant `json:"participants"`
+}
+
+type GameParticipantSetting struct {
+	Notification *NotificationCondition `json:"notification"`
+}
+
+type GamePeriod struct {
+	ID      string    `json:"id"`
+	Count   int       `json:"count"`
+	Name    string    `json:"name"`
+	StartAt time.Time `json:"startAt"`
+	EndAt   time.Time `json:"endAt"`
+}
+
+type GameRuleSetting struct {
+	IsGameMasterProducer bool `json:"isGameMasterProducer"`
+	CanShorten           bool `json:"canShorten"`
+	CanSendDirectMessage bool `json:"canSendDirectMessage"`
+}
+
+type GameSetting struct {
+	Chara    *GameCharaSetting `json:"chara"`
+	Capacity *GameCapacity     `json:"capacity"`
+	Time     *GameTimeSetting  `json:"time"`
+	Rule     *GameRuleSetting  `json:"rule"`
+	Password *string           `json:"password,omitempty"`
+}
+
+type GameTimeSetting struct {
+	PeriodPrefix          *string   `json:"periodPrefix,omitempty"`
+	PeriodSuffix          *string   `json:"periodSuffix,omitempty"`
+	PeriodIntervalSeconds int       `json:"periodIntervalSeconds"`
+	OpenAt                time.Time `json:"openAt"`
+	StartParticipateAt    time.Time `json:"startParticipateAt"`
+	StartGameAt           time.Time `json:"startGameAt"`
 }
 
 type GamesQuery struct {
@@ -25,6 +162,83 @@ type GamesQuery struct {
 	Name   *string        `json:"name,omitempty"`
 	Paging *PageableQuery `json:"paging,omitempty"`
 }
+
+type Message struct {
+	ID        string            `json:"id"`
+	Content   *MessageContent   `json:"content"`
+	Time      *MessageTime      `json:"time"`
+	Sender    *MessageSender    `json:"sender"`
+	ReplyTo   *MessageRecipient `json:"replyTo"`
+	Reactions *MessageReactions `json:"reactions"`
+}
+
+type MessageContent struct {
+	Type               MessageType `json:"type"`
+	Number             int         `json:"number"`
+	Text               string      `json:"text"`
+	CanConvertDisabled bool        `json:"canConvertDisabled"`
+}
+
+type MessageFavorite struct {
+	ParticipantID string `json:"participantId"`
+}
+
+type MessageNotificationCondition struct {
+	Reply         bool     `json:"reply"`
+	DirectMessage bool     `json:"directMessage"`
+	Keywords      []string `json:"keywords"`
+}
+
+type MessageQuery struct {
+	PeriodID     *string        `json:"periodId,omitempty"`
+	Types        []MessageType  `json:"types,omitempty"`
+	SenderIds    []string       `json:"senderIds,omitempty"`
+	RecipientIds []string       `json:"recipientIds,omitempty"`
+	Keywords     []string       `json:"keywords,omitempty"`
+	Paging       *PageableQuery `json:"paging,omitempty"`
+}
+
+type MessageReactions struct {
+	Replies   []*MessageReply    `json:"replies"`
+	Favorites []*MessageFavorite `json:"favorites"`
+}
+
+type MessageRecipient struct {
+	MessageID     string `json:"messageId"`
+	ParticipantID string `json:"participantId"`
+}
+
+type MessageReply struct {
+	MessageID string `json:"messageId"`
+}
+
+type MessageSender struct {
+	Participant *GameParticipant `json:"participant"`
+	Name        string           `json:"name"`
+	CharaImage  *CharaImage      `json:"charaImage"`
+}
+
+type MessageTime struct {
+	Period            *GamePeriod `json:"period"`
+	SendAt            time.Time   `json:"sendAt"`
+	SendUnixTimeMilli int         `json:"sendUnixTimeMilli"`
+}
+
+type Messages struct {
+	List           []*Message `json:"list"`
+	AllPageCount   int        `json:"allPageCount"`
+	HasPrePage     bool       `json:"hasPrePage"`
+	HasNextPage    bool       `json:"hasNextPage"`
+	CurrentPageNum *int       `json:"currentPageNum,omitempty"`
+	IsLatest       bool       `json:"isLatest"`
+}
+
+func (Messages) IsPageable()                  {}
+func (this Messages) GetAllPageCount() int    { return this.AllPageCount }
+func (this Messages) GetHasPrePage() bool     { return this.HasPrePage }
+func (this Messages) GetHasNextPage() bool    { return this.HasNextPage }
+func (this Messages) GetCurrentPageNum() *int { return this.CurrentPageNum }
+func (this Messages) GetIsLatest() bool       { return this.IsLatest }
 
 type NewGame struct {
 	Name string `json:"name"`
@@ -35,17 +249,16 @@ type NewParticipant struct {
 	PlayerID string `json:"playerId"`
 }
 
-type NewPlayer struct {
-	Name string `json:"name"`
+type NotificationCondition struct {
+	DiscordWebhookURL *string                       `json:"discordWebhookUrl,omitempty"`
+	Game              *GameNotificationCondition    `json:"game"`
+	Message           *MessageNotificationCondition `json:"message"`
 }
 
 type PageableQuery struct {
-	PageSize   int `json:"pageSize"`
-	PageNumber int `json:"pageNumber"`
-}
-
-type Participant struct {
-	ID string `json:"id"`
+	PageSize   int  `json:"pageSize"`
+	PageNumber int  `json:"pageNumber"`
+	IsLatest   bool `json:"isLatest"`
 }
 
 type ParticipantsQuery struct {
@@ -55,12 +268,171 @@ type ParticipantsQuery struct {
 }
 
 type Player struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID       string         `json:"id"`
+	Name     string         `json:"name"`
+	Profile  *PlayerProfile `json:"profile,omitempty"`
+	Designer *Designer      `json:"designer,omitempty"`
+}
+
+type PlayerProfile struct {
+	IconURL     *string             `json:"iconUrl,omitempty"`
+	Description *string             `json:"description,omitempty"`
+	SnsAccounts []*PlayerSnsAccount `json:"snsAccounts"`
+}
+
+type PlayerSnsAccount struct {
+	Type SnsType `json:"type"`
+	Name *string `json:"name,omitempty"`
+	URL  string  `json:"url"`
+}
+
+type RegisterGamePayload struct {
+	Game *Game `json:"game"`
+}
+
+type RegisterParticipantPayload struct {
+	Participant *GameParticipant `json:"participant"`
 }
 
 type SimpleGame struct {
 	ID                string `json:"id"`
 	Name              string `json:"name"`
 	ParticipantsCount int    `json:"participantsCount"`
+}
+
+type GameStatus string
+
+const (
+	GameStatusClosed     GameStatus = "CLOSED"
+	GameStatusOpening    GameStatus = "OPENING"
+	GameStatusRecruiting GameStatus = "RECRUITING"
+	GameStatusProgress   GameStatus = "PROGRESS"
+	GameStatusFinished   GameStatus = "FINISHED"
+	GameStatusCanceled   GameStatus = "CANCELED"
+)
+
+var AllGameStatus = []GameStatus{
+	GameStatusClosed,
+	GameStatusOpening,
+	GameStatusRecruiting,
+	GameStatusProgress,
+	GameStatusFinished,
+	GameStatusCanceled,
+}
+
+func (e GameStatus) IsValid() bool {
+	switch e {
+	case GameStatusClosed, GameStatusOpening, GameStatusRecruiting, GameStatusProgress, GameStatusFinished, GameStatusCanceled:
+		return true
+	}
+	return false
+}
+
+func (e GameStatus) String() string {
+	return string(e)
+}
+
+func (e *GameStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = GameStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid GameStatus", str)
+	}
+	return nil
+}
+
+func (e GameStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type MessageType string
+
+const (
+	MessageTypeTalknormal MessageType = "TALKNORMAL"
+	MessageTypeMonologue  MessageType = "MONOLOGUE"
+)
+
+var AllMessageType = []MessageType{
+	MessageTypeTalknormal,
+	MessageTypeMonologue,
+}
+
+func (e MessageType) IsValid() bool {
+	switch e {
+	case MessageTypeTalknormal, MessageTypeMonologue:
+		return true
+	}
+	return false
+}
+
+func (e MessageType) String() string {
+	return string(e)
+}
+
+func (e *MessageType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MessageType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MessageType", str)
+	}
+	return nil
+}
+
+func (e MessageType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SnsType string
+
+const (
+	SnsTypeTwitter SnsType = "TWITTER"
+	SnsTypeDiscord SnsType = "DISCORD"
+	SnsTypeGithub  SnsType = "GITHUB"
+	SnsTypeWebsite SnsType = "WEBSITE"
+	SnsTypePixiv   SnsType = "PIXIV"
+)
+
+var AllSnsType = []SnsType{
+	SnsTypeTwitter,
+	SnsTypeDiscord,
+	SnsTypeGithub,
+	SnsTypeWebsite,
+	SnsTypePixiv,
+}
+
+func (e SnsType) IsValid() bool {
+	switch e {
+	case SnsTypeTwitter, SnsTypeDiscord, SnsTypeGithub, SnsTypeWebsite, SnsTypePixiv:
+		return true
+	}
+	return false
+}
+
+func (e SnsType) String() string {
+	return string(e)
+}
+
+func (e *SnsType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SnsType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SnsType", str)
+	}
+	return nil
+}
+
+func (e SnsType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

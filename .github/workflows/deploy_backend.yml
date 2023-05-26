@@ -1,0 +1,32 @@
+name: delivery backend
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  delivery:
+    runs-on: [self-hosted]
+    steps:
+      - name: clone repository
+        uses: actions/checkout@v2
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ">=1.20.0"
+          cache: true
+          cache-dependency-path: go.sum
+
+      - name: build
+        run: |
+          docker build ghcr.io/h-orito/chat-role-play-backend .
+      - name: deploy
+        run: |
+          docker login ghcr.io -u h-orito -p ${{ secrets.PACKAGE_PAT }}
+          docker push ghcr.io/h-orito/chat-role-play-backend
+      - name: release
+        run: |
+          kubectl delete pod -l app=chat-role-play-backend

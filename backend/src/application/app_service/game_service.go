@@ -10,7 +10,7 @@ type GameService interface {
 		pageSize *int,
 		pageNumber *int,
 	) (participants *model.GameParticipants, err error)
-	Save(game model.Game) (saved *model.Game, err error)
+	Register(game model.Game) (saved *model.Game, err error)
 }
 
 type gameService struct {
@@ -35,6 +35,6 @@ func (s *gameService) FindGameParticipantsByGameID(ID uint32, pageSize *int, pag
 	return s.gameRepository.FindGameParticipantsByGameID(ID, pageSize, pageNumber)
 }
 
-func (s *gameService) Save(game model.Game) (saved *model.Game, err error) {
-	return s.gameRepository.Save(&game)
+func (s *gameService) Register(game model.Game) (saved *model.Game, err error) {
+	return s.gameRepository.Register(game)
 }

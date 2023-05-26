@@ -1,0 +1,11 @@
+query games($pageSize: Int!, $pageNumber: Int!) {
+  games(
+    query: {
+      paging: { pageSize: $pageSize, pageNumber: $pageNumber, isLatest: false }
+    }
+  ) {
+    id
+    name
+    participantsCount
+  }
+}

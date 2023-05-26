@@ -94,6 +94,17 @@ func (repo *GameRepository) FindGameParticipantsByGameID(
 	}, nil
 }
 
+func (repo *GameRepository) Register(g model.Game) (_ *model.Game, err error) {
+	rdbGame := Game{
+		GameName: g.Name,
+	}
+	result := repo.db.Connection.Create(&rdbGame)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to save: %s \n", result.Error)
+	}
+	return repo.Find(rdbGame.ID)
+}
+
 func (repo *GameRepository) findGameParticipantsByGameIDs(IDs []uint32) (participants *model.GameParticipants, err error) {
 	var rdbGameParticipants []Participant
 	result := repo.db.Connection.Model(&Participant{}).Find(&rdbGameParticipants, "game_id in (?)", IDs)

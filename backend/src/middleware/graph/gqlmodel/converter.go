@@ -14,9 +14,15 @@ func MapToGame(g *model.Game) *Game {
 	return &Game{
 		ID:   intIdToBase64(g.ID, "Game"),
 		Name: g.Name,
-		Participants: array.Map(g.Participants.List, func(p model.GameParticipant) *Participant {
+		Participants: array.Map(g.Participants.List, func(p model.GameParticipant) *GameParticipant {
 			return MapToParticipant(p)
 		}),
+	}
+}
+
+func (gg NewGame) MapToGame() model.Game {
+	return model.Game{
+		Name: gg.Name,
 	}
 }
 
@@ -31,8 +37,8 @@ func MapToSimpleGame(g *model.Game) *SimpleGame {
 	}
 }
 
-func MapToParticipant(p model.GameParticipant) *Participant {
-	return &Participant{
+func MapToParticipant(p model.GameParticipant) *GameParticipant {
+	return &GameParticipant{
 		ID: intIdToBase64(p.ID, "Participant"),
 	}
 }

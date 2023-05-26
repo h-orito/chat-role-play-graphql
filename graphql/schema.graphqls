@@ -11,262 +11,334 @@ scalar DateTime
 
 ####################################################
 
-# type Charachip {
-#   id: ID!
-#   name: String!
-#   designer: Designer!
-#   charas: [Chara!]!
-# }
+type Charachip {
+  id: ID!
+  name: String!
+  designer: Designer!
+  charas: [Chara!]!
+}
 
-# type Designer {
-#   id: ID!
-#   name: String!
-# }
+type Designer {
+  id: ID!
+  name: String!
+}
 
-# type Chara {
-#   id: ID!
-#   name: String!
-#   images: [CharaImage!]!
-# }
+type Chara {
+  id: ID!
+  name: String!
+  images: [CharaImage!]!
+}
 
-# type CharaImage {
-#   type: String!
-#   size: CharaSize!
-#   url: String!
-# }
+type CharaImage {
+  type: String!
+  size: CharaSize!
+  url: String!
+}
 
-# type CharaSize {
-#   width: Int!
-#   height: Int!
-# }
-
-####################################################
-
-# type Game {
-#   id: ID!
-#   name: String!
-#   status: GameStatus!
-#   gameMasters: [Player!]!
-#   participants: [GameParticipant!]!
-#   periods: [GamePeriod!]!
-#   setting: GameSetting!
-# }
-
-# enum GameStatus {
-#   CLOSED
-#   OPENING
-#   RECRUITING
-#   PROGRESS
-#   FINISHED
-#   CANCELED
-# }
-
-# type GameParticipant {
-#   id: ID!
-#   name: String!
-#   player: Player!
-#   chara: Chara!
-#   setting: GameParticipantSetting!
-# }
-
-# type GameParticipantSetting {
-#   notification: NotificationCondition!
-# }
-
-# type NotificationCondition {
-#   discordWebhookUrl: String
-#   game: GameNotificationCondition!
-#   message: MessageNotificationCondition!
-# }
-
-# type GameNotificationCondition {
-#   participate: Boolean!
-#   start: Boolean!
-# }
-
-# type MessageNotificationCondition {
-#   reply: Boolean!
-#   directMessage: Boolean!
-#   keywords: [String!]!
-# }
-
-# type GamePeriod {
-#   id: ID!
-#   count: Int!
-#   name: String!
-#   startAt: DateTime!
-#   endAt: DateTime!
-# }
-
-# type GameSetting {
-#   capacity: GameCapacity!
-#   time: GameTimeSetting!
-#   rule: GameRuleSetting!
-#   password: String
-# }
-
-# type GameCapacity {
-#   min: Int!
-#   max: Int!
-# }
-
-# type GameTimeSetting {
-#   periodPrefix: String
-#   periodSuffix: String
-#   periodIntervalSeconds: Int!
-#   openAt: DateTime!
-#   startParticipateAt: DateTime!
-#   startGameAt: DateTime!
-# }
-
-# type GameRuleSetting {
-#   isGameMasterProducer: Boolean!
-#   canShorten: Boolean!
-#   canSendDirectMessage: Boolean!
-# }
-
-# type GameParticipantGroup {
-#   id: ID!
-#   participants: [GameParticipant!]!
-# }
+type CharaSize {
+  width: Int!
+  height: Int!
+}
 
 ####################################################
 
-# type Player {
-#   id: ID!
-#   name: String!
-#   authorities: [Authority!]!
-# }
+type Game {
+  id: ID!
+  name: String!
+  status: GameStatus!
+  gameMasters: [Player!]!
+  participants(paging: PageableQuery): [GameParticipant!]!
+  periods: [GamePeriod!]!
+  setting: GameSetting!
+}
 
-# enum Authority {
-#   PLAYER
-#   ADMIN
-# }
+type SimpleGame {
+  id: ID!
+  name: String!
+  participantsCount: Int!
+}
+
+enum GameStatus {
+  CLOSED
+  OPENING
+  RECRUITING
+  PROGRESS
+  FINISHED
+  CANCELED
+}
+
+type GameParticipant {
+  id: ID!
+  name: String!
+  player: Player!
+  chara: Chara!
+  setting: GameParticipantSetting!
+}
+
+type GameParticipantSetting {
+  notification: NotificationCondition!
+}
+
+type NotificationCondition {
+  discordWebhookUrl: String
+  game: GameNotificationCondition!
+  message: MessageNotificationCondition!
+}
+
+type GameNotificationCondition {
+  participate: Boolean!
+  start: Boolean!
+}
+
+type MessageNotificationCondition {
+  reply: Boolean!
+  directMessage: Boolean!
+  keywords: [String!]!
+}
+
+type GamePeriod {
+  id: ID!
+  count: Int!
+  name: String!
+  startAt: DateTime!
+  endAt: DateTime!
+}
+
+type GameSetting {
+  chara: GameCharaSetting!
+  capacity: GameCapacity!
+  time: GameTimeSetting!
+  rule: GameRuleSetting!
+  password: String
+}
+
+type GameCharaSetting {
+  charachips: [Charachip!]!
+  canOriginalCharacter: Boolean!
+}
+
+type GameCapacity {
+  min: Int!
+  max: Int!
+}
+
+type GameTimeSetting {
+  periodPrefix: String
+  periodSuffix: String
+  periodIntervalSeconds: Int!
+  openAt: DateTime!
+  startParticipateAt: DateTime!
+  startGameAt: DateTime!
+}
+
+type GameRuleSetting {
+  isGameMasterProducer: Boolean!
+  canShorten: Boolean!
+  canSendDirectMessage: Boolean!
+}
+
+type GameParticipantGroup {
+  id: ID!
+  participants: [GameParticipant!]!
+}
+
+####################################################
+
+type Player {
+  id: ID!
+  name: String!
+  profile: PlayerProfile
+  designer: Designer
+}
+
+type PlayerProfile {
+  iconUrl: String
+  description: String
+  snsAccounts: [PlayerSnsAccount!]!
+}
+
+type PlayerSnsAccount {
+  type: SnsType!
+  name: String
+  url: String!
+}
+
+enum SnsType {
+  TWITTER
+  DISCORD
+  GITHUB
+  WEBSITE
+  PIXIV
+}
 
 ####################################################
 
-# type Messages implements Pageable {
-#   list: [Message!]!
-#   allPageCount: Int!
-#   hasPrePage: Boolean!
-#   hasNextPage: Boolean!
-#   currentPageNum: Int
-#   isLatest: Boolean!
-# }
+type Messages implements Pageable {
+  list: [Message!]!
+  allPageCount: Int!
+  hasPrePage: Boolean!
+  hasNextPage: Boolean!
+  currentPageNum: Int
+  isLatest: Boolean!
+}
 
-# type Message {
-#   id: ID!
-#   content: MessageContent!
-#   time: MessageTime!
-#   sender: MessageSender!
-#   replyTo: MessageRecipient!
-#   reactions: MessageReactions!
-# }
+type Message {
+  id: ID!
+  content: MessageContent!
+  time: MessageTime!
+  sender: MessageSender!
+  replyTo: MessageRecipient!
+  reactions: MessageReactions!
+}
 
-# type MessageContent {
-#   type: MessageType!
-#   number: Int!
-#   text: String!
-#   canConvertDisabled: Boolean!
-# }
+type MessageContent {
+  type: MessageType!
+  number: Int!
+  text: String!
+  canConvertDisabled: Boolean!
+}
 
-# enum MessageType {
-#   TALKNORMAL
-#   MONOLOGUE
-# }
+enum MessageType {
+  TALKNORMAL
+  MONOLOGUE
+}
 
-# type MessageTime {
-#   period: GamePeriod!
-#   sendAt: DateTime!
-#   sendUnixTimeMilli: Int!
-# }
+type MessageTime {
+  period: GamePeriod!
+  sendAt: DateTime!
+  sendUnixTimeMilli: Int!
+}
 
-# type MessageSender {
-#   participant: GameParticipant!
-#   name: String!
-#   charaImage: CharaImage!
-# }
+type MessageSender {
+  participant: GameParticipant!
+  name: String!
+  charaImage: CharaImage!
+}
 
-# type MessageRecipient {
-#   messageId: ID!
-#   participantId: ID!
-# }
+type MessageRecipient {
+  messageId: ID!
+  participantId: ID!
+}
 
-# type MessageReactions {
-#   replies: [MessageReply!]!
-#   favorites: [MessageFavorite!]!
-# }
+type MessageReactions {
+  replies: [MessageReply!]!
+  favorites: [MessageFavorite!]!
+}
 
-# type MessageReply {
-#   messageId: ID!
-# }
+type MessageReply {
+  messageId: ID!
+}
 
-# type MessageFavorite {
-#   participantId: ID!
-# }
+type MessageFavorite {
+  participantId: ID!
+}
 
-# type DirectMessages implements Pageable {
-#   list: [DirectMessage!]!
-#   allPageCount: Int!
-#   hasPrePage: Boolean!
-#   hasNextPage: Boolean!
-#   currentPageNum: Int
-#   isLatest: Boolean!
-# }
+type DirectMessages implements Pageable {
+  list: [DirectMessage!]!
+  allPageCount: Int!
+  hasPrePage: Boolean!
+  hasNextPage: Boolean!
+  currentPageNum: Int
+  isLatest: Boolean!
+}
 
-# type DirectMessage {
-#   id: ID!
-#   participantGroup: GameParticipantGroup!
-#   content: MessageContent!
-#   time: MessageTime!
-#   sender: MessageSender!
-# }
-
-####################################################
-
-# interface Pageable {
-#   allPageCount: Int!
-#   hasPrePage: Boolean!
-#   hasNextPage: Boolean!
-#   currentPageNum: Int
-#   isLatest: Boolean!
-# }
+type DirectMessage {
+  id: ID!
+  participantGroup: GameParticipantGroup!
+  content: MessageContent!
+  time: MessageTime!
+  sender: MessageSender!
+}
 
 ####################################################
 
-# type Query {
-#   charachips: [Charachip!]!
-#   charachip(id: ID!): Charachip!
-#   chara(id: ID!): Chara!
-#   games: [Game!]!
-#   game(id: ID!): Game!
-#   participantGroups(gameId: ID!): [GameParticipantGroup!]!
-#   messages(gameId: ID!, query: MessageQuery!): Messages!
-#   message(gameId: ID!, messageId: ID!): Message!
-#   directMessages(gameId: ID!, query: DirectMessageQuery!): DirectMessages!
-# }
-
-# input MessageQuery {
-#   periodId: ID
-#   types: [MessageType!]
-#   senderIds: [ID!]
-#   recipientIds: [ID!]
-#   keywords: [String!]
-#   pageSize: Int
-#   pageNum: Int
-#   isLatest: Boolean
-# }
-
-# input DirectMessageQuery {
-#   periodId: ID
-#   participantGroupId: ID!
-#   types: [MessageType!]
-#   pageSize: Int
-#   pageNum: Int
-#   isLatest: Boolean
-# }
+interface Pageable {
+  allPageCount: Int!
+  hasPrePage: Boolean!
+  hasNextPage: Boolean!
+  currentPageNum: Int
+  isLatest: Boolean!
+}
 
 ####################################################
+
+type Query {
+  games(query: GamesQuery!): [SimpleGame!]!
+  game(id: ID!): Game
+  gameParticipantGroups(gameId: ID!): [GameParticipantGroup!]!
+  player(name: String!): Player
+  charachips(query: CharachipsQuery!): [Charachip!]!
+  charachip(id: ID!): Charachip!
+  chara(id: ID!): Chara!
+  messages(gameId: ID!, query: MessageQuery!): Messages!
+  message(id: ID!): Message!
+  directMessages(gameId: ID!, query: DirectMessageQuery!): DirectMessages!
+}
+
+input PageableQuery {
+  pageSize: Int!
+  pageNumber: Int!
+  isLatest: Boolean!
+}
+
+input GamesQuery {
+  ids: [ID!]
+  name: String
+  paging: PageableQuery
+}
+
+input ParticipantsQuery {
+  ids: [ID!]
+  playerIds: [ID!]
+  paging: PageableQuery
+}
+
+input CharachipsQuery {
+  ids: [ID!]
+  paging: PageableQuery
+}
+
+input MessageQuery {
+  periodId: ID
+  types: [MessageType!]
+  senderIds: [ID!]
+  recipientIds: [ID!]
+  keywords: [String!]
+  paging: PageableQuery
+}
+
+input DirectMessageQuery {
+  periodId: ID
+  participantGroupId: ID!
+  types: [MessageType!]
+  keywords: [String!]
+  paging: PageableQuery
+}
+
+####################################################
+
+type Mutation {
+  registerGame(input: NewGame!): RegisterGamePayload! @isAuthenticated
+  registerParticipant(input: NewParticipant!): RegisterParticipantPayload!
+    @isAuthenticated
+}
+
+input NewGame {
+  name: String!
+}
+
+type RegisterGamePayload {
+  game: Game!
+}
+
+input NewParticipant {
+  gameId: ID!
+  playerId: ID!
+}
+
+type RegisterParticipantPayload {
+  participant: GameParticipant!
+}
 
 # type Mutation {
 #   createDesigner(input: NewDesigner!): CreateDesignerPayload!
@@ -291,79 +363,3 @@ scalar DateTime
 # }
 
 ####################################################
-
-type Game {
-  id: ID!
-  name: String!
-  participants(paging: PageableQuery): [Participant!]!
-}
-
-type SimpleGame {
-  id: ID!
-  name: String!
-  participantsCount: Int!
-}
-
-type Player {
-  id: ID!
-  name: String!
-}
-
-type Participant {
-  id: ID!
-}
-
-type Query {
-  games(query: GamesQuery!): [SimpleGame!]! @isAuthenticated
-  game(id: ID!): Game
-  players: [Player!]!
-  player(name: String!): Player
-}
-
-input PageableQuery {
-  pageSize: Int!
-  pageNumber: Int!
-}
-
-input GamesQuery {
-  ids: [ID!]
-  name: String
-  paging: PageableQuery
-}
-
-input ParticipantsQuery {
-  ids: [ID!]
-  playerIds: [ID!]
-  paging: PageableQuery
-}
-
-type Mutation {
-  createGame(input: NewGame!): CreateGamePayload!
-  createPlayer(input: NewPlayer!): CreatePlayerPayload!
-  createParticipant(input: NewParticipant!): CreateParticipantPayload!
-}
-
-input NewGame {
-  name: String!
-}
-
-type CreateGamePayload {
-  game: Game!
-}
-
-input NewPlayer {
-  name: String!
-}
-
-type CreatePlayerPayload {
-  player: Player!
-}
-
-input NewParticipant {
-  gameId: ID!
-  playerId: ID!
-}
-
-type CreateParticipantPayload {
-  participant: Participant!
-}

@@ -35,5 +35,5 @@ type GameRepository interface {
 		pageSize *int,
 		pageNumber *int,
 	) (participants *GameParticipants, err error)
-	Save(game *Game) (saved *Game, err error)
+	Register(game Game) (saved *Game, err error)
 }
