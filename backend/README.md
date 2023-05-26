@@ -7,7 +7,7 @@
 
 ### 環境変数
 
-- src/config/config.yaml を用意
+- config/config.yaml を用意
 
 例
 
@@ -25,7 +25,7 @@ oauth:
 ### サーバー起動
 
 ```
-go run src/main.go
+go run main.go
 ```
 
 ### library

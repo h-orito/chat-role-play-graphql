@@ -18,11 +18,11 @@ jobs:
       - name: build
         run: >
           docker build
-          -t ghcr.io/h-orito/${{ env.IMAGE_NAME }}:latest .
+          -t ghcr.io/h-orito/${{ env.IMAGE_NAME }}:latest ./frontend
           --build-arg AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}
           --build-arg AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}
           --build-arg AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}
-          --build-arg GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }} ./frontend
+          --build-arg GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }}
       - name: deploy
         run: |
           docker login ghcr.io -u h-orito -p ${{ secrets.PACKAGE_PAT }}

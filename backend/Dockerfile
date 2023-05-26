@@ -6,7 +6,7 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-COPY ./src/* /app/
+COPY ./* ./
 
 # oracle cloud infrastructure用
 ENV CGO_ENABLED=0 \
