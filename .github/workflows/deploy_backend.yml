@@ -20,6 +20,7 @@ jobs:
 
       - name: build
         run: |
+          cd backend
           docker build -t ghcr.io/h-orito/chat-role-play-backend .
       - name: deploy
         run: |
