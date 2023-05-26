@@ -6,7 +6,7 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-COPY ./* ./
+COPY ./* /go/src/chat-role-play/
 
 # oracle cloud infrastructure用
 ENV CGO_ENABLED=0 \
