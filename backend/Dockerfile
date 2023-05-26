@@ -10,7 +10,7 @@ COPY . .
 
 # oracle cloud infrastructure用
 ENV CGO_ENABLED=0 \
-    GOOS=linux 
+    GOOS=linux \
     GOARCH=arm64
 
 RUN go build -o /main
