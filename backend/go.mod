@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/99designs/gqlgen v0.17.31
-	github.com/spf13/viper v1.15.0
 	github.com/vektah/gqlparser/v2 v2.5.1
 )
 
@@ -15,6 +14,7 @@ require (
 )
 
 require (
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect

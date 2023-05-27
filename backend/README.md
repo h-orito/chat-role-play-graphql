@@ -7,19 +7,17 @@
 
 ### 環境変数
 
-- config/config.yaml を用意
+.env を用意
 
 例
 
 ```
-db:
-  host: localhost
-  name: chat_rp_db
-  user: chatrp
-  pass: password
-oauth:
-  issueruri: {oauth issuer uri}
-  audience: {oauth audience (comma separated)}
+DB_HOST=localhost
+DB_NAME=chat_rp_db
+DB_USER=chatrp
+DB_PASS=password
+OAUTH_ISSUERURI={oauth issuer uri}
+OAUTH_AUDIENCE={oauth audience (comma separated)}
 ```
 
 ### サーバー起動
