@@ -1,5 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  app: {
+    baseURL: '/chat-role-play/'
+  },
   srcDir: 'src/',
   typescript: {
     strict: true
@@ -16,7 +19,8 @@ export default defineNuxtConfig({
   apollo: {
     clients: {
       default: {
-        httpEndpoint: process.env.GRAPHQL_ENDPOINT || 'http://localhost:8080/query'
+        httpEndpoint:
+          process.env.GRAPHQL_ENDPOINT || 'http://localhost:8080/query'
       }
     }
   }
