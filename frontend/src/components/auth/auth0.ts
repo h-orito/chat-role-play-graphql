@@ -1,5 +1,3 @@
-import { LocationQuery } from 'vue-router'
-
 export const login = async (): Promise<void> => {
   if (process.server) return
   const { $auth0 } = useNuxtApp()
@@ -13,7 +11,7 @@ export const logout = async (): Promise<void> => {
   const { logout: doLogout } = $auth0
   const { onLogout } = useApollo()
   await onLogout('default', false) // apollo logout
-  await doLogout({ logoutParams: { returnTo: window.location.origin } })
+  await doLogout({ logoutParams: { returnTo: window.location.href } })
 }
 
 export const updateAuth0LoginState = async (): Promise<void> => {
