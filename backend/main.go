@@ -25,8 +25,8 @@ func main() {
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 	}).Handler(srv)
-	http.Handle("/crp-server/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/crp-server/", playground.Handler("GraphQL playground", "/crp-server/query"))
 	http.Handle("/crp-server/query", handler)
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Printf("connect to http://localhost:%s/crp-server/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

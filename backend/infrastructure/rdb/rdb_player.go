@@ -18,3 +18,39 @@ func (p Player) ToModel() *model.Player {
 		Name: p.PlayerName,
 	}
 }
+
+type PlayerProfile struct {
+	PlayerID     uint32 `gorm:"primaryKey"`
+	IconUrl      *string
+	Introduction *string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+}
+
+func (p PlayerProfile) ToModel(snsAccounts []model.PlayerSnsAccount) *model.PlayerProfile {
+	return &model.PlayerProfile{
+		PlayerID:     p.PlayerID,
+		IconURL:      p.IconUrl,
+		Introduction: p.Introduction,
+		SnsAccounts:  snsAccounts,
+	}
+}
+
+type PlayerSnsAccount struct {
+	ID          uint32
+	PlayerID    uint32
+	SnsTypeCode string
+	AccountName string
+	AccountUrl  string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+func (p PlayerSnsAccount) ToModel() *model.PlayerSnsAccount {
+	return &model.PlayerSnsAccount{
+		ID:          p.ID,
+		SnsType:     *model.SnsTypeValueOf(p.SnsTypeCode),
+		AccountName: p.AccountName,
+		AccountURL:  p.AccountUrl,
+	}
+}
