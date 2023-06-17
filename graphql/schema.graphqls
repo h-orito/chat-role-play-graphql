@@ -9,6 +9,8 @@ directive @isAuthenticated on FIELD_DEFINITION
 # RFC3339 e.g. 2019-11-19T18:00:00+09:00
 scalar DateTime
 
+scalar Long
+
 ####################################################
 
 type Charachip {
@@ -30,6 +32,7 @@ type Chara {
 }
 
 type CharaImage {
+  id: ID!
   type: String!
   size: CharaSize!
   url: String!
@@ -46,33 +49,44 @@ type Game {
   id: ID!
   name: String!
   status: GameStatus!
-  gameMasters: [Player!]!
+  gameMasters: [GameMaster!]!
   participants(paging: PageableQuery): [GameParticipant!]!
   periods: [GamePeriod!]!
-  setting: GameSetting!
+  settings: GameSettings!
 }
 
 type SimpleGame {
   id: ID!
   name: String!
+  status: GameStatus!
   participantsCount: Int!
+  periods: [GamePeriod!]!
+  settings: GameSettings!
 }
 
 enum GameStatus {
-  CLOSED
-  OPENING
-  RECRUITING
-  PROGRESS
-  FINISHED
-  CANCELED
+  Closed
+  Opening
+  Recruiting
+  Progress
+  Finished
+  Cancelled
+}
+
+type GameMaster {
+  id: ID!
+  player: Player!
+  isProducer: Boolean!
 }
 
 type GameParticipant {
   id: ID!
   name: String!
+  entryNumber: Int!
   player: Player!
   chara: Chara!
-  setting: GameParticipantSetting!
+  isGone: Boolean!
+  lastAccessedAt: DateTime!
 }
 
 type GameParticipantSetting {
@@ -96,6 +110,14 @@ type MessageNotificationCondition {
   keywords: [String!]!
 }
 
+type GameParticipantProfile {
+  iconUrl: String
+  introduction: String
+  memo: String
+  followsCount: Int!
+  followersCount: Int!
+}
+
 type GamePeriod {
   id: ID!
   count: Int!
@@ -104,12 +126,20 @@ type GamePeriod {
   endAt: DateTime!
 }
 
-type GameSetting {
+type GameParticipantDiary {
+  id: ID!
+  participant: GameParticipant!
+  period: GamePeriod!
+  title: String!
+  body: String!
+}
+
+type GameSettings {
   chara: GameCharaSetting!
   capacity: GameCapacity!
   time: GameTimeSetting!
   rule: GameRuleSetting!
-  password: String
+  password: GamePasswordSetting!
 }
 
 type GameCharaSetting {
@@ -137,8 +167,13 @@ type GameRuleSetting {
   canSendDirectMessage: Boolean!
 }
 
+type GamePasswordSetting {
+  hasPassword: Boolean!
+}
+
 type GameParticipantGroup {
   id: ID!
+  name: String!
   participants: [GameParticipant!]!
 }
 
@@ -153,22 +188,25 @@ type Player {
 
 type PlayerProfile {
   iconUrl: String
-  description: String
+  introduction: String
   snsAccounts: [PlayerSnsAccount!]!
 }
 
 type PlayerSnsAccount {
+  id: ID!
   type: SnsType!
   name: String
   url: String!
 }
 
 enum SnsType {
-  TWITTER
-  DISCORD
-  GITHUB
-  WEBSITE
-  PIXIV
+  Twitter
+  Mastodon
+  Misskey
+  Discord
+  Github
+  WebSite
+  Pixiv
 }
 
 ####################################################
@@ -178,8 +216,8 @@ type Messages implements Pageable {
   allPageCount: Int!
   hasPrePage: Boolean!
   hasNextPage: Boolean!
-  currentPageNum: Int
-  isLatest: Boolean!
+  currentPageNumber: Int
+  isDesc: Boolean!
 }
 
 type Message {
@@ -195,23 +233,25 @@ type MessageContent {
   type: MessageType!
   number: Int!
   text: String!
-  canConvertDisabled: Boolean!
+  isConvertDisabled: Boolean!
 }
 
 enum MessageType {
-  TALKNORMAL
-  MONOLOGUE
+  TalkNormal
+  Monologue
+  Description
+  SystemPublic
+  SystemPrivate
 }
 
 type MessageTime {
-  period: GamePeriod!
   sendAt: DateTime!
-  sendUnixTimeMilli: Int!
+  sendUnixTimeMilli: Long!
 }
 
 type MessageSender {
-  participant: GameParticipant!
-  name: String!
+  participantId: ID!
+  charaName: String!
   charaImage: CharaImage!
 }
 
@@ -221,16 +261,8 @@ type MessageRecipient {
 }
 
 type MessageReactions {
-  replies: [MessageReply!]!
-  favorites: [MessageFavorite!]!
-}
-
-type MessageReply {
-  messageId: ID!
-}
-
-type MessageFavorite {
-  participantId: ID!
+  replyCount: Int!
+  favoriteCount: Int!
 }
 
 type DirectMessages implements Pageable {
@@ -238,16 +270,21 @@ type DirectMessages implements Pageable {
   allPageCount: Int!
   hasPrePage: Boolean!
   hasNextPage: Boolean!
-  currentPageNum: Int
-  isLatest: Boolean!
+  currentPageNumber: Int
+  isDesc: Boolean!
 }
 
 type DirectMessage {
   id: ID!
-  participantGroup: GameParticipantGroup!
+  participantGroupId: ID!
   content: MessageContent!
   time: MessageTime!
   sender: MessageSender!
+  reactions: DirectMessageReactions!
+}
+
+type DirectMessageReactions {
+  favoriteCounts: Int!
 }
 
 ####################################################
@@ -256,29 +293,63 @@ interface Pageable {
   allPageCount: Int!
   hasPrePage: Boolean!
   hasNextPage: Boolean!
-  currentPageNum: Int
-  isLatest: Boolean!
+  currentPageNumber: Int
+  isDesc: Boolean!
 }
 
 ####################################################
 
 type Query {
+  designers(query: DesignersQuery!): [Designer!]!
+  designer(id: ID!): Designer
+  charachips(query: CharachipsQuery!): [Charachip!]!
+  charachip(id: ID!): Charachip
+  chara(id: ID!): Chara
   games(query: GamesQuery!): [SimpleGame!]!
   game(id: ID!): Game
-  gameParticipantGroups(gameId: ID!): [GameParticipantGroup!]!
-  player(name: String!): Player
-  charachips(query: CharachipsQuery!): [Charachip!]!
-  charachip(id: ID!): Charachip!
-  chara(id: ID!): Chara!
-  messages(gameId: ID!, query: MessageQuery!): Messages!
-  message(id: ID!): Message!
-  directMessages(gameId: ID!, query: DirectMessageQuery!): DirectMessages!
+  myGameParticipant(gameId: ID!): GameParticipant
+  gameParticipantProfile(participantId: ID!): GameParticipantProfile!
+  gameParticipantFollows(participantId: ID!): [GameParticipant!]!
+  gameParticipantFollowers(participantId: ID!): [GameParticipant!]!
+  gameParticipantSetting(gameId: ID!): GameParticipantSetting!
+  gameDiaries(gameId: ID!, query: GameDiariesQuery!): [GameParticipantDiary!]!
+  gameDiary(gameId: ID!, diaryId: ID!): GameParticipantDiary
+  player(id: ID!): Player
+  messages(gameId: ID!, query: MessagesQuery!): Messages!
+  message(gameId: ID!, messageId: ID!): Message
+  messageReplies(gameId: ID!, messageId: ID!): [Message!]!
+  messageFavoriteGameParticipants(
+    gameId: ID!
+    messageId: ID!
+  ): [GameParticipant!]!
+  gameParticipantGroups(
+    gameId: ID!
+    query: GameParticipantGroupsQuery!
+  ): [GameParticipantGroup!]!
+  directMessages(gameId: ID!, query: DirectMessagesQuery!): DirectMessages!
+  directMessage(gameId: ID!, directMessageId: ID!): DirectMessage
+  directMessageFavoriteGameParticipants(
+    gameId: ID!
+    directMessageId: ID!
+  ): [GameParticipant!]!
 }
 
 input PageableQuery {
   pageSize: Int!
   pageNumber: Int!
-  isLatest: Boolean!
+  isDesc: Boolean!
+}
+
+input CharachipsQuery {
+  ids: [ID!]
+  name: String
+  paging: PageableQuery
+}
+
+input DesignersQuery {
+  ids: [ID!]
+  Name: String
+  paging: PageableQuery
 }
 
 input GamesQuery {
@@ -287,79 +358,579 @@ input GamesQuery {
   paging: PageableQuery
 }
 
+input GameDiariesQuery {
+  participantId: ID
+  periodId: ID
+}
+
 input ParticipantsQuery {
   ids: [ID!]
   playerIds: [ID!]
   paging: PageableQuery
 }
 
-input CharachipsQuery {
+input MessagesQuery {
   ids: [ID!]
-  paging: PageableQuery
-}
-
-input MessageQuery {
   periodId: ID
   types: [MessageType!]
   senderIds: [ID!]
-  recipientIds: [ID!]
+  replyToMessageId: ID
   keywords: [String!]
+  sinceAt: DateTime
+  untilAt: DateTime
+  offsetUnixTimeMilli: Long
   paging: PageableQuery
 }
 
-input DirectMessageQuery {
-  periodId: ID
+input GameParticipantGroupsQuery {
+  memberParticipantId: ID
+}
+
+input DirectMessagesQuery {
+  ids: [ID!]
   participantGroupId: ID!
+  periodId: ID
   types: [MessageType!]
+  senderIds: [ID!]
   keywords: [String!]
+  sinceAt: DateTime
+  untilAt: DateTime
+  offsetUnixTimeMilli: Long
   paging: PageableQuery
 }
 
 ####################################################
 
 type Mutation {
-  registerGame(input: NewGame!): RegisterGamePayload! @isAuthenticated
-  registerParticipant(input: NewParticipant!): RegisterParticipantPayload!
+  # chara
+  registerDesigner(input: NewDesigner!): RegisterDesignerPayload!
     @isAuthenticated
+  updateDesigner(input: UpdateDesigner!): UpdateDesignerPayload!
+    @isAuthenticated
+  registerCharachip(input: NewCharachip!): RegisterCharachipPayload!
+    @isAuthenticated
+  updateCharachip(input: UpdateCharachip!): UpdateCharachipPayload!
+    @isAuthenticated
+  registerCharachipChara(input: NewChara!): RegisterCharaPayload!
+    @isAuthenticated
+  updateChara(input: UpdateChara!): UpdateCharaPayload! @isAuthenticated
+  # TODO original character
+  registerCharaImage(input: NewCharaImage!): RegisterCharaImagePayload!
+    @isAuthenticated
+  updateCharaImage(input: UpdateCharaImage!): UpdateCharaImagePayload!
+
+  # game
+  registerGame(input: NewGame!): RegisterGamePayload! @isAuthenticated
+  registerGameMaster(input: NewGameMaster!): RegisterGameMasterPayload!
+    @isAuthenticated
+  updateGameMaster(input: UpdateGameMaster!): UpdateGameMasterPayload!
+    @isAuthenticated
+  deleteGameMaster(input: DeleteGameMaster!): DeleteGameMasterPayload!
+    @isAuthenticated
+  updateGameStatus(input: UpdateGameStatus!): UpdateGameStatusPayload!
+    @isAuthenticated
+  updateGameSetting(input: UpdateGameSetting!): UpdateGameSettingPayload!
+    @isAuthenticated
+  updateGamePeriod(input: UpdateGamePeriod!): UpdateGamePeriodPayload!
+    @isAuthenticated
+
+  # game participant
+  registerGameParticipant(
+    input: NewGameParticipant!
+  ): RegisterGameParticipantPayload! @isAuthenticated
+  updateGameParticipantProfile(
+    input: UpdateGameParticipantProfile!
+  ): UpdateGameParticipantProfilePayload! @isAuthenticated
+  updateGameParticipantSetting(
+    input: UpdateGameParticipantSetting!
+  ): UpdateGameParticipantSettingPayload! @isAuthenticated
+  deleteGameParticipant(
+    input: DeleteGameParticipant!
+  ): DeleteGameParticipantPayload! @isAuthenticated
+  registerGameParticipantFollow(
+    input: NewGameParticipantFollow!
+  ): RegisterGameParticipantFollowPayload! @isAuthenticated
+  deleteGameParticipantFollow(
+    input: DeleteGameParticipantFollow!
+  ): DeleteGameParticipantFollowPayload! @isAuthenticated
+  registerGameParticipantDiary(
+    input: NewGameParticipantDiary!
+  ): RegisterGameParticipantDiaryPayload! @isAuthenticated
+  updateGameParticipantDiary(
+    input: UpdateGameParticipantDiary!
+  ): UpdateGameParticipantDiaryPayload! @isAuthenticated
+
+  # player
+  registerPlayerProfile(
+    input: NewPlayerProfile!
+  ): RegisterPlayerProfilePayload! @isAuthenticated
+  updatePlayerProfile(input: UpdatePlayerProfile!): UpdatePlayerProfilePayload!
+    @isAuthenticated
+  registerPlayerSnsAccount(
+    input: NewPlayerSnsAccount!
+  ): RegisterPlayerSnsAccountPayload! @isAuthenticated
+  updatePlayerSnsAccount(
+    input: UpdatePlayerSnsAccount!
+  ): UpdatePlayerSnsAccountPayload! @isAuthenticated
+  deletePlayerSnsAccount(
+    input: DeletePlayerSnsAccount!
+  ): DeletePlayerSnsAccountPayload! @isAuthenticated
+
+  # message
+  registerMessage(input: NewMessage!): RegisterMessagePayload! @isAuthenticated
+  # TODO: updateMessage（メッセージ編集機能）
+  registerMessageFavorite(
+    input: NewMessageFavorite!
+  ): RegisterMessageFavoritePayload! @isAuthenticated
+  deleteMessageFavorite(
+    input: DeleteMessageFavorite!
+  ): DeleteMessageFavoritePayload! @isAuthenticated
+  registerDirectMessage(
+    input: NewDirectMessage!
+  ): RegisterDirectMessagePayload! @isAuthenticated
+  registerDirectMessageFavorite(
+    input: NewDirectMessageFavorite!
+  ): RegisterDirectMessageFavoritePayload! @isAuthenticated
+  deleteDirectMessageFavorite(
+    input: DeleteDirectMessageFavorite!
+  ): DeleteDirectMessageFavoritePayload! @isAuthenticated
 }
+
+## chara
+
+input NewDesigner {
+  name: String!
+}
+
+type RegisterDesignerPayload {
+  designer: Designer!
+}
+
+input UpdateDesigner {
+  id: ID!
+  name: String!
+}
+
+type UpdateDesignerPayload {
+  ok: Boolean!
+}
+
+input NewCharachip {
+  name: String!
+  designerId: ID!
+}
+
+type RegisterCharachipPayload {
+  charachip: Charachip!
+}
+
+input UpdateCharachip {
+  id: ID!
+  name: String!
+}
+
+type UpdateCharachipPayload {
+  ok: Boolean!
+}
+
+input NewChara {
+  charachipId: ID!
+  name: String!
+}
+
+type RegisterCharaPayload {
+  chara: Chara!
+}
+
+input UpdateChara {
+  id: ID!
+  name: String!
+}
+
+type UpdateCharaPayload {
+  ok: Boolean!
+}
+
+input NewCharaImage {
+  charaId: ID!
+  type: String!
+  url: String!
+  width: Int!
+  height: Int!
+}
+
+type RegisterCharaImagePayload {
+  charaImage: CharaImage!
+}
+
+input UpdateCharaImage {
+  id: ID!
+  type: String!
+  url: String!
+  width: Int!
+  height: Int!
+}
+
+type UpdateCharaImagePayload {
+  ok: Boolean!
+}
+
+## game
 
 input NewGame {
   name: String!
+  settings: NewGameSettings!
+}
+
+input NewGameSettings {
+  chara: NewGameCharaSetting!
+  capacity: NewGameCapacity!
+  time: NewGameTimeSetting!
+  rule: NewGameRuleSetting!
+  password: NewGamePasswordSetting!
+}
+
+input NewGameCharaSetting {
+  charachipIds: [Int!]!
+  canOriginalCharacter: Boolean!
+}
+
+input NewGameCapacity {
+  min: Int!
+  max: Int!
+}
+
+input NewGameTimeSetting {
+  periodPrefix: String
+  periodSuffix: String
+  periodIntervalSeconds: Int!
+  openAt: DateTime!
+  startParticipateAt: DateTime!
+  startGameAt: DateTime!
+}
+
+input NewGameRuleSetting {
+  isGameMasterProducer: Boolean!
+  canShorten: Boolean!
+  canSendDirectMessage: Boolean!
+}
+
+input NewGamePasswordSetting {
+  password: String
 }
 
 type RegisterGamePayload {
   game: Game!
 }
 
-input NewParticipant {
+input NewGameMaster {
   gameId: ID!
   playerId: ID!
+  isProducer: Boolean!
 }
 
-type RegisterParticipantPayload {
-  participant: GameParticipant!
+type RegisterGameMasterPayload {
+  gameMaster: GameMaster!
 }
 
-# type Mutation {
-#   createDesigner(input: NewDesigner!): CreateDesignerPayload!
-#   createCharachip(input: NewCharachip!): CreateCharachipPayload!
-# }
+input UpdateGameMaster {
+  id: ID!
+  isProducer: Boolean!
+}
 
-# input NewDesigner {
-#   name: String!
-# }
+type UpdateGameMasterPayload {
+  ok: Boolean!
+}
 
-# type CreateDesignerPayload {
-#   designer: Designer!
-# }
+input DeleteGameMaster {
+  id: ID!
+}
 
-# input NewCharachip {
-#   name: String!
-#   designerId: ID!
-# }
+type DeleteGameMasterPayload {
+  ok: Boolean!
+}
 
-# type CreateCharachipPayload {
-#   charachip: Charachip!
-# }
+input UpdateGameSetting {
+  gameId: ID!
+  settings: UpdateGameSettings!
+}
+
+input UpdateGameSettings {
+  chara: UpdateCharaSetting!
+  capacity: UpdateGameCapacity!
+  time: UpdateGameTimeSetting!
+  rule: UpdateGameRuleSetting!
+  password: UpdateGamePasswordSetting!
+}
+
+input UpdateCharaSetting {
+  charachipIds: [Int!]!
+  canOriginalCharacter: Boolean!
+}
+
+input UpdateGameCapacity {
+  min: Int!
+  max: Int!
+}
+
+input UpdateGameTimeSetting {
+  periodPrefix: String
+  periodSuffix: String
+  periodIntervalSeconds: Int!
+  openAt: DateTime!
+  startParticipateAt: DateTime!
+  startGameAt: DateTime!
+}
+
+input UpdateGameRuleSetting {
+  isGameMasterProducer: Boolean!
+  canShorten: Boolean!
+  canSendDirectMessage: Boolean!
+}
+
+input UpdateGamePasswordSetting {
+  password: String
+}
+
+type UpdateGameSettingPayload {
+  ok: Boolean!
+}
+
+input UpdateGameStatus {
+  gameId: ID!
+  status: GameStatus!
+}
+
+type UpdateGameStatusPayload {
+  ok: Boolean!
+}
+
+input UpdateGamePeriod {
+  gameId: ID!
+  name: String!
+  startAt: DateTime!
+  endAt: DateTime!
+}
+
+type UpdateGamePeriodPayload {
+  ok: Boolean!
+}
+
+## game participant
+
+input NewGameParticipant {
+  gameId: ID!
+  Name: String!
+  charaId: ID!
+}
+
+type RegisterGameParticipantPayload {
+  gameParticipant: GameParticipant!
+}
+
+input UpdateGameParticipantProfile {
+  gameParticipantId: ID!
+  name: String!
+  iconUrl: String
+  introduction: String
+  memo: String
+}
+
+type UpdateGameParticipantProfilePayload {
+  ok: Boolean!
+}
+
+input UpdateGameParticipantSetting {
+  gameParticipantId: ID!
+  notification: UpdateNotificationCondition
+}
+
+input UpdateNotificationCondition {
+  discordWebhookUrl: String
+  game: UpdateGameNotificationCondition!
+  message: UpdateMessageNotificationCondition!
+}
+
+input UpdateGameNotificationCondition {
+  participate: Boolean!
+  start: Boolean!
+}
+
+input UpdateMessageNotificationCondition {
+  reply: Boolean!
+  directMessage: Boolean!
+  keywords: [String!]!
+}
+
+type UpdateGameParticipantSettingPayload {
+  ok: Boolean!
+}
+
+input DeleteGameParticipant {
+  gameId: ID!
+}
+
+type DeleteGameParticipantPayload {
+  ok: Boolean!
+}
+
+input NewGameParticipantFollow {
+  gameId: ID!
+  targetGameParticipantId: ID!
+}
+
+type RegisterGameParticipantFollowPayload {
+  ok: Boolean!
+}
+
+input DeleteGameParticipantFollow {
+  gameId: ID!
+  targetGameParticipantId: ID!
+}
+
+type DeleteGameParticipantFollowPayload {
+  ok: Boolean!
+}
+
+input NewGameParticipantDiary {
+  gameId: ID!
+  periodId: ID!
+  title: String!
+  body: String!
+}
+
+type RegisterGameParticipantDiaryPayload {
+  gameParticipantDiary: GameParticipantDiary!
+}
+
+input UpdateGameParticipantDiary {
+  gameId: ID!
+  id: ID!
+  title: String!
+  body: String!
+}
+
+type UpdateGameParticipantDiaryPayload {
+  ok: Boolean!
+}
+
+## player
+
+input NewPlayerProfile {
+  name: String!
+  iconUrl: String
+  introduction: String
+}
+
+type RegisterPlayerProfilePayload {
+  playerProfile: PlayerProfile!
+}
+
+input UpdatePlayerProfile {
+  name: String!
+  iconUrl: String
+  introduction: String
+}
+
+type UpdatePlayerProfilePayload {
+  ok: Boolean!
+}
+
+input NewPlayerSnsAccount {
+  type: SnsType!
+  accountName: String!
+  accountUrl: String!
+}
+
+type RegisterPlayerSnsAccountPayload {
+  playerSnsAccount: PlayerSnsAccount!
+}
+
+input UpdatePlayerSnsAccount {
+  id: ID!
+  type: SnsType!
+  accountName: String!
+  accountUrl: String!
+}
+
+type UpdatePlayerSnsAccountPayload {
+  ok: Boolean!
+}
+
+input DeletePlayerSnsAccount {
+  id: ID!
+}
+
+type DeletePlayerSnsAccountPayload {
+  ok: Boolean!
+}
+
+## message
+
+input NewMessage {
+  gameId: ID!
+  type: MessageType!
+  charaImageId: ID!
+  charaName: String!
+  replyToMessageId: ID
+  text: String!
+  isConvertDisabled: Boolean!
+}
+
+type RegisterMessagePayload {
+  ok: Boolean!
+}
+
+input NewMessageFavorite {
+  gameId: ID!
+  messageId: ID!
+}
+
+type RegisterMessageFavoritePayload {
+  ok: Boolean!
+}
+
+input DeleteMessageFavorite {
+  gameId: ID!
+  messageId: ID!
+}
+
+type DeleteMessageFavoritePayload {
+  ok: Boolean!
+}
+
+input NewDirectMessage {
+  gameId: ID!
+  gameParticipantGroupId: ID!
+  type: MessageType!
+  charaImageId: ID!
+  charaName: String!
+  text: String!
+  isConvertDisabled: Boolean!
+}
+
+type RegisterDirectMessagePayload {
+  ok: Boolean!
+}
+
+input NewDirectMessageFavorite {
+  gameId: ID!
+  directMessageId: ID!
+}
+
+type RegisterDirectMessageFavoritePayload {
+  ok: Boolean!
+}
+
+input DeleteDirectMessageFavorite {
+  gameId: ID!
+  directMessageId: ID!
+}
+
+type DeleteDirectMessageFavoritePayload {
+  ok: Boolean!
+}
 
 ####################################################
+
+# TODO: subscription

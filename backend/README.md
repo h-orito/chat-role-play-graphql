@@ -31,3 +31,8 @@ go run main.go
 - GraphQL: gqlgen
 - ORM: gorm
 - Auth: Auth0 JWT
+
+### todo
+
+- over fetch を防ぐ
+  - see: https://tech.layerx.co.jp/entry/2021/10/22/171242

@@ -14,8 +14,8 @@ type Pageable interface {
 	GetAllPageCount() int
 	GetHasPrePage() bool
 	GetHasNextPage() bool
-	GetCurrentPageNum() *int
-	GetIsLatest() bool
+	GetCurrentPageNumber() *int
+	GetIsDesc() bool
 }
 
 type Chara struct {
@@ -25,6 +25,7 @@ type Chara struct {
 }
 
 type CharaImage struct {
+	ID   string     `json:"id"`
 	Type string     `json:"type"`
 	Size *CharaSize `json:"size"`
 	URL  string     `json:"url"`
@@ -44,7 +45,59 @@ type Charachip struct {
 
 type CharachipsQuery struct {
 	Ids    []string       `json:"ids,omitempty"`
+	Name   *string        `json:"name,omitempty"`
 	Paging *PageableQuery `json:"paging,omitempty"`
+}
+
+type DeleteDirectMessageFavorite struct {
+	GameID          string `json:"gameId"`
+	DirectMessageID string `json:"directMessageId"`
+}
+
+type DeleteDirectMessageFavoritePayload struct {
+	Ok bool `json:"ok"`
+}
+
+type DeleteGameMaster struct {
+	ID string `json:"id"`
+}
+
+type DeleteGameMasterPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type DeleteGameParticipant struct {
+	GameID string `json:"gameId"`
+}
+
+type DeleteGameParticipantFollow struct {
+	GameID                  string `json:"gameId"`
+	TargetGameParticipantID string `json:"targetGameParticipantId"`
+}
+
+type DeleteGameParticipantFollowPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type DeleteGameParticipantPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type DeleteMessageFavorite struct {
+	GameID    string `json:"gameId"`
+	MessageID string `json:"messageId"`
+}
+
+type DeleteMessageFavoritePayload struct {
+	Ok bool `json:"ok"`
+}
+
+type DeletePlayerSnsAccount struct {
+	ID string `json:"id"`
+}
+
+type DeletePlayerSnsAccountPayload struct {
+	Ok bool `json:"ok"`
 }
 
 type Designer struct {
@@ -52,46 +105,62 @@ type Designer struct {
 	Name string `json:"name"`
 }
 
-type DirectMessage struct {
-	ID               string                `json:"id"`
-	ParticipantGroup *GameParticipantGroup `json:"participantGroup"`
-	Content          *MessageContent       `json:"content"`
-	Time             *MessageTime          `json:"time"`
-	Sender           *MessageSender        `json:"sender"`
+type DesignersQuery struct {
+	Ids    []string       `json:"ids,omitempty"`
+	Name   *string        `json:"Name,omitempty"`
+	Paging *PageableQuery `json:"paging,omitempty"`
 }
 
-type DirectMessageQuery struct {
-	PeriodID           *string        `json:"periodId,omitempty"`
-	ParticipantGroupID string         `json:"participantGroupId"`
-	Types              []MessageType  `json:"types,omitempty"`
-	Keywords           []string       `json:"keywords,omitempty"`
-	Paging             *PageableQuery `json:"paging,omitempty"`
+type DirectMessage struct {
+	ID                 string                  `json:"id"`
+	ParticipantGroupID string                  `json:"participantGroupId"`
+	Content            *MessageContent         `json:"content"`
+	Time               *MessageTime            `json:"time"`
+	Sender             *MessageSender          `json:"sender"`
+	Reactions          *DirectMessageReactions `json:"reactions"`
+}
+
+type DirectMessageReactions struct {
+	FavoriteCounts int `json:"favoriteCounts"`
 }
 
 type DirectMessages struct {
-	List           []*DirectMessage `json:"list"`
-	AllPageCount   int              `json:"allPageCount"`
-	HasPrePage     bool             `json:"hasPrePage"`
-	HasNextPage    bool             `json:"hasNextPage"`
-	CurrentPageNum *int             `json:"currentPageNum,omitempty"`
-	IsLatest       bool             `json:"isLatest"`
+	List              []*DirectMessage `json:"list"`
+	AllPageCount      int              `json:"allPageCount"`
+	HasPrePage        bool             `json:"hasPrePage"`
+	HasNextPage       bool             `json:"hasNextPage"`
+	CurrentPageNumber *int             `json:"currentPageNumber,omitempty"`
+	IsDesc            bool             `json:"isDesc"`
 }
 
-func (DirectMessages) IsPageable()                  {}
-func (this DirectMessages) GetAllPageCount() int    { return this.AllPageCount }
-func (this DirectMessages) GetHasPrePage() bool     { return this.HasPrePage }
-func (this DirectMessages) GetHasNextPage() bool    { return this.HasNextPage }
-func (this DirectMessages) GetCurrentPageNum() *int { return this.CurrentPageNum }
-func (this DirectMessages) GetIsLatest() bool       { return this.IsLatest }
+func (DirectMessages) IsPageable()                     {}
+func (this DirectMessages) GetAllPageCount() int       { return this.AllPageCount }
+func (this DirectMessages) GetHasPrePage() bool        { return this.HasPrePage }
+func (this DirectMessages) GetHasNextPage() bool       { return this.HasNextPage }
+func (this DirectMessages) GetCurrentPageNumber() *int { return this.CurrentPageNumber }
+func (this DirectMessages) GetIsDesc() bool            { return this.IsDesc }
+
+type DirectMessagesQuery struct {
+	Ids                 []string       `json:"ids,omitempty"`
+	ParticipantGroupID  string         `json:"participantGroupId"`
+	PeriodID            *string        `json:"periodId,omitempty"`
+	Types               []MessageType  `json:"types,omitempty"`
+	SenderIds           []string       `json:"senderIds,omitempty"`
+	Keywords            []string       `json:"keywords,omitempty"`
+	SinceAt             *time.Time     `json:"sinceAt,omitempty"`
+	UntilAt             *time.Time     `json:"untilAt,omitempty"`
+	OffsetUnixTimeMilli *string        `json:"offsetUnixTimeMilli,omitempty"`
+	Paging              *PageableQuery `json:"paging,omitempty"`
+}
 
 type Game struct {
 	ID           string             `json:"id"`
 	Name         string             `json:"name"`
 	Status       GameStatus         `json:"status"`
-	GameMasters  []*Player          `json:"gameMasters"`
+	GameMasters  []*GameMaster      `json:"gameMasters"`
 	Participants []*GameParticipant `json:"participants"`
 	Periods      []*GamePeriod      `json:"periods"`
-	Setting      *GameSetting       `json:"setting"`
+	Settings     *GameSettings      `json:"settings"`
 }
 
 type GameCapacity struct {
@@ -104,26 +173,54 @@ type GameCharaSetting struct {
 	CanOriginalCharacter bool         `json:"canOriginalCharacter"`
 }
 
+type GameDiariesQuery struct {
+	ParticipantID *string `json:"participantId,omitempty"`
+	PeriodID      *string `json:"periodId,omitempty"`
+}
+
+type GameMaster struct {
+	ID         string  `json:"id"`
+	Player     *Player `json:"player"`
+	IsProducer bool    `json:"isProducer"`
+}
+
 type GameNotificationCondition struct {
 	Participate bool `json:"participate"`
 	Start       bool `json:"start"`
 }
 
-type GameParticipant struct {
-	ID      string                  `json:"id"`
-	Name    string                  `json:"name"`
-	Player  *Player                 `json:"player"`
-	Chara   *Chara                  `json:"chara"`
-	Setting *GameParticipantSetting `json:"setting"`
+type GameParticipantDiary struct {
+	ID          string           `json:"id"`
+	Participant *GameParticipant `json:"participant"`
+	Period      *GamePeriod      `json:"period"`
+	Title       string           `json:"title"`
+	Body        string           `json:"body"`
 }
 
 type GameParticipantGroup struct {
 	ID           string             `json:"id"`
+	Name         string             `json:"name"`
 	Participants []*GameParticipant `json:"participants"`
+}
+
+type GameParticipantGroupsQuery struct {
+	MemberParticipantID *string `json:"memberParticipantId,omitempty"`
+}
+
+type GameParticipantProfile struct {
+	IconURL        *string `json:"iconUrl,omitempty"`
+	Introduction   *string `json:"introduction,omitempty"`
+	Memo           *string `json:"memo,omitempty"`
+	FollowsCount   int     `json:"followsCount"`
+	FollowersCount int     `json:"followersCount"`
 }
 
 type GameParticipantSetting struct {
 	Notification *NotificationCondition `json:"notification"`
+}
+
+type GamePasswordSetting struct {
+	HasPassword bool `json:"hasPassword"`
 }
 
 type GamePeriod struct {
@@ -140,12 +237,12 @@ type GameRuleSetting struct {
 	CanSendDirectMessage bool `json:"canSendDirectMessage"`
 }
 
-type GameSetting struct {
-	Chara    *GameCharaSetting `json:"chara"`
-	Capacity *GameCapacity     `json:"capacity"`
-	Time     *GameTimeSetting  `json:"time"`
-	Rule     *GameRuleSetting  `json:"rule"`
-	Password *string           `json:"password,omitempty"`
+type GameSettings struct {
+	Chara    *GameCharaSetting    `json:"chara"`
+	Capacity *GameCapacity        `json:"capacity"`
+	Time     *GameTimeSetting     `json:"time"`
+	Rule     *GameRuleSetting     `json:"rule"`
+	Password *GamePasswordSetting `json:"password"`
 }
 
 type GameTimeSetting struct {
@@ -173,14 +270,10 @@ type Message struct {
 }
 
 type MessageContent struct {
-	Type               MessageType `json:"type"`
-	Number             int         `json:"number"`
-	Text               string      `json:"text"`
-	CanConvertDisabled bool        `json:"canConvertDisabled"`
-}
-
-type MessageFavorite struct {
-	ParticipantID string `json:"participantId"`
+	Type              MessageType `json:"type"`
+	Number            int         `json:"number"`
+	Text              string      `json:"text"`
+	IsConvertDisabled bool        `json:"isConvertDisabled"`
 }
 
 type MessageNotificationCondition struct {
@@ -189,18 +282,9 @@ type MessageNotificationCondition struct {
 	Keywords      []string `json:"keywords"`
 }
 
-type MessageQuery struct {
-	PeriodID     *string        `json:"periodId,omitempty"`
-	Types        []MessageType  `json:"types,omitempty"`
-	SenderIds    []string       `json:"senderIds,omitempty"`
-	RecipientIds []string       `json:"recipientIds,omitempty"`
-	Keywords     []string       `json:"keywords,omitempty"`
-	Paging       *PageableQuery `json:"paging,omitempty"`
-}
-
 type MessageReactions struct {
-	Replies   []*MessageReply    `json:"replies"`
-	Favorites []*MessageFavorite `json:"favorites"`
+	ReplyCount    int `json:"replyCount"`
+	FavoriteCount int `json:"favoriteCount"`
 }
 
 type MessageRecipient struct {
@@ -208,45 +292,168 @@ type MessageRecipient struct {
 	ParticipantID string `json:"participantId"`
 }
 
-type MessageReply struct {
-	MessageID string `json:"messageId"`
-}
-
-type MessageSender struct {
-	Participant *GameParticipant `json:"participant"`
-	Name        string           `json:"name"`
-	CharaImage  *CharaImage      `json:"charaImage"`
-}
-
 type MessageTime struct {
-	Period            *GamePeriod `json:"period"`
-	SendAt            time.Time   `json:"sendAt"`
-	SendUnixTimeMilli int         `json:"sendUnixTimeMilli"`
+	SendAt            time.Time `json:"sendAt"`
+	SendUnixTimeMilli string    `json:"sendUnixTimeMilli"`
 }
 
 type Messages struct {
-	List           []*Message `json:"list"`
-	AllPageCount   int        `json:"allPageCount"`
-	HasPrePage     bool       `json:"hasPrePage"`
-	HasNextPage    bool       `json:"hasNextPage"`
-	CurrentPageNum *int       `json:"currentPageNum,omitempty"`
-	IsLatest       bool       `json:"isLatest"`
+	List              []*Message `json:"list"`
+	AllPageCount      int        `json:"allPageCount"`
+	HasPrePage        bool       `json:"hasPrePage"`
+	HasNextPage       bool       `json:"hasNextPage"`
+	CurrentPageNumber *int       `json:"currentPageNumber,omitempty"`
+	IsDesc            bool       `json:"isDesc"`
 }
 
-func (Messages) IsPageable()                  {}
-func (this Messages) GetAllPageCount() int    { return this.AllPageCount }
-func (this Messages) GetHasPrePage() bool     { return this.HasPrePage }
-func (this Messages) GetHasNextPage() bool    { return this.HasNextPage }
-func (this Messages) GetCurrentPageNum() *int { return this.CurrentPageNum }
-func (this Messages) GetIsLatest() bool       { return this.IsLatest }
+func (Messages) IsPageable()                     {}
+func (this Messages) GetAllPageCount() int       { return this.AllPageCount }
+func (this Messages) GetHasPrePage() bool        { return this.HasPrePage }
+func (this Messages) GetHasNextPage() bool       { return this.HasNextPage }
+func (this Messages) GetCurrentPageNumber() *int { return this.CurrentPageNumber }
+func (this Messages) GetIsDesc() bool            { return this.IsDesc }
 
-type NewGame struct {
+type MessagesQuery struct {
+	Ids                 []string       `json:"ids,omitempty"`
+	PeriodID            *string        `json:"periodId,omitempty"`
+	Types               []MessageType  `json:"types,omitempty"`
+	SenderIds           []string       `json:"senderIds,omitempty"`
+	ReplyToMessageID    *string        `json:"replyToMessageId,omitempty"`
+	Keywords            []string       `json:"keywords,omitempty"`
+	SinceAt             *time.Time     `json:"sinceAt,omitempty"`
+	UntilAt             *time.Time     `json:"untilAt,omitempty"`
+	OffsetUnixTimeMilli *string        `json:"offsetUnixTimeMilli,omitempty"`
+	Paging              *PageableQuery `json:"paging,omitempty"`
+}
+
+type NewChara struct {
+	CharachipID string `json:"charachipId"`
+	Name        string `json:"name"`
+}
+
+type NewCharaImage struct {
+	CharaID string `json:"charaId"`
+	Type    string `json:"type"`
+	URL     string `json:"url"`
+	Width   int    `json:"width"`
+	Height  int    `json:"height"`
+}
+
+type NewCharachip struct {
+	Name       string `json:"name"`
+	DesignerID string `json:"designerId"`
+}
+
+type NewDesigner struct {
 	Name string `json:"name"`
 }
 
-type NewParticipant struct {
+type NewDirectMessage struct {
+	GameID                 string      `json:"gameId"`
+	GameParticipantGroupID string      `json:"gameParticipantGroupId"`
+	Type                   MessageType `json:"type"`
+	CharaImageID           string      `json:"charaImageId"`
+	CharaName              string      `json:"charaName"`
+	Text                   string      `json:"text"`
+	IsConvertDisabled      bool        `json:"isConvertDisabled"`
+}
+
+type NewDirectMessageFavorite struct {
+	GameID          string `json:"gameId"`
+	DirectMessageID string `json:"directMessageId"`
+}
+
+type NewGame struct {
+	Name     string           `json:"name"`
+	Settings *NewGameSettings `json:"settings"`
+}
+
+type NewGameCapacity struct {
+	Min int `json:"min"`
+	Max int `json:"max"`
+}
+
+type NewGameCharaSetting struct {
+	CharachipIds         []int `json:"charachipIds"`
+	CanOriginalCharacter bool  `json:"canOriginalCharacter"`
+}
+
+type NewGameMaster struct {
+	GameID     string `json:"gameId"`
+	PlayerID   string `json:"playerId"`
+	IsProducer bool   `json:"isProducer"`
+}
+
+type NewGameParticipant struct {
+	GameID  string `json:"gameId"`
+	Name    string `json:"Name"`
+	CharaID string `json:"charaId"`
+}
+
+type NewGameParticipantDiary struct {
 	GameID   string `json:"gameId"`
-	PlayerID string `json:"playerId"`
+	PeriodID string `json:"periodId"`
+	Title    string `json:"title"`
+	Body     string `json:"body"`
+}
+
+type NewGameParticipantFollow struct {
+	GameID                  string `json:"gameId"`
+	TargetGameParticipantID string `json:"targetGameParticipantId"`
+}
+
+type NewGamePasswordSetting struct {
+	Password *string `json:"password,omitempty"`
+}
+
+type NewGameRuleSetting struct {
+	IsGameMasterProducer bool `json:"isGameMasterProducer"`
+	CanShorten           bool `json:"canShorten"`
+	CanSendDirectMessage bool `json:"canSendDirectMessage"`
+}
+
+type NewGameSettings struct {
+	Chara    *NewGameCharaSetting    `json:"chara"`
+	Capacity *NewGameCapacity        `json:"capacity"`
+	Time     *NewGameTimeSetting     `json:"time"`
+	Rule     *NewGameRuleSetting     `json:"rule"`
+	Password *NewGamePasswordSetting `json:"password"`
+}
+
+type NewGameTimeSetting struct {
+	PeriodPrefix          *string   `json:"periodPrefix,omitempty"`
+	PeriodSuffix          *string   `json:"periodSuffix,omitempty"`
+	PeriodIntervalSeconds int       `json:"periodIntervalSeconds"`
+	OpenAt                time.Time `json:"openAt"`
+	StartParticipateAt    time.Time `json:"startParticipateAt"`
+	StartGameAt           time.Time `json:"startGameAt"`
+}
+
+type NewMessage struct {
+	GameID            string      `json:"gameId"`
+	Type              MessageType `json:"type"`
+	CharaImageID      string      `json:"charaImageId"`
+	CharaName         string      `json:"charaName"`
+	ReplyToMessageID  *string     `json:"replyToMessageId,omitempty"`
+	Text              string      `json:"text"`
+	IsConvertDisabled bool        `json:"isConvertDisabled"`
+}
+
+type NewMessageFavorite struct {
+	GameID    string `json:"gameId"`
+	MessageID string `json:"messageId"`
+}
+
+type NewPlayerProfile struct {
+	Name         string  `json:"name"`
+	IconURL      *string `json:"iconUrl,omitempty"`
+	Introduction *string `json:"introduction,omitempty"`
+}
+
+type NewPlayerSnsAccount struct {
+	Type        SnsType `json:"type"`
+	AccountName string  `json:"accountName"`
+	AccountURL  string  `json:"accountUrl"`
 }
 
 type NotificationCondition struct {
@@ -258,7 +465,7 @@ type NotificationCondition struct {
 type PageableQuery struct {
 	PageSize   int  `json:"pageSize"`
 	PageNumber int  `json:"pageNumber"`
-	IsLatest   bool `json:"isLatest"`
+	IsDesc     bool `json:"isDesc"`
 }
 
 type ParticipantsQuery struct {
@@ -275,40 +482,280 @@ type Player struct {
 }
 
 type PlayerProfile struct {
-	IconURL     *string             `json:"iconUrl,omitempty"`
-	Description *string             `json:"description,omitempty"`
-	SnsAccounts []*PlayerSnsAccount `json:"snsAccounts"`
+	IconURL      *string             `json:"iconUrl,omitempty"`
+	Introduction *string             `json:"introduction,omitempty"`
+	SnsAccounts  []*PlayerSnsAccount `json:"snsAccounts"`
 }
 
 type PlayerSnsAccount struct {
+	ID   string  `json:"id"`
 	Type SnsType `json:"type"`
 	Name *string `json:"name,omitempty"`
 	URL  string  `json:"url"`
+}
+
+type RegisterCharaImagePayload struct {
+	CharaImage *CharaImage `json:"charaImage"`
+}
+
+type RegisterCharaPayload struct {
+	Chara *Chara `json:"chara"`
+}
+
+type RegisterCharachipPayload struct {
+	Charachip *Charachip `json:"charachip"`
+}
+
+type RegisterDesignerPayload struct {
+	Designer *Designer `json:"designer"`
+}
+
+type RegisterDirectMessageFavoritePayload struct {
+	Ok bool `json:"ok"`
+}
+
+type RegisterDirectMessagePayload struct {
+	Ok bool `json:"ok"`
+}
+
+type RegisterGameMasterPayload struct {
+	GameMaster *GameMaster `json:"gameMaster"`
+}
+
+type RegisterGameParticipantDiaryPayload struct {
+	GameParticipantDiary *GameParticipantDiary `json:"gameParticipantDiary"`
+}
+
+type RegisterGameParticipantFollowPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type RegisterGameParticipantPayload struct {
+	GameParticipant *GameParticipant `json:"gameParticipant"`
 }
 
 type RegisterGamePayload struct {
 	Game *Game `json:"game"`
 }
 
-type RegisterParticipantPayload struct {
-	Participant *GameParticipant `json:"participant"`
+type RegisterMessageFavoritePayload struct {
+	Ok bool `json:"ok"`
+}
+
+type RegisterMessagePayload struct {
+	Ok bool `json:"ok"`
+}
+
+type RegisterPlayerProfilePayload struct {
+	PlayerProfile *PlayerProfile `json:"playerProfile"`
+}
+
+type RegisterPlayerSnsAccountPayload struct {
+	PlayerSnsAccount *PlayerSnsAccount `json:"playerSnsAccount"`
 }
 
 type SimpleGame struct {
-	ID                string `json:"id"`
-	Name              string `json:"name"`
-	ParticipantsCount int    `json:"participantsCount"`
+	ID                string        `json:"id"`
+	Name              string        `json:"name"`
+	Status            GameStatus    `json:"status"`
+	ParticipantsCount int           `json:"participantsCount"`
+	Periods           []*GamePeriod `json:"periods"`
+	Settings          *GameSettings `json:"settings"`
+}
+
+type UpdateChara struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type UpdateCharaImage struct {
+	ID     string `json:"id"`
+	Type   string `json:"type"`
+	URL    string `json:"url"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
+}
+
+type UpdateCharaImagePayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateCharaPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateCharaSetting struct {
+	CharachipIds         []int `json:"charachipIds"`
+	CanOriginalCharacter bool  `json:"canOriginalCharacter"`
+}
+
+type UpdateCharachip struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type UpdateCharachipPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateDesigner struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type UpdateDesignerPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateGameCapacity struct {
+	Min int `json:"min"`
+	Max int `json:"max"`
+}
+
+type UpdateGameMaster struct {
+	ID         string `json:"id"`
+	IsProducer bool   `json:"isProducer"`
+}
+
+type UpdateGameMasterPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateGameNotificationCondition struct {
+	Participate bool `json:"participate"`
+	Start       bool `json:"start"`
+}
+
+type UpdateGameParticipantDiary struct {
+	GameID string `json:"gameId"`
+	ID     string `json:"id"`
+	Title  string `json:"title"`
+	Body   string `json:"body"`
+}
+
+type UpdateGameParticipantDiaryPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateGameParticipantProfile struct {
+	GameParticipantID string  `json:"gameParticipantId"`
+	Name              string  `json:"name"`
+	IconURL           *string `json:"iconUrl,omitempty"`
+	Introduction      *string `json:"introduction,omitempty"`
+	Memo              *string `json:"memo,omitempty"`
+}
+
+type UpdateGameParticipantProfilePayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateGameParticipantSetting struct {
+	GameParticipantID string                       `json:"gameParticipantId"`
+	Notification      *UpdateNotificationCondition `json:"notification,omitempty"`
+}
+
+type UpdateGameParticipantSettingPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateGamePasswordSetting struct {
+	Password *string `json:"password,omitempty"`
+}
+
+type UpdateGamePeriod struct {
+	GameID  string    `json:"gameId"`
+	Name    string    `json:"name"`
+	StartAt time.Time `json:"startAt"`
+	EndAt   time.Time `json:"endAt"`
+}
+
+type UpdateGamePeriodPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateGameRuleSetting struct {
+	IsGameMasterProducer bool `json:"isGameMasterProducer"`
+	CanShorten           bool `json:"canShorten"`
+	CanSendDirectMessage bool `json:"canSendDirectMessage"`
+}
+
+type UpdateGameSetting struct {
+	GameID   string              `json:"gameId"`
+	Settings *UpdateGameSettings `json:"settings"`
+}
+
+type UpdateGameSettingPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateGameSettings struct {
+	Chara    *UpdateCharaSetting        `json:"chara"`
+	Capacity *UpdateGameCapacity        `json:"capacity"`
+	Time     *UpdateGameTimeSetting     `json:"time"`
+	Rule     *UpdateGameRuleSetting     `json:"rule"`
+	Password *UpdateGamePasswordSetting `json:"password"`
+}
+
+type UpdateGameStatus struct {
+	GameID string     `json:"gameId"`
+	Status GameStatus `json:"status"`
+}
+
+type UpdateGameStatusPayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdateGameTimeSetting struct {
+	PeriodPrefix          *string   `json:"periodPrefix,omitempty"`
+	PeriodSuffix          *string   `json:"periodSuffix,omitempty"`
+	PeriodIntervalSeconds int       `json:"periodIntervalSeconds"`
+	OpenAt                time.Time `json:"openAt"`
+	StartParticipateAt    time.Time `json:"startParticipateAt"`
+	StartGameAt           time.Time `json:"startGameAt"`
+}
+
+type UpdateMessageNotificationCondition struct {
+	Reply         bool     `json:"reply"`
+	DirectMessage bool     `json:"directMessage"`
+	Keywords      []string `json:"keywords"`
+}
+
+type UpdateNotificationCondition struct {
+	DiscordWebhookURL *string                             `json:"discordWebhookUrl,omitempty"`
+	Game              *UpdateGameNotificationCondition    `json:"game"`
+	Message           *UpdateMessageNotificationCondition `json:"message"`
+}
+
+type UpdatePlayerProfile struct {
+	Name         string  `json:"name"`
+	IconURL      *string `json:"iconUrl,omitempty"`
+	Introduction *string `json:"introduction,omitempty"`
+}
+
+type UpdatePlayerProfilePayload struct {
+	Ok bool `json:"ok"`
+}
+
+type UpdatePlayerSnsAccount struct {
+	ID          string  `json:"id"`
+	Type        SnsType `json:"type"`
+	AccountName string  `json:"accountName"`
+	AccountURL  string  `json:"accountUrl"`
+}
+
+type UpdatePlayerSnsAccountPayload struct {
+	Ok bool `json:"ok"`
 }
 
 type GameStatus string
 
 const (
-	GameStatusClosed     GameStatus = "CLOSED"
-	GameStatusOpening    GameStatus = "OPENING"
-	GameStatusRecruiting GameStatus = "RECRUITING"
-	GameStatusProgress   GameStatus = "PROGRESS"
-	GameStatusFinished   GameStatus = "FINISHED"
-	GameStatusCanceled   GameStatus = "CANCELED"
+	GameStatusClosed     GameStatus = "Closed"
+	GameStatusOpening    GameStatus = "Opening"
+	GameStatusRecruiting GameStatus = "Recruiting"
+	GameStatusProgress   GameStatus = "Progress"
+	GameStatusFinished   GameStatus = "Finished"
+	GameStatusCancelled  GameStatus = "Cancelled"
 )
 
 var AllGameStatus = []GameStatus{
@@ -317,12 +764,12 @@ var AllGameStatus = []GameStatus{
 	GameStatusRecruiting,
 	GameStatusProgress,
 	GameStatusFinished,
-	GameStatusCanceled,
+	GameStatusCancelled,
 }
 
 func (e GameStatus) IsValid() bool {
 	switch e {
-	case GameStatusClosed, GameStatusOpening, GameStatusRecruiting, GameStatusProgress, GameStatusFinished, GameStatusCanceled:
+	case GameStatusClosed, GameStatusOpening, GameStatusRecruiting, GameStatusProgress, GameStatusFinished, GameStatusCancelled:
 		return true
 	}
 	return false
@@ -352,18 +799,24 @@ func (e GameStatus) MarshalGQL(w io.Writer) {
 type MessageType string
 
 const (
-	MessageTypeTalknormal MessageType = "TALKNORMAL"
-	MessageTypeMonologue  MessageType = "MONOLOGUE"
+	MessageTypeTalkNormal    MessageType = "TalkNormal"
+	MessageTypeMonologue     MessageType = "Monologue"
+	MessageTypeDescription   MessageType = "Description"
+	MessageTypeSystemPublic  MessageType = "SystemPublic"
+	MessageTypeSystemPrivate MessageType = "SystemPrivate"
 )
 
 var AllMessageType = []MessageType{
-	MessageTypeTalknormal,
+	MessageTypeTalkNormal,
 	MessageTypeMonologue,
+	MessageTypeDescription,
+	MessageTypeSystemPublic,
+	MessageTypeSystemPrivate,
 }
 
 func (e MessageType) IsValid() bool {
 	switch e {
-	case MessageTypeTalknormal, MessageTypeMonologue:
+	case MessageTypeTalkNormal, MessageTypeMonologue, MessageTypeDescription, MessageTypeSystemPublic, MessageTypeSystemPrivate:
 		return true
 	}
 	return false
@@ -393,24 +846,28 @@ func (e MessageType) MarshalGQL(w io.Writer) {
 type SnsType string
 
 const (
-	SnsTypeTwitter SnsType = "TWITTER"
-	SnsTypeDiscord SnsType = "DISCORD"
-	SnsTypeGithub  SnsType = "GITHUB"
-	SnsTypeWebsite SnsType = "WEBSITE"
-	SnsTypePixiv   SnsType = "PIXIV"
+	SnsTypeTwitter  SnsType = "Twitter"
+	SnsTypeMastodon SnsType = "Mastodon"
+	SnsTypeMisskey  SnsType = "Misskey"
+	SnsTypeDiscord  SnsType = "Discord"
+	SnsTypeGithub   SnsType = "Github"
+	SnsTypeWebSite  SnsType = "WebSite"
+	SnsTypePixiv    SnsType = "Pixiv"
 )
 
 var AllSnsType = []SnsType{
 	SnsTypeTwitter,
+	SnsTypeMastodon,
+	SnsTypeMisskey,
 	SnsTypeDiscord,
 	SnsTypeGithub,
-	SnsTypeWebsite,
+	SnsTypeWebSite,
 	SnsTypePixiv,
 }
 
 func (e SnsType) IsValid() bool {
 	switch e {
-	case SnsTypeTwitter, SnsTypeDiscord, SnsTypeGithub, SnsTypeWebsite, SnsTypePixiv:
+	case SnsTypeTwitter, SnsTypeMastodon, SnsTypeMisskey, SnsTypeDiscord, SnsTypeGithub, SnsTypeWebSite, SnsTypePixiv:
 		return true
 	}
 	return false

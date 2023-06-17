@@ -32,46 +32,87 @@ func InjectServer() http.Handler {
 
 // resolver
 func injectResolver(database db.DB) graphql.Resolver {
+	tx := db.NewTransaction(database.Connection)
+	charaRepository := injectCharaRepository(database)
 	gameRepository := injectGameRepository(database)
+	gameParticipantRepository := injectGameParticipantRepository(database)
 	playerRepository := injectPlayerRepository(database)
-	gameService := injectGameService(gameRepository)
+	messageRepository := injectMessageRepository(database)
+	charaService := injectCharaService(charaRepository)
+	gameService := injectGameService(gameRepository, gameParticipantRepository)
 	playerService := injectPlayerService(playerRepository)
-	gameUsecase := injectGameUsecase(gameService)
+	messageService := injectMessageService(messageRepository)
+	charaUsecase := injectCharaUsecase(charaService, tx)
+	gameUsecase := injectGameUsecase(gameService, tx)
 	playerUsecase := injectPlayerUsecase(playerService)
-	loaders := injectLoaders(gameUsecase)
+	messageUsecase := injectMessageUsecase(messageService)
+	loaders := injectLoaders(playerUsecase, gameUsecase, charaUsecase)
 	return graphql.NewResolver(
+		charaUsecase,
 		gameUsecase,
 		playerUsecase,
+		messageUsecase,
 		loaders,
 	)
 }
 
 // loader
-func injectLoaders(gameUsecase usecase.GameUsecase) *graphql.Loaders {
-	return graphql.NewLoaders(gameUsecase)
+func injectLoaders(
+	playerUsecase usecase.PlayerUsecase,
+	gameUsecase usecase.GameUsecase,
+	charaUsecase usecase.CharaUsecase,
+) *graphql.Loaders {
+	return graphql.NewLoaders(playerUsecase, gameUsecase, charaUsecase)
 }
 
 // usecase
-func injectGameUsecase(gameService app_service.GameService) usecase.GameUsecase {
-	return usecase.NewGameUsecase(gameService)
+func injectCharaUsecase(charaService app_service.CharaService, tx usecase.Transaction) usecase.CharaUsecase {
+	return usecase.NewCharaUsecase(charaService, tx)
+}
+
+func injectGameUsecase(gameService app_service.GameService, tx usecase.Transaction) usecase.GameUsecase {
+	return usecase.NewGameUsecase(gameService, tx)
 }
 
 func injectPlayerUsecase(playerService app_service.PlayerService) usecase.PlayerUsecase {
 	return usecase.NewPlayerUsecase(playerService)
 }
 
+func injectMessageUsecase(messageService app_service.MessageService) usecase.MessageUsecase {
+	return usecase.NewMessageUsecase(messageService)
+}
+
 // service
-func injectGameService(gameRepository model.GameRepository) app_service.GameService {
-	return app_service.NewGameService(gameRepository)
+func injectCharaService(charaRepository model.CharaRepository) app_service.CharaService {
+	return app_service.NewCharaService(charaRepository)
+}
+
+func injectGameService(
+	gameRepository model.GameRepository,
+	gameParticipantRepository model.GameParticipantRepository,
+) app_service.GameService {
+	return app_service.NewGameService(gameRepository, gameParticipantRepository)
 }
 
 func injectPlayerService(playerRepository model.PlayerRepository) app_service.PlayerService {
 	return app_service.NewPlayerService(playerRepository)
 }
 
+func injectMessageService(messageRepository model.MessageRepository) app_service.MessageService {
+	return app_service.NewMessageService(messageRepository)
+}
+
 // repository
+func injectCharaRepository(database db.DB) model.CharaRepository {
+	return db.NewCharaRepository(&database)
+}
+
 func injectGameRepository(database db.DB) model.GameRepository {
 	return db.NewGameRepository(&database)
+}
+
+func injectGameParticipantRepository(database db.DB) model.GameParticipantRepository {
+	return db.NewGameParticipantRepository(&database)
 }
 
 func injectPlayerRepository(database db.DB) model.PlayerRepository {
@@ -80,6 +121,10 @@ func injectPlayerRepository(database db.DB) model.PlayerRepository {
 
 func injectUserRepository(database db.DB) model.UserRepository {
 	return db.NewUserRepository(&database)
+}
+
+func injectMessageRepository(database db.DB) model.MessageRepository {
+	return db.NewMessageRepository(&database)
 }
 
 // database
