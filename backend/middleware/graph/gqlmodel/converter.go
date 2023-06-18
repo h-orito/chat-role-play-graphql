@@ -77,7 +77,32 @@ func MapToGame(g *model.Game) *Game {
 		Periods: array.Map(g.Periods, func(p model.GamePeriod) *GamePeriod {
 			return MapToGamePeriod(&p)
 		}),
-		Settings: &GameSettings{},
+		Settings: &GameSettings{
+			Chara: &GameCharaSetting{
+				Charachips:           []*Charachip{},
+				CanOriginalCharacter: g.Settings.Chara.CanOriginalCharacter,
+			},
+			Capacity: &GameCapacity{
+				Min: int(g.Settings.Capacity.Min),
+				Max: int(g.Settings.Capacity.Max),
+			},
+			Time: &GameTimeSetting{
+				PeriodPrefix:          g.Settings.Time.PeriodPrefix,
+				PeriodSuffix:          g.Settings.Time.PeriodSuffix,
+				PeriodIntervalSeconds: int(g.Settings.Time.PeriodIntervalSeconds),
+				OpenAt:                g.Settings.Time.OpenAt,
+				StartParticipateAt:    g.Settings.Time.StartParticipateAt,
+				StartGameAt:           g.Settings.Time.StartGameAt,
+			},
+			Rule: &GameRuleSetting{
+				IsGameMasterProducer: false,
+				CanShorten:           g.Settings.Rule.CanShorten,
+				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
+			},
+			Password: &GamePasswordSetting{
+				HasPassword: g.Settings.Password.HasPassword,
+			},
+		},
 	}
 }
 

@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       domain={process.env.NEXT_PUBLIC_AUTH0_DOMAIN!}
       clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!}
       authorizationParams={{
-        redirect_uri: window.location.href,
+        redirect_uri: window.location.origin + '/chat-role-play',
         audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE
       }}
     >
@@ -28,7 +28,9 @@ export const LogoutButton = () => {
   return (
     <button
       onClick={() =>
-        logout({ logoutParams: { returnTo: window.location.href } })
+        logout({
+          logoutParams: { returnTo: window.location.origin + '/chat-role-play' }
+        })
       }
     >
       Logout

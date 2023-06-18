@@ -3,29 +3,30 @@ import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useEffect, useState } from 'react'
+import { createClient } from './client'
 
-const createClient = async (
-  isAuthenticated: boolean,
-  getAccessTokenSilently: any
-) => {
-  const authLink = setContext(async (_, { headers }) => {
-    const accessToken = isAuthenticated ? await getAccessTokenSilently() : null
-    return {
-      headers: {
-        ...headers,
-        authorization: accessToken ? `Bearer ${accessToken}` : ''
-      }
-    }
-  })
+// export const createClient = async (
+//   isAuthenticated: boolean,
+//   getAccessTokenSilently: any
+// ) => {
+//   const authLink = setContext(async (_, { headers }) => {
+//     const accessToken = isAuthenticated ? await getAccessTokenSilently() : null
+//     return {
+//       headers: {
+//         ...headers,
+//         authorization: accessToken ? `Bearer ${accessToken}` : ''
+//       }
+//     }
+//   })
 
-  const httpLink = createHttpLink({
-    uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
-  })
-  return new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: new InMemoryCache()
-  })
-}
+//   const httpLink = createHttpLink({
+//     uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
+//   })
+//   return new ApolloClient({
+//     link: authLink.concat(httpLink),
+//     cache: new InMemoryCache()
+//   })
+// }
 
 const defaultClient = new ApolloClient({
   uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
