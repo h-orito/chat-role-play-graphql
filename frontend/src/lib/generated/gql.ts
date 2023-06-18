@@ -13,9 +13,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "query game($id: ID!) {\n  game(id: $id) {\n    id\n    name\n    participants(paging: {pageSize: 10, pageNumber: 1, isDesc: true}) {\n      id\n    }\n  }\n}": types.GameDocument,
-    "query games($pageSize: Int!, $pageNumber: Int!) {\n  games(\n    query: {paging: {pageSize: $pageSize, pageNumber: $pageNumber, isDesc: false}}\n  ) {\n    id\n    name\n    participantsCount\n  }\n}": types.GamesDocument,
-    "mutation registerGame($input: NewGame!) {\n  registerGame(input: $input) {\n    game {\n      id\n      name\n      participants {\n        id\n      }\n    }\n  }\n}": types.RegisterGameDocument,
+    "\n  query Game($id: ID!) {\n    game(id: $id) {\n      id\n      name\n      status\n      participants {\n        id\n      }\n      periods {\n        id\n      }\n      settings {\n        chara {\n          canOriginalCharacter\n        }\n        capacity {\n          min\n          max\n        }\n        rule {\n          canShorten\n          canSendDirectMessage\n        }\n        time {\n          periodPrefix\n          periodSuffix\n          periodIntervalSeconds\n          openAt\n          startParticipateAt\n          startGameAt\n        }\n        password {\n          hasPassword\n        }\n      }\n    }\n  }\n": types.GameDocument,
+    "\n  query IndexGames($pageSize: Int!, $pageNumber: Int!) {\n    games(\n      query: {\n        paging: { pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true }\n      }\n    ) {\n      id\n      name\n      participantsCount\n    }\n  }\n": types.IndexGamesDocument,
 };
 
 /**
@@ -35,15 +34,11 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query game($id: ID!) {\n  game(id: $id) {\n    id\n    name\n    participants(paging: {pageSize: 10, pageNumber: 1, isDesc: true}) {\n      id\n    }\n  }\n}"): (typeof documents)["query game($id: ID!) {\n  game(id: $id) {\n    id\n    name\n    participants(paging: {pageSize: 10, pageNumber: 1, isDesc: true}) {\n      id\n    }\n  }\n}"];
+export function graphql(source: "\n  query Game($id: ID!) {\n    game(id: $id) {\n      id\n      name\n      status\n      participants {\n        id\n      }\n      periods {\n        id\n      }\n      settings {\n        chara {\n          canOriginalCharacter\n        }\n        capacity {\n          min\n          max\n        }\n        rule {\n          canShorten\n          canSendDirectMessage\n        }\n        time {\n          periodPrefix\n          periodSuffix\n          periodIntervalSeconds\n          openAt\n          startParticipateAt\n          startGameAt\n        }\n        password {\n          hasPassword\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query Game($id: ID!) {\n    game(id: $id) {\n      id\n      name\n      status\n      participants {\n        id\n      }\n      periods {\n        id\n      }\n      settings {\n        chara {\n          canOriginalCharacter\n        }\n        capacity {\n          min\n          max\n        }\n        rule {\n          canShorten\n          canSendDirectMessage\n        }\n        time {\n          periodPrefix\n          periodSuffix\n          periodIntervalSeconds\n          openAt\n          startParticipateAt\n          startGameAt\n        }\n        password {\n          hasPassword\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query games($pageSize: Int!, $pageNumber: Int!) {\n  games(\n    query: {paging: {pageSize: $pageSize, pageNumber: $pageNumber, isDesc: false}}\n  ) {\n    id\n    name\n    participantsCount\n  }\n}"): (typeof documents)["query games($pageSize: Int!, $pageNumber: Int!) {\n  games(\n    query: {paging: {pageSize: $pageSize, pageNumber: $pageNumber, isDesc: false}}\n  ) {\n    id\n    name\n    participantsCount\n  }\n}"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "mutation registerGame($input: NewGame!) {\n  registerGame(input: $input) {\n    game {\n      id\n      name\n      participants {\n        id\n      }\n    }\n  }\n}"): (typeof documents)["mutation registerGame($input: NewGame!) {\n  registerGame(input: $input) {\n    game {\n      id\n      name\n      participants {\n        id\n      }\n    }\n  }\n}"];
+export function graphql(source: "\n  query IndexGames($pageSize: Int!, $pageNumber: Int!) {\n    games(\n      query: {\n        paging: { pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true }\n      }\n    ) {\n      id\n      name\n      participantsCount\n    }\n  }\n"): (typeof documents)["\n  query IndexGames($pageSize: Int!, $pageNumber: Int!) {\n    games(\n      query: {\n        paging: { pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true }\n      }\n    ) {\n      id\n      name\n      participantsCount\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

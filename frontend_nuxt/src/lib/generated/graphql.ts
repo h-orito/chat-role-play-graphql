@@ -5,128 +5,126 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string | number; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  DateTime: { input: any; output: any; }
-  Long: { input: any; output: any; }
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  DateTime: any;
+  Long: any;
 };
 
 export type Chara = {
   __typename?: 'Chara';
-  id: Scalars['ID']['output'];
+  id: Scalars['ID'];
   images: Array<CharaImage>;
-  name: Scalars['String']['output'];
+  name: Scalars['String'];
 };
 
 export type CharaImage = {
   __typename?: 'CharaImage';
-  id: Scalars['ID']['output'];
+  id: Scalars['ID'];
   size: CharaSize;
-  type: Scalars['String']['output'];
-  url: Scalars['String']['output'];
+  type: Scalars['String'];
+  url: Scalars['String'];
 };
 
 export type CharaSize = {
   __typename?: 'CharaSize';
-  height: Scalars['Int']['output'];
-  width: Scalars['Int']['output'];
+  height: Scalars['Int'];
+  width: Scalars['Int'];
 };
 
 export type Charachip = {
   __typename?: 'Charachip';
   charas: Array<Chara>;
   designer: Designer;
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type CharachipsQuery = {
-  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  ids?: InputMaybe<Array<Scalars['ID']>>;
+  name?: InputMaybe<Scalars['String']>;
   paging?: InputMaybe<PageableQuery>;
 };
 
 export type DeleteDirectMessageFavorite = {
-  directMessageId: Scalars['ID']['input'];
-  gameId: Scalars['ID']['input'];
+  directMessageId: Scalars['ID'];
+  gameId: Scalars['ID'];
 };
 
 export type DeleteDirectMessageFavoritePayload = {
   __typename?: 'DeleteDirectMessageFavoritePayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type DeleteGameMaster = {
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
 };
 
 export type DeleteGameMasterPayload = {
   __typename?: 'DeleteGameMasterPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type DeleteGameParticipant = {
-  gameId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
 };
 
 export type DeleteGameParticipantFollow = {
-  gameId: Scalars['ID']['input'];
-  targetGameParticipantId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
+  targetGameParticipantId: Scalars['ID'];
 };
 
 export type DeleteGameParticipantFollowPayload = {
   __typename?: 'DeleteGameParticipantFollowPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type DeleteGameParticipantPayload = {
   __typename?: 'DeleteGameParticipantPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type DeleteMessageFavorite = {
-  gameId: Scalars['ID']['input'];
-  messageId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
+  messageId: Scalars['ID'];
 };
 
 export type DeleteMessageFavoritePayload = {
   __typename?: 'DeleteMessageFavoritePayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type DeletePlayerSnsAccount = {
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
 };
 
 export type DeletePlayerSnsAccountPayload = {
   __typename?: 'DeletePlayerSnsAccountPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type Designer = {
   __typename?: 'Designer';
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type DesignersQuery = {
-  Name?: InputMaybe<Scalars['String']['input']>;
-  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
+  Name?: InputMaybe<Scalars['String']>;
+  ids?: InputMaybe<Array<Scalars['ID']>>;
   paging?: InputMaybe<PageableQuery>;
 };
 
 export type DirectMessage = {
   __typename?: 'DirectMessage';
   content: MessageContent;
-  id: Scalars['ID']['output'];
-  participantGroupId: Scalars['ID']['output'];
+  id: Scalars['ID'];
+  participantGroupId: Scalars['ID'];
   reactions: DirectMessageReactions;
   sender: MessageSender;
   time: MessageTime;
@@ -134,37 +132,37 @@ export type DirectMessage = {
 
 export type DirectMessageReactions = {
   __typename?: 'DirectMessageReactions';
-  favoriteCounts: Scalars['Int']['output'];
+  favoriteCounts: Scalars['Int'];
 };
 
 export type DirectMessages = Pageable & {
   __typename?: 'DirectMessages';
-  allPageCount: Scalars['Int']['output'];
-  currentPageNumber?: Maybe<Scalars['Int']['output']>;
-  hasNextPage: Scalars['Boolean']['output'];
-  hasPrePage: Scalars['Boolean']['output'];
-  isDesc: Scalars['Boolean']['output'];
+  allPageCount: Scalars['Int'];
+  currentPageNumber?: Maybe<Scalars['Int']>;
+  hasNextPage: Scalars['Boolean'];
+  hasPrePage: Scalars['Boolean'];
+  isDesc: Scalars['Boolean'];
   list: Array<DirectMessage>;
 };
 
 export type DirectMessagesQuery = {
-  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
-  keywords?: InputMaybe<Array<Scalars['String']['input']>>;
-  offsetUnixTimeMilli?: InputMaybe<Scalars['Long']['input']>;
+  ids?: InputMaybe<Array<Scalars['ID']>>;
+  keywords?: InputMaybe<Array<Scalars['String']>>;
+  offsetUnixTimeMilli?: InputMaybe<Scalars['Long']>;
   paging?: InputMaybe<PageableQuery>;
-  participantGroupId: Scalars['ID']['input'];
-  periodId?: InputMaybe<Scalars['ID']['input']>;
-  senderIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  sinceAt?: InputMaybe<Scalars['DateTime']['input']>;
+  participantGroupId: Scalars['ID'];
+  periodId?: InputMaybe<Scalars['ID']>;
+  senderIds?: InputMaybe<Array<Scalars['ID']>>;
+  sinceAt?: InputMaybe<Scalars['DateTime']>;
   types?: InputMaybe<Array<MessageType>>;
-  untilAt?: InputMaybe<Scalars['DateTime']['input']>;
+  untilAt?: InputMaybe<Scalars['DateTime']>;
 };
 
 export type Game = {
   __typename?: 'Game';
   gameMasters: Array<GameMaster>;
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
   participants: Array<GameParticipant>;
   periods: Array<GamePeriod>;
   settings: GameSettings;
@@ -178,72 +176,72 @@ export type GameParticipantsArgs = {
 
 export type GameCapacity = {
   __typename?: 'GameCapacity';
-  max: Scalars['Int']['output'];
-  min: Scalars['Int']['output'];
+  max: Scalars['Int'];
+  min: Scalars['Int'];
 };
 
 export type GameCharaSetting = {
   __typename?: 'GameCharaSetting';
-  canOriginalCharacter: Scalars['Boolean']['output'];
+  canOriginalCharacter: Scalars['Boolean'];
   charachips: Array<Charachip>;
 };
 
 export type GameDiariesQuery = {
-  participantId?: InputMaybe<Scalars['ID']['input']>;
-  periodId?: InputMaybe<Scalars['ID']['input']>;
+  participantId?: InputMaybe<Scalars['ID']>;
+  periodId?: InputMaybe<Scalars['ID']>;
 };
 
 export type GameMaster = {
   __typename?: 'GameMaster';
-  id: Scalars['ID']['output'];
-  isProducer: Scalars['Boolean']['output'];
+  id: Scalars['ID'];
+  isProducer: Scalars['Boolean'];
   player: Player;
 };
 
 export type GameNotificationCondition = {
   __typename?: 'GameNotificationCondition';
-  participate: Scalars['Boolean']['output'];
-  start: Scalars['Boolean']['output'];
+  participate: Scalars['Boolean'];
+  start: Scalars['Boolean'];
 };
 
 export type GameParticipant = {
   __typename?: 'GameParticipant';
   chara: Chara;
-  entryNumber: Scalars['Int']['output'];
-  id: Scalars['ID']['output'];
-  isGone: Scalars['Boolean']['output'];
-  lastAccessedAt: Scalars['DateTime']['output'];
-  name: Scalars['String']['output'];
+  entryNumber: Scalars['Int'];
+  id: Scalars['ID'];
+  isGone: Scalars['Boolean'];
+  lastAccessedAt: Scalars['DateTime'];
+  name: Scalars['String'];
   player: Player;
 };
 
 export type GameParticipantDiary = {
   __typename?: 'GameParticipantDiary';
-  body: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
+  body: Scalars['String'];
+  id: Scalars['ID'];
   participant: GameParticipant;
   period: GamePeriod;
-  title: Scalars['String']['output'];
+  title: Scalars['String'];
 };
 
 export type GameParticipantGroup = {
   __typename?: 'GameParticipantGroup';
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
   participants: Array<GameParticipant>;
 };
 
 export type GameParticipantGroupsQuery = {
-  memberParticipantId?: InputMaybe<Scalars['ID']['input']>;
+  memberParticipantId?: InputMaybe<Scalars['ID']>;
 };
 
 export type GameParticipantProfile = {
   __typename?: 'GameParticipantProfile';
-  followersCount: Scalars['Int']['output'];
-  followsCount: Scalars['Int']['output'];
-  iconUrl?: Maybe<Scalars['String']['output']>;
-  introduction?: Maybe<Scalars['String']['output']>;
-  memo?: Maybe<Scalars['String']['output']>;
+  followersCount: Scalars['Int'];
+  followsCount: Scalars['Int'];
+  iconUrl?: Maybe<Scalars['String']>;
+  introduction?: Maybe<Scalars['String']>;
+  memo?: Maybe<Scalars['String']>;
 };
 
 export type GameParticipantSetting = {
@@ -253,23 +251,23 @@ export type GameParticipantSetting = {
 
 export type GamePasswordSetting = {
   __typename?: 'GamePasswordSetting';
-  hasPassword: Scalars['Boolean']['output'];
+  hasPassword: Scalars['Boolean'];
 };
 
 export type GamePeriod = {
   __typename?: 'GamePeriod';
-  count: Scalars['Int']['output'];
-  endAt: Scalars['DateTime']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  startAt: Scalars['DateTime']['output'];
+  count: Scalars['Int'];
+  endAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  startAt: Scalars['DateTime'];
 };
 
 export type GameRuleSetting = {
   __typename?: 'GameRuleSetting';
-  canSendDirectMessage: Scalars['Boolean']['output'];
-  canShorten: Scalars['Boolean']['output'];
-  isGameMasterProducer: Scalars['Boolean']['output'];
+  canSendDirectMessage: Scalars['Boolean'];
+  canShorten: Scalars['Boolean'];
+  isGameMasterProducer: Scalars['Boolean'];
 };
 
 export type GameSettings = {
@@ -292,24 +290,24 @@ export enum GameStatus {
 
 export type GameTimeSetting = {
   __typename?: 'GameTimeSetting';
-  openAt: Scalars['DateTime']['output'];
-  periodIntervalSeconds: Scalars['Int']['output'];
-  periodPrefix?: Maybe<Scalars['String']['output']>;
-  periodSuffix?: Maybe<Scalars['String']['output']>;
-  startGameAt: Scalars['DateTime']['output'];
-  startParticipateAt: Scalars['DateTime']['output'];
+  openAt: Scalars['DateTime'];
+  periodIntervalSeconds: Scalars['Int'];
+  periodPrefix?: Maybe<Scalars['String']>;
+  periodSuffix?: Maybe<Scalars['String']>;
+  startGameAt: Scalars['DateTime'];
+  startParticipateAt: Scalars['DateTime'];
 };
 
 export type GamesQuery = {
-  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  ids?: InputMaybe<Array<Scalars['ID']>>;
+  name?: InputMaybe<Scalars['String']>;
   paging?: InputMaybe<PageableQuery>;
 };
 
 export type Message = {
   __typename?: 'Message';
   content: MessageContent;
-  id: Scalars['ID']['output'];
+  id: Scalars['ID'];
   reactions: MessageReactions;
   replyTo: MessageRecipient;
   sender: MessageSender;
@@ -318,42 +316,42 @@ export type Message = {
 
 export type MessageContent = {
   __typename?: 'MessageContent';
-  isConvertDisabled: Scalars['Boolean']['output'];
-  number: Scalars['Int']['output'];
-  text: Scalars['String']['output'];
+  isConvertDisabled: Scalars['Boolean'];
+  number: Scalars['Int'];
+  text: Scalars['String'];
   type: MessageType;
 };
 
 export type MessageNotificationCondition = {
   __typename?: 'MessageNotificationCondition';
-  directMessage: Scalars['Boolean']['output'];
-  keywords: Array<Scalars['String']['output']>;
-  reply: Scalars['Boolean']['output'];
+  directMessage: Scalars['Boolean'];
+  keywords: Array<Scalars['String']>;
+  reply: Scalars['Boolean'];
 };
 
 export type MessageReactions = {
   __typename?: 'MessageReactions';
-  favoriteCount: Scalars['Int']['output'];
-  replyCount: Scalars['Int']['output'];
+  favoriteCount: Scalars['Int'];
+  replyCount: Scalars['Int'];
 };
 
 export type MessageRecipient = {
   __typename?: 'MessageRecipient';
-  messageId: Scalars['ID']['output'];
-  participantId: Scalars['ID']['output'];
+  messageId: Scalars['ID'];
+  participantId: Scalars['ID'];
 };
 
 export type MessageSender = {
   __typename?: 'MessageSender';
   charaImage: CharaImage;
-  charaName: Scalars['String']['output'];
-  participantId: Scalars['ID']['output'];
+  charaName: Scalars['String'];
+  participantId: Scalars['ID'];
 };
 
 export type MessageTime = {
   __typename?: 'MessageTime';
-  sendAt: Scalars['DateTime']['output'];
-  sendUnixTimeMilli: Scalars['Long']['output'];
+  sendAt: Scalars['DateTime'];
+  sendUnixTimeMilli: Scalars['Long'];
 };
 
 export enum MessageType {
@@ -366,25 +364,25 @@ export enum MessageType {
 
 export type Messages = Pageable & {
   __typename?: 'Messages';
-  allPageCount: Scalars['Int']['output'];
-  currentPageNumber?: Maybe<Scalars['Int']['output']>;
-  hasNextPage: Scalars['Boolean']['output'];
-  hasPrePage: Scalars['Boolean']['output'];
-  isDesc: Scalars['Boolean']['output'];
+  allPageCount: Scalars['Int'];
+  currentPageNumber?: Maybe<Scalars['Int']>;
+  hasNextPage: Scalars['Boolean'];
+  hasPrePage: Scalars['Boolean'];
+  isDesc: Scalars['Boolean'];
   list: Array<Message>;
 };
 
 export type MessagesQuery = {
-  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
-  keywords?: InputMaybe<Array<Scalars['String']['input']>>;
-  offsetUnixTimeMilli?: InputMaybe<Scalars['Long']['input']>;
+  ids?: InputMaybe<Array<Scalars['ID']>>;
+  keywords?: InputMaybe<Array<Scalars['String']>>;
+  offsetUnixTimeMilli?: InputMaybe<Scalars['Long']>;
   paging?: InputMaybe<PageableQuery>;
-  periodId?: InputMaybe<Scalars['ID']['input']>;
-  replyToMessageId?: InputMaybe<Scalars['ID']['input']>;
-  senderIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  sinceAt?: InputMaybe<Scalars['DateTime']['input']>;
+  periodId?: InputMaybe<Scalars['ID']>;
+  replyToMessageId?: InputMaybe<Scalars['ID']>;
+  senderIds?: InputMaybe<Array<Scalars['ID']>>;
+  sinceAt?: InputMaybe<Scalars['DateTime']>;
   types?: InputMaybe<Array<MessageType>>;
-  untilAt?: InputMaybe<Scalars['DateTime']['input']>;
+  untilAt?: InputMaybe<Scalars['DateTime']>;
 };
 
 export type Mutation = {
@@ -596,89 +594,89 @@ export type MutationUpdatePlayerSnsAccountArgs = {
 };
 
 export type NewChara = {
-  charachipId: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
+  charachipId: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type NewCharaImage = {
-  charaId: Scalars['ID']['input'];
-  height: Scalars['Int']['input'];
-  type: Scalars['String']['input'];
-  url: Scalars['String']['input'];
-  width: Scalars['Int']['input'];
+  charaId: Scalars['ID'];
+  height: Scalars['Int'];
+  type: Scalars['String'];
+  url: Scalars['String'];
+  width: Scalars['Int'];
 };
 
 export type NewCharachip = {
-  designerId: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
+  designerId: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type NewDesigner = {
-  name: Scalars['String']['input'];
+  name: Scalars['String'];
 };
 
 export type NewDirectMessage = {
-  charaImageId: Scalars['ID']['input'];
-  charaName: Scalars['String']['input'];
-  gameId: Scalars['ID']['input'];
-  gameParticipantGroupId: Scalars['ID']['input'];
-  isConvertDisabled: Scalars['Boolean']['input'];
-  text: Scalars['String']['input'];
+  charaImageId: Scalars['ID'];
+  charaName: Scalars['String'];
+  gameId: Scalars['ID'];
+  gameParticipantGroupId: Scalars['ID'];
+  isConvertDisabled: Scalars['Boolean'];
+  text: Scalars['String'];
   type: MessageType;
 };
 
 export type NewDirectMessageFavorite = {
-  directMessageId: Scalars['ID']['input'];
-  gameId: Scalars['ID']['input'];
+  directMessageId: Scalars['ID'];
+  gameId: Scalars['ID'];
 };
 
 export type NewGame = {
-  name: Scalars['String']['input'];
+  name: Scalars['String'];
   settings: NewGameSettings;
 };
 
 export type NewGameCapacity = {
-  max: Scalars['Int']['input'];
-  min: Scalars['Int']['input'];
+  max: Scalars['Int'];
+  min: Scalars['Int'];
 };
 
 export type NewGameCharaSetting = {
-  canOriginalCharacter: Scalars['Boolean']['input'];
-  charachipIds: Array<Scalars['Int']['input']>;
+  canOriginalCharacter: Scalars['Boolean'];
+  charachipIds: Array<Scalars['Int']>;
 };
 
 export type NewGameMaster = {
-  gameId: Scalars['ID']['input'];
-  isProducer: Scalars['Boolean']['input'];
-  playerId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
+  isProducer: Scalars['Boolean'];
+  playerId: Scalars['ID'];
 };
 
 export type NewGameParticipant = {
-  Name: Scalars['String']['input'];
-  charaId: Scalars['ID']['input'];
-  gameId: Scalars['ID']['input'];
+  Name: Scalars['String'];
+  charaId: Scalars['ID'];
+  gameId: Scalars['ID'];
 };
 
 export type NewGameParticipantDiary = {
-  body: Scalars['String']['input'];
-  gameId: Scalars['ID']['input'];
-  periodId: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
+  body: Scalars['String'];
+  gameId: Scalars['ID'];
+  periodId: Scalars['ID'];
+  title: Scalars['String'];
 };
 
 export type NewGameParticipantFollow = {
-  gameId: Scalars['ID']['input'];
-  targetGameParticipantId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
+  targetGameParticipantId: Scalars['ID'];
 };
 
 export type NewGamePasswordSetting = {
-  password?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']>;
 };
 
 export type NewGameRuleSetting = {
-  canSendDirectMessage: Scalars['Boolean']['input'];
-  canShorten: Scalars['Boolean']['input'];
-  isGameMasterProducer: Scalars['Boolean']['input'];
+  canSendDirectMessage: Scalars['Boolean'];
+  canShorten: Scalars['Boolean'];
+  isGameMasterProducer: Scalars['Boolean'];
 };
 
 export type NewGameSettings = {
@@ -690,89 +688,89 @@ export type NewGameSettings = {
 };
 
 export type NewGameTimeSetting = {
-  openAt: Scalars['DateTime']['input'];
-  periodIntervalSeconds: Scalars['Int']['input'];
-  periodPrefix?: InputMaybe<Scalars['String']['input']>;
-  periodSuffix?: InputMaybe<Scalars['String']['input']>;
-  startGameAt: Scalars['DateTime']['input'];
-  startParticipateAt: Scalars['DateTime']['input'];
+  openAt: Scalars['DateTime'];
+  periodIntervalSeconds: Scalars['Int'];
+  periodPrefix?: InputMaybe<Scalars['String']>;
+  periodSuffix?: InputMaybe<Scalars['String']>;
+  startGameAt: Scalars['DateTime'];
+  startParticipateAt: Scalars['DateTime'];
 };
 
 export type NewMessage = {
-  charaImageId: Scalars['ID']['input'];
-  charaName: Scalars['String']['input'];
-  gameId: Scalars['ID']['input'];
-  isConvertDisabled: Scalars['Boolean']['input'];
-  replyToMessageId?: InputMaybe<Scalars['ID']['input']>;
-  text: Scalars['String']['input'];
+  charaImageId: Scalars['ID'];
+  charaName: Scalars['String'];
+  gameId: Scalars['ID'];
+  isConvertDisabled: Scalars['Boolean'];
+  replyToMessageId?: InputMaybe<Scalars['ID']>;
+  text: Scalars['String'];
   type: MessageType;
 };
 
 export type NewMessageFavorite = {
-  gameId: Scalars['ID']['input'];
-  messageId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
+  messageId: Scalars['ID'];
 };
 
 export type NewPlayerProfile = {
-  iconUrl?: InputMaybe<Scalars['String']['input']>;
-  introduction?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
+  iconUrl?: InputMaybe<Scalars['String']>;
+  introduction?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type NewPlayerSnsAccount = {
-  accountName: Scalars['String']['input'];
-  accountUrl: Scalars['String']['input'];
+  accountName: Scalars['String'];
+  accountUrl: Scalars['String'];
   type: SnsType;
 };
 
 export type NotificationCondition = {
   __typename?: 'NotificationCondition';
-  discordWebhookUrl?: Maybe<Scalars['String']['output']>;
+  discordWebhookUrl?: Maybe<Scalars['String']>;
   game: GameNotificationCondition;
   message: MessageNotificationCondition;
 };
 
 export type Pageable = {
-  allPageCount: Scalars['Int']['output'];
-  currentPageNumber?: Maybe<Scalars['Int']['output']>;
-  hasNextPage: Scalars['Boolean']['output'];
-  hasPrePage: Scalars['Boolean']['output'];
-  isDesc: Scalars['Boolean']['output'];
+  allPageCount: Scalars['Int'];
+  currentPageNumber?: Maybe<Scalars['Int']>;
+  hasNextPage: Scalars['Boolean'];
+  hasPrePage: Scalars['Boolean'];
+  isDesc: Scalars['Boolean'];
 };
 
 export type PageableQuery = {
-  isDesc: Scalars['Boolean']['input'];
-  pageNumber: Scalars['Int']['input'];
-  pageSize: Scalars['Int']['input'];
+  isDesc: Scalars['Boolean'];
+  pageNumber: Scalars['Int'];
+  pageSize: Scalars['Int'];
 };
 
 export type ParticipantsQuery = {
-  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
+  ids?: InputMaybe<Array<Scalars['ID']>>;
   paging?: InputMaybe<PageableQuery>;
-  playerIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  playerIds?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 export type Player = {
   __typename?: 'Player';
   designer?: Maybe<Designer>;
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
   profile?: Maybe<PlayerProfile>;
 };
 
 export type PlayerProfile = {
   __typename?: 'PlayerProfile';
-  iconUrl?: Maybe<Scalars['String']['output']>;
-  introduction?: Maybe<Scalars['String']['output']>;
+  iconUrl?: Maybe<Scalars['String']>;
+  introduction?: Maybe<Scalars['String']>;
   snsAccounts: Array<PlayerSnsAccount>;
 };
 
 export type PlayerSnsAccount = {
   __typename?: 'PlayerSnsAccount';
-  id: Scalars['ID']['output'];
-  name?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
   type: SnsType;
-  url: Scalars['String']['output'];
+  url: Scalars['String'];
 };
 
 export type Query = {
@@ -804,12 +802,12 @@ export type Query = {
 
 
 export type QueryCharaArgs = {
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
 };
 
 
 export type QueryCharachipArgs = {
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
 };
 
 
@@ -819,7 +817,7 @@ export type QueryCharachipsArgs = {
 
 
 export type QueryDesignerArgs = {
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
 };
 
 
@@ -829,63 +827,63 @@ export type QueryDesignersArgs = {
 
 
 export type QueryDirectMessageArgs = {
-  directMessageId: Scalars['ID']['input'];
-  gameId: Scalars['ID']['input'];
+  directMessageId: Scalars['ID'];
+  gameId: Scalars['ID'];
 };
 
 
 export type QueryDirectMessageFavoriteGameParticipantsArgs = {
-  directMessageId: Scalars['ID']['input'];
-  gameId: Scalars['ID']['input'];
+  directMessageId: Scalars['ID'];
+  gameId: Scalars['ID'];
 };
 
 
 export type QueryDirectMessagesArgs = {
-  gameId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
   query: DirectMessagesQuery;
 };
 
 
 export type QueryGameArgs = {
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
 };
 
 
 export type QueryGameDiariesArgs = {
-  gameId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
   query: GameDiariesQuery;
 };
 
 
 export type QueryGameDiaryArgs = {
-  diaryId: Scalars['ID']['input'];
-  gameId: Scalars['ID']['input'];
+  diaryId: Scalars['ID'];
+  gameId: Scalars['ID'];
 };
 
 
 export type QueryGameParticipantFollowersArgs = {
-  participantId: Scalars['ID']['input'];
+  participantId: Scalars['ID'];
 };
 
 
 export type QueryGameParticipantFollowsArgs = {
-  participantId: Scalars['ID']['input'];
+  participantId: Scalars['ID'];
 };
 
 
 export type QueryGameParticipantGroupsArgs = {
-  gameId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
   query: GameParticipantGroupsQuery;
 };
 
 
 export type QueryGameParticipantProfileArgs = {
-  participantId: Scalars['ID']['input'];
+  participantId: Scalars['ID'];
 };
 
 
 export type QueryGameParticipantSettingArgs = {
-  gameId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
 };
 
 
@@ -895,36 +893,36 @@ export type QueryGamesArgs = {
 
 
 export type QueryMessageArgs = {
-  gameId: Scalars['ID']['input'];
-  messageId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
+  messageId: Scalars['ID'];
 };
 
 
 export type QueryMessageFavoriteGameParticipantsArgs = {
-  gameId: Scalars['ID']['input'];
-  messageId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
+  messageId: Scalars['ID'];
 };
 
 
 export type QueryMessageRepliesArgs = {
-  gameId: Scalars['ID']['input'];
-  messageId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
+  messageId: Scalars['ID'];
 };
 
 
 export type QueryMessagesArgs = {
-  gameId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
   query: MessagesQuery;
 };
 
 
 export type QueryMyGameParticipantArgs = {
-  gameId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
 };
 
 
 export type QueryPlayerArgs = {
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
 };
 
 export type RegisterCharaImagePayload = {
@@ -949,12 +947,12 @@ export type RegisterDesignerPayload = {
 
 export type RegisterDirectMessageFavoritePayload = {
   __typename?: 'RegisterDirectMessageFavoritePayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type RegisterDirectMessagePayload = {
   __typename?: 'RegisterDirectMessagePayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type RegisterGameMasterPayload = {
@@ -969,7 +967,7 @@ export type RegisterGameParticipantDiaryPayload = {
 
 export type RegisterGameParticipantFollowPayload = {
   __typename?: 'RegisterGameParticipantFollowPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type RegisterGameParticipantPayload = {
@@ -984,12 +982,12 @@ export type RegisterGamePayload = {
 
 export type RegisterMessageFavoritePayload = {
   __typename?: 'RegisterMessageFavoritePayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type RegisterMessagePayload = {
   __typename?: 'RegisterMessagePayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type RegisterPlayerProfilePayload = {
@@ -1004,9 +1002,9 @@ export type RegisterPlayerSnsAccountPayload = {
 
 export type SimpleGame = {
   __typename?: 'SimpleGame';
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  participantsCount: Scalars['Int']['output'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  participantsCount: Scalars['Int'];
   periods: Array<GamePeriod>;
   settings: GameSettings;
   status: GameStatus;
@@ -1023,138 +1021,138 @@ export enum SnsType {
 }
 
 export type UpdateChara = {
-  id: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type UpdateCharaImage = {
-  height: Scalars['Int']['input'];
-  id: Scalars['ID']['input'];
-  type: Scalars['String']['input'];
-  url: Scalars['String']['input'];
-  width: Scalars['Int']['input'];
+  height: Scalars['Int'];
+  id: Scalars['ID'];
+  type: Scalars['String'];
+  url: Scalars['String'];
+  width: Scalars['Int'];
 };
 
 export type UpdateCharaImagePayload = {
   __typename?: 'UpdateCharaImagePayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateCharaPayload = {
   __typename?: 'UpdateCharaPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateCharaSetting = {
-  canOriginalCharacter: Scalars['Boolean']['input'];
-  charachipIds: Array<Scalars['Int']['input']>;
+  canOriginalCharacter: Scalars['Boolean'];
+  charachipIds: Array<Scalars['Int']>;
 };
 
 export type UpdateCharachip = {
-  id: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type UpdateCharachipPayload = {
   __typename?: 'UpdateCharachipPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateDesigner = {
-  id: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type UpdateDesignerPayload = {
   __typename?: 'UpdateDesignerPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateGameCapacity = {
-  max: Scalars['Int']['input'];
-  min: Scalars['Int']['input'];
+  max: Scalars['Int'];
+  min: Scalars['Int'];
 };
 
 export type UpdateGameMaster = {
-  id: Scalars['ID']['input'];
-  isProducer: Scalars['Boolean']['input'];
+  id: Scalars['ID'];
+  isProducer: Scalars['Boolean'];
 };
 
 export type UpdateGameMasterPayload = {
   __typename?: 'UpdateGameMasterPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateGameNotificationCondition = {
-  participate: Scalars['Boolean']['input'];
-  start: Scalars['Boolean']['input'];
+  participate: Scalars['Boolean'];
+  start: Scalars['Boolean'];
 };
 
 export type UpdateGameParticipantDiary = {
-  body: Scalars['String']['input'];
-  gameId: Scalars['ID']['input'];
-  id: Scalars['ID']['input'];
-  title: Scalars['String']['input'];
+  body: Scalars['String'];
+  gameId: Scalars['ID'];
+  id: Scalars['ID'];
+  title: Scalars['String'];
 };
 
 export type UpdateGameParticipantDiaryPayload = {
   __typename?: 'UpdateGameParticipantDiaryPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateGameParticipantProfile = {
-  gameParticipantId: Scalars['ID']['input'];
-  iconUrl?: InputMaybe<Scalars['String']['input']>;
-  introduction?: InputMaybe<Scalars['String']['input']>;
-  memo?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
+  gameParticipantId: Scalars['ID'];
+  iconUrl?: InputMaybe<Scalars['String']>;
+  introduction?: InputMaybe<Scalars['String']>;
+  memo?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type UpdateGameParticipantProfilePayload = {
   __typename?: 'UpdateGameParticipantProfilePayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateGameParticipantSetting = {
-  gameParticipantId: Scalars['ID']['input'];
+  gameParticipantId: Scalars['ID'];
   notification?: InputMaybe<UpdateNotificationCondition>;
 };
 
 export type UpdateGameParticipantSettingPayload = {
   __typename?: 'UpdateGameParticipantSettingPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateGamePasswordSetting = {
-  password?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateGamePeriod = {
-  endAt: Scalars['DateTime']['input'];
-  gameId: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
-  startAt: Scalars['DateTime']['input'];
+  endAt: Scalars['DateTime'];
+  gameId: Scalars['ID'];
+  name: Scalars['String'];
+  startAt: Scalars['DateTime'];
 };
 
 export type UpdateGamePeriodPayload = {
   __typename?: 'UpdateGamePeriodPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateGameRuleSetting = {
-  canSendDirectMessage: Scalars['Boolean']['input'];
-  canShorten: Scalars['Boolean']['input'];
-  isGameMasterProducer: Scalars['Boolean']['input'];
+  canSendDirectMessage: Scalars['Boolean'];
+  canShorten: Scalars['Boolean'];
+  isGameMasterProducer: Scalars['Boolean'];
 };
 
 export type UpdateGameSetting = {
-  gameId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
   settings: UpdateGameSettings;
 };
 
 export type UpdateGameSettingPayload = {
   __typename?: 'UpdateGameSettingPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateGameSettings = {
@@ -1166,74 +1164,82 @@ export type UpdateGameSettings = {
 };
 
 export type UpdateGameStatus = {
-  gameId: Scalars['ID']['input'];
+  gameId: Scalars['ID'];
   status: GameStatus;
 };
 
 export type UpdateGameStatusPayload = {
   __typename?: 'UpdateGameStatusPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdateGameTimeSetting = {
-  openAt: Scalars['DateTime']['input'];
-  periodIntervalSeconds: Scalars['Int']['input'];
-  periodPrefix?: InputMaybe<Scalars['String']['input']>;
-  periodSuffix?: InputMaybe<Scalars['String']['input']>;
-  startGameAt: Scalars['DateTime']['input'];
-  startParticipateAt: Scalars['DateTime']['input'];
+  openAt: Scalars['DateTime'];
+  periodIntervalSeconds: Scalars['Int'];
+  periodPrefix?: InputMaybe<Scalars['String']>;
+  periodSuffix?: InputMaybe<Scalars['String']>;
+  startGameAt: Scalars['DateTime'];
+  startParticipateAt: Scalars['DateTime'];
 };
 
 export type UpdateMessageNotificationCondition = {
-  directMessage: Scalars['Boolean']['input'];
-  keywords: Array<Scalars['String']['input']>;
-  reply: Scalars['Boolean']['input'];
+  directMessage: Scalars['Boolean'];
+  keywords: Array<Scalars['String']>;
+  reply: Scalars['Boolean'];
 };
 
 export type UpdateNotificationCondition = {
-  discordWebhookUrl?: InputMaybe<Scalars['String']['input']>;
+  discordWebhookUrl?: InputMaybe<Scalars['String']>;
   game: UpdateGameNotificationCondition;
   message: UpdateMessageNotificationCondition;
 };
 
 export type UpdatePlayerProfile = {
-  iconUrl?: InputMaybe<Scalars['String']['input']>;
-  introduction?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
+  iconUrl?: InputMaybe<Scalars['String']>;
+  introduction?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type UpdatePlayerProfilePayload = {
   __typename?: 'UpdatePlayerProfilePayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type UpdatePlayerSnsAccount = {
-  accountName: Scalars['String']['input'];
-  accountUrl: Scalars['String']['input'];
-  id: Scalars['ID']['input'];
+  accountName: Scalars['String'];
+  accountUrl: Scalars['String'];
+  id: Scalars['ID'];
   type: SnsType;
 };
 
 export type UpdatePlayerSnsAccountPayload = {
   __typename?: 'UpdatePlayerSnsAccountPayload';
-  ok: Scalars['Boolean']['output'];
+  ok: Scalars['Boolean'];
 };
 
 export type GameQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
 }>;
 
 
-export type GameQuery = { __typename?: 'Query', game?: { __typename?: 'Game', id: string, name: string, status: GameStatus, participants: Array<{ __typename?: 'GameParticipant', id: string }>, periods: Array<{ __typename?: 'GamePeriod', id: string }>, settings: { __typename?: 'GameSettings', chara: { __typename?: 'GameCharaSetting', canOriginalCharacter: boolean }, capacity: { __typename?: 'GameCapacity', min: number, max: number }, rule: { __typename?: 'GameRuleSetting', canShorten: boolean, canSendDirectMessage: boolean }, time: { __typename?: 'GameTimeSetting', periodPrefix?: string | null, periodSuffix?: string | null, periodIntervalSeconds: number, openAt: any, startParticipateAt: any, startGameAt: any }, password: { __typename?: 'GamePasswordSetting', hasPassword: boolean } } } | null };
+export type GameQuery = { __typename?: 'Query', game?: { __typename?: 'Game', id: string, name: string, participants: Array<{ __typename?: 'GameParticipant', id: string }> } | null };
 
-export type IndexGamesQueryVariables = Exact<{
-  pageSize: Scalars['Int']['input'];
-  pageNumber: Scalars['Int']['input'];
+export type GamesQueryVariables = Exact<{
+  pageSize: Scalars['Int'];
+  pageNumber: Scalars['Int'];
 }>;
 
 
-export type IndexGamesQuery = { __typename?: 'Query', games: Array<{ __typename?: 'SimpleGame', id: string, name: string, participantsCount: number }> };
+export type GamesQuery = { __typename?: 'Query', games: Array<{ __typename?: 'SimpleGame', id: string, name: string, participantsCount: number }> };
+
+export type RegisterGameMutationVariables = Exact<{
+  input: NewGame;
+}>;
 
 
-export const GameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Game"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"game"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"participants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"periods"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chara"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canOriginalCharacter"}}]}},{"kind":"Field","name":{"kind":"Name","value":"capacity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"min"}},{"kind":"Field","name":{"kind":"Name","value":"max"}}]}},{"kind":"Field","name":{"kind":"Name","value":"rule"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canShorten"}},{"kind":"Field","name":{"kind":"Name","value":"canSendDirectMessage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"time"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"periodPrefix"}},{"kind":"Field","name":{"kind":"Name","value":"periodSuffix"}},{"kind":"Field","name":{"kind":"Name","value":"periodIntervalSeconds"}},{"kind":"Field","name":{"kind":"Name","value":"openAt"}},{"kind":"Field","name":{"kind":"Name","value":"startParticipateAt"}},{"kind":"Field","name":{"kind":"Name","value":"startGameAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"password"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasPassword"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GameQuery, GameQueryVariables>;
-export const IndexGamesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"IndexGames"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageNumber"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"games"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"paging"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"pageNumber"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageNumber"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"isDesc"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"participantsCount"}}]}}]}}]} as unknown as DocumentNode<IndexGamesQuery, IndexGamesQueryVariables>;
+export type RegisterGameMutation = { __typename?: 'Mutation', registerGame: { __typename?: 'RegisterGamePayload', game: { __typename?: 'Game', id: string, name: string, participants: Array<{ __typename?: 'GameParticipant', id: string }> } } };
+
+
+export const GameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"game"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"game"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"participants"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"paging"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"IntValue","value":"10"}},{"kind":"ObjectField","name":{"kind":"Name","value":"pageNumber"},"value":{"kind":"IntValue","value":"1"}},{"kind":"ObjectField","name":{"kind":"Name","value":"isDesc"},"value":{"kind":"BooleanValue","value":true}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<GameQuery, GameQueryVariables>;
+export const GamesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"games"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageNumber"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"games"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"paging"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"pageNumber"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageNumber"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"isDesc"},"value":{"kind":"BooleanValue","value":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"participantsCount"}}]}}]}}]} as unknown as DocumentNode<GamesQuery, GamesQueryVariables>;
+export const RegisterGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"registerGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewGame"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"game"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"participants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RegisterGameMutation, RegisterGameMutationVariables>;

@@ -13,6 +13,10 @@ jobs:
     env:
       IMAGE_NAME: chat-role-play-frontend
     steps:
+      - name: setup
+        run: |
+          docker image prune --force
+
       - name: clone repository
         uses: actions/checkout@v2
 
@@ -24,6 +28,7 @@ jobs:
           --build-arg AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}
           --build-arg AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}
           --build-arg GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }}
+          --build-arg GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_INNER_ENDPOINT }}
       - name: deploy
         run: |
           docker login ghcr.io -u h-orito -p ${{ secrets.PACKAGE_PAT }}

@@ -1,6 +1,6 @@
 import { defineNuxtPlugin } from '#app'
 import dayjs from 'dayjs'
-import isBetween from 'dayjs/plugin/isBetween.js'
+import isBetween from 'dayjs/plugin/isBetween'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 
 import 'dayjs/locale/ja'
