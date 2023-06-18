@@ -13,6 +13,10 @@ jobs:
     env:
       IMAGE_NAME: chat-role-play-frontend
     steps:
+      - name: setup
+        run: |
+          docker image prune --force
+
       - name: clone repository
         uses: actions/checkout@v2
 

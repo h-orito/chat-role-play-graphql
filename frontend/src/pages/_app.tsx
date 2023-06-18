@@ -1,3 +1,4 @@
+import '@/components/layout/globals.css'
 import React from 'react'
 import { AppProps } from 'next/app'
 import { AuthProvider } from '@/components/auth/auth'
