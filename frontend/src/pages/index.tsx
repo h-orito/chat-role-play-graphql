@@ -1,9 +1,8 @@
 // import Image from 'next/image'
-import styles from './index.module.css'
 import { LoginButton, LogoutButton } from '@/components/auth/auth'
 import useAuth from '@/components/auth/use-auth'
 import { gql, useQuery } from '@apollo/client'
-import { createClient, createInnerClient } from '@/components/graphql/client'
+import { createInnerClient } from '@/components/graphql/client'
 import {
   SimpleGame,
   IndexGamesDocument,
@@ -53,9 +52,8 @@ type Props = {
 }
 
 export default function Index({ games }: Props) {
-  console.log(games)
   return (
-    <main className={styles.main}>
+    <main>
       <UserInfo />
       <Games games={games} />
     </main>

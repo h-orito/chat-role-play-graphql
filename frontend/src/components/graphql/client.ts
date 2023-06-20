@@ -31,7 +31,6 @@ export const createClient = async (
 
 let innerClient: ApolloClient<NormalizedCacheObject> | null = null
 export const createInnerClient = () => {
-  console.log(process.env.NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT)
   if (innerClient) return innerClient
   innerClient = new ApolloClient({
     ssrMode: true,

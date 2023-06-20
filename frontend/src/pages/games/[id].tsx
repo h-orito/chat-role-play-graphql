@@ -1,5 +1,7 @@
 import { createClient, createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
+import Article from '@/components/pages/games/article/article'
+import Sidebar from '@/components/pages/games/sidebar/sidebar'
 import {
   Game,
   GameDocument,
@@ -67,10 +69,10 @@ type Props = {
 }
 
 export default function GamePage({ game }: Props) {
-  console.log(game)
   return (
-    <main>
-      <h1>{game.name}</h1>
+    <main className='flex'>
+      <Sidebar game={game} />
+      <Article game={game} />
     </main>
   )
 }
