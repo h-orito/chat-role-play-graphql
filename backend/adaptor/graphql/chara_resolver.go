@@ -261,7 +261,7 @@ func (r *gameParticipantResolver) chara(ctx context.Context, obj *gqlmodel.GameP
 }
 
 func (r *messageSenderResolver) charaImage(ctx context.Context, obj *gqlmodel.MessageSender) (*gqlmodel.CharaImage, error) {
-	thunk := r.loaders.CharaLoader.Load(ctx, dataloader.StringKey(obj.CharaImageID))
+	thunk := r.loaders.CharaImageLoader.Load(ctx, dataloader.StringKey(obj.CharaImageID))
 	c, err := thunk()
 	if err != nil {
 		return nil, err

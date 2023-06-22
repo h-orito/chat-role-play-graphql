@@ -2783,8 +2783,8 @@ type Message {
   id: ID!
   content: MessageContent!
   time: MessageTime!
-  sender: MessageSender!
-  replyTo: MessageRecipient!
+  sender: MessageSender
+  replyTo: MessageRecipient
   reactions: MessageReactions!
 }
 
@@ -8928,14 +8928,11 @@ func (ec *executionContext) _Message_sender(ctx context.Context, field graphql.C
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*gqlmodel.MessageSender)
 	fc.Result = res
-	return ec.marshalNMessageSender2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageSender(ctx, field.Selections, res)
+	return ec.marshalOMessageSender2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageSender(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Message_sender(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8980,14 +8977,11 @@ func (ec *executionContext) _Message_replyTo(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*gqlmodel.MessageRecipient)
 	fc.Result = res
-	return ec.marshalNMessageRecipient2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageRecipient(ctx, field.Selections, res)
+	return ec.marshalOMessageRecipient2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageRecipient(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Message_replyTo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -22492,16 +22486,10 @@ func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, 
 
 			out.Values[i] = ec._Message_sender(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "replyTo":
 
 			out.Values[i] = ec._Message_replyTo(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "reactions":
 
 			out.Values[i] = ec._Message_reactions(ctx, field, obj)
@@ -26075,16 +26063,6 @@ func (ec *executionContext) marshalNMessageReactions2ᚖchatᚑroleᚑplayᚋmid
 	return ec._MessageReactions(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNMessageRecipient2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageRecipient(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.MessageRecipient) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._MessageRecipient(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalNMessageSender2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageSender(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.MessageSender) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -27370,6 +27348,20 @@ func (ec *executionContext) marshalOMessage2ᚖchatᚑroleᚑplayᚋmiddleware�
 		return graphql.Null
 	}
 	return ec._Message(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOMessageRecipient2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageRecipient(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.MessageRecipient) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._MessageRecipient(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOMessageSender2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageSender(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.MessageSender) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._MessageSender(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOMessageType2ᚕchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageTypeᚄ(ctx context.Context, v interface{}) ([]gqlmodel.MessageType, error) {

@@ -2597,13 +2597,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "MessageRecipient",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "MessageRecipient",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -2613,13 +2609,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "MessageSender",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "MessageSender",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

@@ -264,8 +264,8 @@ type Message struct {
 	ID        string            `json:"id"`
 	Content   *MessageContent   `json:"content"`
 	Time      *MessageTime      `json:"time"`
-	Sender    *MessageSender    `json:"sender"`
-	ReplyTo   *MessageRecipient `json:"replyTo"`
+	Sender    *MessageSender    `json:"sender,omitempty"`
+	ReplyTo   *MessageRecipient `json:"replyTo,omitempty"`
 	Reactions *MessageReactions `json:"reactions"`
 }
 
