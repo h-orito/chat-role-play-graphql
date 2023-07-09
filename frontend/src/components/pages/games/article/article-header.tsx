@@ -1,7 +1,12 @@
-import { useState } from 'react'
+import { GameParticipant } from '@/lib/generated/graphql'
 
-export default function ArticleHeader() {
-  const [tab, setTab] = useState('home')
+type Props = {
+  myself: GameParticipant | null
+  tab: string
+  setTab: (tabName: string) => void
+}
+
+export default function ArticleHeader({ myself, tab, setTab }: Props) {
   const borderBottomClass = (tabName: string) => {
     if (tab === tabName) {
       return 'box-border border-b-2 border-blue-500'
@@ -22,22 +27,26 @@ export default function ArticleHeader() {
           ホーム
         </button>
       </div>
-      <div className={`flex-1 text-center ${borderBottomClass('follow')}`}>
-        <button
-          className='w-full  px-4 py-2 hover:bg-slate-200'
-          onClick={() => onClickTab('follow')}
-        >
-          フォロー中
-        </button>
-      </div>
-      <div className={`flex-1 text-center ${borderBottomClass('dm')}`}>
-        <button
-          className='w-full  px-4 py-2 hover:bg-slate-200'
-          onClick={() => onClickTab('dm')}
-        >
-          ダイレクトメッセージ
-        </button>
-      </div>
+      {myself != null && (
+        <>
+          <div className={`flex-1 text-center ${borderBottomClass('follow')}`}>
+            <button
+              className='w-full  px-4 py-2 hover:bg-slate-200'
+              onClick={() => onClickTab('follow')}
+            >
+              フォロー中
+            </button>
+          </div>
+          <div className={`flex-1 text-center ${borderBottomClass('dm')}`}>
+            <button
+              className='w-full  px-4 py-2 hover:bg-slate-200'
+              onClick={() => onClickTab('dm')}
+            >
+              ダイレクトメッセージ
+            </button>
+          </div>
+        </>
+      )}
     </div>
   )
 }

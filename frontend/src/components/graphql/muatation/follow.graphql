@@ -1,0 +1,5 @@
+mutation Follow($input: NewGameParticipantFollow!) {
+  registerGameParticipantFollow(input: $input) {
+    ok
+  }
+}

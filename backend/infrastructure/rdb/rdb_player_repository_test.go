@@ -87,9 +87,9 @@ func TestSaveProfile(t *testing.T) {
 		url := "test icon url"
 		introduction := "test introduction"
 		profile := model.PlayerProfile{
-			PlayerID:     1,
-			IconURL:      &url,
-			Introduction: &introduction,
+			PlayerID:        1,
+			ProfileImageURL: &url,
+			Introduction:    &introduction,
 		}
 		got, err := repo.SaveProfile(ctx, &profile)
 		if err != nil {

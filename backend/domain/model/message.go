@@ -88,8 +88,8 @@ func MessageTypeValueOf(s string) *MessageType {
 
 type MessageSender struct {
 	GameParticipantID uint32
-	CharaImageID      uint32
-	CharaName         string
+	SenderIconID      uint32
+	SenderName        string
 }
 
 type MessageReplyTo struct {
@@ -109,8 +109,9 @@ type MessageTime struct {
 }
 
 type MessageReactions struct {
-	ReplyCount    uint32
-	FavoriteCount uint32
+	ReplyCount             uint32
+	FavoriteCount          uint32
+	FavoriteParticipantIDs []uint32
 }
 
 type MessagesQuery struct {
@@ -154,11 +155,13 @@ type GameParticipantGroup struct {
 
 type GameParticipantGroupsQuery struct {
 	GameID                   uint32
+	IDs                      *[]uint32
 	MemberGroupParticipantID *uint32
 }
 
 type DirectMessageReactions struct {
-	FavoriteCount uint32
+	FavoriteCount          uint32
+	FavoriteParticipantIDs []uint32
 }
 
 type DirectMessagesQuery struct {
@@ -185,7 +188,8 @@ type MessageRepository interface {
 	DeleteMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error
 	// participant group
 	FindGameParticipantGroups(query GameParticipantGroupsQuery) ([]GameParticipantGroup, error)
-	RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group GameParticipantGroup) error
+	RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group GameParticipantGroup) (*GameParticipantGroup, error)
+	UpdateGameParticipantGroup(ctx context.Context, gameID uint32, group GameParticipantGroup) error
 	// direct message
 	FindDirectMessages(gameID uint32, query DirectMessagesQuery) (DirectMessages, error)
 	FindDirectMessage(gameID uint32, ID uint64) (*DirectMessage, error)

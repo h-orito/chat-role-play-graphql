@@ -9,8 +9,8 @@ INSERT INTO player_accounts VALUES (NULL, 2, 'user name 2', NOW(), NOW());
 INSERT INTO player_authorities VALUES (NULL, 1, 'AuthorityPlayer', NOW(), NOW());
 INSERT INTO player_authorities VALUES (NULL, 2, 'AuthorityPlayer', NOW(), NOW());
 
-INSERT INTO player_profiles VALUES (1, 'https://placehold.jp/150x150.png', 'introduction', NOW(), NOW());
-INSERT INTO player_profiles VALUES (2, 'https://placehold.jp/150x150.png', 'introduction', NOW(), NOW());
+INSERT INTO player_profiles VALUES (1, 'https://placehold.jp/120x120.png', 'introduction', NOW(), NOW());
+INSERT INTO player_profiles VALUES (2, 'https://placehold.jp/120x120.png', 'introduction', NOW(), NOW());
 
 INSERT INTO player_sns_accounts VALUES (NULL, 1, 'Twitter', 'accountname', 'https://twitter.com', NOW(), NOW());
 INSERT INTO player_sns_accounts VALUES (NULL, 2, 'Twitter', 'accountname', 'https://twitter.com', NOW(), NOW());
@@ -19,21 +19,21 @@ INSERT INTO designers VALUES (NULL, 'designer name', NOW(), NOW());
 
 INSERT INTO charachips VALUES (NULL, 'charachip name', 1, NOW(), NOW());
 
-INSERT INTO charas VALUES (NULL, 'chara name 1', 1, NULL, NOW(), NOW());
-INSERT INTO charas VALUES (NULL, 'chara name 2', NULL, 1, NOW(), NOW());
+INSERT INTO charas VALUES (NULL, 'chara name 1', 1, NOW(), NOW());
 
-INSERT INTO chara_images VALUES (NULL, 1, '通常', 'https://placehold.jp/150x150.png', 75, 75, NOW(), NOW());
-INSERT INTO chara_images VALUES (NULL, 2, '通常', 'https://placehold.jp/150x150.png', 75, 75, NOW(), NOW());
+INSERT INTO chara_images VALUES (NULL, 1, '通常', 'https://placehold.jp/120x120.png', 60, 60, NOW(), NOW());
 
 INSERT INTO games VALUES (NULL, 'game name', 'Closed', NOW(), NOW());
 
 INSERT INTO game_master_players VALUES (NULL, 1, 1, false, NOW(), NOW());
 
-INSERT INTO game_participants VALUES (NULL, 1, 1, 1, 'participant name 1', false, NOW(), NOW(), NOW());
-INSERT INTO game_participants VALUES (NULL, 1, 2, 2, 'participant name 2', false, NOW(), NOW(), NOW());
+INSERT INTO game_participants VALUES (NULL, 1, 1, 'participant name 1', 1, 'memo', NOW(), false, NOW(), NOW());
+INSERT INTO game_participants VALUES (NULL, 1, 2, 'participant name 2', 2, NULL, NOW(), false, NOW(), NOW());
 
-INSERT INTO game_participant_profiles VALUES (1, 'https://placehold.jp/150x150.png', 'introduction', null, NOW(), NOW());
-INSERT INTO game_participant_profiles VALUES (2, 'https://placehold.jp/150x150.png', 'introduction', null, NOW(), NOW());
+INSERT INTO game_participant_profiles VALUES (1, 'https://placehold.jp/120x120.png', 'introduction', NOW(), NOW());
+INSERT INTO game_participant_profiles VALUES (2, 'https://placehold.jp/120x120.png', 'introduction', NOW(), NOW());
+
+INSERT INTO game_participant_icons VALUES (1, 1, '通常', 'https://placehold.jp/120x120.png', 60, 60, false, NOW(), NOW());
 
 INSERT INTO game_participant_notifications VALUES (1, 'webhook url', TRUE, TRUE, TRUE, TRUE, 'keyword', NOW(), NOW());
 INSERT INTO game_participant_notifications VALUES (2, 'webhook url', TRUE, TRUE, TRUE, TRUE, 'keyword', NOW(), NOW());

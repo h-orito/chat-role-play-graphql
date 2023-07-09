@@ -92,16 +92,25 @@ models:
     fields:
       player:
         resolver: true
-      chara:
+      followParticipantIds:
+        resolver: true
+      followerParticipantIds:
         resolver: true
   MessageSender:
     fields:
-      charaImage:
+      icon:
         resolver: true
-  # Game:
-  #   fields:
-  #     participants:
-  #       resolver: true
-  # custom models
-  # GameParticipant:
-  #   model: chat-role-play/gqlmodel.GameParticipant
+  GameMaster:
+    fields:
+      player:
+        resolver: true
+  GameParticipantDiary:
+    fields:
+      participant:
+        resolver: true
+      period:
+        resolver: true
+  GameParticipantGroup:
+    fields:
+      participants:
+        resolver: true

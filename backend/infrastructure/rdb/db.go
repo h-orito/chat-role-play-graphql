@@ -36,7 +36,7 @@ func NewDB() DB {
 		cfg.Db.Name,
 	)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(logger.Error),
 	})
 	if err != nil {
 		panic(err.Error())

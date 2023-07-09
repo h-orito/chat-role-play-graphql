@@ -43,9 +43,9 @@ alter table player_authorities
 ;
 
 create table player_profiles (
-    player_id    int unsigned not null auto_increment comment 'プレイヤーID',
-    icon_url     varchar(1000) comment 'アイコンURL',
-    introduction text comment '自己紹介',
+    player_id         int unsigned not null auto_increment comment 'プレイヤーID',
+    profile_image_url varchar(1000) comment 'アイコンURL',
+    introduction      text comment '自己紹介',
     created_at datetime not null comment '作成日時',
     updated_at datetime not null comment '更新日時',
     primary key (player_id)
@@ -104,7 +104,6 @@ create table charas (
     id            int unsigned not null auto_increment comment 'ID',
     chara_name    varchar(255) not null comment 'キャラクター名',
     charachip_id  int unsigned          comment 'キャラチップID',
-    player_id     int unsigned          comment 'プレイヤーID',
     created_at datetime     not null comment '作成日時',
     updated_at datetime     not null comment '更新日時',
     primary key (id)
@@ -113,13 +112,6 @@ create table charas (
 alter table charas
     add constraint fk_charas_charachips foreign key (charachip_id)
     references charachips (id)
-    on update restrict
-    on delete restrict
-;
-
-alter table charas
-    add constraint fk_charas_players foreign key (player_id)
-    references players (id)
     on update restrict
     on delete restrict
 ;
@@ -181,11 +173,11 @@ create table game_participants (
     id                    int unsigned not null auto_increment comment 'ID',
     game_id               int unsigned not null comment 'ゲームID',
     player_id             int unsigned not null comment 'プレイヤーID',
-    chara_id              int unsigned not null comment 'キャラクターID',
     game_participant_name varchar(255) not null comment 'ゲーム参加者名',
     entry_number          int unsigned not null comment '参加番号',
-    is_gone               boolean      not null comment 'ゲームから退出したか',
+    memo                  varchar(1000)         comment 'メモ',
     last_accessed_at      datetime     not null comment '最終アクセス日時',
+    is_gone               boolean      not null comment 'ゲームから退出したか',
     created_at datetime     not null comment '作成日時',
     updated_at datetime     not null comment '更新日時',
     primary key (id),
@@ -207,10 +199,9 @@ alter table game_participants
 ;
 
 create table game_participant_profiles (
-    game_participant_id int unsigned not null auto_increment comment 'プレイヤーID',
-    icon_url            varchar(1000) comment 'アイコンURL',
-    introduction        text comment '自己紹介',
-    memo                varchar(1000) comment 'メモ',
+    game_participant_id   int unsigned not null auto_increment comment 'ゲーム参加者ID',
+    profile_image_url     varchar(1000) comment 'プロフィール画像URL',
+    introduction          text comment '自己紹介',
     created_at datetime not null comment '作成日時',
     updated_at datetime not null comment '更新日時',
     primary key (game_participant_id)
@@ -218,6 +209,26 @@ create table game_participant_profiles (
 
 alter table game_participant_profiles
     add constraint fk_game_participant_profiles_game_participants foreign key (game_participant_id)
+    references game_participants (id)
+    on update restrict
+    on delete restrict
+;
+
+create table game_participant_icons (
+    id                  int unsigned not null auto_increment comment 'ID',
+    game_participant_id int unsigned not null comment 'ゲーム参加者ID',
+    icon_type_name      varchar(255) not null comment 'キャラクター画像種別',
+    icon_image_url      varchar(1000) not null comment '画像url',
+    width               int unsigned not null comment '幅',
+    height              int unsigned not null comment '高さ',
+    is_deleted          boolean      not null comment '削除済みか',
+    created_at datetime     not null comment '作成日時',
+    updated_at datetime     not null comment '更新日時',
+    primary key (id)
+);
+
+alter table game_participant_icons
+    add constraint fk_game_participant_icons_game_participants foreign key (game_participant_id)
     references game_participants (id)
     on update restrict
     on delete restrict
@@ -401,8 +412,8 @@ create table messages (
     game_id                      int unsigned not null comment 'ゲームID',
     game_period_id               int unsigned not null comment 'ゲームピリオドID',
     sender_game_participant_id   int unsigned          comment '送信者ゲーム参加者ID',
-    sender_chara_image_id        int unsigned          comment '送信者キャラクター画像ID',
-    sender_chara_name            varchar(255)          comment '送信者キャラクター名',
+    sender_icon_id               int unsigned          comment '送信者アイコンID',
+    sender_name                  varchar(255)          comment '送信者キャラクター名',
     reply_to_message_id          bigint unsigned       comment '返信先メッセージID',
     reply_to_game_participant_id int unsigned          comment '返信先ゲーム参加者ID',
     message_type_code            varchar(255) not null comment 'メッセージ種別コード',
@@ -447,8 +458,8 @@ create table direct_messages (
     game_participant_group_id    int unsigned not null comment 'ゲーム参加者グループID',
     game_period_id               int unsigned not null comment 'ゲームピリオドID',
     sender_game_participant_id   int unsigned          comment '送信者ゲーム参加者ID',
-    sender_chara_image_id        int unsigned          comment '送信者キャラクター画像ID',
-    sender_chara_name            varchar(255)          comment '送信者キャラクター名',
+    sender_icon_id               int unsigned          comment '送信者アイコンID',
+    sender_name                  varchar(255)          comment '送信者キャラクター名',
     message_type_code            varchar(255) not null comment 'メッセージ種別コード',
     message_number               int unsigned not null comment 'メッセージ番号',
     message_content              text         not null comment 'メッセージ内容',

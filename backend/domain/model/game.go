@@ -92,13 +92,13 @@ type GameParticipant struct {
 	Name           string
 	EntryNumber    uint32
 	PlayerID       uint32
-	CharaID        uint32
-	IsGone         bool
+	Memo           *string
 	LastAccessedAt time.Time
+	IsGone         bool
 }
 
 type GameParticipantQuery struct {
-	GameID   uint32
+	GameID   *uint32
 	ID       *uint32
 	PlayerID *uint32
 	CharaID  *uint32
@@ -106,11 +106,24 @@ type GameParticipantQuery struct {
 
 type GameParticipantProfile struct {
 	GameParticipantID uint32
-	IconURL           *string
+	ProfileImageURL   *string
 	Introduction      *string
-	Memo              *string
 	FollowsCount      int
 	FollowersCount    int
+}
+
+type GameParticipantIcon struct {
+	ID           uint32
+	IconTypeName string
+	IconImageURL string
+	Width        uint32
+	Height       uint32
+}
+
+type GameParticipantIconsQuery struct {
+	GameParticipantID *uint32
+	IDs               *[]uint32
+	IsContainDeleted  *bool
 }
 
 type GameParticipantNotification struct {
@@ -199,6 +212,7 @@ type GameRepository interface {
 	// game
 	FindGames(query GamesQuery) (games []Game, err error)
 	FindGame(ID uint32) (game *Game, err error)
+	FindGamePeriods(IDs []uint32) (periods []GamePeriod, err error)
 	RegisterGame(ctx context.Context, game Game) (saved *Game, err error)
 	RegisterGameMaster(ctx context.Context, gameID uint32, master GameMaster) (saved *GameMaster, err error)
 	UpdateGameMaster(ctx context.Context, master GameMaster) (err error)
@@ -214,10 +228,14 @@ type GameParticipantRepository interface {
 	FindGameParticipants(query GameParticipantsQuery) (participants GameParticipants, err error)
 	FindGameParticipant(query GameParticipantQuery) (participant *GameParticipant, err error)
 	RegisterGameParticipant(ctx context.Context, gameID uint32, participant GameParticipant) (saved *GameParticipant, err error)
-	UpdateGameParticipantName(ctx context.Context, ID uint32, name string) (err error)
+	UpdateGameParticipant(ctx context.Context, ID uint32, name string, memo *string) (err error)
 	// participant profile
 	FindGameParticipantProfile(gameParticipantID uint32) (profile *GameParticipantProfile, err error)
 	UpdateGameParticipantProfile(ctx context.Context, ID uint32, profile GameParticipantProfile) (err error)
+	// participant icon
+	FindGameParticipantIcons(query GameParticipantIconsQuery) (icons []GameParticipantIcon, err error)
+	RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon GameParticipantIcon) (saved *GameParticipantIcon, err error)
+	DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error)
 	// participant notification
 	FindGameParticipantNotificationSetting(gameParticipantID uint32) (notification *GameParticipantNotification, err error)
 	UpdateGameParticipantNotificationSetting(ctx context.Context, ID uint32, setting GameParticipantNotification) (err error)

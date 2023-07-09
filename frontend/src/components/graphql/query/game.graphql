@@ -1,0 +1,38 @@
+query Game($id: ID!) {
+  game(id: $id) {
+    id
+    name
+    status
+    participants {
+      id
+      name
+    }
+    periods {
+      id
+    }
+    settings {
+      chara {
+        canOriginalCharacter
+      }
+      capacity {
+        min
+        max
+      }
+      rule {
+        canShorten
+        canSendDirectMessage
+      }
+      time {
+        periodPrefix
+        periodSuffix
+        periodIntervalSeconds
+        openAt
+        startParticipateAt
+        startGameAt
+      }
+      password {
+        hasPassword
+      }
+    }
+  }
+}

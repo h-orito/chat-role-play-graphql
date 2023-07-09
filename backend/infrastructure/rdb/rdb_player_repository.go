@@ -81,7 +81,7 @@ func (repo *PlayerRepository) SaveProfile(ctx context.Context, profile *model.Pl
 	if rdbPlayerProfile == nil {
 		return nil, nil
 	}
-	rdbPlayerProfile.IconUrl = profile.IconURL
+	rdbPlayerProfile.ProfileImageUrl = profile.ProfileImageURL
 	rdbPlayerProfile.Introduction = profile.Introduction
 	result := tx.Save(&rdbPlayerProfile)
 	if result.Error != nil {

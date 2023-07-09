@@ -10,6 +10,7 @@ type GameService interface {
 	// game
 	FindGames(query model.GamesQuery) (games []model.Game, err error)
 	FindGame(ID uint32) (game *model.Game, err error)
+	FindGamePeriods(IDs []uint32) (periods []model.GamePeriod, err error)
 	RegisterGame(ctx context.Context, game model.Game) (saved *model.Game, err error)
 	RegisterGameMaster(ctx context.Context, gameID uint32, playerID uint32, isProducer bool) (gameMaster *model.GameMaster, err error)
 	UpdateGameMaster(ctx context.Context, gameMaster model.GameMaster) (err error)
@@ -22,10 +23,14 @@ type GameService interface {
 	FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
 	FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error)
 	Participate(ctx context.Context, gameID uint32, participant model.GameParticipant) (saved *model.GameParticipant, err error)
-	UpdateParticipantName(ctx context.Context, participantID uint32, name string) (err error)
+	UpdateParticipant(ctx context.Context, participantID uint32, name string, memo *string) (err error)
 	// game participant profile
 	FindGameParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, err error)
 	UpdateGameParticipantProfile(ctx context.Context, participantID uint32, profile model.GameParticipantProfile) (err error)
+	// game participant icon
+	FindGameParticipantIcons(query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error)
+	RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error)
+	DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error)
 	// participant notification
 	FindGameParticipantNotificationSetting(ID uint32) (notification *model.GameParticipantNotification, err error)
 	UpdateGameParticipantNotificationSetting(ctx context.Context, participantID uint32, notification model.GameParticipantNotification) (err error)
@@ -61,6 +66,10 @@ func (g *gameService) FindGames(query model.GamesQuery) (games []model.Game, err
 
 func (g *gameService) FindGame(ID uint32) (game *model.Game, err error) {
 	return g.gameRepository.FindGame(ID)
+}
+
+func (g *gameService) FindGamePeriods(IDs []uint32) (periods []model.GamePeriod, err error) {
+	return g.gameRepository.FindGamePeriods(IDs)
 }
 
 func (g *gameService) RegisterGame(ctx context.Context, game model.Game) (saved *model.Game, err error) {
@@ -109,16 +118,28 @@ func (g *gameService) Participate(ctx context.Context, gameID uint32, participan
 	return g.gameParticipantRepository.RegisterGameParticipant(ctx, gameID, participant)
 }
 
-func (g *gameService) UpdateParticipantName(ctx context.Context, participantID uint32, name string) (err error) {
-	return g.gameParticipantRepository.UpdateGameParticipantName(ctx, participantID, name)
+func (g *gameService) UpdateParticipant(ctx context.Context, participantID uint32, name string, memo *string) (err error) {
+	return g.gameParticipantRepository.UpdateGameParticipant(ctx, participantID, name, memo)
 }
 
 func (g *gameService) FindGameParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, err error) {
-	return g.FindGameParticipantProfile(participantID)
+	return g.gameParticipantRepository.FindGameParticipantProfile(participantID)
 }
 
 func (g *gameService) UpdateGameParticipantProfile(ctx context.Context, participantID uint32, profile model.GameParticipantProfile) (err error) {
 	return g.gameParticipantRepository.UpdateGameParticipantProfile(ctx, participantID, profile)
+}
+
+func (g *gameService) FindGameParticipantIcons(query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {
+	return g.gameParticipantRepository.FindGameParticipantIcons(query)
+}
+
+func (g *gameService) RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error) {
+	return g.gameParticipantRepository.RegisterGameParticipantIcon(ctx, gameParticipantID, icon)
+}
+
+func (g *gameService) DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error) {
+	return g.gameParticipantRepository.DeleteGameParticipantIcon(ctx, iconID)
 }
 
 func (g *gameService) FindGameParticipantNotificationSetting(ID uint32) (notification *model.GameParticipantNotification, err error) {
@@ -137,6 +158,9 @@ func (g *gameService) FindGameParticipantFollows(participantID uint32) (follows 
 	ids := array.Map(fs, func(f model.GameParticipantFollow) uint32 {
 		return f.FollowGameParticipantID
 	})
+	if (len(ids)) == 0 {
+		return []model.GameParticipant{}, nil
+	}
 	pts, err := g.gameParticipantRepository.FindGameParticipants(model.GameParticipantsQuery{
 		IDs: &ids,
 	})
@@ -154,6 +178,9 @@ func (g *gameService) FindGameParticipantFollowers(participantID uint32) (follow
 	ids := array.Map(fs, func(f model.GameParticipantFollow) uint32 {
 		return f.GameParticipantID
 	})
+	if (len(ids)) == 0 {
+		return []model.GameParticipant{}, nil
+	}
 	pts, err := g.gameParticipantRepository.FindGameParticipants(model.GameParticipantsQuery{
 		IDs: &ids,
 	})

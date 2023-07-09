@@ -1,0 +1,35 @@
+query GameDirectMessages($gameId: ID!, $query: DirectMessagesQuery!) {
+  directMessages(gameId: $gameId, query: $query) {
+    list {
+      id
+      content {
+        type
+        text
+        number
+        isConvertDisabled
+      }
+      time {
+        sendAt
+        sendUnixTimeMilli
+      }
+      sender {
+        participantId
+        name
+        icon {
+          url
+          width
+          height
+        }
+      }
+      reactions {
+        favoriteCounts
+        favoriteParticipantIds
+      }
+    }
+    allPageCount
+    hasPrePage
+    hasNextPage
+    currentPageNumber
+    isDesc
+  }
+}

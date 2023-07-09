@@ -15,7 +15,8 @@ type MessageService interface {
 	DeleteMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error
 	// participant group
 	FindGameParticipantGroups(query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error)
-	RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) error
+	RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error)
+	UpdateGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) error
 	// direct message
 	FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error)
 	FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error)
@@ -76,8 +77,12 @@ func (s *messageService) FindGameParticipantGroups(query model.GameParticipantGr
 }
 
 // RegisterGameParticipantGroup implements MessageService.
-func (s *messageService) RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) error {
+func (s *messageService) RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error) {
 	return s.messageRepository.RegisterGameParticipantGroup(ctx, gameID, group)
+}
+
+func (s *messageService) UpdateGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) error {
+	return s.messageRepository.UpdateGameParticipantGroup(ctx, gameID, group)
 }
 
 // FindDirectMessages implements MessageService.

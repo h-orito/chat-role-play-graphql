@@ -73,12 +73,20 @@ func (repo *MessageRepository) FindGameParticipantGroups(query model.GamePartici
 	return findGameParticipantGroups(repo.db.Connection, query)
 }
 
-func (repo *MessageRepository) RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) error {
+func (repo *MessageRepository) RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error) {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return nil, fmt.Errorf("failed to get tx from context")
+	}
+	return registerGameParticipantGroup(tx, gameID, group)
+}
+
+func (repo *MessageRepository) UpdateGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) error {
 	tx, ok := GetTx(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get tx from context")
 	}
-	return registerGameParticipantGroup(tx, gameID, group)
+	return updateGameParticipantGroup(tx, gameID, group)
 }
 
 func (repo *MessageRepository) FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
@@ -125,8 +133,20 @@ func findMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) (model.
 	if err != nil {
 		return model.Messages{}, err
 	}
+	favs, err := findRdbMessageFavoritesByMessageIDs(db, gameID, array.Map(rdb, func(m Message) uint64 {
+		return m.ID
+	}))
+	if err != nil {
+		return model.Messages{}, err
+	}
 	list := array.Map(rdb, func(m Message) model.Message {
-		return *m.ToModel()
+		pIDs := array.Map(array.Filter(favs, func(fav MessageFavorite) bool {
+			return fav.MessageID == m.ID
+		}), func(fav MessageFavorite) uint32 {
+			return fav.GameParticipantID
+		})
+
+		return *m.ToModel(pIDs)
 	})
 	ms := model.Messages{
 		List:              list,
@@ -215,7 +235,14 @@ func findMessage(db *gorm.DB, gameID uint32, ID uint64) (*model.Message, error) 
 	if rdb == nil {
 		return nil, nil
 	}
-	return rdb.ToModel(), nil
+	favs, err := findRdbMessageFavorites(db, gameID, ID)
+	if err != nil {
+		return nil, err
+	}
+	favPIDs := array.Map(favs, func(fav MessageFavorite) uint32 {
+		return fav.GameParticipantID
+	})
+	return rdb.ToModel(favPIDs), nil
 }
 
 func findRdbMessage(db *gorm.DB, gameID uint32, ID uint64) (*Message, error) {
@@ -259,8 +286,8 @@ func registerMessage(tx *gorm.DB, gameID uint32, message model.Message) error {
 	}
 	if message.Sender != nil {
 		rdb.SenderGameParticipantID = &message.Sender.GameParticipantID
-		rdb.SenderCharaImageID = &message.Sender.CharaImageID
-		rdb.SenderCharaName = &message.Sender.CharaName
+		rdb.SenderIconID = &message.Sender.SenderIconID
+		rdb.SenderName = &message.Sender.SenderName
 	}
 	if message.ReplyTo != nil {
 		rdb.ReplyToMessageID = &message.ReplyTo.MessageID
@@ -316,6 +343,18 @@ func updateReplyCount(tx *gorm.DB, messageID uint64) error {
 		return fmt.Errorf("failed to update: %s \n", result.Error)
 	}
 	return nil
+}
+
+func findRdbMessageFavoritesByMessageIDs(db *gorm.DB, gameID uint32, messageIDs []uint64) ([]MessageFavorite, error) {
+	var rdb []MessageFavorite
+	result := db.Model(&MessageFavorite{}).Where("game_id = ?", gameID).Where("message_id in (?)", messageIDs).Find(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	return rdb, nil
 }
 
 func findRdbMessageFavorites(db *gorm.DB, gameID uint32, messageID uint64) ([]MessageFavorite, error) {
@@ -403,6 +442,9 @@ func findGameParticipantGroups(db *gorm.DB, query model.GameParticipantGroupsQue
 func findRdbGameParticipantGroups(db *gorm.DB, query model.GameParticipantGroupsQuery) ([]GameParticipantGroup, error) {
 	var rdb []GameParticipantGroup
 	result := db.Model(&GameParticipantGroup{}).Where("game_id = ?", query.GameID)
+	if query.IDs != nil {
+		result = result.Where("id in (?)", *query.IDs)
+	}
 	if query.MemberGroupParticipantID != nil {
 		result = result.
 			Joins("inner join game_participant_group_members on game_participant_group_members.game_participant_group_id = game_participant_groups.id").
@@ -442,14 +484,38 @@ type GameParticipantGroupMembersQuery struct {
 	IDs *[]uint32
 }
 
-func registerGameParticipantGroup(tx *gorm.DB, gameID uint32, group model.GameParticipantGroup) error {
+func registerGameParticipantGroup(tx *gorm.DB, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error) {
 	rdb := GameParticipantGroup{
 		GameID:                   gameID,
 		GameParticipantGroupName: group.Name,
 	}
 	result := tx.Create(&rdb)
 	if result.Error != nil {
-		return fmt.Errorf("failed to create: %s \n", result.Error)
+		return nil, fmt.Errorf("failed to create: %s \n", result.Error)
+	}
+	var err error
+	array.ForEach(group.MemberIDs, func(id uint32) {
+		rdbMember := GameParticipantGroupMember{
+			GameParticipantGroupID: rdb.ID,
+			GameParticipantID:      id,
+		}
+		memberResult := tx.Create(&rdbMember)
+		if memberResult.Error != nil {
+			err = fmt.Errorf("failed to create member: %s \n", memberResult.Error)
+		}
+	})
+	if err != nil {
+		return nil, err
+	}
+	return rdb.ToModel(group.MemberIDs), nil
+}
+
+func updateGameParticipantGroup(tx *gorm.DB, gameID uint32, group model.GameParticipantGroup) error {
+	if err := tx.Model(&GameParticipantGroup{}).
+		Where("id = ? and game_id = ?", group.ID, gameID).
+		Update("game_participant_group_name", group.Name).
+		Error; err != nil {
+		return err
 	}
 	return nil
 }
@@ -459,9 +525,21 @@ func findDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessagesQu
 	if err != nil {
 		return model.DirectMessages{}, err
 	}
+	favs, err := findRdbDirectMessageFavoritesByMessageIDs(db, gameID, array.Map(rdb, func(m DirectMessage) uint64 {
+		return m.ID
+	}))
+	if err != nil {
+		return model.DirectMessages{}, err
+	}
 	list := array.Map(rdb, func(m DirectMessage) model.DirectMessage {
-		return *m.ToModel()
+		favPIDs := array.Map(array.Filter(favs, func(f DirectMessageFavorite) bool {
+			return f.DirectMessageID == m.ID
+		}), func(f DirectMessageFavorite) uint32 {
+			return f.GameParticipantID
+		})
+		return *m.ToModel(favPIDs)
 	})
+
 	ms := model.DirectMessages{
 		List:              list,
 		AllPageCount:      1,
@@ -487,6 +565,9 @@ func findRdbDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessage
 	result := db.Model(&DirectMessage{}).Where("game_id = ?", gameID)
 	if query.IDs != nil {
 		result = result.Where("id IN (?)", *query.IDs)
+	}
+	if query.GameParticipantGroupID != nil {
+		result = result.Where("game_participant_group_id = ?", *query.GameParticipantGroupID)
 	}
 	if query.GamePeriodID != nil {
 		result = result.Where("game_period_id = ?", *query.GamePeriodID)
@@ -544,7 +625,14 @@ func findDirectMessage(db *gorm.DB, gameID uint32, ID uint64) (*model.DirectMess
 	if rdb == nil {
 		return nil, nil
 	}
-	return rdb.ToModel(), nil
+	favs, err := findRdbDirectMessageFavorites(db, gameID, ID)
+	if err != nil {
+		return nil, err
+	}
+	pIDs := array.Map(favs, func(f DirectMessageFavorite) uint32 {
+		return f.GameParticipantID
+	})
+	return rdb.ToModel(pIDs), nil
 }
 
 func findRdbDirectMessage(db *gorm.DB, gameID uint32, ID uint64) (*DirectMessage, error) {
@@ -576,6 +664,18 @@ func findDirectMessageFavoriteGameParticipants(db *gorm.DB, gameID uint32, direc
 
 }
 
+func findRdbDirectMessageFavoritesByMessageIDs(db *gorm.DB, gameID uint32, directMessageIDs []uint64) ([]DirectMessageFavorite, error) {
+	var rdb []DirectMessageFavorite
+	result := db.Model(&DirectMessageFavorite{}).Where("game_id = ?", gameID).Where("direct_message_id in (?)", directMessageIDs).Find(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	return rdb, nil
+}
+
 func findRdbDirectMessageFavorites(db *gorm.DB, gameID uint32, directMessageID uint64) ([]DirectMessageFavorite, error) {
 	var rdb []DirectMessageFavorite
 	result := db.Model(&DirectMessageFavorite{}).Where("game_id = ?", gameID).Where("direct_message_id = ?", directMessageID).Find(&rdb)
@@ -590,17 +690,18 @@ func findRdbDirectMessageFavorites(db *gorm.DB, gameID uint32, directMessageID u
 
 func registerDirectMessage(tx *gorm.DB, gameID uint32, message model.DirectMessage) error {
 	rdb := DirectMessage{
-		GameID:            gameID,
-		GamePeriodID:      message.GamePeriodID,
-		MessageTypeCode:   message.Type.String(),
-		MessageContent:    message.Content.Text,
-		IsConvertDisabled: message.Content.IsConvertDisabled,
-		FavoriteCount:     0,
+		GameID:                 gameID,
+		GameParticipantGroupID: message.GameParticipantGroupID,
+		GamePeriodID:           message.GamePeriodID,
+		MessageTypeCode:        message.Type.String(),
+		MessageContent:         message.Content.Text,
+		IsConvertDisabled:      message.Content.IsConvertDisabled,
+		FavoriteCount:          0,
 	}
 	if message.Sender != nil {
 		rdb.SenderGameParticipantID = &message.Sender.GameParticipantID
-		rdb.SenderCharaImageID = &message.Sender.CharaImageID
-		rdb.SenderCharaName = &message.Sender.CharaName
+		rdb.SenderIconID = &message.Sender.SenderIconID
+		rdb.SenderName = &message.Sender.SenderName
 	}
 	now := time.Now()
 	rdb.SendAt = now

@@ -7,6 +7,8 @@ import (
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/99designs/gqlgen/graphql"
 )
 
 type Pageable interface {
@@ -79,6 +81,15 @@ type DeleteGameParticipantFollowPayload struct {
 	Ok bool `json:"ok"`
 }
 
+type DeleteGameParticipantIcon struct {
+	GameID string `json:"gameId"`
+	IconID string `json:"iconId"`
+}
+
+type DeleteGameParticipantIconPayload struct {
+	Ok bool `json:"ok"`
+}
+
 type DeleteGameParticipantPayload struct {
 	Ok bool `json:"ok"`
 }
@@ -121,7 +132,8 @@ type DirectMessage struct {
 }
 
 type DirectMessageReactions struct {
-	FavoriteCounts int `json:"favoriteCounts"`
+	FavoriteCounts         int      `json:"favoriteCounts"`
+	FavoriteParticipantIds []string `json:"favoriteParticipantIds"`
 }
 
 type DirectMessages struct {
@@ -178,41 +190,30 @@ type GameDiariesQuery struct {
 	PeriodID      *string `json:"periodId,omitempty"`
 }
 
-type GameMaster struct {
-	ID         string  `json:"id"`
-	Player     *Player `json:"player"`
-	IsProducer bool    `json:"isProducer"`
-}
-
 type GameNotificationCondition struct {
 	Participate bool `json:"participate"`
 	Start       bool `json:"start"`
-}
-
-type GameParticipantDiary struct {
-	ID          string           `json:"id"`
-	Participant *GameParticipant `json:"participant"`
-	Period      *GamePeriod      `json:"period"`
-	Title       string           `json:"title"`
-	Body        string           `json:"body"`
-}
-
-type GameParticipantGroup struct {
-	ID           string             `json:"id"`
-	Name         string             `json:"name"`
-	Participants []*GameParticipant `json:"participants"`
 }
 
 type GameParticipantGroupsQuery struct {
 	MemberParticipantID *string `json:"memberParticipantId,omitempty"`
 }
 
+type GameParticipantIcon struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	URL    string `json:"url"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
+}
+
 type GameParticipantProfile struct {
-	IconURL        *string `json:"iconUrl,omitempty"`
-	Introduction   *string `json:"introduction,omitempty"`
-	Memo           *string `json:"memo,omitempty"`
-	FollowsCount   int     `json:"followsCount"`
-	FollowersCount int     `json:"followersCount"`
+	ParticipantID   string  `json:"participantId"`
+	Name            string  `json:"name"`
+	ProfileImageURL *string `json:"profileImageUrl,omitempty"`
+	Introduction    *string `json:"introduction,omitempty"`
+	FollowsCount    int     `json:"followsCount"`
+	FollowersCount  int     `json:"followersCount"`
 }
 
 type GameParticipantSetting struct {
@@ -283,8 +284,9 @@ type MessageNotificationCondition struct {
 }
 
 type MessageReactions struct {
-	ReplyCount    int `json:"replyCount"`
-	FavoriteCount int `json:"favoriteCount"`
+	ReplyCount             int      `json:"replyCount"`
+	FavoriteCount          int      `json:"favoriteCount"`
+	FavoriteParticipantIds []string `json:"favoriteParticipantIds"`
 }
 
 type MessageRecipient struct {
@@ -332,11 +334,11 @@ type NewChara struct {
 }
 
 type NewCharaImage struct {
-	CharaID string `json:"charaId"`
-	Type    string `json:"type"`
-	URL     string `json:"url"`
-	Width   int    `json:"width"`
-	Height  int    `json:"height"`
+	CharaID string         `json:"charaId"`
+	Type    string         `json:"type"`
+	File    graphql.Upload `json:"file"`
+	Width   int            `json:"width"`
+	Height  int            `json:"height"`
 }
 
 type NewCharachip struct {
@@ -352,8 +354,8 @@ type NewDirectMessage struct {
 	GameID                 string      `json:"gameId"`
 	GameParticipantGroupID string      `json:"gameParticipantGroupId"`
 	Type                   MessageType `json:"type"`
-	CharaImageID           string      `json:"charaImageId"`
-	CharaName              string      `json:"charaName"`
+	IconID                 string      `json:"iconId"`
+	Name                   string      `json:"name"`
 	Text                   string      `json:"text"`
 	IsConvertDisabled      bool        `json:"isConvertDisabled"`
 }
@@ -385,9 +387,9 @@ type NewGameMaster struct {
 }
 
 type NewGameParticipant struct {
-	GameID  string `json:"gameId"`
-	Name    string `json:"Name"`
-	CharaID string `json:"charaId"`
+	GameID  string  `json:"gameId"`
+	Name    string  `json:"name"`
+	CharaID *string `json:"charaId,omitempty"`
 }
 
 type NewGameParticipantDiary struct {
@@ -400,6 +402,20 @@ type NewGameParticipantDiary struct {
 type NewGameParticipantFollow struct {
 	GameID                  string `json:"gameId"`
 	TargetGameParticipantID string `json:"targetGameParticipantId"`
+}
+
+type NewGameParticipantGroup struct {
+	GameID             string   `json:"gameId"`
+	Name               string   `json:"name"`
+	GameParticipantIds []string `json:"gameParticipantIds"`
+}
+
+type NewGameParticipantIcon struct {
+	GameID   string         `json:"gameId"`
+	Name     string         `json:"name"`
+	IconFile graphql.Upload `json:"iconFile"`
+	Width    int            `json:"width"`
+	Height   int            `json:"height"`
 }
 
 type NewGamePasswordSetting struct {
@@ -432,8 +448,8 @@ type NewGameTimeSetting struct {
 type NewMessage struct {
 	GameID            string      `json:"gameId"`
 	Type              MessageType `json:"type"`
-	CharaImageID      string      `json:"charaImageId"`
-	CharaName         string      `json:"charaName"`
+	IconID            string      `json:"iconId"`
+	Name              string      `json:"name"`
 	ReplyToMessageID  *string     `json:"replyToMessageId,omitempty"`
 	Text              string      `json:"text"`
 	IsConvertDisabled bool        `json:"isConvertDisabled"`
@@ -445,9 +461,9 @@ type NewMessageFavorite struct {
 }
 
 type NewPlayerProfile struct {
-	Name         string  `json:"name"`
-	IconURL      *string `json:"iconUrl,omitempty"`
-	Introduction *string `json:"introduction,omitempty"`
+	Name             string          `json:"name"`
+	ProfileImageFile *graphql.Upload `json:"profileImageFile,omitempty"`
+	Introduction     *string         `json:"introduction,omitempty"`
 }
 
 type NewPlayerSnsAccount struct {
@@ -482,9 +498,9 @@ type Player struct {
 }
 
 type PlayerProfile struct {
-	IconURL      *string             `json:"iconUrl,omitempty"`
-	Introduction *string             `json:"introduction,omitempty"`
-	SnsAccounts  []*PlayerSnsAccount `json:"snsAccounts"`
+	ProfileImageURL *string             `json:"profileImageUrl,omitempty"`
+	Introduction    *string             `json:"introduction,omitempty"`
+	SnsAccounts     []*PlayerSnsAccount `json:"snsAccounts"`
 }
 
 type PlayerSnsAccount struct {
@@ -530,6 +546,14 @@ type RegisterGameParticipantFollowPayload struct {
 	Ok bool `json:"ok"`
 }
 
+type RegisterGameParticipantGroupPayload struct {
+	GameParticipantGroup *GameParticipantGroup `json:"gameParticipantGroup"`
+}
+
+type RegisterGameParticipantIconPayload struct {
+	GameParticipantIcon *GameParticipantIcon `json:"gameParticipantIcon"`
+}
+
 type RegisterGameParticipantPayload struct {
 	GameParticipant *GameParticipant `json:"gameParticipant"`
 }
@@ -569,11 +593,11 @@ type UpdateChara struct {
 }
 
 type UpdateCharaImage struct {
-	ID     string `json:"id"`
-	Type   string `json:"type"`
-	URL    string `json:"url"`
-	Width  int    `json:"width"`
-	Height int    `json:"height"`
+	ID     string         `json:"id"`
+	Type   string         `json:"type"`
+	File   graphql.Upload `json:"file"`
+	Width  int            `json:"width"`
+	Height int            `json:"height"`
 }
 
 type UpdateCharaImagePayload struct {
@@ -637,12 +661,23 @@ type UpdateGameParticipantDiaryPayload struct {
 	Ok bool `json:"ok"`
 }
 
+type UpdateGameParticipantGroup struct {
+	GameID string `json:"gameId"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+}
+
+type UpdateGameParticipantGroupPayload struct {
+	Ok bool `json:"ok"`
+}
+
 type UpdateGameParticipantProfile struct {
-	GameParticipantID string  `json:"gameParticipantId"`
-	Name              string  `json:"name"`
-	IconURL           *string `json:"iconUrl,omitempty"`
-	Introduction      *string `json:"introduction,omitempty"`
-	Memo              *string `json:"memo,omitempty"`
+	GameID           string          `json:"gameId"`
+	Name             string          `json:"name"`
+	ProfileImageFile *graphql.Upload `json:"profileImageFile,omitempty"`
+	ProfileImageURL  *string         `json:"profileImageUrl,omitempty"`
+	Introduction     *string         `json:"introduction,omitempty"`
+	Memo             *string         `json:"memo,omitempty"`
 }
 
 type UpdateGameParticipantProfilePayload struct {
@@ -650,8 +685,8 @@ type UpdateGameParticipantProfilePayload struct {
 }
 
 type UpdateGameParticipantSetting struct {
-	GameParticipantID string                       `json:"gameParticipantId"`
-	Notification      *UpdateNotificationCondition `json:"notification,omitempty"`
+	GameID       string                       `json:"gameId"`
+	Notification *UpdateNotificationCondition `json:"notification,omitempty"`
 }
 
 type UpdateGameParticipantSettingPayload struct {
@@ -727,9 +762,10 @@ type UpdateNotificationCondition struct {
 }
 
 type UpdatePlayerProfile struct {
-	Name         string  `json:"name"`
-	IconURL      *string `json:"iconUrl,omitempty"`
-	Introduction *string `json:"introduction,omitempty"`
+	Name             string          `json:"name"`
+	ProfileImageFile *graphql.Upload `json:"profileImageFile,omitempty"`
+	ProfileImageURL  *string         `json:"profileImageUrl,omitempty"`
+	Introduction     *string         `json:"introduction,omitempty"`
 }
 
 type UpdatePlayerProfilePayload struct {

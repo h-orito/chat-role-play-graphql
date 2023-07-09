@@ -23,7 +23,6 @@ type CharaService interface {
 		ctx context.Context,
 		chara model.Chara,
 		charachipID *uint32,
-		playerID *uint32,
 	) (saved *model.Chara, err error)
 	UpdateChara(
 		ctx context.Context,
@@ -85,8 +84,8 @@ func (c *charaService) FindCharas(query model.CharaQuery) (charas []model.Chara,
 	return c.charaRepository.FindCharas(query)
 }
 
-func (c *charaService) RegisterChara(ctx context.Context, chara model.Chara, charachipID *uint32, playerID *uint32) (saved *model.Chara, err error) {
-	return c.charaRepository.RegisterChara(ctx, chara, charachipID, playerID)
+func (c *charaService) RegisterChara(ctx context.Context, chara model.Chara, charachipID *uint32) (saved *model.Chara, err error) {
+	return c.charaRepository.RegisterChara(ctx, chara, charachipID)
 }
 
 func (c *charaService) UpdateChara(ctx context.Context, chara model.Chara) (saved *model.Chara, err error) {

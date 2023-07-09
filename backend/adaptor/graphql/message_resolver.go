@@ -1,11 +1,14 @@
 package graphql
 
 import (
+	"chat-role-play/adaptor/auth"
 	"chat-role-play/domain/model"
 	"chat-role-play/middleware/graph/gqlmodel"
 	"chat-role-play/util/array"
 	"context"
 	"strconv"
+
+	"github.com/graph-gophers/dataloader"
 )
 
 func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.NewMessage) (*gqlmodel.RegisterMessagePayload, error) {
@@ -13,26 +16,20 @@ func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.N
 	if err != nil {
 		return nil, err
 	}
-	game, err := r.gameUsecase.FindGame(gameID)
-	if err != nil {
-		return nil, err
-	}
-	latestPeriod := game.Periods[len(game.Periods)-1]
-	participant, err := r.findMyGameParticipant(ctx, input.GameID)
-	if err != nil {
-		return nil, err
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, nil
 	}
 	messageType := model.MessageTypeValueOf(input.Type.String())
 	var sender *model.MessageSender
 	if !messageType.IsSystem() {
-		ciID, err := idToUint32(input.CharaImageID)
+		iconID, err := idToUint32(input.IconID)
 		if err != nil {
 			return nil, err
 		}
 		sender = &model.MessageSender{
-			GameParticipantID: participant.ID,
-			CharaImageID:      ciID,
-			CharaName:         input.CharaName,
+			SenderIconID: iconID,
+			SenderName:   input.Name,
 		}
 	}
 	var replyTo *model.MessageReplyTo
@@ -46,16 +43,15 @@ func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.N
 		}
 	}
 	m := model.Message{
-		GamePeriodID: latestPeriod.ID,
-		Type:         *messageType,
-		Sender:       sender,
-		ReplyTo:      replyTo,
+		Type:    *messageType,
+		Sender:  sender,
+		ReplyTo: replyTo,
 		Content: model.MessageContent{
 			Text:              input.Text,
 			IsConvertDisabled: input.IsConvertDisabled,
 		},
 	}
-	if err := r.messageUsecase.RegisterMessage(ctx, gameID, m); err != nil {
+	if err := r.messageUsecase.RegisterMessage(ctx, gameID, *user, m); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.RegisterMessagePayload{
@@ -68,15 +64,15 @@ func (r *mutationResolver) registerMessageFavorite(ctx context.Context, input gq
 	if err != nil {
 		return nil, err
 	}
-	participant, err := r.findMyGameParticipant(ctx, input.GameID)
-	if err != nil {
-		return nil, err
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, nil
 	}
 	messageID, err := idToUint64(input.MessageID)
 	if err != nil {
 		return nil, err
 	}
-	if err := r.messageUsecase.RegisterMessageFavorite(ctx, gameID, messageID, participant.ID); err != nil {
+	if err := r.messageUsecase.RegisterMessageFavorite(ctx, gameID, *user, messageID); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.RegisterMessageFavoritePayload{
@@ -89,15 +85,15 @@ func (r *mutationResolver) deleteMessageFavorite(ctx context.Context, input gqlm
 	if err != nil {
 		return nil, err
 	}
-	participant, err := r.findMyGameParticipant(ctx, input.GameID)
-	if err != nil {
-		return nil, err
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, nil
 	}
 	messageID, err := idToUint64(input.MessageID)
 	if err != nil {
 		return nil, err
 	}
-	if err := r.messageUsecase.DeleteMessageFavorite(ctx, gameID, messageID, participant.ID); err != nil {
+	if err := r.messageUsecase.DeleteMessageFavorite(ctx, gameID, *user, messageID); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.DeleteMessageFavoritePayload{
@@ -110,45 +106,36 @@ func (r *mutationResolver) registerDirectMessage(ctx context.Context, input gqlm
 	if err != nil {
 		return nil, err
 	}
-	game, err := r.gameUsecase.FindGame(gameID)
-	if err != nil {
-		return nil, err
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, nil
 	}
 	gameParticipantGroupID, err := idToUint32(input.GameParticipantGroupID)
-	if err != nil {
-		return nil, err
-	}
-	latestPeriod := game.Periods[len(game.Periods)-1]
-	participant, err := r.findMyGameParticipant(ctx, input.GameID)
 	if err != nil {
 		return nil, err
 	}
 	messageType := model.MessageTypeValueOf(input.Type.String())
 	var sender *model.MessageSender
 	if !messageType.IsSystem() {
-		ciID, err := idToUint32(input.CharaImageID)
+		iconID, err := idToUint32(input.IconID)
 		if err != nil {
 			return nil, err
 		}
 		sender = &model.MessageSender{
-			GameParticipantID: participant.ID,
-			CharaImageID:      ciID,
-			CharaName:         input.CharaName,
+			SenderIconID: iconID,
+			SenderName:   input.Name,
 		}
 	}
 	m := model.DirectMessage{
 		GameParticipantGroupID: gameParticipantGroupID,
-		GamePeriodID:           latestPeriod.ID,
 		Type:                   *messageType,
 		Sender:                 sender,
 		Content: model.MessageContent{
 			Text:              input.Text,
 			IsConvertDisabled: input.IsConvertDisabled,
 		},
-		Time:      model.MessageTime{},
-		Reactions: model.DirectMessageReactions{},
 	}
-	if err := r.messageUsecase.RegisterDirectMessage(ctx, gameID, m); err != nil {
+	if err := r.messageUsecase.RegisterDirectMessage(ctx, gameID, *user, m); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.RegisterDirectMessagePayload{
@@ -161,15 +148,15 @@ func (r *mutationResolver) registerDirectMessageFavorite(ctx context.Context, in
 	if err != nil {
 		return nil, err
 	}
-	participant, err := r.findMyGameParticipant(ctx, input.GameID)
-	if err != nil {
-		return nil, err
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, nil
 	}
 	directMessageID, err := idToUint64(input.DirectMessageID)
 	if err != nil {
 		return nil, err
 	}
-	if err := r.messageUsecase.RegisterDirectMessageFavorite(ctx, gameID, directMessageID, participant.ID); err != nil {
+	if err := r.messageUsecase.RegisterDirectMessageFavorite(ctx, gameID, *user, directMessageID); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.RegisterDirectMessageFavoritePayload{
@@ -182,15 +169,15 @@ func (r *mutationResolver) deleteDirectMessageFavorite(ctx context.Context, inpu
 	if err != nil {
 		return nil, err
 	}
-	participant, err := r.findMyGameParticipant(ctx, input.GameID)
-	if err != nil {
-		return nil, err
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, nil
 	}
 	directMessageID, err := idToUint64(input.DirectMessageID)
 	if err != nil {
 		return nil, err
 	}
-	if err := r.messageUsecase.DeleteMessageFavorite(ctx, gameID, directMessageID, participant.ID); err != nil {
+	if err := r.messageUsecase.DeleteDirectMessageFavorite(ctx, gameID, *user, directMessageID); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.DeleteDirectMessageFavoritePayload{
@@ -211,7 +198,7 @@ func (r *queryResolver) messages(ctx context.Context, gameID string, query gqlmo
 	if err != nil {
 		return nil, err
 	}
-	ms := gqlmodel.MapToMessages(messages)
+	ms := MapToMessages(messages)
 	return &ms, nil
 }
 
@@ -318,7 +305,7 @@ func (r *queryResolver) message(ctx context.Context, gameID string, messageID st
 	if err != nil {
 		return nil, err
 	}
-	return gqlmodel.MapToMessage(message), nil
+	return MapToMessage(message), nil
 }
 
 func (r *queryResolver) messageReplies(ctx context.Context, gameID string, messageID string) ([]*gqlmodel.Message, error) {
@@ -335,7 +322,7 @@ func (r *queryResolver) messageReplies(ctx context.Context, gameID string, messa
 		return nil, err
 	}
 	return array.Map(messages, func(m model.Message) *gqlmodel.Message {
-		return gqlmodel.MapToMessage(&m)
+		return MapToMessage(&m)
 	}), nil
 }
 
@@ -352,39 +339,7 @@ func (r *queryResolver) messageFavoriteGameParticipants(ctx context.Context, gam
 	if err != nil {
 		return nil, err
 	}
-	return gqlmodel.MapToGameParticipants(pts.List), nil
-}
-
-func (r *queryResolver) gameParticipantGroups(ctx context.Context, gameID string, query gqlmodel.GameParticipantGroupsQuery) ([]*gqlmodel.GameParticipantGroup, error) {
-	gID, err := idToUint32(gameID)
-	if err != nil {
-		return nil, err
-	}
-	var memberID *uint32
-	if query.MemberParticipantID != nil {
-		id, err := idToUint32(*query.MemberParticipantID)
-		if err != nil {
-			return nil, err
-		}
-		memberID = &id
-	}
-	groups, err := r.messageUsecase.FindGameParticipantGroups(model.GameParticipantGroupsQuery{
-		GameID:                   gID,
-		MemberGroupParticipantID: memberID,
-	})
-	if err != nil {
-		return nil, err
-	}
-	memberIDs := array.Uint32Distinct(array.FlatMap(groups, func(g model.GameParticipantGroup) []uint32 {
-		return g.MemberIDs
-	}))
-	participants, err := r.findGameParticipantsByIDs(memberIDs)
-	if err != nil {
-		return nil, err
-	}
-	return array.Map(groups, func(g model.GameParticipantGroup) *gqlmodel.GameParticipantGroup {
-		return gqlmodel.MapToGameParticipantGroup(&g, participants)
-	}), nil
+	return MapToGameParticipants(pts.List), nil
 }
 
 func (r *queryResolver) directMessages(ctx context.Context, gameID string, query gqlmodel.DirectMessagesQuery) (*gqlmodel.DirectMessages, error) {
@@ -400,7 +355,7 @@ func (r *queryResolver) directMessages(ctx context.Context, gameID string, query
 	if err != nil {
 		return nil, err
 	}
-	ms := gqlmodel.MapToDirectMessages(messages)
+	ms := MapToDirectMessages(messages)
 	return &ms, nil
 }
 
@@ -503,7 +458,7 @@ func (r *queryResolver) directMessage(ctx context.Context, gameID string, direct
 	if err != nil {
 		return nil, err
 	}
-	return gqlmodel.MapToDirectMessage(message), nil
+	return MapToDirectMessage(message), nil
 }
 
 func (r *queryResolver) directMessageFavoriteGameParticipants(ctx context.Context, gameID string, directMessageID string) ([]*gqlmodel.GameParticipant, error) {
@@ -519,5 +474,98 @@ func (r *queryResolver) directMessageFavoriteGameParticipants(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
-	return gqlmodel.MapToGameParticipants(pts.List), nil
+	return MapToGameParticipants(pts.List), nil
+}
+
+func (r *queryResolver) gameParticipantGroups(ctx context.Context, gameID string, query gqlmodel.GameParticipantGroupsQuery) ([]*gqlmodel.GameParticipantGroup, error) {
+	gID, err := idToUint32(gameID)
+	if err != nil {
+		return nil, err
+	}
+	var memberID *uint32
+	if query.MemberParticipantID != nil {
+		id, err := idToUint32(*query.MemberParticipantID)
+		if err != nil {
+			return nil, err
+		}
+		memberID = &id
+	}
+	groups, err := r.messageUsecase.FindGameParticipantGroups(model.GameParticipantGroupsQuery{
+		GameID:                   gID,
+		MemberGroupParticipantID: memberID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return array.Map(groups, func(g model.GameParticipantGroup) *gqlmodel.GameParticipantGroup {
+		return MapToGameParticipantGroup(&g)
+	}), nil
+}
+
+func (r *mutationResolver) registerGameParticipantGroup(ctx context.Context, input gqlmodel.NewGameParticipantGroup) (*gqlmodel.RegisterGameParticipantGroupPayload, error) {
+	gID, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
+	memberIDs := array.Map(input.GameParticipantIds, func(id string) uint32 {
+		i, e := idToUint32(id)
+		if e != nil {
+			err = e
+		}
+		return i
+	})
+	if err != nil {
+		return nil, err
+	}
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, nil
+	}
+	saved, err := r.messageUsecase.RegisterGameParticipantGroup(ctx, *user, gID, model.GameParticipantGroup{
+		Name:      input.Name,
+		MemberIDs: memberIDs,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &gqlmodel.RegisterGameParticipantGroupPayload{
+		GameParticipantGroup: MapToGameParticipantGroup(saved),
+	}, nil
+}
+
+func (r *mutationResolver) updateGameParticipantGroup(ctx context.Context, input gqlmodel.UpdateGameParticipantGroup) (*gqlmodel.UpdateGameParticipantGroupPayload, error) {
+	gID, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
+	groupID, err := idToUint32(input.ID)
+	if err != nil {
+		return nil, err
+	}
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, nil
+	}
+	err = r.messageUsecase.UpdateGameParticipantGroup(ctx, *user, gID, model.GameParticipantGroup{
+		ID:   groupID,
+		Name: input.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &gqlmodel.UpdateGameParticipantGroupPayload{
+		Ok: true,
+	}, nil
+}
+
+func (r *gameParticipantGroupResolver) participants(ctx context.Context, obj *gqlmodel.GameParticipantGroup) ([]*gqlmodel.GameParticipant, error) {
+	thunk := r.loaders.ParticipantLoader.LoadMany(ctx, dataloader.NewKeysFromStrings(obj.ParticipantIDs))
+	p, errs := thunk()
+	if errs != nil || len(errs) > 0 {
+		return nil, errs[0]
+	}
+	return array.Map(p, func(p interface{}) *gqlmodel.GameParticipant {
+		participant := p.(*model.GameParticipant)
+		return MapToGameParticipant(*participant)
+	}), nil
 }

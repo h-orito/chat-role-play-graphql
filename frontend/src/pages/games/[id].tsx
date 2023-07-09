@@ -1,102 +1,22 @@
-import { createClient, createInnerClient } from '@/components/graphql/client'
+import { createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
+import ArticleModal from '@/components/modal/article-modal'
+import Modal from '@/components/modal/modal'
 import Article from '@/components/pages/games/article/article'
+import Profile from '@/components/pages/games/profile/profile'
 import Sidebar from '@/components/pages/games/sidebar/sidebar'
 import {
   Game,
   GameDocument,
-  GameMessagesDocument,
-  GameMessagesQuery,
-  GameMessagesQueryVariables,
+  GameParticipant,
   GameQuery,
   GameQueryVariables,
-  Messages
+  MyGameParticipantDocument,
+  MyGameParticipantQuery,
+  MyGameParticipantQueryVariables
 } from '@/lib/generated/graphql'
-import { gql } from '@apollo/client'
-
-const game = gql`
-  query Game($id: ID!) {
-    game(id: $id) {
-      id
-      name
-      status
-      participants {
-        id
-      }
-      periods {
-        id
-      }
-      settings {
-        chara {
-          canOriginalCharacter
-        }
-        capacity {
-          min
-          max
-        }
-        rule {
-          canShorten
-          canSendDirectMessage
-        }
-        time {
-          periodPrefix
-          periodSuffix
-          periodIntervalSeconds
-          openAt
-          startParticipateAt
-          startGameAt
-        }
-        password {
-          hasPassword
-        }
-      }
-    }
-  }
-`
-
-const messageQ = gql`
-  query GameMessages($gameId: ID!) {
-    messages(gameId: $gameId, query: {}) {
-      list {
-        id
-        content {
-          type
-          text
-          number
-          isConvertDisabled
-        }
-        time {
-          sendAt
-          sendUnixTimeMilli
-        }
-        sender {
-          participantId
-          charaName
-          charaImage {
-            size {
-              width
-              height
-            }
-            url
-          }
-        }
-        replyTo {
-          messageId
-          participantId
-        }
-        reactions {
-          replyCount
-          favoriteCount
-        }
-      }
-      allPageCount
-      hasPrePage
-      hasNextPage
-      currentPageNumber
-      isDesc
-    }
-  }
-`
+import { useLazyQuery } from '@apollo/client'
+import { useEffect, useState } from 'react'
 
 export const getServerSideProps = async (context: any) => {
   const { id } = context.params
@@ -106,28 +26,83 @@ export const getServerSideProps = async (context: any) => {
     query: GameDocument,
     variables: { id: gameId } as GameQueryVariables
   })
-  const { data: messagedata } = await client.query<GameMessagesQuery>({
-    query: GameMessagesDocument,
-    variables: { gameId } as GameMessagesQueryVariables
-  })
   return {
     props: {
-      game: gamedata.game,
-      messages: messagedata.messages
+      gameId: id,
+      game: gamedata.game
     }
   }
 }
 
 type Props = {
+  gameId: number
   game: Game
-  messages: Messages
 }
 
-export default function GamePage({ game, messages }: Props) {
+export default function GamePage({ gameId, game }: Props) {
+  const [loading, setLoading] = useState(false)
+  const [myself, setMyself] = useState<GameParticipant | null>(null)
+
+  const [fetchMyself] = useLazyQuery<MyGameParticipantQuery>(
+    MyGameParticipantDocument
+  )
+  const refetchMyself = async () => {
+    const { data } = await fetchMyself({
+      variables: { gameId: game.id } as MyGameParticipantQueryVariables
+    })
+    if (data?.myGameParticipant == null) setMyself(null)
+    else setMyself(data.myGameParticipant as GameParticipant)
+  }
+
+  useEffect(() => {
+    const fetch = async () => {
+      setLoading(true)
+      await refetchMyself()
+      setLoading(false)
+    }
+    fetch()
+  }, [])
+
+  const [isOpenProfileModal, setIsOpenProfileModal] = useState(false)
+  const toggleProfileModal = (e: any) => {
+    setIsOpenProfileModal(!isOpenProfileModal)
+  }
+  const [profileParticipantId, setProfileParticipantId] = useState<string>('')
+  const openProfileModal = async (participantId: string) => {
+    setProfileParticipantId(participantId)
+    setIsOpenProfileModal(true)
+  }
+
+  if (loading) return <div>loading...</div>
   return (
-    <main className='flex'>
-      <Sidebar game={game} />
-      <Article game={game} messages={messages} />
+    <main className='flex w-full'>
+      <Sidebar
+        game={game}
+        myself={myself}
+        openProfileModal={openProfileModal}
+      />
+      <Article
+        game={game}
+        myself={myself}
+        openProfileModal={openProfileModal}
+      />
+      {isOpenProfileModal && (
+        <ArticleModal
+          header={
+            game.participants.find((p) => p.id === profileParticipantId)?.name
+          }
+          close={toggleProfileModal}
+          hideFooter
+        >
+          <Profile
+            game={game}
+            myself={myself}
+            participantId={profileParticipantId}
+            refetchMyself={refetchMyself}
+            close={toggleProfileModal}
+          />
+        </ArticleModal>
+      )}
     </main>
   )
 }

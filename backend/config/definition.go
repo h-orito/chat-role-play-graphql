@@ -11,6 +11,7 @@ import (
 type Config struct {
 	Db    Db
 	Oauth Oauth
+	Image Image
 }
 
 type Db struct {
@@ -23,6 +24,11 @@ type Db struct {
 type Oauth struct {
 	IssuerUri string
 	Audience  string
+}
+
+type Image struct {
+	UploaderHost string
+	Domain       string
 }
 
 func Load() (*Config, error) {
@@ -41,6 +47,10 @@ func Load() (*Config, error) {
 		Oauth: Oauth{
 			IssuerUri: os.Getenv("OAUTH_ISSUERURI"),
 			Audience:  os.Getenv("OAUTH_AUDIENCE"),
+		},
+		Image: Image{
+			UploaderHost: os.Getenv("IMAGE_UPLOADER_HOST"),
+			Domain:       os.Getenv("IMAGE_DOMAIN"),
 		},
 	}, nil
 }

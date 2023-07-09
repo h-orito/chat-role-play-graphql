@@ -150,8 +150,8 @@ func TestRegisterMessage(t *testing.T) {
 			Type:         model.MessageTypeTalkNormal,
 			Sender: &model.MessageSender{
 				GameParticipantID: 1,
-				CharaImageID:      1,
-				CharaName:         "chara name",
+				SenderIconID:      1,
+				SenderName:        "chara name",
 			},
 			ReplyTo: &model.MessageReplyTo{
 				MessageID:         1,
@@ -212,12 +212,15 @@ func TestRegisterGameParticipantGroup(t *testing.T) {
 	transaction := NewTestTransaction(database.Connection)
 	transaction.DoInTx(context.Background(), func(ctx context.Context) (interface{}, error) {
 		repo := db.NewMessageRepository(&database)
-		err := repo.RegisterGameParticipantGroup(ctx, 1, model.GameParticipantGroup{
+		got, err := repo.RegisterGameParticipantGroup(ctx, 1, model.GameParticipantGroup{
 			Name:      "name",
 			MemberIDs: []uint32{1, 2},
 		})
 		if err != nil {
 			t.Errorf("failed to register game participant group: %s", err)
+		}
+		if got == nil {
+			t.Errorf("got nil, want game participant group")
 		}
 		return nil, nil
 	})
@@ -346,8 +349,8 @@ func TestRegisterDirectMessage(t *testing.T) {
 			Type:         model.MessageTypeTalkNormal,
 			Sender: &model.MessageSender{
 				GameParticipantID: 1,
-				CharaImageID:      1,
-				CharaName:         "chara name",
+				SenderIconID:      1,
+				SenderName:        "chara name",
 			},
 			Content: model.MessageContent{
 				Number:            0,

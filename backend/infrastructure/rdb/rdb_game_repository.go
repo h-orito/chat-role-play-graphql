@@ -30,6 +30,10 @@ func (repo *GameRepository) FindGame(ID uint32) (_ *model.Game, err error) {
 	return findGame(repo.db.Connection, ID)
 }
 
+func (repo *GameRepository) FindGamePeriods(IDs []uint32) (periods []model.GamePeriod, err error) {
+	return findGamePeriods(repo.db.Connection, IDs)
+}
+
 func (repo *GameRepository) RegisterGame(ctx context.Context, game model.Game) (saved *model.Game, err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
@@ -297,6 +301,16 @@ func findRdbGame(db *gorm.DB, ID uint32) (_ *Game, err error) {
 	return &rdbGame, nil
 }
 
+func findGamePeriods(db *gorm.DB, IDs []uint32) (_ []model.GamePeriod, err error) {
+	rdbPeriods, err := findRdbGamePeriods(db, gamePeriodsQuery{IDs: &IDs})
+	if err != nil {
+		return nil, err
+	}
+	return array.Map(rdbPeriods, func(p GamePeriod) model.GamePeriod {
+		return *p.ToModel()
+	}), nil
+}
+
 func registerGame(db *gorm.DB, game model.Game) (_ *Game, err error) {
 	g := Game{
 		GameName:       game.Name,
@@ -372,6 +386,9 @@ func findLatestGamePeriod(db *gorm.DB, gameID uint32) (period *GamePeriod, err e
 func findRdbGamePeriods(db *gorm.DB, query gamePeriodsQuery) (_ []GamePeriod, err error) {
 	var rdbs []GamePeriod
 	result := db.Model(&GamePeriod{})
+	if query.IDs != nil {
+		result = result.Where("id in (?)", *query.IDs)
+	}
 	if query.GameIDs != nil {
 		result = result.Where("game_id in (?)", *query.GameIDs)
 	}
@@ -389,6 +406,7 @@ func findRdbGamePeriods(db *gorm.DB, query gamePeriodsQuery) (_ []GamePeriod, er
 }
 
 type gamePeriodsQuery struct {
+	IDs     *[]uint32
 	GameIDs *[]uint32
 	GameID  *uint32
 }

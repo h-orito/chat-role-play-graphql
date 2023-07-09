@@ -1,0 +1,5 @@
+mutation TalkDirect($input: NewDirectMessage!) {
+  registerDirectMessage(input: $input) {
+    ok
+  }
+}

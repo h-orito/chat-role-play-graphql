@@ -11,6 +11,16 @@ import (
 	"github.com/graph-gophers/dataloader"
 )
 
+func (r *gameMasterResolver) player(ctx context.Context, obj *gqlmodel.GameMaster) (*gqlmodel.Player, error) {
+	thunk := r.loaders.PlayerLoader.Load(ctx, dataloader.StringKey(obj.PlayerID))
+	p, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+	player := p.(*model.Player)
+	return MapToPlayer(player), nil
+}
+
 func (r *gameParticipantResolver) player(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.Player, error) {
 	thunk := r.loaders.PlayerLoader.Load(ctx, dataloader.StringKey(obj.PlayerID))
 	p, err := thunk()
@@ -18,7 +28,7 @@ func (r *gameParticipantResolver) player(ctx context.Context, obj *gqlmodel.Game
 		return nil, err
 	}
 	player := p.(*model.Player)
-	return gqlmodel.MapToPlayer(player), nil
+	return MapToPlayer(player), nil
 }
 
 func (r *queryResolver) player(ctx context.Context, id string) (*gqlmodel.Player, error) {
@@ -30,7 +40,7 @@ func (r *queryResolver) player(ctx context.Context, id string) (*gqlmodel.Player
 	if err != nil {
 		return nil, err
 	}
-	return gqlmodel.MapToPlayer(p), nil
+	return MapToPlayer(p), nil
 }
 
 func (r *mutationResolver) registerPlayerProfile(ctx context.Context, input gqlmodel.NewPlayerProfile) (*gqlmodel.RegisterPlayerProfilePayload, error) {
@@ -42,17 +52,25 @@ func (r *mutationResolver) registerPlayerProfile(ctx context.Context, input gqlm
 	if err != nil {
 		return nil, err
 	}
+	var imageUrl *string
+	if input.ProfileImageFile != nil {
+		url, err := r.imageUsecase.Upload(input.ProfileImageFile.File)
+		if err != nil {
+			return nil, err
+		}
+		imageUrl = url
+	}
 	saved, err := r.playerUsecase.SaveProfile(ctx, &model.PlayerProfile{
-		PlayerID:     player.ID,
-		IconURL:      input.IconURL,
-		Introduction: input.Introduction,
-		SnsAccounts:  []model.PlayerSnsAccount{},
+		PlayerID:        player.ID,
+		ProfileImageURL: imageUrl,
+		Introduction:    input.Introduction,
+		SnsAccounts:     []model.PlayerSnsAccount{},
 	})
 	if err != nil {
 		return nil, err
 	}
 	return &gqlmodel.RegisterPlayerProfilePayload{
-		PlayerProfile: gqlmodel.MapToPlayerProfile(saved),
+		PlayerProfile: MapToPlayerProfile(saved),
 	}, nil
 }
 
@@ -65,11 +83,21 @@ func (r *mutationResolver) updatePlayerProfile(ctx context.Context, input gqlmod
 	if err != nil {
 		return nil, err
 	}
+	var imageUrl *string
+	if input.ProfileImageURL != nil {
+		imageUrl = input.ProfileImageURL
+	} else if input.ProfileImageFile != nil {
+		url, err := r.imageUsecase.Upload(input.ProfileImageFile.File)
+		if err != nil {
+			return nil, err
+		}
+		imageUrl = url
+	}
 	if _, err := r.playerUsecase.SaveProfile(ctx, &model.PlayerProfile{
-		PlayerID:     player.ID,
-		IconURL:      input.IconURL,
-		Introduction: input.Introduction,
-		SnsAccounts:  []model.PlayerSnsAccount{},
+		PlayerID:        player.ID,
+		ProfileImageURL: imageUrl,
+		Introduction:    input.Introduction,
+		SnsAccounts:     []model.PlayerSnsAccount{},
 	}); err != nil {
 		return nil, err
 	}
@@ -96,7 +124,7 @@ func (r *mutationResolver) registerPlayerSnsAccount(ctx context.Context, input g
 		return nil, err
 	}
 	return &gqlmodel.RegisterPlayerSnsAccountPayload{
-		PlayerSnsAccount: gqlmodel.MapToPlayerSnsAccount(*saved),
+		PlayerSnsAccount: MapToPlayerSnsAccount(*saved),
 	}, nil
 }
 

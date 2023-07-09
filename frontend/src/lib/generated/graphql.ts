@@ -9,13 +9,14 @@ export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> =
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string | number; output: string; }
+  ID: { input: string; output: string; }
   String: { input: string; output: string; }
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
   Long: { input: any; output: any; }
+  Upload: { input: any; output: any; }
 };
 
 export type Chara = {
@@ -86,6 +87,16 @@ export type DeleteGameParticipantFollowPayload = {
   ok: Scalars['Boolean']['output'];
 };
 
+export type DeleteGameParticipantIcon = {
+  gameId: Scalars['ID']['input'];
+  iconId: Scalars['ID']['input'];
+};
+
+export type DeleteGameParticipantIconPayload = {
+  __typename?: 'DeleteGameParticipantIconPayload';
+  ok: Scalars['Boolean']['output'];
+};
+
 export type DeleteGameParticipantPayload = {
   __typename?: 'DeleteGameParticipantPayload';
   ok: Scalars['Boolean']['output'];
@@ -135,6 +146,7 @@ export type DirectMessage = {
 export type DirectMessageReactions = {
   __typename?: 'DirectMessageReactions';
   favoriteCounts: Scalars['Int']['output'];
+  favoriteParticipantIds: Array<Scalars['ID']['output']>;
 };
 
 export type DirectMessages = Pageable & {
@@ -208,11 +220,13 @@ export type GameNotificationCondition = {
 
 export type GameParticipant = {
   __typename?: 'GameParticipant';
-  chara: Chara;
   entryNumber: Scalars['Int']['output'];
+  followParticipantIds: Array<Scalars['ID']['output']>;
+  followerParticipantIds: Array<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
   isGone: Scalars['Boolean']['output'];
   lastAccessedAt: Scalars['DateTime']['output'];
+  memo?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   player: Player;
 };
@@ -237,13 +251,23 @@ export type GameParticipantGroupsQuery = {
   memberParticipantId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+export type GameParticipantIcon = {
+  __typename?: 'GameParticipantIcon';
+  height: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  url: Scalars['String']['output'];
+  width: Scalars['Int']['output'];
+};
+
 export type GameParticipantProfile = {
   __typename?: 'GameParticipantProfile';
   followersCount: Scalars['Int']['output'];
   followsCount: Scalars['Int']['output'];
-  iconUrl?: Maybe<Scalars['String']['output']>;
   introduction?: Maybe<Scalars['String']['output']>;
-  memo?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  participantId: Scalars['ID']['output'];
+  profileImageUrl?: Maybe<Scalars['String']['output']>;
 };
 
 export type GameParticipantSetting = {
@@ -334,6 +358,7 @@ export type MessageNotificationCondition = {
 export type MessageReactions = {
   __typename?: 'MessageReactions';
   favoriteCount: Scalars['Int']['output'];
+  favoriteParticipantIds: Array<Scalars['ID']['output']>;
   replyCount: Scalars['Int']['output'];
 };
 
@@ -345,8 +370,8 @@ export type MessageRecipient = {
 
 export type MessageSender = {
   __typename?: 'MessageSender';
-  charaImage: CharaImage;
-  charaName: Scalars['String']['output'];
+  icon: GameParticipantIcon;
+  name: Scalars['String']['output'];
   participantId: Scalars['ID']['output'];
 };
 
@@ -393,6 +418,7 @@ export type Mutation = {
   deleteGameMaster: DeleteGameMasterPayload;
   deleteGameParticipant: DeleteGameParticipantPayload;
   deleteGameParticipantFollow: DeleteGameParticipantFollowPayload;
+  deleteGameParticipantIcon: DeleteGameParticipantIconPayload;
   deleteMessageFavorite: DeleteMessageFavoritePayload;
   deletePlayerSnsAccount: DeletePlayerSnsAccountPayload;
   registerCharaImage: RegisterCharaImagePayload;
@@ -406,6 +432,8 @@ export type Mutation = {
   registerGameParticipant: RegisterGameParticipantPayload;
   registerGameParticipantDiary: RegisterGameParticipantDiaryPayload;
   registerGameParticipantFollow: RegisterGameParticipantFollowPayload;
+  registerGameParticipantGroup: RegisterGameParticipantGroupPayload;
+  registerGameParticipantIcon: RegisterGameParticipantIconPayload;
   registerMessage: RegisterMessagePayload;
   registerMessageFavorite: RegisterMessageFavoritePayload;
   registerPlayerProfile: RegisterPlayerProfilePayload;
@@ -416,6 +444,7 @@ export type Mutation = {
   updateDesigner: UpdateDesignerPayload;
   updateGameMaster: UpdateGameMasterPayload;
   updateGameParticipantDiary: UpdateGameParticipantDiaryPayload;
+  updateGameParticipantGroup: UpdateGameParticipantGroupPayload;
   updateGameParticipantProfile: UpdateGameParticipantProfilePayload;
   updateGameParticipantSetting: UpdateGameParticipantSettingPayload;
   updateGamePeriod: UpdateGamePeriodPayload;
@@ -443,6 +472,11 @@ export type MutationDeleteGameParticipantArgs = {
 
 export type MutationDeleteGameParticipantFollowArgs = {
   input: DeleteGameParticipantFollow;
+};
+
+
+export type MutationDeleteGameParticipantIconArgs = {
+  input: DeleteGameParticipantIcon;
 };
 
 
@@ -511,6 +545,16 @@ export type MutationRegisterGameParticipantFollowArgs = {
 };
 
 
+export type MutationRegisterGameParticipantGroupArgs = {
+  input: NewGameParticipantGroup;
+};
+
+
+export type MutationRegisterGameParticipantIconArgs = {
+  input: NewGameParticipantIcon;
+};
+
+
 export type MutationRegisterMessageArgs = {
   input: NewMessage;
 };
@@ -561,6 +605,11 @@ export type MutationUpdateGameParticipantDiaryArgs = {
 };
 
 
+export type MutationUpdateGameParticipantGroupArgs = {
+  input: UpdateGameParticipantGroup;
+};
+
+
 export type MutationUpdateGameParticipantProfileArgs = {
   input: UpdateGameParticipantProfile;
 };
@@ -602,9 +651,9 @@ export type NewChara = {
 
 export type NewCharaImage = {
   charaId: Scalars['ID']['input'];
+  file: Scalars['Upload']['input'];
   height: Scalars['Int']['input'];
   type: Scalars['String']['input'];
-  url: Scalars['String']['input'];
   width: Scalars['Int']['input'];
 };
 
@@ -618,11 +667,11 @@ export type NewDesigner = {
 };
 
 export type NewDirectMessage = {
-  charaImageId: Scalars['ID']['input'];
-  charaName: Scalars['String']['input'];
   gameId: Scalars['ID']['input'];
   gameParticipantGroupId: Scalars['ID']['input'];
+  iconId: Scalars['ID']['input'];
   isConvertDisabled: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
   text: Scalars['String']['input'];
   type: MessageType;
 };
@@ -654,9 +703,9 @@ export type NewGameMaster = {
 };
 
 export type NewGameParticipant = {
-  Name: Scalars['String']['input'];
-  charaId: Scalars['ID']['input'];
+  charaId?: InputMaybe<Scalars['ID']['input']>;
   gameId: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type NewGameParticipantDiary = {
@@ -669,6 +718,20 @@ export type NewGameParticipantDiary = {
 export type NewGameParticipantFollow = {
   gameId: Scalars['ID']['input'];
   targetGameParticipantId: Scalars['ID']['input'];
+};
+
+export type NewGameParticipantGroup = {
+  gameId: Scalars['ID']['input'];
+  gameParticipantIds: Array<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type NewGameParticipantIcon = {
+  gameId: Scalars['ID']['input'];
+  height: Scalars['Int']['input'];
+  iconFile: Scalars['Upload']['input'];
+  name: Scalars['String']['input'];
+  width: Scalars['Int']['input'];
 };
 
 export type NewGamePasswordSetting = {
@@ -699,10 +762,10 @@ export type NewGameTimeSetting = {
 };
 
 export type NewMessage = {
-  charaImageId: Scalars['ID']['input'];
-  charaName: Scalars['String']['input'];
   gameId: Scalars['ID']['input'];
+  iconId: Scalars['ID']['input'];
   isConvertDisabled: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
   replyToMessageId?: InputMaybe<Scalars['ID']['input']>;
   text: Scalars['String']['input'];
   type: MessageType;
@@ -714,9 +777,9 @@ export type NewMessageFavorite = {
 };
 
 export type NewPlayerProfile = {
-  iconUrl?: InputMaybe<Scalars['String']['input']>;
   introduction?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  profileImageFile?: InputMaybe<Scalars['Upload']['input']>;
 };
 
 export type NewPlayerSnsAccount = {
@@ -762,8 +825,8 @@ export type Player = {
 
 export type PlayerProfile = {
   __typename?: 'PlayerProfile';
-  iconUrl?: Maybe<Scalars['String']['output']>;
   introduction?: Maybe<Scalars['String']['output']>;
+  profileImageUrl?: Maybe<Scalars['String']['output']>;
   snsAccounts: Array<PlayerSnsAccount>;
 };
 
@@ -791,6 +854,7 @@ export type Query = {
   gameParticipantFollowers: Array<GameParticipant>;
   gameParticipantFollows: Array<GameParticipant>;
   gameParticipantGroups: Array<GameParticipantGroup>;
+  gameParticipantIcons: Array<GameParticipantIcon>;
   gameParticipantProfile: GameParticipantProfile;
   gameParticipantSetting: GameParticipantSetting;
   games: Array<SimpleGame>;
@@ -852,14 +916,12 @@ export type QueryGameArgs = {
 
 
 export type QueryGameDiariesArgs = {
-  gameId: Scalars['ID']['input'];
   query: GameDiariesQuery;
 };
 
 
 export type QueryGameDiaryArgs = {
   diaryId: Scalars['ID']['input'];
-  gameId: Scalars['ID']['input'];
 };
 
 
@@ -876,6 +938,11 @@ export type QueryGameParticipantFollowsArgs = {
 export type QueryGameParticipantGroupsArgs = {
   gameId: Scalars['ID']['input'];
   query: GameParticipantGroupsQuery;
+};
+
+
+export type QueryGameParticipantIconsArgs = {
+  participantId: Scalars['ID']['input'];
 };
 
 
@@ -972,6 +1039,16 @@ export type RegisterGameParticipantFollowPayload = {
   ok: Scalars['Boolean']['output'];
 };
 
+export type RegisterGameParticipantGroupPayload = {
+  __typename?: 'RegisterGameParticipantGroupPayload';
+  gameParticipantGroup: GameParticipantGroup;
+};
+
+export type RegisterGameParticipantIconPayload = {
+  __typename?: 'RegisterGameParticipantIconPayload';
+  gameParticipantIcon: GameParticipantIcon;
+};
+
 export type RegisterGameParticipantPayload = {
   __typename?: 'RegisterGameParticipantPayload';
   gameParticipant: GameParticipant;
@@ -1028,10 +1105,10 @@ export type UpdateChara = {
 };
 
 export type UpdateCharaImage = {
+  file: Scalars['Upload']['input'];
   height: Scalars['Int']['input'];
   id: Scalars['ID']['input'];
   type: Scalars['String']['input'];
-  url: Scalars['String']['input'];
   width: Scalars['Int']['input'];
 };
 
@@ -1102,12 +1179,24 @@ export type UpdateGameParticipantDiaryPayload = {
   ok: Scalars['Boolean']['output'];
 };
 
+export type UpdateGameParticipantGroup = {
+  gameId: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+};
+
+export type UpdateGameParticipantGroupPayload = {
+  __typename?: 'UpdateGameParticipantGroupPayload';
+  ok: Scalars['Boolean']['output'];
+};
+
 export type UpdateGameParticipantProfile = {
-  gameParticipantId: Scalars['ID']['input'];
-  iconUrl?: InputMaybe<Scalars['String']['input']>;
+  gameId: Scalars['ID']['input'];
   introduction?: InputMaybe<Scalars['String']['input']>;
   memo?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  profileImageFile?: InputMaybe<Scalars['Upload']['input']>;
+  profileImageUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateGameParticipantProfilePayload = {
@@ -1116,7 +1205,7 @@ export type UpdateGameParticipantProfilePayload = {
 };
 
 export type UpdateGameParticipantSetting = {
-  gameParticipantId: Scalars['ID']['input'];
+  gameId: Scalars['ID']['input'];
   notification?: InputMaybe<UpdateNotificationCondition>;
 };
 
@@ -1197,9 +1286,10 @@ export type UpdateNotificationCondition = {
 };
 
 export type UpdatePlayerProfile = {
-  iconUrl?: InputMaybe<Scalars['String']['input']>;
   introduction?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  profileImageFile?: InputMaybe<Scalars['Upload']['input']>;
+  profileImageUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdatePlayerProfilePayload = {
@@ -1219,19 +1309,179 @@ export type UpdatePlayerSnsAccountPayload = {
   ok: Scalars['Boolean']['output'];
 };
 
+export type DeleteParticipantIconMutationVariables = Exact<{
+  input: DeleteGameParticipantIcon;
+}>;
+
+
+export type DeleteParticipantIconMutation = { __typename?: 'Mutation', deleteGameParticipantIcon: { __typename?: 'DeleteGameParticipantIconPayload', ok: boolean } };
+
+export type FavoriteDirectMutationVariables = Exact<{
+  input: NewDirectMessageFavorite;
+}>;
+
+
+export type FavoriteDirectMutation = { __typename?: 'Mutation', registerDirectMessageFavorite: { __typename?: 'RegisterDirectMessageFavoritePayload', ok: boolean } };
+
+export type UnfavoriteDirectMutationVariables = Exact<{
+  input: DeleteDirectMessageFavorite;
+}>;
+
+
+export type UnfavoriteDirectMutation = { __typename?: 'Mutation', deleteDirectMessageFavorite: { __typename?: 'DeleteDirectMessageFavoritePayload', ok: boolean } };
+
+export type FollowMutationVariables = Exact<{
+  input: NewGameParticipantFollow;
+}>;
+
+
+export type FollowMutation = { __typename?: 'Mutation', registerGameParticipantFollow: { __typename?: 'RegisterGameParticipantFollowPayload', ok: boolean } };
+
+export type FavoriteMutationVariables = Exact<{
+  input: NewMessageFavorite;
+}>;
+
+
+export type FavoriteMutation = { __typename?: 'Mutation', registerMessageFavorite: { __typename?: 'RegisterMessageFavoritePayload', ok: boolean } };
+
+export type UnfavoriteMutationVariables = Exact<{
+  input: DeleteMessageFavorite;
+}>;
+
+
+export type UnfavoriteMutation = { __typename?: 'Mutation', deleteMessageFavorite: { __typename?: 'DeleteMessageFavoritePayload', ok: boolean } };
+
+export type RegisterParticipantGroupMutationVariables = Exact<{
+  input: NewGameParticipantGroup;
+}>;
+
+
+export type RegisterParticipantGroupMutation = { __typename?: 'Mutation', registerGameParticipantGroup: { __typename?: 'RegisterGameParticipantGroupPayload', gameParticipantGroup: { __typename?: 'GameParticipantGroup', id: string, name: string, participants: Array<{ __typename?: 'GameParticipant', id: string, name: string }> } } };
+
+export type RegisterGameParticipantMutationVariables = Exact<{
+  input: NewGameParticipant;
+}>;
+
+
+export type RegisterGameParticipantMutation = { __typename?: 'Mutation', registerGameParticipant: { __typename?: 'RegisterGameParticipantPayload', gameParticipant: { __typename?: 'GameParticipant', id: string } } };
+
+export type TalkDirectMutationVariables = Exact<{
+  input: NewDirectMessage;
+}>;
+
+
+export type TalkDirectMutation = { __typename?: 'Mutation', registerDirectMessage: { __typename?: 'RegisterDirectMessagePayload', ok: boolean } };
+
+export type TalkMutationVariables = Exact<{
+  input: NewMessage;
+}>;
+
+
+export type TalkMutation = { __typename?: 'Mutation', registerMessage: { __typename?: 'RegisterMessagePayload', ok: boolean } };
+
+export type UnfollowMutationVariables = Exact<{
+  input: DeleteGameParticipantFollow;
+}>;
+
+
+export type UnfollowMutation = { __typename?: 'Mutation', deleteGameParticipantFollow: { __typename?: 'DeleteGameParticipantFollowPayload', ok: boolean } };
+
+export type UpdateParticipantGroupMutationVariables = Exact<{
+  input: UpdateGameParticipantGroup;
+}>;
+
+
+export type UpdateParticipantGroupMutation = { __typename?: 'Mutation', updateGameParticipantGroup: { __typename?: 'UpdateGameParticipantGroupPayload', ok: boolean } };
+
+export type UpdateGameParticipantProfileMutationVariables = Exact<{
+  input: UpdateGameParticipantProfile;
+}>;
+
+
+export type UpdateGameParticipantProfileMutation = { __typename?: 'Mutation', updateGameParticipantProfile: { __typename?: 'UpdateGameParticipantProfilePayload', ok: boolean } };
+
+export type UploadIconMutationVariables = Exact<{
+  input: NewGameParticipantIcon;
+}>;
+
+
+export type UploadIconMutation = { __typename?: 'Mutation', registerGameParticipantIcon: { __typename?: 'RegisterGameParticipantIconPayload', gameParticipantIcon: { __typename?: 'GameParticipantIcon', id: string } } };
+
+export type DirectFavoriteParticipantsQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  directMessageId: Scalars['ID']['input'];
+}>;
+
+
+export type DirectFavoriteParticipantsQuery = { __typename?: 'Query', directMessageFavoriteGameParticipants: Array<{ __typename?: 'GameParticipant', id: string, name: string, entryNumber: number }> };
+
+export type GameDirectMessagesQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  query: DirectMessagesQuery;
+}>;
+
+
+export type GameDirectMessagesQuery = { __typename?: 'Query', directMessages: { __typename?: 'DirectMessages', allPageCount: number, hasPrePage: boolean, hasNextPage: boolean, currentPageNumber?: number | null, isDesc: boolean, list: Array<{ __typename?: 'DirectMessage', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender: { __typename?: 'MessageSender', participantId: string, name: string, icon: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } }, reactions: { __typename?: 'DirectMessageReactions', favoriteCounts: number, favoriteParticipantIds: Array<string> } }> } };
+
+export type GameMessagesQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  query: MessagesQuery;
+}>;
+
+
+export type GameMessagesQuery = { __typename?: 'Query', messages: { __typename?: 'Messages', allPageCount: number, hasPrePage: boolean, hasNextPage: boolean, currentPageNumber?: number | null, isDesc: boolean, list: Array<{ __typename?: 'Message', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender?: { __typename?: 'MessageSender', participantId: string, name: string, icon: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } } | null, replyTo?: { __typename?: 'MessageRecipient', messageId: string, participantId: string } | null, reactions: { __typename?: 'MessageReactions', replyCount: number, favoriteCount: number, favoriteParticipantIds: Array<string> } }> } };
+
+export type ParticipantGroupsQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  participantId?: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+
+export type ParticipantGroupsQuery = { __typename?: 'Query', gameParticipantGroups: Array<{ __typename?: 'GameParticipantGroup', id: string, name: string, participants: Array<{ __typename?: 'GameParticipant', id: string, name: string }> }> };
+
+export type IconsQueryVariables = Exact<{
+  participantId: Scalars['ID']['input'];
+}>;
+
+
+export type IconsQuery = { __typename?: 'Query', gameParticipantIcons: Array<{ __typename?: 'GameParticipantIcon', id: string, name: string, url: string, width: number, height: number }> };
+
+export type GameParticipantProfileQueryVariables = Exact<{
+  participantId: Scalars['ID']['input'];
+}>;
+
+
+export type GameParticipantProfileQuery = { __typename?: 'Query', gameParticipantProfile: { __typename?: 'GameParticipantProfile', participantId: string, name: string, profileImageUrl?: string | null, introduction?: string | null, followsCount: number, followersCount: number } };
+
 export type GameQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type GameQuery = { __typename?: 'Query', game?: { __typename?: 'Game', id: string, name: string, status: GameStatus, participants: Array<{ __typename?: 'GameParticipant', id: string }>, periods: Array<{ __typename?: 'GamePeriod', id: string }>, settings: { __typename?: 'GameSettings', chara: { __typename?: 'GameCharaSetting', canOriginalCharacter: boolean }, capacity: { __typename?: 'GameCapacity', min: number, max: number }, rule: { __typename?: 'GameRuleSetting', canShorten: boolean, canSendDirectMessage: boolean }, time: { __typename?: 'GameTimeSetting', periodPrefix?: string | null, periodSuffix?: string | null, periodIntervalSeconds: number, openAt: any, startParticipateAt: any, startGameAt: any }, password: { __typename?: 'GamePasswordSetting', hasPassword: boolean } } } | null };
+export type GameQuery = { __typename?: 'Query', game?: { __typename?: 'Game', id: string, name: string, status: GameStatus, participants: Array<{ __typename?: 'GameParticipant', id: string, name: string }>, periods: Array<{ __typename?: 'GamePeriod', id: string }>, settings: { __typename?: 'GameSettings', chara: { __typename?: 'GameCharaSetting', canOriginalCharacter: boolean }, capacity: { __typename?: 'GameCapacity', min: number, max: number }, rule: { __typename?: 'GameRuleSetting', canShorten: boolean, canSendDirectMessage: boolean }, time: { __typename?: 'GameTimeSetting', periodPrefix?: string | null, periodSuffix?: string | null, periodIntervalSeconds: number, openAt: any, startParticipateAt: any, startGameAt: any }, password: { __typename?: 'GamePasswordSetting', hasPassword: boolean } } } | null };
 
-export type GameMessagesQueryVariables = Exact<{
+export type FavoriteParticipantsQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  messageId: Scalars['ID']['input'];
+}>;
+
+
+export type FavoriteParticipantsQuery = { __typename?: 'Query', messageFavoriteGameParticipants: Array<{ __typename?: 'GameParticipant', id: string, name: string, entryNumber: number }> };
+
+export type MessageRepliesQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+  messageId: Scalars['ID']['input'];
+}>;
+
+
+export type MessageRepliesQuery = { __typename?: 'Query', messageReplies: Array<{ __typename?: 'Message', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender?: { __typename?: 'MessageSender', participantId: string, name: string, icon: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } } | null, replyTo?: { __typename?: 'MessageRecipient', messageId: string, participantId: string } | null, reactions: { __typename?: 'MessageReactions', replyCount: number, favoriteCount: number, favoriteParticipantIds: Array<string> } }> };
+
+export type MyGameParticipantQueryVariables = Exact<{
   gameId: Scalars['ID']['input'];
 }>;
 
 
-export type GameMessagesQuery = { __typename?: 'Query', messages: { __typename?: 'Messages', allPageCount: number, hasPrePage: boolean, hasNextPage: boolean, currentPageNumber?: number | null, isDesc: boolean, list: Array<{ __typename?: 'Message', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender?: { __typename?: 'MessageSender', participantId: string, charaName: string, charaImage: { __typename?: 'CharaImage', url: string, size: { __typename?: 'CharaSize', width: number, height: number } } } | null, replyTo?: { __typename?: 'MessageRecipient', messageId: string, participantId: string } | null, reactions: { __typename?: 'MessageReactions', replyCount: number, favoriteCount: number } }> } };
+export type MyGameParticipantQuery = { __typename?: 'Query', myGameParticipant?: { __typename?: 'GameParticipant', id: string, name: string, entryNumber: number, followParticipantIds: Array<string>, followerParticipantIds: Array<string>, player: { __typename?: 'Player', id: string } } | null };
 
 export type IndexGamesQueryVariables = Exact<{
   pageSize: Scalars['Int']['input'];
@@ -1242,6 +1492,28 @@ export type IndexGamesQueryVariables = Exact<{
 export type IndexGamesQuery = { __typename?: 'Query', games: Array<{ __typename?: 'SimpleGame', id: string, name: string, participantsCount: number }> };
 
 
-export const GameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Game"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"game"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"participants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"periods"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chara"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canOriginalCharacter"}}]}},{"kind":"Field","name":{"kind":"Name","value":"capacity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"min"}},{"kind":"Field","name":{"kind":"Name","value":"max"}}]}},{"kind":"Field","name":{"kind":"Name","value":"rule"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canShorten"}},{"kind":"Field","name":{"kind":"Name","value":"canSendDirectMessage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"time"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"periodPrefix"}},{"kind":"Field","name":{"kind":"Name","value":"periodSuffix"}},{"kind":"Field","name":{"kind":"Name","value":"periodIntervalSeconds"}},{"kind":"Field","name":{"kind":"Name","value":"openAt"}},{"kind":"Field","name":{"kind":"Name","value":"startParticipateAt"}},{"kind":"Field","name":{"kind":"Name","value":"startGameAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"password"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasPassword"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GameQuery, GameQueryVariables>;
-export const GameMessagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GameMessages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"messages"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"ObjectValue","fields":[]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"isConvertDisabled"}}]}},{"kind":"Field","name":{"kind":"Name","value":"time"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendUnixTimeMilli"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sender"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"participantId"}},{"kind":"Field","name":{"kind":"Name","value":"charaName"}},{"kind":"Field","name":{"kind":"Name","value":"charaImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"size"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"replyTo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"messageId"}},{"kind":"Field","name":{"kind":"Name","value":"participantId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"replyCount"}},{"kind":"Field","name":{"kind":"Name","value":"favoriteCount"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"allPageCount"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrePage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"currentPageNumber"}},{"kind":"Field","name":{"kind":"Name","value":"isDesc"}}]}}]}}]} as unknown as DocumentNode<GameMessagesQuery, GameMessagesQueryVariables>;
+export const DeleteParticipantIconDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteParticipantIcon"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteGameParticipantIcon"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteGameParticipantIcon"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeleteParticipantIconMutation, DeleteParticipantIconMutationVariables>;
+export const FavoriteDirectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"FavoriteDirect"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewDirectMessageFavorite"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerDirectMessageFavorite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<FavoriteDirectMutation, FavoriteDirectMutationVariables>;
+export const UnfavoriteDirectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UnfavoriteDirect"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteDirectMessageFavorite"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteDirectMessageFavorite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<UnfavoriteDirectMutation, UnfavoriteDirectMutationVariables>;
+export const FollowDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Follow"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewGameParticipantFollow"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerGameParticipantFollow"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<FollowMutation, FollowMutationVariables>;
+export const FavoriteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Favorite"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewMessageFavorite"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerMessageFavorite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<FavoriteMutation, FavoriteMutationVariables>;
+export const UnfavoriteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Unfavorite"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteMessageFavorite"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMessageFavorite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<UnfavoriteMutation, UnfavoriteMutationVariables>;
+export const RegisterParticipantGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterParticipantGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewGameParticipantGroup"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerGameParticipantGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gameParticipantGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"participants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RegisterParticipantGroupMutation, RegisterParticipantGroupMutationVariables>;
+export const RegisterGameParticipantDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterGameParticipant"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewGameParticipant"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerGameParticipant"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gameParticipant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<RegisterGameParticipantMutation, RegisterGameParticipantMutationVariables>;
+export const TalkDirectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TalkDirect"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewDirectMessage"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerDirectMessage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<TalkDirectMutation, TalkDirectMutationVariables>;
+export const TalkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Talk"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewMessage"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerMessage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<TalkMutation, TalkMutationVariables>;
+export const UnfollowDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Unfollow"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteGameParticipantFollow"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteGameParticipantFollow"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<UnfollowMutation, UnfollowMutationVariables>;
+export const UpdateParticipantGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateParticipantGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateGameParticipantGroup"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateGameParticipantGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<UpdateParticipantGroupMutation, UpdateParticipantGroupMutationVariables>;
+export const UpdateGameParticipantProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateGameParticipantProfile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateGameParticipantProfile"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateGameParticipantProfile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<UpdateGameParticipantProfileMutation, UpdateGameParticipantProfileMutationVariables>;
+export const UploadIconDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UploadIcon"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewGameParticipantIcon"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerGameParticipantIcon"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gameParticipantIcon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<UploadIconMutation, UploadIconMutationVariables>;
+export const DirectFavoriteParticipantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DirectFavoriteParticipants"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"directMessageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"directMessageFavoriteGameParticipants"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"directMessageId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"directMessageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"entryNumber"}}]}}]}}]} as unknown as DocumentNode<DirectFavoriteParticipantsQuery, DirectFavoriteParticipantsQueryVariables>;
+export const GameDirectMessagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GameDirectMessages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"query"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DirectMessagesQuery"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"directMessages"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"Variable","name":{"kind":"Name","value":"query"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"isConvertDisabled"}}]}},{"kind":"Field","name":{"kind":"Name","value":"time"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendUnixTimeMilli"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sender"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"participantId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"reactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"favoriteCounts"}},{"kind":"Field","name":{"kind":"Name","value":"favoriteParticipantIds"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"allPageCount"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrePage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"currentPageNumber"}},{"kind":"Field","name":{"kind":"Name","value":"isDesc"}}]}}]}}]} as unknown as DocumentNode<GameDirectMessagesQuery, GameDirectMessagesQueryVariables>;
+export const GameMessagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GameMessages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"query"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MessagesQuery"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"messages"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"Variable","name":{"kind":"Name","value":"query"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"isConvertDisabled"}}]}},{"kind":"Field","name":{"kind":"Name","value":"time"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendUnixTimeMilli"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sender"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"participantId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"replyTo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"messageId"}},{"kind":"Field","name":{"kind":"Name","value":"participantId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"replyCount"}},{"kind":"Field","name":{"kind":"Name","value":"favoriteCount"}},{"kind":"Field","name":{"kind":"Name","value":"favoriteParticipantIds"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"allPageCount"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrePage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"currentPageNumber"}},{"kind":"Field","name":{"kind":"Name","value":"isDesc"}}]}}]}}]} as unknown as DocumentNode<GameMessagesQuery, GameMessagesQueryVariables>;
+export const ParticipantGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ParticipantGroups"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"participantId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gameParticipantGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"memberParticipantId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"participantId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"participants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<ParticipantGroupsQuery, ParticipantGroupsQueryVariables>;
+export const IconsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Icons"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"participantId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gameParticipantIcons"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"participantId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"participantId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]}}]} as unknown as DocumentNode<IconsQuery, IconsQueryVariables>;
+export const GameParticipantProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GameParticipantProfile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"participantId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gameParticipantProfile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"participantId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"participantId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"participantId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"profileImageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"introduction"}},{"kind":"Field","name":{"kind":"Name","value":"followsCount"}},{"kind":"Field","name":{"kind":"Name","value":"followersCount"}}]}}]}}]} as unknown as DocumentNode<GameParticipantProfileQuery, GameParticipantProfileQueryVariables>;
+export const GameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Game"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"game"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"participants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"periods"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chara"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canOriginalCharacter"}}]}},{"kind":"Field","name":{"kind":"Name","value":"capacity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"min"}},{"kind":"Field","name":{"kind":"Name","value":"max"}}]}},{"kind":"Field","name":{"kind":"Name","value":"rule"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canShorten"}},{"kind":"Field","name":{"kind":"Name","value":"canSendDirectMessage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"time"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"periodPrefix"}},{"kind":"Field","name":{"kind":"Name","value":"periodSuffix"}},{"kind":"Field","name":{"kind":"Name","value":"periodIntervalSeconds"}},{"kind":"Field","name":{"kind":"Name","value":"openAt"}},{"kind":"Field","name":{"kind":"Name","value":"startParticipateAt"}},{"kind":"Field","name":{"kind":"Name","value":"startGameAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"password"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasPassword"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GameQuery, GameQueryVariables>;
+export const FavoriteParticipantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FavoriteParticipants"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"messageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"messageFavoriteGameParticipants"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"messageId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"messageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"entryNumber"}}]}}]}}]} as unknown as DocumentNode<FavoriteParticipantsQuery, FavoriteParticipantsQueryVariables>;
+export const MessageRepliesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MessageReplies"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"messageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"messageReplies"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"messageId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"messageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"isConvertDisabled"}}]}},{"kind":"Field","name":{"kind":"Name","value":"time"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendUnixTimeMilli"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sender"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"participantId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"replyTo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"messageId"}},{"kind":"Field","name":{"kind":"Name","value":"participantId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"replyCount"}},{"kind":"Field","name":{"kind":"Name","value":"favoriteCount"}},{"kind":"Field","name":{"kind":"Name","value":"favoriteParticipantIds"}}]}}]}}]}}]} as unknown as DocumentNode<MessageRepliesQuery, MessageRepliesQueryVariables>;
+export const MyGameParticipantDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MyGameParticipant"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myGameParticipant"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"entryNumber"}},{"kind":"Field","name":{"kind":"Name","value":"player"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"followParticipantIds"}},{"kind":"Field","name":{"kind":"Name","value":"followerParticipantIds"}}]}}]}}]} as unknown as DocumentNode<MyGameParticipantQuery, MyGameParticipantQueryVariables>;
 export const IndexGamesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"IndexGames"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageNumber"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"games"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"paging"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"pageNumber"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageNumber"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"isDesc"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"participantsCount"}}]}}]}}]} as unknown as DocumentNode<IndexGamesQuery, IndexGamesQueryVariables>;

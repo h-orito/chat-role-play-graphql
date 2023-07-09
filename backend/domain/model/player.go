@@ -11,10 +11,10 @@ type Player struct {
 }
 
 type PlayerProfile struct {
-	PlayerID     uint32
-	IconURL      *string
-	Introduction *string
-	SnsAccounts  []PlayerSnsAccount
+	PlayerID        uint32
+	ProfileImageURL *string
+	Introduction    *string
+	SnsAccounts     []PlayerSnsAccount
 }
 
 type PlayerSnsAccount struct {

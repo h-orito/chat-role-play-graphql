@@ -77,7 +77,6 @@ type CharaRepository interface {
 		ctx context.Context,
 		chara Chara,
 		charachipID *uint32,
-		playerID *uint32,
 	) (saved *Chara, err error)
 	UpdateChara(ctx context.Context, chara Chara) (saved *Chara, err error)
 	// chara image

@@ -18,10 +18,10 @@ export default function Modal({
   return (
     <Portal>
       <div
-        className='fixed inset-x-0 inset-y-0 z-50 flex items-center justify-center bg-black/60'
+        className='fixed inset-x-0 inset-y-0 z-50 flex items-center justify-center bg-black/60 text-sm'
         onClick={close}
       >
-        <div className='w-full max-w-full bg-white p-4 md:max-w-screen-md'>
+        <div className='md:w-screen-md max-h-[90vh] w-[90vw] max-w-[90vw] overflow-y-auto bg-white p-4 md:max-w-screen-md'>
           {header && (
             <p className='mb-2 border-b border-gray-300 pb-2 text-xl'>
               {header}

@@ -98,7 +98,6 @@ const Games = ({ games }: GamesProps) => {
 
 const UserInfo = () => {
   const authState: AuthState = useAuth()
-  if (authState.isLoading) return <div>Authentication Loading...</div>
   if (!authState.isAuthenticated) {
     return <LoginButton />
   }

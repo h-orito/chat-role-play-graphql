@@ -17,6 +17,7 @@ type Resolver struct {
 	gameUsecase    usecase.GameUsecase
 	playerUsecase  usecase.PlayerUsecase
 	messageUsecase usecase.MessageUsecase
+	imageUsecase   usecase.ImageUsecase
 	loaders        *Loaders
 }
 
@@ -25,6 +26,7 @@ func NewResolver(
 	gameUsecase usecase.GameUsecase,
 	playerUsecase usecase.PlayerUsecase,
 	messageUsecase usecase.MessageUsecase,
+	imageUsecase usecase.ImageUsecase,
 	loaders *Loaders,
 ) Resolver {
 	return Resolver{
@@ -32,6 +34,7 @@ func NewResolver(
 		gameUsecase:    gameUsecase,
 		playerUsecase:  playerUsecase,
 		messageUsecase: messageUsecase,
+		imageUsecase:   imageUsecase,
 		loaders:        loaders,
 	}
 }
