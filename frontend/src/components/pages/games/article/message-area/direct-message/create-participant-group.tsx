@@ -10,6 +10,7 @@ import {
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
 import { useCallback, useState } from 'react'
+import ParticipantsCheckbox from '../../../participant/participants-checkbox'
 
 type Props = {
   close: (e: any) => void
@@ -70,33 +71,18 @@ export default function CreateParticipantGroup({
   return (
     <div className='max-h-full w-full p-4'>
       <div className='mb-4'>
-        {alreadyExists && (
+        {alreadyExists ? (
           <p className='text-red-500'>
             既にこのメンバーのグループは作成済みです
           </p>
+        ) : (
+          <p>グループに含めるメンバーを選択してください</p>
         )}
-        {game.participants
-          .filter((gp) => gp.id !== myself.id)
-          .map((gp) => (
-            <div key={gp.id} className='flex items-center'>
-              <input
-                id={`register-group-participant-${gp.id}`}
-                type='checkbox'
-                className='mr-2'
-                checked={participants.includes(gp)}
-                onChange={() => {
-                  if (participants.includes(gp)) {
-                    setParticipants(participants.filter((s) => s.id !== gp.id))
-                  } else {
-                    setParticipants([...participants, gp])
-                  }
-                }}
-              />
-              <label htmlFor={`register-group-participant-${gp.id}`}>
-                {gp.name}
-              </label>
-            </div>
-          ))}
+        <ParticipantsCheckbox
+          participants={game.participants}
+          selects={participants}
+          setSelects={setParticipants}
+        />
       </div>
       <div className='flex justify-end'>
         <PrimaryButton disabled={!canSubmit} click={() => handleRegister()}>

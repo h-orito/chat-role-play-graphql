@@ -1,0 +1,10 @@
+query Followers($participantId: ID!) {
+  gameParticipantFollowers(participantId: $participantId) {
+    id
+    name
+    profileIcon {
+      id
+      url
+    }
+  }
+}

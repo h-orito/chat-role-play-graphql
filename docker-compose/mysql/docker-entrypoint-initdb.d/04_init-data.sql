@@ -27,13 +27,14 @@ INSERT INTO games VALUES (NULL, 'game name', 'Closed', NOW(), NOW());
 
 INSERT INTO game_master_players VALUES (NULL, 1, 1, false, NOW(), NOW());
 
-INSERT INTO game_participants VALUES (NULL, 1, 1, 'participant name 1', 1, 'memo', NOW(), false, NOW(), NOW());
-INSERT INTO game_participants VALUES (NULL, 1, 2, 'participant name 2', 2, NULL, NOW(), false, NOW(), NOW());
+INSERT INTO game_participants VALUES (NULL, 1, 1, 'participant name 1', 1, 'memo', NULL, NOW(), false, NOW(), NOW());
+INSERT INTO game_participants VALUES (NULL, 1, 2, 'participant name 2', 2, NULL, NULL, NOW(), false, NOW(), NOW());
 
-INSERT INTO game_participant_profiles VALUES (1, 'https://placehold.jp/120x120.png', 'introduction', NOW(), NOW());
-INSERT INTO game_participant_profiles VALUES (2, 'https://placehold.jp/120x120.png', 'introduction', NOW(), NOW());
+INSERT INTO game_participant_profiles VALUES (1, 'https://placehold.jp/400x600.png', 'introduction', NOW(), NOW());
+INSERT INTO game_participant_profiles VALUES (2, 'https://placehold.jp/400x600.png', 'introduction', NOW(), NOW());
 
-INSERT INTO game_participant_icons VALUES (1, 1, '通常', 'https://placehold.jp/120x120.png', 60, 60, false, NOW(), NOW());
+INSERT INTO game_participant_icons VALUES (1, 1, 'https://placehold.jp/120x120.png', 60, 60, 1, false, NOW(), NOW());
+UPDATE game_participants SET profile_icon_id = 1 where id = 1;
 
 INSERT INTO game_participant_notifications VALUES (1, 'webhook url', TRUE, TRUE, TRUE, TRUE, 'keyword', NOW(), NOW());
 INSERT INTO game_participant_notifications VALUES (2, 'webhook url', TRUE, TRUE, TRUE, TRUE, 'keyword', NOW(), NOW());

@@ -200,11 +200,11 @@ type GameParticipantGroupsQuery struct {
 }
 
 type GameParticipantIcon struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	URL    string `json:"url"`
-	Width  int    `json:"width"`
-	Height int    `json:"height"`
+	ID           string `json:"id"`
+	URL          string `json:"url"`
+	Width        int    `json:"width"`
+	Height       int    `json:"height"`
+	DisplayOrder int    `json:"displayOrder"`
 }
 
 type GameParticipantProfile struct {
@@ -412,7 +412,6 @@ type NewGameParticipantGroup struct {
 
 type NewGameParticipantIcon struct {
 	GameID   string         `json:"gameId"`
-	Name     string         `json:"name"`
 	IconFile graphql.Upload `json:"iconFile"`
 	Width    int            `json:"width"`
 	Height   int            `json:"height"`
@@ -671,11 +670,22 @@ type UpdateGameParticipantGroupPayload struct {
 	Ok bool `json:"ok"`
 }
 
+type UpdateGameParticipantIcon struct {
+	GameID       string `json:"gameId"`
+	ID           string `json:"id"`
+	DisplayOrder int    `json:"displayOrder"`
+}
+
+type UpdateGameParticipantIconPayload struct {
+	Ok bool `json:"ok"`
+}
+
 type UpdateGameParticipantProfile struct {
 	GameID           string          `json:"gameId"`
 	Name             string          `json:"name"`
 	ProfileImageFile *graphql.Upload `json:"profileImageFile,omitempty"`
 	ProfileImageURL  *string         `json:"profileImageUrl,omitempty"`
+	ProfileIconID    *string         `json:"profileIconId,omitempty"`
 	Introduction     *string         `json:"introduction,omitempty"`
 	Memo             *string         `json:"memo,omitempty"`
 }

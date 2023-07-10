@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import SubmitButton from '@/components/button/submit-button'
 import InputImage from '@/components/form/input-image'
 import InputText from '@/components/form/input-text'
@@ -5,7 +6,9 @@ import InputTextarea from '@/components/form/input-textarea'
 import {
   Game,
   GameParticipant,
+  GameParticipantIcon,
   GameParticipantProfile,
+  UpdateGameParticipantProfile,
   UpdateGameParticipantProfileDocument,
   UpdateGameParticipantProfileMutation,
   UpdateGameParticipantProfileMutationVariables
@@ -13,6 +16,7 @@ import {
 import { useMutation } from '@apollo/client'
 import { useCallback, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import Modal from '@/components/modal/modal'
 
 type Props = {
   close: (e: any) => void
@@ -20,6 +24,7 @@ type Props = {
   myself: GameParticipant | null
   refetchMyself: () => void
   profile: GameParticipantProfile
+  icons: GameParticipantIcon[]
   refetchProfile: () => void
 }
 
@@ -34,6 +39,7 @@ export default function ProfileEdit({
   myself,
   refetchMyself,
   profile,
+  icons,
   refetchProfile
 }: Props) {
   const { control, formState, handleSubmit } = useForm<FormInput>({
@@ -43,6 +49,16 @@ export default function ProfileEdit({
     }
   })
   const [images, setImages] = useState<File[]>([])
+  const [iconId, setIconId] = useState<string | null>(
+    myself?.profileIcon?.id ?? null
+  )
+  const [isOpenIconSelectModal, setIsOpenIconSelectModal] = useState(false)
+  const toggleIconSelectModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenIconSelectModal(!isOpenIconSelectModal)
+    }
+  }
+
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting
   const [updateProfile] = useMutation<UpdateGameParticipantProfileMutation>(
     UpdateGameParticipantProfileDocument,
@@ -67,14 +83,17 @@ export default function ProfileEdit({
             name: data.name,
             profileImageFile: images.length > 0 ? images[0] : null,
             profileImageUrl: images.length > 0 ? null : profile.profileImageUrl,
+            profileIconId: iconId,
             introduction: data.introduction,
             memo: null // TODO: 消えてしまうかも
-          }
+          } as UpdateGameParticipantProfile
         } as UpdateGameParticipantProfileMutationVariables
       })
     },
-    [updateProfile, images]
+    [updateProfile, images, iconId]
   )
+
+  const selectedIcon = icons.find((icon) => icon.id === iconId)
 
   return (
     <div>
@@ -109,15 +128,72 @@ export default function ProfileEdit({
           setImages={setImages}
           defaultImageUrl={profile.profileImageUrl}
         />
-        <p>なまえ: {profile.name}</p>
-        <p>紹介文: {profile.introduction}</p>
-        <p>アイコン: {profile.profileImageUrl}</p>
-        <p>フォロー: {profile.followsCount}</p>
-        <p>フォロワー: {profile.followersCount}</p>
+        <div>
+          <label>プロフィールアイコン</label>
+          {icons.length > 0 && (
+            <div>
+              <button
+                onClick={(e: any) => {
+                  e.preventDefault()
+                  setIsOpenIconSelectModal(true)
+                }}
+                disabled={icons.length <= 0}
+              >
+                <Image
+                  src={
+                    selectedIcon
+                      ? selectedIcon.url
+                      : 'https://placehold.jp/120x120.png'
+                  }
+                  width={selectedIcon ? selectedIcon.width : 60}
+                  height={selectedIcon ? selectedIcon.height : 60}
+                  alt='キャラアイコン'
+                />
+              </button>
+            </div>
+          )}
+        </div>
         <div className='flex justify-end'>
           <SubmitButton label='更新する' disabled={!canSubmit} />
         </div>
+        {isOpenIconSelectModal && (
+          <Modal close={toggleIconSelectModal} hideFooter>
+            <IconSelect
+              icons={icons}
+              setIconId={setIconId}
+              toggle={() => setIsOpenIconSelectModal(false)}
+            />
+          </Modal>
+        )}
       </form>
+    </div>
+  )
+}
+
+type IconSelectProps = {
+  icons: Array<GameParticipantIcon>
+  setIconId: (iconId: string) => void
+  toggle: () => void
+}
+const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
+  const handleSelect = (e: any, iconId: string) => {
+    e.preventDefault()
+    setIconId(iconId)
+    toggle()
+  }
+
+  return (
+    <div>
+      {icons.map((icon) => (
+        <button onClick={(e: any) => handleSelect(e, icon.id)} key={icon.id}>
+          <Image
+            src={icon.url}
+            width={icon.width}
+            height={icon.height}
+            alt='キャラアイコン'
+          />
+        </button>
+      ))}
     </div>
   )
 }

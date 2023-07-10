@@ -20,6 +20,11 @@ func (r *gameParticipantResolver) Player(ctx context.Context, obj *gqlmodel.Game
 	return r.player(ctx, obj)
 }
 
+// ProfileIcon is the resolver for the profileIcon field.
+func (r *gameParticipantResolver) ProfileIcon(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.GameParticipantIcon, error) {
+	return r.profileIcon(ctx, obj)
+}
+
 // FollowParticipantIds is the resolver for the followParticipantIds field.
 func (r *gameParticipantResolver) FollowParticipantIds(ctx context.Context, obj *gqlmodel.GameParticipant) ([]string, error) {
 	return r.followParticipantIds(ctx, obj)
@@ -138,6 +143,11 @@ func (r *mutationResolver) UpdateGameParticipantProfile(ctx context.Context, inp
 // RegisterGameParticipantIcon is the resolver for the registerGameParticipantIcon field.
 func (r *mutationResolver) RegisterGameParticipantIcon(ctx context.Context, input gqlmodel.NewGameParticipantIcon) (*gqlmodel.RegisterGameParticipantIconPayload, error) {
 	return r.registerGameParticipantIcon(ctx, input)
+}
+
+// UpdateGameParticipantIcon is the resolver for the updateGameParticipantIcon field.
+func (r *mutationResolver) UpdateGameParticipantIcon(ctx context.Context, input gqlmodel.UpdateGameParticipantIcon) (*gqlmodel.UpdateGameParticipantIconPayload, error) {
+	return r.updateGameParticipantIcon(ctx, input)
 }
 
 // DeleteGameParticipantIcon is the resolver for the deleteGameParticipantIcon field.

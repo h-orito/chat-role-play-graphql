@@ -80,9 +80,7 @@ export default function InputImage({
         onChange={handleFile}
         hidden
       />
-      <PrimaryButton click={onProfileButtonClick}>
-        {label ? label : '画像'}を選択
-      </PrimaryButton>
+      <PrimaryButton click={onProfileButtonClick}>画像を選択</PrimaryButton>
       {previewImageUrl != null && (
         <DangerButton className='ml-2' click={(e: any) => handleCancel(e)}>
           削除

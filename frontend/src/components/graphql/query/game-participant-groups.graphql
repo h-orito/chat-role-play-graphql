@@ -8,6 +8,10 @@ query ParticipantGroups($gameId: ID!, $participantId: ID) {
     participants {
       id
       name
+      profileIcon {
+        id
+        url
+      }
     }
   }
 }

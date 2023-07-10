@@ -56,12 +56,16 @@ func (*GameParticipantRepository) RegisterGameParticipant(ctx context.Context, g
 	return p, nil
 }
 
-func (*GameParticipantRepository) UpdateGameParticipant(ctx context.Context, ID uint32, name string, memo *string) (err error) {
+func (*GameParticipantRepository) UpdateGameParticipant(ctx context.Context, ID uint32, name string, memo *string, iconId *uint32) (err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get tx from context")
 	}
-	tx.Model(&GameParticipant{}).Where("id = ?", ID).Update("game_participant_name", name).Update("memo", memo)
+	tx.Model(&GameParticipant{}).Where("id = ?", ID).Updates(GameParticipant{
+		GameParticipantName: name,
+		Memo:                memo,
+		ProfileIconID:       iconId,
+	})
 	return nil
 }
 
@@ -90,6 +94,14 @@ func (*GameParticipantRepository) RegisterGameParticipantIcon(ctx context.Contex
 		return nil, fmt.Errorf("failed to get tx from context")
 	}
 	return registerGameParticipantIcon(tx, gameParticipantID, icon)
+}
+
+func (*GameParticipantRepository) UpdateGameParticipantIcon(ctx context.Context, icon model.GameParticipantIcon) (err error) {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return fmt.Errorf("failed to get tx from context")
+	}
+	return updateGameParticipantIcon(tx, icon)
 }
 
 func (*GameParticipantRepository) DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error) {
@@ -395,7 +407,7 @@ func findRdbGameParticipantIcons(db *gorm.DB, query model.GameParticipantIconsQu
 	if query.IsContainDeleted == nil || !*query.IsContainDeleted {
 		result = result.Where("is_deleted = ?", false)
 	}
-	result = result.Find(&rdb)
+	result = result.Order("display_order").Find(&rdb)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
@@ -406,18 +418,35 @@ func findRdbGameParticipantIcons(db *gorm.DB, query model.GameParticipantIconsQu
 }
 
 func registerGameParticipantIcon(tx *gorm.DB, gameParticipantID uint32, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error) {
+	maxDisplayOrder, err := selectMaxIconsDisplayOrder(tx, gameParticipantID)
 	rdb := GameParticipantIcon{
 		GameParticipantID: gameParticipantID,
-		IconTypeName:      icon.IconTypeName,
 		IconImageUrl:      icon.IconImageURL,
 		Width:             icon.Width,
 		Height:            icon.Height,
+		DisplayOrder:      maxDisplayOrder + 1,
 		IsDeleted:         false,
 	}
 	if result := tx.Create(&rdb); result.Error != nil {
 		return nil, fmt.Errorf("failed to save: %s \n", result.Error)
 	}
 	return rdb.ToModel(), nil
+}
+
+func selectMaxIconsDisplayOrder(db *gorm.DB, gameParticipantID uint32) (uint32, error) {
+	var max float64
+	result := db.Table("game_participant_icons").Select("MAX(display_order)").
+		Where("game_participant_id = ?", gameParticipantID).
+		Scan(&max)
+	if result.Error != nil {
+		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
+	}
+	return uint32(max), nil
+}
+
+func updateGameParticipantIcon(tx *gorm.DB, icon model.GameParticipantIcon) (err error) {
+	tx.Model(&GameParticipantIcon{}).Where("id = ?", icon.ID).Update("display_order", icon.DisplayOrder)
+	return nil
 }
 
 func deleteGameParticipantIcon(tx *gorm.DB, iconID uint32) (err error) {

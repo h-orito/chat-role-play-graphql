@@ -3,5 +3,9 @@ query FavoriteParticipants($gameId: ID!, $messageId: ID!) {
     id
     name
     entryNumber
+    profileIcon {
+      id
+      url
+    }
   }
 }

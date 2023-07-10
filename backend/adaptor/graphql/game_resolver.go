@@ -131,6 +131,14 @@ func (r *mutationResolver) updateGameParticipantProfile(ctx context.Context, inp
 	if err != nil {
 		return nil, err
 	}
+	var iconID *uint32
+	if input.ProfileIconID != nil {
+		ID, err := idToUint32(*input.ProfileIconID)
+		if err != nil {
+			return nil, err
+		}
+		iconID = &ID
+	}
 	user := auth.GetUser(ctx)
 	if user == nil {
 		return nil, err
@@ -149,7 +157,7 @@ func (r *mutationResolver) updateGameParticipantProfile(ctx context.Context, inp
 		ProfileImageURL: imageUrl,
 		Introduction:    input.Introduction,
 	}
-	if err := r.gameUsecase.UpdateParticipantProfile(ctx, gameId, *user, input.Name, input.Memo, profile); err != nil {
+	if err := r.gameUsecase.UpdateParticipantProfile(ctx, gameId, *user, input.Name, input.Memo, iconID, profile); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.UpdateGameParticipantProfilePayload{Ok: true}, nil
@@ -187,7 +195,6 @@ func (r *mutationResolver) registerGameParticipantIcon(ctx context.Context, inpu
 		return nil, err
 	}
 	icon, err := r.gameUsecase.RegisterGameParticipantIcon(ctx, gameId, *user, model.GameParticipantIcon{
-		IconTypeName: input.Name,
 		IconImageURL: *url,
 		Width:        uint32(input.Width),
 		Height:       uint32(input.Height),
@@ -195,6 +202,29 @@ func (r *mutationResolver) registerGameParticipantIcon(ctx context.Context, inpu
 	return &gqlmodel.RegisterGameParticipantIconPayload{
 		GameParticipantIcon: MapToGameParticipantIcon(*icon),
 	}, nil
+}
+
+func (r *mutationResolver) updateGameParticipantIcon(ctx context.Context, input gqlmodel.UpdateGameParticipantIcon) (*gqlmodel.UpdateGameParticipantIconPayload, error) {
+	gameId, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
+	iconID, err := idToUint32(input.ID)
+	if err != nil {
+		return nil, err
+	}
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, err
+	}
+	err = r.gameUsecase.UpdateGameParticipantIcon(ctx, gameId, *user, model.GameParticipantIcon{
+		ID:           iconID,
+		DisplayOrder: uint32(input.DisplayOrder),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &gqlmodel.UpdateGameParticipantIconPayload{Ok: true}, nil
 }
 
 func (r *mutationResolver) deleteGameParticipantIcon(ctx context.Context, input gqlmodel.DeleteGameParticipantIcon) (*gqlmodel.DeleteGameParticipantIconPayload, error) {
@@ -537,6 +567,19 @@ func (r *gameParticipantDiaryResolver) period(ctx context.Context, obj *gqlmodel
 
 func (r *messageSenderResolver) icon(ctx context.Context, obj *gqlmodel.MessageSender) (*gqlmodel.GameParticipantIcon, error) {
 	thunk := r.loaders.ParticipantIconLoader.Load(ctx, dataloader.StringKey(obj.IconID))
+	i, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+	icon := i.(*model.GameParticipantIcon)
+	return MapToGameParticipantIcon(*icon), nil
+}
+
+func (r *gameParticipantResolver) profileIcon(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.GameParticipantIcon, error) {
+	if obj.ProfileIconID == nil {
+		return nil, nil
+	}
+	thunk := r.loaders.ParticipantIconLoader.Load(ctx, dataloader.StringKey(*obj.ProfileIconID))
 	i, err := thunk()
 	if err != nil {
 		return nil, err

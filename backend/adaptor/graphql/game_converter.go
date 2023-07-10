@@ -95,11 +95,18 @@ func MapToGameParticipants(participants []model.GameParticipant) []*gqlmodel.Gam
 }
 
 func MapToGameParticipant(p model.GameParticipant) *gqlmodel.GameParticipant {
+	var iconID *string
+	if p.ProfileIconID != nil {
+		id := intIdToBase64(*p.ProfileIconID, "GameParticipantIcon")
+		iconID = &id
+	}
 	return &gqlmodel.GameParticipant{
 		ID:             intIdToBase64(p.ID, "GameParticipant"),
 		Name:           p.Name,
 		EntryNumber:    int(p.EntryNumber),
 		PlayerID:       intIdToBase64(p.PlayerID, "Player"),
+		Memo:           p.Memo,
+		ProfileIconID:  iconID,
 		IsGone:         p.IsGone,
 		LastAccessedAt: p.LastAccessedAt,
 	}
@@ -119,7 +126,6 @@ func MapToGameParticipantProfile(p model.GameParticipantProfile, name string) *g
 func MapToGameParticipantIcon(p model.GameParticipantIcon) *gqlmodel.GameParticipantIcon {
 	return &gqlmodel.GameParticipantIcon{
 		ID:     intIdToBase64(p.ID, "GameParticipantIcon"),
-		Name:   p.IconTypeName,
 		URL:    p.IconImageURL,
 		Width:  int(p.Width),
 		Height: int(p.Height),

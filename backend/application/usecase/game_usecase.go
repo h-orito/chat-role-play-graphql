@@ -30,10 +30,11 @@ type GameUsecase interface {
 	Leave(ctx context.Context, gameID uint32, user model.User) (err error)
 	// game participant profile
 	FindParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, participant *model.GameParticipant, err error)
-	UpdateParticipantProfile(ctx context.Context, gameID uint32, user model.User, name string, memo *string, profile model.GameParticipantProfile) (err error)
+	UpdateParticipantProfile(ctx context.Context, gameID uint32, user model.User, name string, memo *string, iconId *uint32, profile model.GameParticipantProfile) (err error)
 	// game participant icon
 	FindGameParticipantIcons(model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error)
 	RegisterGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error)
+	UpdateGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, icon model.GameParticipantIcon) error
 	DeleteGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, iconID uint32) (err error)
 	// game participant setting
 	FindParticipantSetting(gameID uint32, user model.User) (setting *model.GameParticipantNotification, err error)
@@ -192,6 +193,7 @@ func (g *gameUsecase) UpdateParticipantProfile(
 	user model.User,
 	name string,
 	memo *string,
+	iconID *uint32,
 	profile model.GameParticipantProfile,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
@@ -202,7 +204,7 @@ func (g *gameUsecase) UpdateParticipantProfile(
 		if myself == nil {
 			return nil, fmt.Errorf("you are not participating in this game")
 		}
-		if err := g.gameService.UpdateParticipant(ctx, myself.ID, name, memo); err != nil {
+		if err := g.gameService.UpdateParticipant(ctx, myself.ID, name, memo, iconID); err != nil {
 			return nil, err
 		}
 		return nil, g.gameService.UpdateGameParticipantProfile(ctx, myself.ID, model.GameParticipantProfile{
@@ -230,6 +232,20 @@ func (g *gameUsecase) RegisterGameParticipantIcon(ctx context.Context, gameID ui
 		return g.gameService.RegisterGameParticipantIcon(ctx, myself.ID, icon)
 	})
 	return i.(*model.GameParticipantIcon), err
+}
+
+func (g *gameUsecase) UpdateGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, icon model.GameParticipantIcon) error {
+	_, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		myself, err := g.findMyGameParticipant(gameID, user)
+		if err != nil {
+			return nil, err
+		}
+		if myself == nil {
+			return nil, fmt.Errorf("you are not participating in this game")
+		}
+		return nil, g.gameService.UpdateGameParticipantIcon(ctx, icon)
+	})
+	return err
 }
 
 func (g *gameUsecase) DeleteGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, iconID uint32) (err error) {

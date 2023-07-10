@@ -76,6 +76,7 @@ type GameParticipant struct {
 	GameParticipantName string
 	EntryNumber         uint32
 	Memo                *string
+	ProfileIconID       *uint32
 	IsGone              bool
 	LastAccessedAt      time.Time
 	CreatedAt           time.Time
@@ -89,6 +90,7 @@ func (p GameParticipant) ToModel() *model.GameParticipant {
 		Name:           p.GameParticipantName,
 		EntryNumber:    p.EntryNumber,
 		Memo:           p.Memo,
+		ProfileIconID:  p.ProfileIconID,
 		IsGone:         p.IsGone,
 		LastAccessedAt: p.LastAccessedAt,
 	}
@@ -118,10 +120,10 @@ func (p GameParticipantProfile) ToModel(
 type GameParticipantIcon struct {
 	ID                uint32
 	GameParticipantID uint32
-	IconTypeName      string
 	IconImageUrl      string
 	Width             uint32
 	Height            uint32
+	DisplayOrder      uint32
 	IsDeleted         bool
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
@@ -130,10 +132,10 @@ type GameParticipantIcon struct {
 func (i GameParticipantIcon) ToModel() *model.GameParticipantIcon {
 	return &model.GameParticipantIcon{
 		ID:           i.ID,
-		IconTypeName: i.IconTypeName,
 		IconImageURL: i.IconImageUrl,
 		Width:        i.Width,
 		Height:       i.Height,
+		DisplayOrder: i.DisplayOrder,
 	}
 }
 

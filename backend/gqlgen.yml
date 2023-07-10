@@ -92,6 +92,8 @@ models:
     fields:
       player:
         resolver: true
+      profileIcon:
+        resolver: true
       followParticipantIds:
         resolver: true
       followerParticipantIds:

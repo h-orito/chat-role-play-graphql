@@ -6,5 +6,9 @@ query DirectFavoriteParticipants($gameId: ID!, $directMessageId: ID!) {
     id
     name
     entryNumber
+    profileIcon {
+      id
+      url
+    }
   }
 }

@@ -12,6 +12,8 @@
   "dependencies": {
     "@apollo/client": "^3.7.15",
     "@auth0/auth0-react": "^2.1.1",
+    "@dnd-kit/core": "^6.0.8",
+    "@dnd-kit/sortable": "^7.0.2",
     "@graphql-codegen/cli": "^4.0.1",
     "@graphql-codegen/client-preset": "^4.0.0",
     "@graphql-codegen/introspection": "^4.0.0",

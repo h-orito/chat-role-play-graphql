@@ -6,6 +6,10 @@ query MyGameParticipant($gameId: ID!) {
     player {
       id
     }
+    profileIcon {
+      id
+      url
+    }
     followParticipantIds
     followerParticipantIds
   }

@@ -93,6 +93,7 @@ type GameParticipant struct {
 	EntryNumber    uint32
 	PlayerID       uint32
 	Memo           *string
+	ProfileIconID  *uint32
 	LastAccessedAt time.Time
 	IsGone         bool
 }
@@ -114,10 +115,10 @@ type GameParticipantProfile struct {
 
 type GameParticipantIcon struct {
 	ID           uint32
-	IconTypeName string
 	IconImageURL string
 	Width        uint32
 	Height       uint32
+	DisplayOrder uint32
 }
 
 type GameParticipantIconsQuery struct {
@@ -228,13 +229,14 @@ type GameParticipantRepository interface {
 	FindGameParticipants(query GameParticipantsQuery) (participants GameParticipants, err error)
 	FindGameParticipant(query GameParticipantQuery) (participant *GameParticipant, err error)
 	RegisterGameParticipant(ctx context.Context, gameID uint32, participant GameParticipant) (saved *GameParticipant, err error)
-	UpdateGameParticipant(ctx context.Context, ID uint32, name string, memo *string) (err error)
+	UpdateGameParticipant(ctx context.Context, ID uint32, name string, memo *string, iconId *uint32) (err error)
 	// participant profile
 	FindGameParticipantProfile(gameParticipantID uint32) (profile *GameParticipantProfile, err error)
 	UpdateGameParticipantProfile(ctx context.Context, ID uint32, profile GameParticipantProfile) (err error)
 	// participant icon
 	FindGameParticipantIcons(query GameParticipantIconsQuery) (icons []GameParticipantIcon, err error)
 	RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon GameParticipantIcon) (saved *GameParticipantIcon, err error)
+	UpdateGameParticipantIcon(ctx context.Context, icon GameParticipantIcon) (err error)
 	DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error)
 	// participant notification
 	FindGameParticipantNotificationSetting(gameParticipantID uint32) (notification *GameParticipantNotification, err error)

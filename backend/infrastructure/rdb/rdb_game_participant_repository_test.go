@@ -71,7 +71,7 @@ func TestUpdateGameParticipant(t *testing.T) {
 	transaction := NewTestTransaction(database.Connection)
 	transaction.DoInTx(context.Background(), func(ctx context.Context) (interface{}, error) {
 		repo := db.NewGameParticipantRepository(&database)
-		err := repo.UpdateGameParticipant(ctx, 1, "name", nil)
+		err := repo.UpdateGameParticipant(ctx, 1, "name", nil, nil)
 		if err != nil {
 			t.Errorf("failed to register game participant: %s", err)
 		}

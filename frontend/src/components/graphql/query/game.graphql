@@ -6,6 +6,11 @@ query Game($id: ID!) {
     participants {
       id
       name
+      entryNumber
+      profileIcon {
+        id
+        url
+      }
     }
     periods {
       id

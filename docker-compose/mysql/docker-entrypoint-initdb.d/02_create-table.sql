@@ -176,6 +176,7 @@ create table game_participants (
     game_participant_name varchar(255) not null comment 'ゲーム参加者名',
     entry_number          int unsigned not null comment '参加番号',
     memo                  varchar(1000)         comment 'メモ',
+    profile_icon_id       int unsigned          comment 'プロフィールアイコンID',
     last_accessed_at      datetime     not null comment '最終アクセス日時',
     is_gone               boolean      not null comment 'ゲームから退出したか',
     created_at datetime     not null comment '作成日時',
@@ -217,15 +218,22 @@ alter table game_participant_profiles
 create table game_participant_icons (
     id                  int unsigned not null auto_increment comment 'ID',
     game_participant_id int unsigned not null comment 'ゲーム参加者ID',
-    icon_type_name      varchar(255) not null comment 'キャラクター画像種別',
     icon_image_url      varchar(1000) not null comment '画像url',
     width               int unsigned not null comment '幅',
     height              int unsigned not null comment '高さ',
+    display_order       int unsigned not null comment '表示順',
     is_deleted          boolean      not null comment '削除済みか',
     created_at datetime     not null comment '作成日時',
     updated_at datetime     not null comment '更新日時',
     primary key (id)
 );
+
+alter table game_participants
+    add constraint fk_game_participants_icons foreign key (profile_icon_id)
+    references game_participant_icons (id)
+    on update restrict
+    on delete restrict
+;
 
 alter table game_participant_icons
     add constraint fk_game_participant_icons_game_participants foreign key (game_participant_id)

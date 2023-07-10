@@ -1,10 +1,6 @@
-import Image from 'next/image'
 import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import {
-  DeleteParticipantIconDocument,
-  DeleteParticipantIconMutation,
-  DeleteParticipantIconMutationVariables,
   FollowDocument,
   FollowMutation,
   FollowMutationVariables,
@@ -20,32 +16,33 @@ import {
   UnfollowMutation,
   UnfollowMutationVariables
 } from '@/lib/generated/graphql'
-import { TrashIcon } from '@heroicons/react/24/outline'
 import { useCallback, useEffect, useState } from 'react'
 import ProfileEdit from './profile-edit'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import DangerButton from '@/components/button/danger-button'
-import ParticipantIconAdd from './participant-icon-add'
+import FollowsCount from './follows-count'
+import FollowersCount from './followers-count'
+import ParticipantIcons from './participant-icons'
 
 type Props = {
   close: (e: any) => void
   game: Game
+  participantId: string
   myself: GameParticipant | null
   refetchMyself: () => void
-  participantId: string
 }
 
 export default function Profile({
   close,
   game,
+  participantId,
   myself,
-  refetchMyself,
-  participantId
+  refetchMyself
 }: Props) {
   const [profile, setProfile] = useState<GameParticipantProfile | null>(null)
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
   const [isOpenEditModal, setIsOpenEditModal] = useState(false)
-  const [isOpenIconAddModal, setIsOpenIconAddModal] = useState(false)
+
   const [fetchProfile] = useLazyQuery<GameParticipantProfileQuery>(
     GameParticipantProfileDocument
   )
@@ -59,12 +56,13 @@ export default function Profile({
     setProfile(data.gameParticipantProfile)
   }
 
-  const refetchIcons = async () => {
+  const refetchIcons = async (): Promise<Array<GameParticipantIcon>> => {
     const { data } = await fetchIcons({
       variables: { participantId }
     })
-    if (data?.gameParticipantIcons == null) return
+    if (data?.gameParticipantIcons == null) return []
     setIcons(data.gameParticipantIcons)
+    return data.gameParticipantIcons
   }
 
   useEffect(() => {
@@ -72,16 +70,101 @@ export default function Profile({
     refetchIcons()
   }, [participantId])
 
-  const [follow] = useMutation<FollowMutation>(FollowDocument, {
-    onCompleted(e) {
-      refetchMyself()
-      refetchProfile()
-    },
-    onError(error) {
-      console.error(error)
+  if (profile == null) return <div>Loading...</div>
+
+  const canEdit = myself?.id === profile.participantId
+
+  const toggleEditModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenEditModal(!isOpenEditModal)
     }
-  })
-  const [unfollow] = useMutation<UnfollowMutation>(UnfollowDocument, {
+  }
+
+  return (
+    <div className='p-4'>
+      <p>なまえ: {profile.name}</p>
+      <p>紹介文: {profile.introduction}</p>
+      {profile.profileImageUrl && (
+        <img src={profile.profileImageUrl} width={400} alt='プロフィール画像' />
+      )}
+      <div>
+        <FollowsCount
+          game={game}
+          myself={myself}
+          profile={profile}
+          refetchMyself={refetchMyself}
+        />
+        &nbsp;
+        <FollowersCount
+          game={game}
+          myself={myself}
+          profile={profile}
+          refetchMyself={refetchMyself}
+        />
+      </div>
+      {canEdit && (
+        <PrimaryButton click={() => setIsOpenEditModal(true)}>
+          編集
+        </PrimaryButton>
+      )}
+      <FollowButton
+        game={game}
+        participantId={participantId}
+        myself={myself}
+        profile={profile}
+        refetchMyself={refetchMyself}
+        refetchProfile={refetchProfile}
+      />
+      <UnfollowButton
+        game={game}
+        participantId={participantId}
+        myself={myself}
+        profile={profile}
+        refetchMyself={refetchMyself}
+        refetchProfile={refetchProfile}
+      />
+      <ParticipantIcons
+        game={game}
+        myself={myself}
+        icons={icons}
+        canEdit={canEdit}
+        refetchIcons={refetchIcons}
+      />
+      {isOpenEditModal && (
+        <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
+          <ProfileEdit
+            game={game}
+            myself={myself}
+            refetchMyself={refetchMyself}
+            profile={profile}
+            icons={icons}
+            refetchProfile={refetchProfile}
+            close={toggleEditModal}
+          />
+        </Modal>
+      )}
+    </div>
+  )
+}
+
+type FollowButtonProps = {
+  game: Game
+  participantId: string
+  myself: GameParticipant | null
+  profile: GameParticipantProfile
+  refetchMyself: () => void
+  refetchProfile: () => void
+}
+
+const FollowButton = ({
+  game,
+  participantId,
+  myself,
+  profile,
+  refetchMyself,
+  refetchProfile
+}: FollowButtonProps) => {
+  const [follow] = useMutation<FollowMutation>(FollowDocument, {
     onCompleted(e) {
       refetchMyself()
       refetchProfile()
@@ -102,6 +185,43 @@ export default function Profile({
     })
   }, [follow])
 
+  const canFollow =
+    myself != null &&
+    myself.id !== profile.participantId &&
+    !myself.followParticipantIds.some((id) => id === profile.participantId)
+
+  if (!canFollow) return <></>
+
+  return <PrimaryButton click={() => handleFollow()}>フォロー</PrimaryButton>
+}
+
+type UnfollowButtonProps = {
+  game: Game
+  participantId: string
+  myself: GameParticipant | null
+  profile: GameParticipantProfile
+  refetchMyself: () => void
+  refetchProfile: () => void
+}
+
+const UnfollowButton = ({
+  game,
+  participantId,
+  myself,
+  profile,
+  refetchMyself,
+  refetchProfile
+}: UnfollowButtonProps) => {
+  const [unfollow] = useMutation<UnfollowMutation>(UnfollowDocument, {
+    onCompleted(e) {
+      refetchMyself()
+      refetchProfile()
+    },
+    onError(error) {
+      console.error(error)
+    }
+  })
+
   const handleUnfollow = useCallback(() => {
     unfollow({
       variables: {
@@ -113,157 +233,14 @@ export default function Profile({
     })
   }, [unfollow])
 
-  if (profile == null) return <div>Loading...</div>
-
-  const canEdit = myself?.id === profile.participantId
-  const canFollow =
-    myself != null &&
-    myself.id !== profile.participantId &&
-    !myself.followParticipantIds.some((id) => id === profile.participantId)
   const canUnfollow =
     myself != null &&
     myself.id !== profile.participantId &&
     myself.followParticipantIds.some((id) => id === profile.participantId)
 
-  const toggleEditModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenEditModal(!isOpenEditModal)
-    }
-  }
-  const toggleIconAddModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenIconAddModal(!isOpenIconAddModal)
-    }
-  }
+  if (!canUnfollow) return <></>
 
   return (
-    <div className='p-4'>
-      <p>なまえ: {profile.name}</p>
-      <p>紹介文: {profile.introduction}</p>
-      {profile.profileImageUrl && (
-        <img
-          className='w-32'
-          src={profile.profileImageUrl}
-          alt='プロフィール画像'
-        />
-      )}
-      <p>フォロー: {profile.followsCount}</p>
-      <p>フォロワー: {profile.followersCount}</p>
-      {canEdit && (
-        <PrimaryButton click={() => setIsOpenEditModal(true)}>
-          編集
-        </PrimaryButton>
-      )}
-      {canFollow && (
-        <PrimaryButton click={() => handleFollow()}>フォロー</PrimaryButton>
-      )}
-      {canUnfollow && (
-        <DangerButton click={() => handleUnfollow()}>フォロー解除</DangerButton>
-      )}
-      <ParticipantIcons
-        game={game}
-        icons={icons}
-        canEdit={canEdit}
-        refetchIcons={refetchIcons}
-      />
-      {canEdit && (
-        <PrimaryButton click={() => setIsOpenIconAddModal(true)}>
-          アイコン登録
-        </PrimaryButton>
-      )}
-      {isOpenEditModal && (
-        <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
-          <ProfileEdit
-            game={game}
-            myself={myself}
-            refetchMyself={refetchMyself}
-            profile={profile}
-            refetchProfile={refetchProfile}
-            close={toggleEditModal}
-          />
-        </Modal>
-      )}
-      {isOpenIconAddModal && (
-        <Modal header='アイコン追加' close={toggleIconAddModal} hideFooter>
-          <ParticipantIconAdd
-            game={game}
-            myself={myself}
-            icons={icons}
-            refetchIcons={refetchIcons}
-            close={toggleIconAddModal}
-          />
-        </Modal>
-      )}
-    </div>
-  )
-}
-
-type IconsProps = {
-  game: Game
-  icons: Array<GameParticipantIcon>
-  canEdit: boolean
-  refetchIcons: () => void
-}
-
-const ParticipantIcons = ({
-  game,
-  icons,
-  canEdit,
-  refetchIcons
-}: IconsProps) => {
-  const [deleteIcon] = useMutation<DeleteParticipantIconMutation>(
-    DeleteParticipantIconDocument,
-    {
-      onCompleted(e) {
-        refetchIcons()
-      },
-      onError(error) {
-        console.error(error)
-      }
-    }
-  )
-
-  const handleDelete = useCallback(
-    (iconId: string) => {
-      if (window.confirm('アイコンを削除しますか？') === false) return
-      deleteIcon({
-        variables: {
-          input: {
-            gameId: game.id,
-            iconId: iconId
-          }
-        } as DeleteParticipantIconMutationVariables
-      })
-    },
-    [deleteIcon]
-  )
-
-  return (
-    <div>
-      アイコン
-      <div className='mb-1 flex'>
-        {icons.length === 0 && <p>アイコンが登録されていません。</p>}
-        {icons.length > 0 &&
-          icons.map((icon) => (
-            <div className='relative flex' key={icon.id}>
-              <Image
-                className='block w-full'
-                src={icon.url}
-                width={60}
-                height={60}
-                alt='プロフィール画像'
-              />
-              {canEdit && (
-                <button
-                  className='absolute right-0 top-0'
-                  onClick={() => handleDelete(icon.id)}
-                >
-                  <TrashIcon className='h-4 w-4 bg-red-500 text-white' />
-                </button>
-              )}
-            </div>
-          ))}
-      </div>
-    </div>
+    <DangerButton click={() => handleUnfollow()}>フォロー解除</DangerButton>
   )
 }

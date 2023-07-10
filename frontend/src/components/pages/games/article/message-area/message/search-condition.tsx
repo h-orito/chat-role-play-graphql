@@ -10,6 +10,7 @@ import PrimaryButton from '@/components/button/primary-button'
 import CheckGroup from '@/components/form/check-group'
 import Modal from '@/components/modal/modal'
 import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import ParticipantsCheckbox from '../../../participant/participants-checkbox'
 
 type Props = {
   game: Game
@@ -141,52 +142,14 @@ export default function SearchCondition({
         </div>
         {isOpenSenderModal && (
           <Modal close={toggleSenderModal}>
-            <SenderSelect
-              game={game}
-              senders={senders}
-              setSenders={setSenders}
-              toggle={() => setIsOpenSenderModal(false)}
+            <ParticipantsCheckbox
+              participants={game.participants}
+              selects={senders}
+              setSelects={setSenders}
             />
           </Modal>
         )}
       </div>
-    </div>
-  )
-}
-
-type SenderSelectProps = {
-  game: Game
-  senders: GameParticipant[]
-  setSenders: (senders: GameParticipant[]) => void
-  toggle: () => void
-}
-
-const SenderSelect = ({
-  game,
-  senders,
-  setSenders,
-  toggle
-}: SenderSelectProps) => {
-  return (
-    <div>
-      {game.participants.map((gp) => (
-        <div key={gp.id} className='flex items-center'>
-          <input
-            id={`search-sender-${gp.id}`}
-            type='checkbox'
-            className='mr-2'
-            checked={senders.includes(gp)}
-            onChange={() => {
-              if (senders.includes(gp)) {
-                setSenders(senders.filter((s) => s.id !== gp.id))
-              } else {
-                setSenders([...senders, gp])
-              }
-            }}
-          />
-          <label htmlFor={`search-sender-${gp.id}`}>{gp.name}</label>
-        </div>
-      ))}
     </div>
   )
 }

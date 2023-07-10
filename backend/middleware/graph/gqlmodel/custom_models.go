@@ -5,14 +5,16 @@ import "time"
 // custom modelを定義
 
 type GameParticipant struct {
-	ID             string    `json:"id"`
-	Name           string    `json:"name"`
-	EntryNumber    int       `json:"entryNumber"`
-	PlayerID       string    `json:"playerId"`
-	Player         *Player   `json:"player"`
-	Memo           *string   `json:"memo"`
-	LastAccessedAt time.Time `json:"lastAccessedAt"`
-	IsGone         bool      `json:"isGone"`
+	ID             string               `json:"id"`
+	Name           string               `json:"name"`
+	EntryNumber    int                  `json:"entryNumber"`
+	PlayerID       string               `json:"playerId"`
+	Player         *Player              `json:"player"`
+	Memo           *string              `json:"memo"`
+	ProfileIconID  *string              `json:"profileIconId"`
+	ProfileIcon    *GameParticipantIcon `json:"profileIcon"`
+	LastAccessedAt time.Time            `json:"lastAccessedAt"`
+	IsGone         bool                 `json:"isGone"`
 }
 
 type MessageSender struct {

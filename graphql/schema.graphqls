@@ -87,6 +87,7 @@ type GameParticipant {
   entryNumber: Int!
   player: Player!
   memo: String
+  profileIcon: GameParticipantIcon
   lastAccessedAt: DateTime!
   isGone: Boolean!
   followParticipantIds: [ID!]!
@@ -125,10 +126,10 @@ type GameParticipantProfile {
 
 type GameParticipantIcon {
   id: ID!
-  name: String!
   url: String!
   width: Int!
   height: Int!
+  displayOrder: Int!
 }
 
 type GamePeriod {
@@ -459,6 +460,9 @@ type Mutation {
   registerGameParticipantIcon(
     input: NewGameParticipantIcon!
   ): RegisterGameParticipantIconPayload! @isAuthenticated
+  updateGameParticipantIcon(
+    input: UpdateGameParticipantIcon!
+  ): UpdateGameParticipantIconPayload! @isAuthenticated
   deleteGameParticipantIcon(
     input: DeleteGameParticipantIcon!
   ): DeleteGameParticipantIconPayload! @isAuthenticated
@@ -760,6 +764,7 @@ input UpdateGameParticipantProfile {
   name: String!
   profileImageFile: Upload
   profileImageUrl: String
+  profileIconId: ID
   introduction: String
   memo: String
 }
@@ -770,7 +775,6 @@ type UpdateGameParticipantProfilePayload {
 
 input NewGameParticipantIcon {
   gameId: ID!
-  name: String!
   iconFile: Upload!
   width: Int!
   height: Int!
@@ -778,6 +782,16 @@ input NewGameParticipantIcon {
 
 type RegisterGameParticipantIconPayload {
   gameParticipantIcon: GameParticipantIcon!
+}
+
+input UpdateGameParticipantIcon {
+  gameId: ID!
+  id: ID!
+  displayOrder: Int!
+}
+
+type UpdateGameParticipantIconPayload {
+  ok: Boolean!
 }
 
 input DeleteGameParticipantIcon {
