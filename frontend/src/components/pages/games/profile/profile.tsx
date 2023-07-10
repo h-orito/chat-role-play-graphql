@@ -61,8 +61,8 @@ export default function Profile({
       variables: { participantId }
     })
     if (data?.gameParticipantIcons == null) return []
-    setIcons(data.gameParticipantIcons)
-    return data.gameParticipantIcons
+    setIcons(data.gameParticipantIcons as Array<GameParticipantIcon>)
+    return data.gameParticipantIcons as Array<GameParticipantIcon>
   }
 
   useEffect(() => {
