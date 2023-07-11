@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import {
@@ -82,54 +83,81 @@ export default function Profile({
 
   return (
     <div className='p-4'>
-      <p>なまえ: {profile.name}</p>
-      <p>紹介文: {profile.introduction}</p>
-      {profile.profileImageUrl && (
-        <img src={profile.profileImageUrl} width={400} alt='プロフィール画像' />
-      )}
-      <div>
-        <FollowsCount
-          game={game}
-          myself={myself}
-          profile={profile}
-          refetchMyself={refetchMyself}
-        />
-        &nbsp;
-        <FollowersCount
-          game={game}
-          myself={myself}
-          profile={profile}
-          refetchMyself={refetchMyself}
-        />
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+        <div>
+          {profile.profileImageUrl ? (
+            <img
+              src={profile.profileImageUrl}
+              width={400}
+              alt='プロフィール画像'
+            />
+          ) : (
+            <Image
+              src={
+                'https://placehold.jp/cccccc/999/400x600.png?text=no%20image'
+              }
+              width={400}
+              height={600}
+              alt='プロフィール画像'
+            />
+          )}
+        </div>
+        <div>
+          <div className='flex'>
+            <p className='text-lg font-bold'>{profile.name}</p>
+            <div className='ml-auto'>
+              <FollowButton
+                game={game}
+                participantId={participantId}
+                myself={myself}
+                profile={profile}
+                refetchMyself={refetchMyself}
+                refetchProfile={refetchProfile}
+              />
+              <UnfollowButton
+                game={game}
+                participantId={participantId}
+                myself={myself}
+                profile={profile}
+                refetchMyself={refetchMyself}
+                refetchProfile={refetchProfile}
+              />
+              {canEdit && (
+                <PrimaryButton click={() => setIsOpenEditModal(true)}>
+                  プロフィール編集
+                </PrimaryButton>
+              )}
+            </div>
+          </div>
+          {profile.introduction && (
+            <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-xs text-gray-700'>
+              {profile.introduction}
+            </p>
+          )}
+          <div>
+            <FollowsCount
+              game={game}
+              myself={myself}
+              profile={profile}
+              refetchMyself={refetchMyself}
+            />
+            &nbsp;&nbsp;
+            <FollowersCount
+              game={game}
+              myself={myself}
+              profile={profile}
+              refetchMyself={refetchMyself}
+            />
+          </div>
+          <ParticipantIcons
+            game={game}
+            myself={myself}
+            icons={icons}
+            canEdit={canEdit}
+            refetchIcons={refetchIcons}
+          />
+        </div>
       </div>
-      {canEdit && (
-        <PrimaryButton click={() => setIsOpenEditModal(true)}>
-          編集
-        </PrimaryButton>
-      )}
-      <FollowButton
-        game={game}
-        participantId={participantId}
-        myself={myself}
-        profile={profile}
-        refetchMyself={refetchMyself}
-        refetchProfile={refetchProfile}
-      />
-      <UnfollowButton
-        game={game}
-        participantId={participantId}
-        myself={myself}
-        profile={profile}
-        refetchMyself={refetchMyself}
-        refetchProfile={refetchProfile}
-      />
-      <ParticipantIcons
-        game={game}
-        myself={myself}
-        icons={icons}
-        canEdit={canEdit}
-        refetchIcons={refetchIcons}
-      />
       {isOpenEditModal && (
         <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
           <ProfileEdit

@@ -1,7 +1,7 @@
+import Head from 'next/head'
 import { createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
 import ArticleModal from '@/components/modal/article-modal'
-import Modal from '@/components/modal/modal'
 import Article from '@/components/pages/games/article/article'
 import Profile from '@/components/pages/games/profile/profile'
 import Sidebar from '@/components/pages/games/sidebar/sidebar'
@@ -76,6 +76,9 @@ export default function GamePage({ gameId, game }: Props) {
   if (loading) return <div>loading...</div>
   return (
     <main className='flex w-full'>
+      <Head>
+        <title>{game.name}</title>
+      </Head>
       <Sidebar
         game={game}
         myself={myself}

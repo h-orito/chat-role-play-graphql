@@ -2,6 +2,7 @@ query Followers($participantId: ID!) {
   gameParticipantFollowers(participantId: $participantId) {
     id
     name
+    entryNumber
     profileIcon {
       id
       url

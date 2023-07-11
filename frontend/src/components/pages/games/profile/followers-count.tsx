@@ -36,10 +36,20 @@ export default function FollowersCount({
     setIsOpenProfileModal(true)
   }
 
+  if (profile.followersCount <= 0) {
+    return (
+      <>
+        フォロワー: <span className='font-bold'>{profile.followersCount}</span>
+      </>
+    )
+  }
   return (
     <>
-      <button onClick={() => setIsOpenFollowersModal(true)}>
-        フォロワー: {profile.followersCount}
+      <button
+        className='hover:text-blue-500'
+        onClick={() => setIsOpenFollowersModal(true)}
+      >
+        フォロワー: <span className='font-bold'>{profile.followersCount}</span>
       </button>
       {isOpenFollowersModal && (
         <ArticleModal

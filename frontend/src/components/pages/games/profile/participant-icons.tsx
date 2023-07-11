@@ -33,10 +33,21 @@ export default function ParticipantIcons({
   }
 
   return (
-    <div>
-      アイコン
-      <div className='mb-1 flex'>
-        {icons.length === 0 && <p>アイコンが登録されていません。</p>}
+    <div className='my-4'>
+      <div className='flex'>
+        {icons.length === 0 && (
+          <div className='relative flex'>
+            <Image
+              className='block w-full'
+              src={
+                'https://placehold.jp/cccccc/999/120x120.png?text=no%20image'
+              }
+              width={60}
+              height={60}
+              alt='アイコン'
+            />
+          </div>
+        )}
         {icons.length > 0 &&
           icons.map((icon) => (
             <div className='relative flex' key={icon.id}>
@@ -45,13 +56,16 @@ export default function ParticipantIcons({
                 src={icon.url}
                 width={60}
                 height={60}
-                alt='プロフィール画像'
+                alt='アイコン'
               />
             </div>
           ))}
       </div>
       {canEdit && (
-        <PrimaryButton click={() => setIsOpenIconEditModal(true)}>
+        <PrimaryButton
+          className='mt-2'
+          click={() => setIsOpenIconEditModal(true)}
+        >
           アイコン管理
         </PrimaryButton>
       )}

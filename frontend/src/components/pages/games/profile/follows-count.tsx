@@ -36,10 +36,21 @@ export default function FollowsCount({
     setIsOpenProfileModal(true)
   }
 
+  if (profile.followsCount <= 0) {
+    return (
+      <>
+        フォロー: <span className='font-bold'>{profile.followsCount}</span>
+      </>
+    )
+  }
+
   return (
     <>
-      <button onClick={() => setIsOpenFollowsModal(true)}>
-        フォロー: {profile.followsCount}
+      <button
+        className='hover:text-blue-500'
+        onClick={() => setIsOpenFollowsModal(true)}
+      >
+        フォロー: <span className='font-bold'>{profile.followsCount}</span>
       </button>
       {isOpenFollowsModal && (
         <ArticleModal

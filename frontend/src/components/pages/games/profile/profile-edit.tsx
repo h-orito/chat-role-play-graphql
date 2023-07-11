@@ -130,6 +130,16 @@ export default function ProfileEdit({
         />
         <div>
           <label>プロフィールアイコン</label>
+          {icons.length <= 0 && (
+            <Image
+              src={
+                'https://placehold.jp/cccccc/999/120x120.png?text=no%20image'
+              }
+              width={60}
+              height={60}
+              alt='アイコン'
+            />
+          )}
           {icons.length > 0 && (
             <div>
               <button
@@ -143,7 +153,7 @@ export default function ProfileEdit({
                   src={
                     selectedIcon
                       ? selectedIcon.url
-                      : 'https://placehold.jp/120x120.png'
+                      : 'https://placehold.jp/cccccc/999/120x120.png?text=no%20image'
                   }
                   width={selectedIcon ? selectedIcon.width : 60}
                   height={selectedIcon ? selectedIcon.height : 60}
