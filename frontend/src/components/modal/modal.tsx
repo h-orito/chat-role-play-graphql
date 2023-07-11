@@ -1,6 +1,7 @@
-import { cloneElement } from 'react'
+import { cloneElement, useState } from 'react'
 import Portal from './portal'
 import SecondaryButton from '../button/scondary-button'
+import { set } from 'react-hook-form'
 
 type ModalProps = {
   header?: string
@@ -15,11 +16,20 @@ export default function Modal({
   children,
   hideFooter
 }: ModalProps) {
+  const [insideClick, setInsideClick] = useState(false)
+  const onMouseDown = (e: any) => setInsideClick(e.target === e.currentTarget)
+  const onMouseUp = (e: any) => {
+    if (e.target === e.currentTarget && insideClick) {
+      close(e)
+    }
+  }
+
   return (
     <Portal>
       <div
         className='fixed inset-x-0 inset-y-0 z-50 flex items-center justify-center bg-black/60 text-sm'
-        onClick={close}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
       >
         <div className='md:w-screen-md max-h-[90vh] w-[90vw] max-w-[90vw] overflow-y-auto bg-white p-4 md:max-w-screen-md'>
           {header && (
