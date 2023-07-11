@@ -17,6 +17,9 @@ query Game($id: ID!) {
     }
     settings {
       chara {
+        charachips {
+          name
+        }
         canOriginalCharacter
       }
       capacity {

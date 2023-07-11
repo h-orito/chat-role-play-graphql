@@ -5,16 +5,61 @@ type GameSettingsProps = {
   game: Game
 }
 
+type SettingItem = {
+  name: string
+  value: string
+}
+
+// TODO: 項目網羅
 export default function GameSettings({ close, game }: GameSettingsProps) {
-  const submit = (e: any) => {
-    e.preventDefault()
-    // いろいろな処理
-    close(e)
-  }
+  const settings = game.settings
+  const items: Array<SettingItem> = []
+  items.push({
+    name: '利用可能なキャラチップ',
+    value:
+      settings.chara.charachips.length > 0
+        ? settings.chara.charachips.map((c) => c.name).join('、')
+        : 'なし'
+  })
+  items.push({
+    name: 'オリジナルキャラクターの登録',
+    value: settings.chara.canOriginalCharacter ? '可能' : '不可'
+  })
+  items.push({
+    name: '人数',
+    value: `${settings.capacity.min} - ${settings.capacity.max}人`
+  })
+  items.push({
+    name: 'ゲーム内期間',
+    value: `${settings.time.periodPrefix ?? ''}1${
+      settings.time.periodSuffix ?? ''
+    }, ${settings.time.periodPrefix ?? ''}2${
+      settings.time.periodSuffix ?? ''
+    },..`
+  })
+
   return (
     <div>
-      <p>ゲーム設定をここに表示</p>
-      <button onClick={close}>とじる</button>
+      <table className='table-auto border border-gray-300'>
+        <thead>
+          <tr className='bg-blue-200'>
+            <th className='border border-gray-300 p-2 text-left'>項目</th>
+            <th className='border border-gray-300 p-2'>設定</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item: SettingItem) => {
+            return (
+              <tr>
+                <td className='border border-gray-300 p-2'>{item.name}</td>
+                <td className='whitespace-pre-wrap break-words border border-gray-300 p-2 text-left'>
+                  {item.value}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }
