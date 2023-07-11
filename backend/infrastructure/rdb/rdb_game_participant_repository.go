@@ -450,6 +450,28 @@ func updateGameParticipantIcon(tx *gorm.DB, icon model.GameParticipantIcon) (err
 }
 
 func deleteGameParticipantIcon(tx *gorm.DB, iconID uint32) (err error) {
+	// game_participant.profile_icon_idに使われていたら先に削除
+	var rdb GameParticipantIcon
+	result := tx.Model(&GameParticipantIcon{}).Where("id = ?", iconID).First(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil
+	}
+	if result.Error != nil {
+		return fmt.Errorf("failed to find icon: %s \n", result.Error)
+	}
+	participant, err := findRdbGameParticipant(tx, model.GameParticipantQuery{
+		ID: &rdb.GameParticipantID,
+	})
+	if err != nil {
+		return err
+	}
+	if participant == nil {
+		return fmt.Errorf("failed to find participant: %d \n", rdb.GameParticipantID)
+	}
+	if participant.ProfileIconID != nil && *participant.ProfileIconID == iconID {
+		tx.Model(&GameParticipant{}).Where("id = ?", rdb.GameParticipantID).Update("profile_icon_id", nil)
+	}
+	// icon自体を論理削除
 	tx.Model(&GameParticipantIcon{}).Where("id = ?", iconID).Update("is_deleted", true)
 	return nil
 }
