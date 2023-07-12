@@ -1,3 +1,4 @@
+import { iso2display } from '@/components/util/datetime/datetime'
 import { Game } from '@/lib/generated/graphql'
 
 type GameSettingsProps = {
@@ -37,7 +38,30 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
       settings.time.periodSuffix ?? ''
     },..`
   })
-
+  items.push({
+    name: '公開',
+    value: iso2display(settings.time.openAt)
+  })
+  items.push({
+    name: '登録開始',
+    value: iso2display(settings.time.startParticipateAt)
+  })
+  items.push({
+    name: 'ゲーム開始',
+    value: iso2display(settings.time.startGameAt)
+  })
+  items.push({
+    name: '期間短縮',
+    value: settings.rule.canShorten ? '可能' : '不可'
+  })
+  items.push({
+    name: 'ダイレクトメッセージ',
+    value: settings.rule.canSendDirectMessage ? '可能' : '不可'
+  })
+  items.push({
+    name: 'ゲーム参加パスワード',
+    value: settings.password.hasPassword ? 'あり' : 'なし'
+  })
   return (
     <div>
       <table className='table-auto border border-gray-300'>
