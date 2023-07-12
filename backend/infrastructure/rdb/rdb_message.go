@@ -155,11 +155,13 @@ type GameParticipantGroup struct {
 
 func (g GameParticipantGroup) ToModel(
 	gameParticipantIDs []uint32,
+	latestUnixTimeMilli uint64,
 ) *model.GameParticipantGroup {
 	return &model.GameParticipantGroup{
-		ID:        g.ID,
-		Name:      g.GameParticipantGroupName,
-		MemberIDs: gameParticipantIDs,
+		ID:                  g.ID,
+		Name:                g.GameParticipantGroupName,
+		MemberIDs:           gameParticipantIDs,
+		LatestUnixTimeMilli: latestUnixTimeMilli,
 	}
 }
 

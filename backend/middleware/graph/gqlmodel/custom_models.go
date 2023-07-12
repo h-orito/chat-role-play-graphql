@@ -42,8 +42,9 @@ type GameParticipantDiary struct {
 }
 
 type GameParticipantGroup struct {
-	ID             string             `json:"id"`
-	Name           string             `json:"name"`
-	ParticipantIDs []string           `json:"participantIds"`
-	Participants   []*GameParticipant `json:"participants"`
+	ID                  string             `json:"id"`
+	Name                string             `json:"name"`
+	ParticipantIDs      []string           `json:"participantIds"`
+	Participants        []*GameParticipant `json:"participants"`
+	LatestUnixTimeMilli uint64             `json:"latestUnixTimeMilli"`
 }

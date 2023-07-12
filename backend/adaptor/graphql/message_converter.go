@@ -17,12 +17,13 @@ func MapToMessages(ms model.Messages) gqlmodel.Messages {
 		currentPageNumber = &n
 	}
 	return gqlmodel.Messages{
-		List:              list,
-		AllPageCount:      int(ms.AllPageCount),
-		HasPrePage:        ms.HasPrePage,
-		HasNextPage:       ms.HasNextPage,
-		CurrentPageNumber: currentPageNumber,
-		IsDesc:            ms.IsDesc,
+		List:                list,
+		AllPageCount:        int(ms.AllPageCount),
+		HasPrePage:          ms.HasPrePage,
+		HasNextPage:         ms.HasNextPage,
+		CurrentPageNumber:   currentPageNumber,
+		IsDesc:              ms.IsDesc,
+		LatestUnixTimeMilli: ms.LatestUnixTimeMilli,
 	}
 
 }
@@ -79,6 +80,7 @@ func MapToGameParticipantGroup(g *model.GameParticipantGroup) *gqlmodel.GamePart
 		ParticipantIDs: array.Map(g.MemberIDs, func(id uint32) string {
 			return intIdToBase64(id, "GameParticipant")
 		}),
+		LatestUnixTimeMilli: g.LatestUnixTimeMilli,
 	}
 }
 
@@ -93,12 +95,13 @@ func MapToDirectMessages(ms model.DirectMessages) gqlmodel.DirectMessages {
 		currentPageNumber = &n
 	}
 	return gqlmodel.DirectMessages{
-		List:              list,
-		AllPageCount:      int(ms.AllPageCount),
-		HasPrePage:        ms.HasPrePage,
-		HasNextPage:       ms.HasNextPage,
-		CurrentPageNumber: currentPageNumber,
-		IsDesc:            ms.IsDesc,
+		List:                list,
+		AllPageCount:        int(ms.AllPageCount),
+		HasPrePage:          ms.HasPrePage,
+		HasNextPage:         ms.HasNextPage,
+		CurrentPageNumber:   currentPageNumber,
+		IsDesc:              ms.IsDesc,
+		LatestUnixTimeMilli: ms.LatestUnixTimeMilli,
 	}
 
 }

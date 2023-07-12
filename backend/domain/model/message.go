@@ -150,9 +150,10 @@ type DirectMessage struct {
 }
 
 type GameParticipantGroup struct {
-	ID        uint32
-	Name      string
-	MemberIDs []uint32
+	ID                  uint32
+	Name                string
+	MemberIDs           []uint32
+	LatestUnixTimeMilli uint64
 }
 
 type GameParticipantGroupsQuery struct {

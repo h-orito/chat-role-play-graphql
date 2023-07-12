@@ -4,12 +4,13 @@ import {
   GameParticipant,
   Message,
   Messages,
+  MessagesLatestQuery,
   MessagesQuery,
   PageableQuery
 } from '@/lib/generated/graphql'
 import MessageComponent from './message'
 import Paging from '../paging'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import SearchCondition from './search-condition'
 import { LazyQueryExecFunction, OperationVariables } from '@apollo/client'
 
@@ -18,8 +19,15 @@ type Props = {
   className?: string
   myself: GameParticipant | null
   fetchMessages: LazyQueryExecFunction<GameMessagesQuery, OperationVariables>
+  fetchMessagesLatest: LazyQueryExecFunction<
+    MessagesLatestQuery,
+    OperationVariables
+  >
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
+  isViewing: boolean
+  existsUnread: boolean
+  setExistUnread: (exist: boolean) => void
   onlyFollowing?: boolean
 }
 
@@ -28,12 +36,18 @@ export default function MessageArea({
   className,
   myself,
   fetchMessages,
+  fetchMessagesLatest,
   openProfileModal,
   openFavoritesModal,
+  isViewing,
+  existsUnread,
+  setExistUnread,
   onlyFollowing = false
 }: Props) {
   const defaultMessageQuery: MessagesQuery = {
-    senderIds: onlyFollowing ? myself?.followParticipantIds : null,
+    senderIds: onlyFollowing
+      ? [...myself!.followParticipantIds, myself!.id]
+      : null,
     paging: {
       pageSize: 10,
       pageNumber: 1,
@@ -46,8 +60,10 @@ export default function MessageArea({
     allPageCount: 0,
     hasPrePage: false,
     hasNextPage: false,
-    isDesc: true
+    isDesc: true,
+    latestUnixTimeMilli: 0
   })
+  const [latestTime, setLatestTime] = useState<number>(0)
   const [messageQuery, setMessageQuery] = useState(defaultMessageQuery)
 
   const search = async (query: MessagesQuery) => {
@@ -63,11 +79,50 @@ export default function MessageArea({
     })
     if (data?.messages == null) return
     setMessages(data.messages as Messages)
+    setLatestTime(data.messages.latestUnixTimeMilli as number)
+    setExistUnread(false)
   }
 
+  const fetchLatestTime = async () => {
+    if (existsUnread) return
+    const { data } = await fetchMessagesLatest({
+      variables: {
+        gameId: game.id,
+        query: {
+          ...messageQuery,
+          offsetUnixTimeMilli: latestTime
+        }
+      } as MessagesQuery
+    })
+    if (data?.messagesLatestUnixTimeMilli == null) return
+    const latest = data.messagesLatestUnixTimeMilli as number
+    if (latestTime < latest) {
+      if (isViewing) search(messageQuery)
+      else setExistUnread(true)
+    }
+  }
+
+  // 初回の取得
   useEffect(() => {
     search(defaultMessageQuery)
   }, [])
+
+  // 30秒ごとに最新をチェックして更新されていれば取得
+  const usePollingMessages = (callback: () => void) => {
+    const ref = useRef<() => void>(callback)
+    useEffect(() => {
+      ref.current = callback
+    }, [callback])
+
+    useEffect(() => {
+      const fetch = () => {
+        ref.current()
+      }
+      const timer = setInterval(fetch, 30000)
+      return () => clearInterval(timer)
+    }, [])
+  }
+  usePollingMessages(() => fetchLatestTime())
 
   const setPageableQuery = (pageNumber: number) => {
     const newQuery = {

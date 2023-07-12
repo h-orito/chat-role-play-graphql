@@ -189,6 +189,7 @@ type GameParticipantGroup {
   id: ID!
   name: String!
   participants: [GameParticipant!]!
+  latestUnixTimeMilli: Long!
 }
 
 ####################################################

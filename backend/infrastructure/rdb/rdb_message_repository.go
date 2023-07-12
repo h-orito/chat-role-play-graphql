@@ -477,14 +477,43 @@ func findGameParticipantGroups(db *gorm.DB, query model.GameParticipantGroupsQue
 	if err != nil {
 		return nil, err
 	}
+	latests, err := selectGameParticipantGroupLatests(db, ids)
 	return array.Map(rdbs, func(rdb GameParticipantGroup) model.GameParticipantGroup {
 		m := array.Map(array.Filter(members, func(m GameParticipantGroupMember) bool {
 			return m.GameParticipantGroupID == rdb.ID
 		}), func(m GameParticipantGroupMember) uint32 {
 			return m.GameParticipantID
 		})
-		return *rdb.ToModel(m)
+		latest := array.Find(latests, func(latest GameParticipantGroupLatest) bool {
+			return latest.GameParticipantGroupID == rdb.ID
+		})
+		if latest == nil {
+			return *rdb.ToModel(m, 0)
+		} else {
+			return *rdb.ToModel(m, latest.LatestUnixTimeMilli)
+		}
 	}), nil
+}
+
+type GameParticipantGroupLatest struct {
+	GameParticipantGroupID uint32
+	LatestUnixTimeMilli    uint64
+}
+
+func selectGameParticipantGroupLatests(db *gorm.DB, ids []uint32) ([]GameParticipantGroupLatest, error) {
+	var rdb []GameParticipantGroupLatest
+	result := db.Table("direct_messages").
+		Select("game_participant_group_id, max(send_unixtime_milli) as latest_unix_time_milli").
+		Where("game_participant_group_id in (?)", ids).
+		Group("game_participant_group_id").
+		Find(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	return rdb, nil
 }
 
 func findRdbGameParticipantGroups(db *gorm.DB, query model.GameParticipantGroupsQuery) ([]GameParticipantGroup, error) {
@@ -555,7 +584,7 @@ func registerGameParticipantGroup(tx *gorm.DB, gameID uint32, group model.GamePa
 	if err != nil {
 		return nil, err
 	}
-	return rdb.ToModel(group.MemberIDs), nil
+	return rdb.ToModel(group.MemberIDs, 0), nil
 }
 
 func updateGameParticipantGroup(tx *gorm.DB, gameID uint32, group model.GameParticipantGroup) error {

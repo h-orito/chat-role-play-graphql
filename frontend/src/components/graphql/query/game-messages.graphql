@@ -36,5 +36,6 @@ query GameMessages($gameId: ID!, $query: MessagesQuery!) {
     hasNextPage
     currentPageNumber
     isDesc
+    latestUnixTimeMilli
   }
 }

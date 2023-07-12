@@ -13,5 +13,6 @@ query ParticipantGroups($gameId: ID!, $participantId: ID) {
         url
       }
     }
+    latestUnixTimeMilli
   }
 }

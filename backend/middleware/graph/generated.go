@@ -186,9 +186,10 @@ type ComplexityRoot struct {
 	}
 
 	GameParticipantGroup struct {
-		ID           func(childComplexity int) int
-		Name         func(childComplexity int) int
-		Participants func(childComplexity int) int
+		ID                  func(childComplexity int) int
+		LatestUnixTimeMilli func(childComplexity int) int
+		Name                func(childComplexity int) int
+		Participants        func(childComplexity int) int
 	}
 
 	GameParticipantIcon struct {
@@ -1129,6 +1130,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GameParticipantGroup.ID(childComplexity), true
+
+	case "GameParticipantGroup.latestUnixTimeMilli":
+		if e.complexity.GameParticipantGroup.LatestUnixTimeMilli == nil {
+			break
+		}
+
+		return e.complexity.GameParticipantGroup.LatestUnixTimeMilli(childComplexity), true
 
 	case "GameParticipantGroup.name":
 		if e.complexity.GameParticipantGroup.Name == nil {
@@ -3044,6 +3052,7 @@ type GameParticipantGroup {
   id: ID!
   name: String!
   participants: [GameParticipant!]!
+  latestUnixTimeMilli: Long!
 }
 
 ####################################################
@@ -8368,6 +8377,50 @@ func (ec *executionContext) fieldContext_GameParticipantGroup_participants(ctx c
 				return ec.fieldContext_GameParticipant_followerParticipantIds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GameParticipant", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameParticipantGroup_latestUnixTimeMilli(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameParticipantGroup) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameParticipantGroup_latestUnixTimeMilli(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LatestUnixTimeMilli, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint64)
+	fc.Result = res
+	return ec.marshalNLong2uint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameParticipantGroup_latestUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameParticipantGroup",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Long does not have child fields")
 		},
 	}
 	return fc, nil
@@ -16329,6 +16382,8 @@ func (ec *executionContext) fieldContext_Query_gameParticipantGroups(ctx context
 				return ec.fieldContext_GameParticipantGroup_name(ctx, field)
 			case "participants":
 				return ec.fieldContext_GameParticipantGroup_participants(ctx, field)
+			case "latestUnixTimeMilli":
+				return ec.fieldContext_GameParticipantGroup_latestUnixTimeMilli(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GameParticipantGroup", field.Name)
 		},
@@ -17240,6 +17295,8 @@ func (ec *executionContext) fieldContext_RegisterGameParticipantGroupPayload_gam
 				return ec.fieldContext_GameParticipantGroup_name(ctx, field)
 			case "participants":
 				return ec.fieldContext_GameParticipantGroup_participants(ctx, field)
+			case "latestUnixTimeMilli":
+				return ec.fieldContext_GameParticipantGroup_latestUnixTimeMilli(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GameParticipantGroup", field.Name)
 		},
@@ -24481,6 +24538,13 @@ func (ec *executionContext) _GameParticipantGroup(ctx context.Context, sel ast.S
 				return innerFunc(ctx)
 
 			})
+		case "latestUnixTimeMilli":
+
+			out.Values[i] = ec._GameParticipantGroup_latestUnixTimeMilli(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

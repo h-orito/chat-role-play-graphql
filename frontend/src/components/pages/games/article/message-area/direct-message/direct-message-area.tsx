@@ -56,7 +56,8 @@ export default function DirectMessageArea({
     allPageCount: 0,
     hasPrePage: false,
     hasNextPage: false,
-    isDesc: true
+    isDesc: true,
+    latestUnixTimeMilli: 0
   })
 
   const [fetchDirectMessages] = useLazyQuery<GameDirectMessagesQuery>(

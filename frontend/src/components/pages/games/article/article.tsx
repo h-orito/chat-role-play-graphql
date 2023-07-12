@@ -2,7 +2,9 @@ import {
   Game,
   GameMessagesDocument,
   GameMessagesQuery,
-  GameParticipant
+  GameParticipant,
+  MessagesLatestDocument,
+  MessagesLatestQuery
 } from '@/lib/generated/graphql'
 import ArticleHeader from './article-header'
 import { useState } from 'react'
@@ -37,20 +39,36 @@ export default function Article({
   }
 
   const [fetchMessages] = useLazyQuery<GameMessagesQuery>(GameMessagesDocument)
+  const [fetchMessagesLatest] = useLazyQuery<MessagesLatestQuery>(
+    MessagesLatestDocument
+  )
+
+  const [existsHomeUnread, setExistsHomeUnread] = useState(false)
+  const [existFollowsUnread, setExistFollowsUnread] = useState(false)
 
   return (
     <article
       id='article'
       className='relative flex h-screen max-h-screen w-full flex-1 flex-col'
     >
-      <ArticleHeader myself={myself} tab={tab} setTab={setTab} />
+      <ArticleHeader
+        myself={myself}
+        tab={tab}
+        setTab={setTab}
+        existsHomeUnread={existsHomeUnread}
+        existsFollowsUnread={existFollowsUnread}
+      />
       <MessageArea
         className={`${tab === 'home' ? '' : 'hidden'}`}
         game={game}
         myself={myself}
         fetchMessages={fetchMessages}
+        fetchMessagesLatest={fetchMessagesLatest}
         openProfileModal={openProfileModal}
         openFavoritesModal={openFavoritesModal}
+        isViewing={tab === 'home'}
+        existsUnread={existsHomeUnread}
+        setExistUnread={setExistsHomeUnread}
       />
       {myself && (
         <>
@@ -59,8 +77,12 @@ export default function Article({
             game={game}
             myself={myself}
             fetchMessages={fetchMessages}
+            fetchMessagesLatest={fetchMessagesLatest}
             openProfileModal={openProfileModal}
             openFavoritesModal={openFavoritesModal}
+            isViewing={tab === 'follow'}
+            existsUnread={existFollowsUnread}
+            setExistUnread={setExistFollowsUnread}
             onlyFollowing
           />
           <DirectMessagesArea
