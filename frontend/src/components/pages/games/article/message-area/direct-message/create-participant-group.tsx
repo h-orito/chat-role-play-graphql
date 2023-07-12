@@ -79,7 +79,7 @@ export default function CreateParticipantGroup({
           <p>グループに含めるメンバーを選択してください</p>
         )}
         <ParticipantsCheckbox
-          participants={game.participants}
+          participants={game.participants.filter((p) => p.id !== myself.id)}
           selects={participants}
           setSelects={setParticipants}
         />

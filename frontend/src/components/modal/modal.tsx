@@ -1,7 +1,6 @@
 import { cloneElement, useState } from 'react'
 import Portal from './portal'
 import SecondaryButton from '../button/scondary-button'
-import { set } from 'react-hook-form'
 
 type ModalProps = {
   header?: string
