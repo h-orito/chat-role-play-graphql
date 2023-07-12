@@ -24,6 +24,10 @@ func (repo *MessageRepository) FindMessages(gameID uint32, query model.MessagesQ
 	return findMessages(repo.db.Connection, gameID, query)
 }
 
+func (repo *MessageRepository) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error) {
+	return selectMaxMessageSendUnixTimeMilli(repo.db.Connection, gameID, query)
+}
+
 func (repo *MessageRepository) FindMessage(gameID uint32, ID uint64) (*model.Message, error) {
 	return findMessage(repo.db.Connection, gameID, ID)
 }
@@ -93,6 +97,10 @@ func (repo *MessageRepository) FindDirectMessages(gameID uint32, query model.Dir
 	return findDirectMessages(repo.db.Connection, gameID, query)
 }
 
+func (repo *MessageRepository) FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
+	return selectMaxDirectMessageSendUnixTimeMilli(repo.db.Connection, gameID, query)
+}
+
 func (repo *MessageRepository) FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error) {
 	return findDirectMessage(repo.db.Connection, gameID, ID)
 }
@@ -148,13 +156,18 @@ func findMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) (model.
 
 		return *m.ToModel(pIDs)
 	})
+	latestUnixTimeMilli, err := selectMaxMessageSendUnixTimeMilli(db, gameID, query)
+	if err != nil {
+		return model.Messages{}, err
+	}
 	ms := model.Messages{
-		List:              list,
-		AllPageCount:      1,
-		HasPrePage:        false,
-		HasNextPage:       false,
-		CurrentPageNumber: nil,
-		IsDesc:            false,
+		List:                list,
+		AllPageCount:        1,
+		HasPrePage:          false,
+		HasNextPage:         false,
+		CurrentPageNumber:   nil,
+		IsDesc:              false,
+		LatestUnixTimeMilli: latestUnixTimeMilli,
 	}
 	if query.Paging != nil {
 		allPageCount := uint32(math.Ceil(float64(allCount) / float64(query.Paging.PageSize)))
@@ -169,39 +182,19 @@ func findMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) (model.
 }
 
 // TODO: 独り言のことは後で考える
-func findRdbMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) ([]Message, int64, error) {
+func findRdbMessages(
+	db *gorm.DB,
+	gameID uint32,
+	query model.MessagesQuery,
+) (
+	list []Message,
+	allCount int64,
+	err error,
+) {
 	var rdb []Message
 	result := db.Model(&Message{}).Where("game_id = ?", gameID)
-	if query.IDs != nil {
-		result = result.Where("id IN (?)", *query.IDs)
-	}
-	if query.GamePeriodID != nil {
-		result = result.Where("game_period_id = ?", *query.GamePeriodID)
-	}
-	if query.Types != nil {
-		typeCodes := array.Map(*query.Types, func(t model.MessageType) string {
-			return t.String()
-		})
-		result = result.Where("message_type_code IN (?)", typeCodes)
-	}
-	if query.SenderIDs != nil {
-		result = result.Where("sender_game_participant_id IN (?)", *query.SenderIDs)
-	}
-	if query.ReplyToMessageID != nil {
-		result = result.Where("reply_to_message_id = ?", *query.ReplyToMessageID)
-	}
-	if query.Keywords != nil {
-		result = result.Scopes(Like("message_content", *query.Keywords))
-	}
-	if query.SinceAt != nil {
-		result = result.Where("send_at >= ?", *query.SinceAt)
-	}
-	if query.UntilAt != nil {
-		result = result.Where("send_at <= ?", *query.UntilAt)
-	}
-	if query.OffsetUnixtimeMilli != nil {
-		result = result.Where("send_unixtime_milli > ?", *query.OffsetUnixtimeMilli)
-	}
+	// paging以外のwhere句をセット
+	setMessageDbQuery(result, query)
 
 	var count int64
 	if query.Paging != nil {
@@ -225,6 +218,58 @@ func findRdbMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) ([]M
 	}
 
 	return rdb, count, nil
+}
+
+// paging以外のwhere句を追加
+func setMessageDbQuery(db *gorm.DB, query model.MessagesQuery) {
+	if query.IDs != nil {
+		db = db.Where("id IN (?)", *query.IDs)
+	}
+	if query.GamePeriodID != nil {
+		db = db.Where("game_period_id = ?", *query.GamePeriodID)
+	}
+	if query.Types != nil {
+		typeCodes := array.Map(*query.Types, func(t model.MessageType) string {
+			return t.String()
+		})
+		db = db.Where("message_type_code IN (?)", typeCodes)
+	}
+	if query.SenderIDs != nil {
+		db = db.Where("sender_game_participant_id IN (?)", *query.SenderIDs)
+	}
+	if query.ReplyToMessageID != nil {
+		db = db.Where("reply_to_message_id = ?", *query.ReplyToMessageID)
+	}
+	if query.Keywords != nil {
+		db = db.Scopes(Like("message_content", *query.Keywords))
+	}
+	if query.SinceAt != nil {
+		db = db.Where("send_at >= ?", *query.SinceAt)
+	}
+	if query.UntilAt != nil {
+		db = db.Where("send_at <= ?", *query.UntilAt)
+	}
+	if query.OffsetUnixtimeMilli != nil {
+		db = db.Where("send_unixtime_milli > ?", *query.OffsetUnixtimeMilli)
+	}
+}
+
+func selectMaxMessageSendUnixTimeMilli(db *gorm.DB, gameID uint32, query model.MessagesQuery) (uint64, error) {
+	var max *float64
+	result := db.Table("messages").Select("MAX(send_unixtime_milli)").Where("game_id = ?", gameID)
+	setMessageDbQuery(result, query)
+	result = result.Scan(&max)
+	if result.Error != nil {
+		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
+	}
+	if max == nil {
+		if query.OffsetUnixtimeMilli != nil {
+			return *query.OffsetUnixtimeMilli, nil
+		} else {
+			return 0, nil
+		}
+	}
+	return uint64(*max), nil
 }
 
 func findMessage(db *gorm.DB, gameID uint32, ID uint64) (*model.Message, error) {
@@ -321,7 +366,7 @@ func registerMessage(tx *gorm.DB, gameID uint32, message model.Message) error {
 }
 
 func selectMaxMessageNumber(db *gorm.DB, gameID uint32, message model.Message) (uint32, error) {
-	var max float64
+	var max *float64
 	result := db.Table("messages").Select("MAX(message_number)").
 		Where("game_id = ?", gameID).
 		Where("message_type_code = ?", message.Type.String()).
@@ -329,7 +374,10 @@ func selectMaxMessageNumber(db *gorm.DB, gameID uint32, message model.Message) (
 	if result.Error != nil {
 		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
 	}
-	return uint32(max), nil
+	if max == nil {
+		return 0, nil
+	}
+	return uint32(*max), nil
 }
 
 func updateReplyCount(tx *gorm.DB, messageID uint64) error {
@@ -539,14 +587,18 @@ func findDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessagesQu
 		})
 		return *m.ToModel(favPIDs)
 	})
-
+	latest, err := selectMaxDirectMessageSendUnixTimeMilli(db, gameID, query)
+	if err != nil {
+		return model.DirectMessages{}, err
+	}
 	ms := model.DirectMessages{
-		List:              list,
-		AllPageCount:      1,
-		HasPrePage:        false,
-		HasNextPage:       false,
-		CurrentPageNumber: nil,
-		IsDesc:            false,
+		List:                list,
+		AllPageCount:        1,
+		HasPrePage:          false,
+		HasNextPage:         false,
+		CurrentPageNumber:   nil,
+		IsDesc:              false,
+		LatestUnixTimeMilli: latest,
 	}
 	if query.Paging != nil {
 		allPageCount := uint32(math.Ceil(float64(allCount) / float64(query.Paging.PageSize)))
@@ -563,36 +615,8 @@ func findDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessagesQu
 func findRdbDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessagesQuery) ([]DirectMessage, int64, error) {
 	var rdb []DirectMessage
 	result := db.Model(&DirectMessage{}).Where("game_id = ?", gameID)
-	if query.IDs != nil {
-		result = result.Where("id IN (?)", *query.IDs)
-	}
-	if query.GameParticipantGroupID != nil {
-		result = result.Where("game_participant_group_id = ?", *query.GameParticipantGroupID)
-	}
-	if query.GamePeriodID != nil {
-		result = result.Where("game_period_id = ?", *query.GamePeriodID)
-	}
-	if query.Types != nil {
-		typeCodes := array.Map(*query.Types, func(t model.MessageType) string {
-			return t.String()
-		})
-		result = result.Where("message_type_code IN (?)", typeCodes)
-	}
-	if query.SenderIDs != nil {
-		result = result.Where("sender_game_participant_id IN (?)", *query.SenderIDs)
-	}
-	if query.Keywords != nil {
-		result = result.Scopes(Like("message_content", *query.Keywords))
-	}
-	if query.SinceAt != nil {
-		result = result.Where("send_at >= ?", *query.SinceAt)
-	}
-	if query.UntilAt != nil {
-		result = result.Where("send_at <= ?", *query.UntilAt)
-	}
-	if query.OffsetUnixtimeMilli != nil {
-		result = result.Where("send_unixtime_milli > ?", *query.OffsetUnixtimeMilli)
-	}
+	// paging以外のwhere句セット
+	setDirectMessageDbQuery(result, query)
 
 	var count int64
 	if query.Paging != nil {
@@ -615,6 +639,57 @@ func findRdbDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessage
 		return nil, 0, fmt.Errorf("failed to find: %s \n", result.Error)
 	}
 	return rdb, count, nil
+}
+
+func setDirectMessageDbQuery(db *gorm.DB, query model.DirectMessagesQuery) {
+	if query.IDs != nil {
+		db = db.Where("id IN (?)", *query.IDs)
+	}
+	if query.GameParticipantGroupID != nil {
+		db = db.Where("game_participant_group_id = ?", *query.GameParticipantGroupID)
+	}
+	if query.GamePeriodID != nil {
+		db = db.Where("game_period_id = ?", *query.GamePeriodID)
+	}
+	if query.Types != nil {
+		typeCodes := array.Map(*query.Types, func(t model.MessageType) string {
+			return t.String()
+		})
+		db = db.Where("message_type_code IN (?)", typeCodes)
+	}
+	if query.SenderIDs != nil {
+		db = db.Where("sender_game_participant_id IN (?)", *query.SenderIDs)
+	}
+	if query.Keywords != nil {
+		db = db.Scopes(Like("message_content", *query.Keywords))
+	}
+	if query.SinceAt != nil {
+		db = db.Where("send_at >= ?", *query.SinceAt)
+	}
+	if query.UntilAt != nil {
+		db = db.Where("send_at <= ?", *query.UntilAt)
+	}
+	if query.OffsetUnixtimeMilli != nil {
+		db = db.Where("send_unixtime_milli > ?", *query.OffsetUnixtimeMilli)
+	}
+}
+
+func selectMaxDirectMessageSendUnixTimeMilli(db *gorm.DB, gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
+	var max *float64
+	result := db.Table("direct_messages").Select("MAX(send_unixtime_milli)").Where("game_id = ?", gameID)
+	setDirectMessageDbQuery(result, query)
+	result = result.Scan(&max)
+	if result.Error != nil {
+		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
+	}
+	if max == nil {
+		if query.OffsetUnixtimeMilli != nil {
+			return *query.OffsetUnixtimeMilli, nil
+		} else {
+			return 0, nil
+		}
+	}
+	return uint64(*max), nil
 }
 
 func findDirectMessage(db *gorm.DB, gameID uint32, ID uint64) (*model.DirectMessage, error) {

@@ -88,6 +88,9 @@ models:
   Uint32:
     model:
       - github.com/99designs/gqlgen/graphql.Uint32
+  Long:
+    model:
+      - github.com/99designs/gqlgen/graphql.Uint64
   GameParticipant:
     fields:
       player:

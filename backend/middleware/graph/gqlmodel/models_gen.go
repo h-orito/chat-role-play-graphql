@@ -137,12 +137,13 @@ type DirectMessageReactions struct {
 }
 
 type DirectMessages struct {
-	List              []*DirectMessage `json:"list"`
-	AllPageCount      int              `json:"allPageCount"`
-	HasPrePage        bool             `json:"hasPrePage"`
-	HasNextPage       bool             `json:"hasNextPage"`
-	CurrentPageNumber *int             `json:"currentPageNumber,omitempty"`
-	IsDesc            bool             `json:"isDesc"`
+	List                []*DirectMessage `json:"list"`
+	AllPageCount        int              `json:"allPageCount"`
+	HasPrePage          bool             `json:"hasPrePage"`
+	HasNextPage         bool             `json:"hasNextPage"`
+	CurrentPageNumber   *int             `json:"currentPageNumber,omitempty"`
+	IsDesc              bool             `json:"isDesc"`
+	LatestUnixTimeMilli uint64           `json:"latestUnixTimeMilli"`
 }
 
 func (DirectMessages) IsPageable()                     {}
@@ -161,7 +162,7 @@ type DirectMessagesQuery struct {
 	Keywords            []string       `json:"keywords,omitempty"`
 	SinceAt             *time.Time     `json:"sinceAt,omitempty"`
 	UntilAt             *time.Time     `json:"untilAt,omitempty"`
-	OffsetUnixTimeMilli *string        `json:"offsetUnixTimeMilli,omitempty"`
+	OffsetUnixTimeMilli *uint64        `json:"offsetUnixTimeMilli,omitempty"`
 	Paging              *PageableQuery `json:"paging,omitempty"`
 }
 
@@ -296,16 +297,17 @@ type MessageRecipient struct {
 
 type MessageTime struct {
 	SendAt            time.Time `json:"sendAt"`
-	SendUnixTimeMilli string    `json:"sendUnixTimeMilli"`
+	SendUnixTimeMilli uint64    `json:"sendUnixTimeMilli"`
 }
 
 type Messages struct {
-	List              []*Message `json:"list"`
-	AllPageCount      int        `json:"allPageCount"`
-	HasPrePage        bool       `json:"hasPrePage"`
-	HasNextPage       bool       `json:"hasNextPage"`
-	CurrentPageNumber *int       `json:"currentPageNumber,omitempty"`
-	IsDesc            bool       `json:"isDesc"`
+	List                []*Message `json:"list"`
+	AllPageCount        int        `json:"allPageCount"`
+	HasPrePage          bool       `json:"hasPrePage"`
+	HasNextPage         bool       `json:"hasNextPage"`
+	CurrentPageNumber   *int       `json:"currentPageNumber,omitempty"`
+	IsDesc              bool       `json:"isDesc"`
+	LatestUnixTimeMilli uint64     `json:"latestUnixTimeMilli"`
 }
 
 func (Messages) IsPageable()                     {}
@@ -324,7 +326,7 @@ type MessagesQuery struct {
 	Keywords            []string       `json:"keywords,omitempty"`
 	SinceAt             *time.Time     `json:"sinceAt,omitempty"`
 	UntilAt             *time.Time     `json:"untilAt,omitempty"`
-	OffsetUnixTimeMilli *string        `json:"offsetUnixTimeMilli,omitempty"`
+	OffsetUnixTimeMilli *uint64        `json:"offsetUnixTimeMilli,omitempty"`
 	Paging              *PageableQuery `json:"paging,omitempty"`
 }
 

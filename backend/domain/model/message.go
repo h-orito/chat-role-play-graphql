@@ -7,12 +7,13 @@ import (
 )
 
 type Messages struct {
-	List              []Message
-	AllPageCount      uint32
-	HasPrePage        bool
-	HasNextPage       bool
-	CurrentPageNumber *uint32
-	IsDesc            bool
+	List                []Message
+	AllPageCount        uint32
+	HasPrePage          bool
+	HasNextPage         bool
+	CurrentPageNumber   *uint32
+	IsDesc              bool
+	LatestUnixTimeMilli uint64
 }
 
 type Message struct {
@@ -128,12 +129,13 @@ type MessagesQuery struct {
 }
 
 type DirectMessages struct {
-	List              []DirectMessage
-	AllPageCount      uint32
-	HasPrePage        bool
-	HasNextPage       bool
-	CurrentPageNumber *uint32
-	IsDesc            bool
+	List                []DirectMessage
+	AllPageCount        uint32
+	HasPrePage          bool
+	HasNextPage         bool
+	CurrentPageNumber   *uint32
+	IsDesc              bool
+	LatestUnixTimeMilli uint64
 }
 
 type DirectMessage struct {
@@ -180,6 +182,7 @@ type DirectMessagesQuery struct {
 type MessageRepository interface {
 	// message
 	FindMessages(gameID uint32, query MessagesQuery) (Messages, error)
+	FindMessagesLatestUnixTimeMilli(gameID uint32, query MessagesQuery) (uint64, error)
 	FindMessage(gameID uint32, ID uint64) (*Message, error)
 	FindMessageReplies(gameID uint32, messageID uint64) ([]Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (GameParticipants, error)
@@ -192,6 +195,7 @@ type MessageRepository interface {
 	UpdateGameParticipantGroup(ctx context.Context, gameID uint32, group GameParticipantGroup) error
 	// direct message
 	FindDirectMessages(gameID uint32, query DirectMessagesQuery) (DirectMessages, error)
+	FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query DirectMessagesQuery) (uint64, error)
 	FindDirectMessage(gameID uint32, ID uint64) (*DirectMessage, error)
 	FindDirectMessageFavoriteGameParticipants(gameID uint32, directMessageID uint64) (GameParticipants, error)
 	RegisterDirectMessage(ctx context.Context, gameID uint32, message DirectMessage) error

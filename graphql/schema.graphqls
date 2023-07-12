@@ -232,6 +232,7 @@ type Messages implements Pageable {
   hasNextPage: Boolean!
   currentPageNumber: Int
   isDesc: Boolean!
+  latestUnixTimeMilli: Long!
 }
 
 type Message {
@@ -287,6 +288,7 @@ type DirectMessages implements Pageable {
   hasNextPage: Boolean!
   currentPageNumber: Int
   isDesc: Boolean!
+  latestUnixTimeMilli: Long!
 }
 
 type DirectMessage {
@@ -333,6 +335,7 @@ type Query {
   gameDiary(diaryId: ID!): GameParticipantDiary
   player(id: ID!): Player
   messages(gameId: ID!, query: MessagesQuery!): Messages!
+  messagesLatestUnixTimeMilli(gameId: ID!, query: MessagesQuery!): Long!
   message(gameId: ID!, messageId: ID!): Message
   messageReplies(gameId: ID!, messageId: ID!): [Message!]!
   messageFavoriteGameParticipants(
@@ -344,6 +347,10 @@ type Query {
     query: GameParticipantGroupsQuery!
   ): [GameParticipantGroup!]!
   directMessages(gameId: ID!, query: DirectMessagesQuery!): DirectMessages!
+  directMessagesLatestUnixTimeMilli(
+    gameId: ID!
+    query: DirectMessagesQuery!
+  ): Long!
   directMessage(gameId: ID!, directMessageId: ID!): DirectMessage
   directMessageFavoriteGameParticipants(
     gameId: ID!

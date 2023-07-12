@@ -7,6 +7,7 @@ import (
 
 type MessageService interface {
 	FindMessages(gameID uint32, query model.MessagesQuery) (model.Messages, error)
+	FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error)
 	FindMessage(gameID uint32, ID uint64) (*model.Message, error)
 	FindMessageReplies(gameID uint32, messageID uint64) ([]model.Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error)
@@ -19,6 +20,7 @@ type MessageService interface {
 	UpdateGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) error
 	// direct message
 	FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error)
+	FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error)
 	FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error)
 	FindDirectMessageFavoriteGameParticipants(gameID uint32, directMessageID uint64) (model.GameParticipants, error)
 	RegisterDirectMessage(ctx context.Context, gameID uint32, message model.DirectMessage) error
@@ -39,6 +41,11 @@ func NewMessageService(messageRepository model.MessageRepository) MessageService
 // FindMessages implements MessageService.
 func (s *messageService) FindMessages(gameID uint32, query model.MessagesQuery) (model.Messages, error) {
 	return s.messageRepository.FindMessages(gameID, query)
+}
+
+// FindMessagesLatestUnixTimeMilli implements MessageService.
+func (s *messageService) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error) {
+	return s.messageRepository.FindMessagesLatestUnixTimeMilli(gameID, query)
 }
 
 // FindMessage implements MessageService.
@@ -88,6 +95,11 @@ func (s *messageService) UpdateGameParticipantGroup(ctx context.Context, gameID 
 // FindDirectMessages implements MessageService.
 func (s *messageService) FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
 	return s.messageRepository.FindDirectMessages(gameID, query)
+}
+
+// FindDirectMessagesLatestUnixTimeMilli implements MessageService.
+func (s *messageService) FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
+	return s.messageRepository.FindDirectMessagesLatestUnixTimeMilli(gameID, query)
 }
 
 // FindDirectMessage implements MessageService.

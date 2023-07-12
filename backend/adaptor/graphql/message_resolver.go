@@ -6,7 +6,6 @@ import (
 	"chat-role-play/middleware/graph/gqlmodel"
 	"chat-role-play/util/array"
 	"context"
-	"strconv"
 
 	"github.com/graph-gophers/dataloader"
 )
@@ -202,6 +201,22 @@ func (r *queryResolver) messages(ctx context.Context, gameID string, query gqlmo
 	return &ms, nil
 }
 
+func (r *queryResolver) messagesLatestUnixTimeMilli(ctx context.Context, gameID string, query gqlmodel.MessagesQuery) (uint64, error) {
+	gID, err := idToUint32(gameID)
+	if err != nil {
+		return 0, err
+	}
+	q, err := r.MapToMessagesQuery(query)
+	if err != nil {
+		return 0, err
+	}
+	latest, err := r.messageUsecase.FindMessagesLatestUnixTimeMilli(gID, *q)
+	if err != nil {
+		return 0, err
+	}
+	return latest, nil
+}
+
 func (r *queryResolver) MapToMessagesQuery(query gqlmodel.MessagesQuery) (*model.MessagesQuery, error) {
 	var err error
 	var IDs *[]uint64
@@ -258,14 +273,6 @@ func (r *queryResolver) MapToMessagesQuery(query gqlmodel.MessagesQuery) (*model
 		}
 		replyToMessageID = &id
 	}
-	var offset *uint64
-	if query.OffsetUnixTimeMilli != nil {
-		number, e := strconv.ParseUint(*query.OffsetUnixTimeMilli, 10, 64)
-		if e != nil {
-			err = e
-		}
-		offset = &number
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -287,7 +294,7 @@ func (r *queryResolver) MapToMessagesQuery(query gqlmodel.MessagesQuery) (*model
 		Keywords:            &query.Keywords,
 		SinceAt:             query.SinceAt,
 		UntilAt:             query.UntilAt,
-		OffsetUnixtimeMilli: offset,
+		OffsetUnixtimeMilli: query.OffsetUnixTimeMilli,
 		Paging:              paging,
 	}, nil
 }
@@ -359,6 +366,22 @@ func (r *queryResolver) directMessages(ctx context.Context, gameID string, query
 	return &ms, nil
 }
 
+func (r *queryResolver) directMessagesLatestUnixTimeMilli(ctx context.Context, gameID string, query gqlmodel.DirectMessagesQuery) (uint64, error) {
+	gID, err := idToUint32(gameID)
+	if err != nil {
+		return 0, err
+	}
+	q, err := r.MapToDirectMessagesQuery(query)
+	if err != nil {
+		return 0, err
+	}
+	latest, err := r.messageUsecase.FindDirectMessagesLatestUnixTimeMilli(gID, *q)
+	if err != nil {
+		return 0, err
+	}
+	return latest, nil
+}
+
 func (r *queryResolver) MapToDirectMessagesQuery(query gqlmodel.DirectMessagesQuery) (*model.DirectMessagesQuery, error) {
 	var err error
 	var IDs *[]uint64
@@ -411,17 +434,6 @@ func (r *queryResolver) MapToDirectMessagesQuery(query gqlmodel.DirectMessagesQu
 	if err != nil {
 		return nil, err
 	}
-	var offset *uint64
-	if query.OffsetUnixTimeMilli != nil {
-		number, e := strconv.ParseUint(*query.OffsetUnixTimeMilli, 10, 64)
-		if e != nil {
-			err = e
-		}
-		offset = &number
-	}
-	if err != nil {
-		return nil, err
-	}
 	var paging *model.PagingQuery
 	if query.Paging != nil {
 		paging = &model.PagingQuery{
@@ -440,7 +452,7 @@ func (r *queryResolver) MapToDirectMessagesQuery(query gqlmodel.DirectMessagesQu
 		Keywords:               &query.Keywords,
 		SinceAt:                query.SinceAt,
 		UntilAt:                query.UntilAt,
-		OffsetUnixtimeMilli:    offset,
+		OffsetUnixtimeMilli:    query.OffsetUnixTimeMilli,
 		Paging:                 paging,
 	}, nil
 }

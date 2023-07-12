@@ -319,14 +319,17 @@ func registerGameParticipant(db *gorm.DB, gameID uint32, participant model.GameP
 }
 
 func selectMaxEntryNumber(db *gorm.DB, gameID uint32) (uint32, error) {
-	var max float64
+	var max *float64
 	result := db.Table("game_participants").Select("MAX(entry_number)").
 		Where("game_id = ?", gameID).
 		Scan(&max)
 	if result.Error != nil {
 		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
 	}
-	return uint32(max), nil
+	if max == nil {
+		return 0, nil
+	}
+	return uint32(*max), nil
 }
 
 func findGameParticipantProfile(db *gorm.DB, gameParticipantID uint32) (profile *model.GameParticipantProfile, err error) {
@@ -434,14 +437,17 @@ func registerGameParticipantIcon(tx *gorm.DB, gameParticipantID uint32, icon mod
 }
 
 func selectMaxIconsDisplayOrder(db *gorm.DB, gameParticipantID uint32) (uint32, error) {
-	var max float64
+	var max *float64
 	result := db.Table("game_participant_icons").Select("MAX(display_order)").
 		Where("game_participant_id = ?", gameParticipantID).
 		Scan(&max)
 	if result.Error != nil {
 		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
 	}
-	return uint32(max), nil
+	if max == nil {
+		return 0, nil
+	}
+	return uint32(*max), nil
 }
 
 func updateGameParticipantIcon(tx *gorm.DB, icon model.GameParticipantIcon) (err error) {

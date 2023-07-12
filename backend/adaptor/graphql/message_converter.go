@@ -4,7 +4,6 @@ import (
 	"chat-role-play/domain/model"
 	"chat-role-play/middleware/graph/gqlmodel"
 	"chat-role-play/util/array"
-	"strconv"
 )
 
 func MapToMessages(ms model.Messages) gqlmodel.Messages {
@@ -56,7 +55,7 @@ func MapToMessage(m *model.Message) *gqlmodel.Message {
 		},
 		Time: &gqlmodel.MessageTime{
 			SendAt:            m.Time.SendAt,
-			SendUnixTimeMilli: strconv.FormatUint(m.Time.UnixtimeMilli, 10),
+			SendUnixTimeMilli: m.Time.UnixtimeMilli,
 		},
 		Sender:  sender,
 		ReplyTo: replyTo,
@@ -125,7 +124,7 @@ func MapToDirectMessage(m *model.DirectMessage) *gqlmodel.DirectMessage {
 		},
 		Time: &gqlmodel.MessageTime{
 			SendAt:            m.Time.SendAt,
-			SendUnixTimeMilli: strconv.FormatUint(m.Time.UnixtimeMilli, 10),
+			SendUnixTimeMilli: m.Time.UnixtimeMilli,
 		},
 		Sender: sender,
 		Reactions: &gqlmodel.DirectMessageReactions{

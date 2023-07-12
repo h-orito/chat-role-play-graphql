@@ -10,6 +10,7 @@ import (
 
 type MessageUsecase interface {
 	FindMessages(gameID uint32, query model.MessagesQuery) (model.Messages, error)
+	FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error)
 	FindMessage(gameID uint32, ID uint64) (*model.Message, error)
 	FindMessageReplies(gameID uint32, messageID uint64) ([]model.Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error)
@@ -22,6 +23,7 @@ type MessageUsecase interface {
 	UpdateGameParticipantGroup(ctx context.Context, user model.User, gameID uint32, group model.GameParticipantGroup) error
 	// direct message
 	FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error)
+	FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error)
 	FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error)
 	FindDirectMessageFavoriteGameParticipants(gameID uint32, directMessageID uint64) (model.GameParticipants, error)
 	RegisterDirectMessage(ctx context.Context, gameID uint32, user model.User, message model.DirectMessage) error
@@ -53,6 +55,11 @@ func NewMessageUsecase(
 // FindMessages implements MessageService.
 func (s *messageUsecase) FindMessages(gameID uint32, query model.MessagesQuery) (model.Messages, error) {
 	return s.messageService.FindMessages(gameID, query)
+}
+
+// FindMessagesLatestUnixTimeMilli implements MessageUsecase.
+func (s *messageUsecase) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error) {
+	return s.messageService.FindMessagesLatestUnixTimeMilli(gameID, query)
 }
 
 // FindMessage implements MessageService.
@@ -251,6 +258,11 @@ func (s *messageUsecase) UpdateGameParticipantGroup(
 // FindDirectMessages implements MessageService.
 func (s *messageUsecase) FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
 	return s.messageService.FindDirectMessages(gameID, query)
+}
+
+// FindDirectMessagesLatestUnixTimeMilli implements MessageUsecase.
+func (s *messageUsecase) FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
+	return s.messageService.FindDirectMessagesLatestUnixTimeMilli(gameID, query)
 }
 
 // FindDirectMessage implements MessageService.

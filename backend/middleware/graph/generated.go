@@ -124,12 +124,13 @@ type ComplexityRoot struct {
 	}
 
 	DirectMessages struct {
-		AllPageCount      func(childComplexity int) int
-		CurrentPageNumber func(childComplexity int) int
-		HasNextPage       func(childComplexity int) int
-		HasPrePage        func(childComplexity int) int
-		IsDesc            func(childComplexity int) int
-		List              func(childComplexity int) int
+		AllPageCount        func(childComplexity int) int
+		CurrentPageNumber   func(childComplexity int) int
+		HasNextPage         func(childComplexity int) int
+		HasPrePage          func(childComplexity int) int
+		IsDesc              func(childComplexity int) int
+		LatestUnixTimeMilli func(childComplexity int) int
+		List                func(childComplexity int) int
 	}
 
 	Game struct {
@@ -291,12 +292,13 @@ type ComplexityRoot struct {
 	}
 
 	Messages struct {
-		AllPageCount      func(childComplexity int) int
-		CurrentPageNumber func(childComplexity int) int
-		HasNextPage       func(childComplexity int) int
-		HasPrePage        func(childComplexity int) int
-		IsDesc            func(childComplexity int) int
-		List              func(childComplexity int) int
+		AllPageCount        func(childComplexity int) int
+		CurrentPageNumber   func(childComplexity int) int
+		HasNextPage         func(childComplexity int) int
+		HasPrePage          func(childComplexity int) int
+		IsDesc              func(childComplexity int) int
+		LatestUnixTimeMilli func(childComplexity int) int
+		List                func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -376,6 +378,7 @@ type ComplexityRoot struct {
 		DirectMessage                         func(childComplexity int, gameID string, directMessageID string) int
 		DirectMessageFavoriteGameParticipants func(childComplexity int, gameID string, directMessageID string) int
 		DirectMessages                        func(childComplexity int, gameID string, query gqlmodel.DirectMessagesQuery) int
+		DirectMessagesLatestUnixTimeMilli     func(childComplexity int, gameID string, query gqlmodel.DirectMessagesQuery) int
 		Game                                  func(childComplexity int, id string) int
 		GameDiaries                           func(childComplexity int, query gqlmodel.GameDiariesQuery) int
 		GameDiary                             func(childComplexity int, diaryID string) int
@@ -390,6 +393,7 @@ type ComplexityRoot struct {
 		MessageFavoriteGameParticipants       func(childComplexity int, gameID string, messageID string) int
 		MessageReplies                        func(childComplexity int, gameID string, messageID string) int
 		Messages                              func(childComplexity int, gameID string, query gqlmodel.MessagesQuery) int
+		MessagesLatestUnixTimeMilli           func(childComplexity int, gameID string, query gqlmodel.MessagesQuery) int
 		MyGameParticipant                     func(childComplexity int, gameID string) int
 		Player                                func(childComplexity int, id string) int
 	}
@@ -612,11 +616,13 @@ type QueryResolver interface {
 	GameDiary(ctx context.Context, diaryID string) (*gqlmodel.GameParticipantDiary, error)
 	Player(ctx context.Context, id string) (*gqlmodel.Player, error)
 	Messages(ctx context.Context, gameID string, query gqlmodel.MessagesQuery) (*gqlmodel.Messages, error)
+	MessagesLatestUnixTimeMilli(ctx context.Context, gameID string, query gqlmodel.MessagesQuery) (uint64, error)
 	Message(ctx context.Context, gameID string, messageID string) (*gqlmodel.Message, error)
 	MessageReplies(ctx context.Context, gameID string, messageID string) ([]*gqlmodel.Message, error)
 	MessageFavoriteGameParticipants(ctx context.Context, gameID string, messageID string) ([]*gqlmodel.GameParticipant, error)
 	GameParticipantGroups(ctx context.Context, gameID string, query gqlmodel.GameParticipantGroupsQuery) ([]*gqlmodel.GameParticipantGroup, error)
 	DirectMessages(ctx context.Context, gameID string, query gqlmodel.DirectMessagesQuery) (*gqlmodel.DirectMessages, error)
+	DirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID string, query gqlmodel.DirectMessagesQuery) (uint64, error)
 	DirectMessage(ctx context.Context, gameID string, directMessageID string) (*gqlmodel.DirectMessage, error)
 	DirectMessageFavoriteGameParticipants(ctx context.Context, gameID string, directMessageID string) ([]*gqlmodel.GameParticipant, error)
 }
@@ -880,6 +886,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.DirectMessages.IsDesc(childComplexity), true
+
+	case "DirectMessages.latestUnixTimeMilli":
+		if e.complexity.DirectMessages.LatestUnixTimeMilli == nil {
+			break
+		}
+
+		return e.complexity.DirectMessages.LatestUnixTimeMilli(childComplexity), true
 
 	case "DirectMessages.list":
 		if e.complexity.DirectMessages.List == nil {
@@ -1551,6 +1564,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Messages.IsDesc(childComplexity), true
 
+	case "Messages.latestUnixTimeMilli":
+		if e.complexity.Messages.LatestUnixTimeMilli == nil {
+			break
+		}
+
+		return e.complexity.Messages.LatestUnixTimeMilli(childComplexity), true
+
 	case "Messages.list":
 		if e.complexity.Messages.List == nil {
 			break
@@ -2220,6 +2240,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.DirectMessages(childComplexity, args["gameId"].(string), args["query"].(gqlmodel.DirectMessagesQuery)), true
 
+	case "Query.directMessagesLatestUnixTimeMilli":
+		if e.complexity.Query.DirectMessagesLatestUnixTimeMilli == nil {
+			break
+		}
+
+		args, err := ec.field_Query_directMessagesLatestUnixTimeMilli_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DirectMessagesLatestUnixTimeMilli(childComplexity, args["gameId"].(string), args["query"].(gqlmodel.DirectMessagesQuery)), true
+
 	case "Query.game":
 		if e.complexity.Query.Game == nil {
 			break
@@ -2387,6 +2419,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Messages(childComplexity, args["gameId"].(string), args["query"].(gqlmodel.MessagesQuery)), true
+
+	case "Query.messagesLatestUnixTimeMilli":
+		if e.complexity.Query.MessagesLatestUnixTimeMilli == nil {
+			break
+		}
+
+		args, err := ec.field_Query_messagesLatestUnixTimeMilli_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.MessagesLatestUnixTimeMilli(childComplexity, args["gameId"].(string), args["query"].(gqlmodel.MessagesQuery)), true
 
 	case "Query.myGameParticipant":
 		if e.complexity.Query.MyGameParticipant == nil {
@@ -3043,6 +3087,7 @@ type Messages implements Pageable {
   hasNextPage: Boolean!
   currentPageNumber: Int
   isDesc: Boolean!
+  latestUnixTimeMilli: Long!
 }
 
 type Message {
@@ -3098,6 +3143,7 @@ type DirectMessages implements Pageable {
   hasNextPage: Boolean!
   currentPageNumber: Int
   isDesc: Boolean!
+  latestUnixTimeMilli: Long!
 }
 
 type DirectMessage {
@@ -3144,6 +3190,7 @@ type Query {
   gameDiary(diaryId: ID!): GameParticipantDiary
   player(id: ID!): Player
   messages(gameId: ID!, query: MessagesQuery!): Messages!
+  messagesLatestUnixTimeMilli(gameId: ID!, query: MessagesQuery!): Long!
   message(gameId: ID!, messageId: ID!): Message
   messageReplies(gameId: ID!, messageId: ID!): [Message!]!
   messageFavoriteGameParticipants(
@@ -3155,6 +3202,10 @@ type Query {
     query: GameParticipantGroupsQuery!
   ): [GameParticipantGroup!]!
   directMessages(gameId: ID!, query: DirectMessagesQuery!): DirectMessages!
+  directMessagesLatestUnixTimeMilli(
+    gameId: ID!
+    query: DirectMessagesQuery!
+  ): Long!
   directMessage(gameId: ID!, directMessageId: ID!): DirectMessage
   directMessageFavoriteGameParticipants(
     gameId: ID!
@@ -4575,6 +4626,30 @@ func (ec *executionContext) field_Query_directMessage_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_directMessagesLatestUnixTimeMilli_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["gameId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["gameId"] = arg0
+	var arg1 gqlmodel.DirectMessagesQuery
+	if tmp, ok := rawArgs["query"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+		arg1, err = ec.unmarshalNDirectMessagesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDirectMessagesQuery(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["query"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_directMessages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -4827,6 +4902,30 @@ func (ec *executionContext) field_Query_message_args(ctx context.Context, rawArg
 		}
 	}
 	args["messageId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_messagesLatestUnixTimeMilli_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["gameId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["gameId"] = arg0
+	var arg1 gqlmodel.MessagesQuery
+	if tmp, ok := rawArgs["query"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+		arg1, err = ec.unmarshalNMessagesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessagesQuery(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["query"] = arg1
 	return args, nil
 }
 
@@ -6572,6 +6671,50 @@ func (ec *executionContext) fieldContext_DirectMessages_isDesc(ctx context.Conte
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DirectMessages_latestUnixTimeMilli(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.DirectMessages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DirectMessages_latestUnixTimeMilli(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LatestUnixTimeMilli, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint64)
+	fc.Result = res
+	return ec.marshalNLong2uint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DirectMessages_latestUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DirectMessages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Long does not have child fields")
 		},
 	}
 	return fc, nil
@@ -10710,9 +10853,9 @@ func (ec *executionContext) _MessageTime_sendUnixTimeMilli(ctx context.Context, 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(uint64)
 	fc.Result = res
-	return ec.marshalNLong2string(ctx, field.Selections, res)
+	return ec.marshalNLong2uint64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_MessageTime_sendUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -10998,6 +11141,50 @@ func (ec *executionContext) fieldContext_Messages_isDesc(ctx context.Context, fi
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Messages_latestUnixTimeMilli(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.Messages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Messages_latestUnixTimeMilli(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LatestUnixTimeMilli, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint64)
+	fc.Result = res
+	return ec.marshalNLong2uint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Messages_latestUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Messages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Long does not have child fields")
 		},
 	}
 	return fc, nil
@@ -15810,6 +15997,8 @@ func (ec *executionContext) fieldContext_Query_messages(ctx context.Context, fie
 				return ec.fieldContext_Messages_currentPageNumber(ctx, field)
 			case "isDesc":
 				return ec.fieldContext_Messages_isDesc(ctx, field)
+			case "latestUnixTimeMilli":
+				return ec.fieldContext_Messages_latestUnixTimeMilli(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Messages", field.Name)
 		},
@@ -15822,6 +16011,61 @@ func (ec *executionContext) fieldContext_Query_messages(ctx context.Context, fie
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_messages_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_messagesLatestUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_messagesLatestUnixTimeMilli(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().MessagesLatestUnixTimeMilli(rctx, fc.Args["gameId"].(string), fc.Args["query"].(gqlmodel.MessagesQuery))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint64)
+	fc.Result = res
+	return ec.marshalNLong2uint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_messagesLatestUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Long does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_messagesLatestUnixTimeMilli_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -16154,6 +16398,8 @@ func (ec *executionContext) fieldContext_Query_directMessages(ctx context.Contex
 				return ec.fieldContext_DirectMessages_currentPageNumber(ctx, field)
 			case "isDesc":
 				return ec.fieldContext_DirectMessages_isDesc(ctx, field)
+			case "latestUnixTimeMilli":
+				return ec.fieldContext_DirectMessages_latestUnixTimeMilli(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type DirectMessages", field.Name)
 		},
@@ -16166,6 +16412,61 @@ func (ec *executionContext) fieldContext_Query_directMessages(ctx context.Contex
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_directMessages_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_directMessagesLatestUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_directMessagesLatestUnixTimeMilli(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DirectMessagesLatestUnixTimeMilli(rctx, fc.Args["gameId"].(string), fc.Args["query"].(gqlmodel.DirectMessagesQuery))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uint64)
+	fc.Result = res
+	return ec.marshalNLong2uint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_directMessagesLatestUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Long does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_directMessagesLatestUnixTimeMilli_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -20466,7 +20767,7 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offsetUnixTimeMilli"))
-			data, err := ec.unmarshalOLong2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOLong2ᚖuint64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -20690,7 +20991,7 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offsetUnixTimeMilli"))
-			data, err := ec.unmarshalOLong2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOLong2ᚖuint64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -23669,6 +23970,13 @@ func (ec *executionContext) _DirectMessages(ctx context.Context, sel ast.Selecti
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "latestUnixTimeMilli":
+
+			out.Values[i] = ec._DirectMessages_latestUnixTimeMilli(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -24928,6 +25236,13 @@ func (ec *executionContext) _Messages(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "latestUnixTimeMilli":
+
+			out.Values[i] = ec._Messages_latestUnixTimeMilli(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -25873,6 +26188,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "messagesLatestUnixTimeMilli":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_messagesLatestUnixTimeMilli(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "message":
 			field := field
 
@@ -25972,6 +26310,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_directMessages(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "directMessagesLatestUnixTimeMilli":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_directMessagesLatestUnixTimeMilli(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -28373,13 +28734,13 @@ func (ec *executionContext) marshalNInt2ᚕintᚄ(ctx context.Context, sel ast.S
 	return ret
 }
 
-func (ec *executionContext) unmarshalNLong2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalString(v)
+func (ec *executionContext) unmarshalNLong2uint64(ctx context.Context, v interface{}) (uint64, error) {
+	res, err := graphql.UnmarshalUint64(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNLong2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalString(v)
+func (ec *executionContext) marshalNLong2uint64(ctx context.Context, sel ast.SelectionSet, v uint64) graphql.Marshaler {
+	res := graphql.MarshalUint64(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -29834,19 +30195,19 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return res
 }
 
-func (ec *executionContext) unmarshalOLong2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+func (ec *executionContext) unmarshalOLong2ᚖuint64(ctx context.Context, v interface{}) (*uint64, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := graphql.UnmarshalString(v)
+	res, err := graphql.UnmarshalUint64(v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOLong2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+func (ec *executionContext) marshalOLong2ᚖuint64(ctx context.Context, sel ast.SelectionSet, v *uint64) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	res := graphql.MarshalString(*v)
+	res := graphql.MarshalUint64(*v)
 	return res
 }
 

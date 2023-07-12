@@ -335,6 +335,11 @@ func (r *queryResolver) Messages(ctx context.Context, gameID string, query gqlmo
 	return r.messages(ctx, gameID, query)
 }
 
+// MessagesLatestUnixTimeMilli is the resolver for the messagesLatestUnixTimeMilli field.
+func (r *queryResolver) MessagesLatestUnixTimeMilli(ctx context.Context, gameID string, query gqlmodel.MessagesQuery) (uint64, error) {
+	return r.messagesLatestUnixTimeMilli(ctx, gameID, query)
+}
+
 // Message is the resolver for the message field.
 func (r *queryResolver) Message(ctx context.Context, gameID string, messageID string) (*gqlmodel.Message, error) {
 	return r.message(ctx, gameID, messageID)
@@ -358,6 +363,11 @@ func (r *queryResolver) GameParticipantGroups(ctx context.Context, gameID string
 // DirectMessages is the resolver for the directMessages field.
 func (r *queryResolver) DirectMessages(ctx context.Context, gameID string, query gqlmodel.DirectMessagesQuery) (*gqlmodel.DirectMessages, error) {
 	return r.directMessages(ctx, gameID, query)
+}
+
+// DirectMessagesLatestUnixTimeMilli is the resolver for the directMessagesLatestUnixTimeMilli field.
+func (r *queryResolver) DirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID string, query gqlmodel.DirectMessagesQuery) (uint64, error) {
+	return r.directMessagesLatestUnixTimeMilli(ctx, gameID, query)
 }
 
 // DirectMessage is the resolver for the directMessage field.
