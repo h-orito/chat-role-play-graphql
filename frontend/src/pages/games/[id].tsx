@@ -73,6 +73,11 @@ export default function GamePage({ gameId, game }: Props) {
     setIsOpenProfileModal(true)
   }
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const toggleSidebar = (e: any) => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
   if (loading) return <div>loading...</div>
   return (
     <main className='flex w-full'>
@@ -80,6 +85,8 @@ export default function GamePage({ gameId, game }: Props) {
         <title>{game.name}</title>
       </Head>
       <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
         game={game}
         myself={myself}
         openProfileModal={openProfileModal}
@@ -88,6 +95,7 @@ export default function GamePage({ gameId, game }: Props) {
         game={game}
         myself={myself}
         openProfileModal={openProfileModal}
+        toggleSidebar={toggleSidebar}
       />
       {isOpenProfileModal && (
         <ArticleModal

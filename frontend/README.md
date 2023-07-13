@@ -49,4 +49,4 @@ npm run codegen
 ## TODO
 
 - error handling
-- message polling
+- direct message polling

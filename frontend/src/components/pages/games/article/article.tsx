@@ -6,24 +6,26 @@ import {
   MessagesLatestDocument,
   MessagesLatestQuery
 } from '@/lib/generated/graphql'
-import ArticleHeader from './article-header'
 import { useState } from 'react'
 import Modal from '@/components/modal/modal'
 import FavoriteParticipants from './message-area/message/favorite-participants'
 import { useLazyQuery } from '@apollo/client'
 import MessageArea from './message-area/message/message-area'
 import DirectMessagesArea from './message-area/direct-message/direct-messages-area'
+import ArticleMenu from './article-menu'
 
 type ArticleProps = {
   game: Game
   myself: GameParticipant | null
   openProfileModal: (participantId: string) => void
+  toggleSidebar: (e: any) => void
 }
 
 export default function Article({
   game,
   myself,
-  openProfileModal
+  openProfileModal,
+  toggleSidebar
 }: ArticleProps) {
   const [tab, setTab] = useState('home')
   const [isOpenFavoritesModal, setIsOpenFavoritesModal] = useState(false)
@@ -51,12 +53,13 @@ export default function Article({
       id='article'
       className='relative flex h-screen max-h-screen w-full flex-1 flex-col'
     >
-      <ArticleHeader
+      <ArticleMenu
         myself={myself}
         tab={tab}
         setTab={setTab}
         existsHomeUnread={existsHomeUnread}
         existsFollowsUnread={existFollowsUnread}
+        toggleSidebar={toggleSidebar}
       />
       <MessageArea
         className={`${tab === 'home' ? '' : 'hidden'}`}
@@ -104,6 +107,15 @@ export default function Article({
           />
         </Modal>
       )}
+      <ArticleMenu
+        myself={myself}
+        tab={tab}
+        setTab={setTab}
+        existsHomeUnread={existsHomeUnread}
+        existsFollowsUnread={existFollowsUnread}
+        toggleSidebar={toggleSidebar}
+        footer
+      />
     </article>
   )
 }

@@ -11,7 +11,6 @@ type SettingItem = {
   value: string
 }
 
-// TODO: 項目網羅
 export default function GameSettings({ close, game }: GameSettingsProps) {
   const settings = game.settings
   const items: Array<SettingItem> = []
@@ -74,7 +73,7 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
         <tbody>
           {items.map((item: SettingItem) => {
             return (
-              <tr>
+              <tr key={item.name}>
                 <td className='border border-gray-300 p-2'>{item.name}</td>
                 <td className='whitespace-pre-wrap break-words border border-gray-300 p-2 text-left'>
                   {item.value}

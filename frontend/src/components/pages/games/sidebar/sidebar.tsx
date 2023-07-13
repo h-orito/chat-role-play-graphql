@@ -5,7 +5,8 @@ import {
   WrenchIcon,
   UserCircleIcon,
   UserPlusIcon,
-  PencilSquareIcon
+  PencilSquareIcon,
+  HomeIcon
 } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 import GameSettings from './game-settings'
@@ -15,14 +16,19 @@ import { useAuth0 } from '@auth0/auth0-react'
 import Talk from '../talk/talk'
 import ArticleModal from '@/components/modal/article-modal'
 import Participants from '../participant/participants'
+import Link from 'next/link'
 
 type SidebarProps = {
+  isSidebarOpen: boolean
+  toggleSidebar: (e: any) => void
   game: Game
   myself: GameParticipant | null
   openProfileModal: (participantId: string) => void
 }
 
 export default function Sidebar({
+  isSidebarOpen,
+  toggleSidebar,
   game,
   myself,
   openProfileModal
@@ -52,90 +58,112 @@ export default function Sidebar({
     }
   }
 
+  const displayClass = isSidebarOpen
+    ? 'fixed z-20 bg-white md:static flex'
+    : 'hidden'
+
   return (
-    <nav className='flex h-screen w-48 flex-col border-r border-gray-300 py-4'>
-      <h1 className='mb-4 px-4 text-xl font-bold'>{game.name}</h1>
-      <div>
-        <button
-          className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
-          onClick={() => setIsParticipantsModal(true)}
-        >
-          <UsersIcon className='mr-1 h-6 w-6' />
-          <p className='flex-1 self-center text-left'>参加者</p>
-        </button>
-      </div>
-      <div>
-        <button
-          className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
-          onClick={() => setIsOpenGameSettingsModal(true)}
-        >
-          <InformationCircleIcon className='mr-1 h-6 w-6' />
-          <p className='flex-1 self-center text-left'>ゲーム設定</p>
-        </button>
-      </div>
-      <div>
-        <button className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'>
-          <WrenchIcon className='mr-1 h-6 w-6' />
-          <p className='flex-1 self-center text-left'>ユーザー設定</p>
-        </button>
-      </div>
-      {myself && (
-        <div className='mt-auto'>
-          <button
-            className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
-            onClick={() => setIsOpenTalkModal(true)}
-          >
-            <PencilSquareIcon className='mr-1 h-6 w-6' />
-            <p className='flex-1 self-center text-left'>発言</p>
-          </button>
-          <button
-            className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
-            onClick={() => openProfileModal(myself.id)}
-          >
-            <UserCircleIcon className='mr-1 h-6 w-6' />
-            <p className='flex-1 self-center text-left'>{myself.name}</p>
-          </button>
-        </div>
-      )}
-      {isAuthenticated && !myself && (
+    <>
+      <nav
+        className={`${displayClass} h-screen w-64 flex-col border-r border-gray-300 py-4 md:flex`}
+      >
+        <h1 className='mb-4 px-4 text-xl font-bold'>{game.name}</h1>
         <div>
           <button
             className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
-            onClick={() => setIsOpenParticipateModal(true)}
+            onClick={() => setIsParticipantsModal(true)}
           >
-            <UserPlusIcon className='mr-1 h-6 w-6' />
-            <p className='flex-1 self-center text-left'>参加登録</p>
+            <UsersIcon className='mr-1 h-6 w-6' />
+            <p className='flex-1 self-center text-left'>参加者</p>
           </button>
         </div>
+        <div>
+          <button
+            className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+            onClick={() => setIsOpenGameSettingsModal(true)}
+          >
+            <InformationCircleIcon className='mr-1 h-6 w-6' />
+            <p className='flex-1 self-center text-left'>ゲーム設定</p>
+          </button>
+        </div>
+        <div>
+          <button className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'>
+            <WrenchIcon className='mr-1 h-6 w-6' />
+            <p className='flex-1 self-center text-left'>ユーザー設定</p>
+          </button>
+        </div>
+        <div>
+          <Link href='/'>
+            <button className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'>
+              <HomeIcon className='mr-1 h-6 w-6' />
+              <p className='flex-1 self-center text-left'>トップ画面</p>
+            </button>
+          </Link>
+        </div>
+        {myself && (
+          <div className='mt-auto'>
+            <button
+              className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+              onClick={() => setIsOpenTalkModal(true)}
+            >
+              <PencilSquareIcon className='mr-1 h-6 w-6' />
+              <p className='flex-1 self-center text-left'>発言</p>
+            </button>
+            <button
+              className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+              onClick={() => openProfileModal(myself.id)}
+            >
+              <UserCircleIcon className='mr-1 h-6 w-6' />
+              <p className='flex-1 self-center text-left'>{myself.name}</p>
+            </button>
+          </div>
+        )}
+        {isAuthenticated && !myself && (
+          <div>
+            <button
+              className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+              onClick={() => setIsOpenParticipateModal(true)}
+            >
+              <UserPlusIcon className='mr-1 h-6 w-6' />
+              <p className='flex-1 self-center text-left'>参加登録</p>
+            </button>
+          </div>
+        )}
+        {isOpenParticipantsModal && (
+          <ArticleModal
+            header='参加者一覧'
+            close={toggleParticipantsModal}
+            hideFooter
+          >
+            <Participants
+              className='p-4'
+              participants={game.participants}
+              openProfileModal={openProfileModal}
+            />
+          </ArticleModal>
+        )}
+        {isOpenGameSettingsModal && (
+          <Modal header='ゲーム設定' close={toggleGameSettingsModal}>
+            <GameSettings game={game} close={toggleGameSettingsModal} />
+          </Modal>
+        )}
+        {isOpenParticipateModal && (
+          <Modal header='参加登録' close={toggleParticipateModal} hideFooter>
+            <Participate game={game} close={toggleParticipateModal} />
+          </Modal>
+        )}
+        {isOpenTalkModal && (
+          <Modal close={toggleTalkModal} hideFooter>
+            <Talk game={game} myself={myself!} close={toggleTalkModal} />
+          </Modal>
+        )}
+      </nav>
+      {isSidebarOpen && (
+        <div
+          className='fixed inset-x-0 inset-y-0 z-10 h-screen w-screen bg-black/60 md:hidden'
+          onClick={toggleSidebar}
+        ></div>
       )}
-      {isOpenParticipantsModal && (
-        <ArticleModal
-          header='参加者一覧'
-          close={toggleParticipantsModal}
-          hideFooter
-        >
-          <Participants
-            className='p-4'
-            participants={game.participants}
-            openProfileModal={openProfileModal}
-          />
-        </ArticleModal>
-      )}
-      {isOpenGameSettingsModal && (
-        <Modal header='ゲーム設定' close={toggleGameSettingsModal}>
-          <GameSettings game={game} close={toggleGameSettingsModal} />
-        </Modal>
-      )}
-      {isOpenParticipateModal && (
-        <Modal header='参加登録' close={toggleParticipateModal} hideFooter>
-          <Participate game={game} close={toggleParticipateModal} />
-        </Modal>
-      )}
-      {isOpenTalkModal && (
-        <Modal close={toggleTalkModal} hideFooter>
-          <Talk game={game} myself={myself!} close={toggleTalkModal} />
-        </Modal>
-      )}
-    </nav>
+    </>
   )
 }
