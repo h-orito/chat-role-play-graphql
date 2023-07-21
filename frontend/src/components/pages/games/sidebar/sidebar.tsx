@@ -17,6 +17,7 @@ import Talk from '../talk/talk'
 import ArticleModal from '@/components/modal/article-modal'
 import Participants from '../participant/participants'
 import Link from 'next/link'
+import { GoogleAdsense } from '@/components/adsense/google-adsense'
 
 type SidebarProps = {
   isSidebarOpen: boolean
@@ -100,6 +101,9 @@ export default function Sidebar({
             </button>
           </Link>
         </div>
+        <div className='mt-4'>
+          <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
+        </div>
         {myself && (
           <div className='mt-auto'>
             <button
@@ -119,7 +123,7 @@ export default function Sidebar({
           </div>
         )}
         {isAuthenticated && !myself && (
-          <div>
+          <div className='mt-auto'>
             <button
               className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
               onClick={() => setIsOpenParticipateModal(true)}

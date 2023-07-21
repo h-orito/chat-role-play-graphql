@@ -18,7 +18,7 @@ func (r *gameMasterResolver) player(ctx context.Context, obj *gqlmodel.GameMaste
 		return nil, err
 	}
 	player := p.(*model.Player)
-	return MapToPlayer(player), nil
+	return MapToPlayer(player, nil), nil
 }
 
 func (r *gameParticipantResolver) player(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.Player, error) {
@@ -28,7 +28,7 @@ func (r *gameParticipantResolver) player(ctx context.Context, obj *gqlmodel.Game
 		return nil, err
 	}
 	player := p.(*model.Player)
-	return MapToPlayer(player), nil
+	return MapToPlayer(player, nil), nil
 }
 
 func (r *queryResolver) player(ctx context.Context, id string) (*gqlmodel.Player, error) {
@@ -40,38 +40,27 @@ func (r *queryResolver) player(ctx context.Context, id string) (*gqlmodel.Player
 	if err != nil {
 		return nil, err
 	}
-	return MapToPlayer(p), nil
+	profile, err := r.playerUsecase.FindProfile(playerID)
+	if err != nil {
+		return nil, err
+	}
+	return MapToPlayer(p, profile), nil
 }
 
-func (r *mutationResolver) registerPlayerProfile(ctx context.Context, input gqlmodel.NewPlayerProfile) (*gqlmodel.RegisterPlayerProfilePayload, error) {
+func (r *queryResolver) myPlayer(ctx context.Context) (*gqlmodel.Player, error) {
 	user := auth.GetUser(ctx)
 	if user == nil {
 		return nil, fmt.Errorf("user not found")
 	}
-	player, err := r.playerUsecase.FindByUserName(user.UserName)
+	p, err := r.playerUsecase.FindByUserName(user.UserName)
 	if err != nil {
 		return nil, err
 	}
-	var imageUrl *string
-	if input.ProfileImageFile != nil {
-		url, err := r.imageUsecase.Upload(input.ProfileImageFile.File)
-		if err != nil {
-			return nil, err
-		}
-		imageUrl = url
-	}
-	saved, err := r.playerUsecase.SaveProfile(ctx, &model.PlayerProfile{
-		PlayerID:        player.ID,
-		ProfileImageURL: imageUrl,
-		Introduction:    input.Introduction,
-		SnsAccounts:     []model.PlayerSnsAccount{},
-	})
+	profile, err := r.playerUsecase.FindProfile(p.ID)
 	if err != nil {
 		return nil, err
 	}
-	return &gqlmodel.RegisterPlayerProfilePayload{
-		PlayerProfile: MapToPlayerProfile(saved),
-	}, nil
+	return MapToPlayer(p, profile), nil
 }
 
 func (r *mutationResolver) updatePlayerProfile(ctx context.Context, input gqlmodel.UpdatePlayerProfile) (*gqlmodel.UpdatePlayerProfilePayload, error) {
@@ -93,7 +82,7 @@ func (r *mutationResolver) updatePlayerProfile(ctx context.Context, input gqlmod
 		}
 		imageUrl = url
 	}
-	if _, err := r.playerUsecase.SaveProfile(ctx, &model.PlayerProfile{
+	if _, err := r.playerUsecase.SaveProfile(ctx, input.Name, &model.PlayerProfile{
 		PlayerID:        player.ID,
 		ProfileImageURL: imageUrl,
 		Introduction:    input.Introduction,

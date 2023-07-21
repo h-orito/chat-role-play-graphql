@@ -53,6 +53,7 @@ export default function Article({
       id='article'
       className='relative flex h-screen max-h-screen w-full flex-1 flex-col'
     >
+      <ArticleHeader tab={tab} />
       <ArticleMenu
         myself={myself}
         tab={tab}
@@ -117,5 +118,20 @@ export default function Article({
         footer
       />
     </article>
+  )
+}
+
+type HeaderProps = { tab: string }
+const ArticleHeader = ({ tab }: HeaderProps) => {
+  const tabName =
+    tab === 'home'
+      ? 'ホーム'
+      : tab === 'follow'
+      ? 'フォロー'
+      : 'ダイレクトメッセージ'
+  return (
+    <div className='block flex justify-center border-b border-gray-300 px-4 py-2 font-bold md:hidden'>
+      {tabName}
+    </div>
   )
 }

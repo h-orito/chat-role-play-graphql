@@ -325,7 +325,6 @@ type ComplexityRoot struct {
 		RegisterGameParticipantIcon   func(childComplexity int, input gqlmodel.NewGameParticipantIcon) int
 		RegisterMessage               func(childComplexity int, input gqlmodel.NewMessage) int
 		RegisterMessageFavorite       func(childComplexity int, input gqlmodel.NewMessageFavorite) int
-		RegisterPlayerProfile         func(childComplexity int, input gqlmodel.NewPlayerProfile) int
 		RegisterPlayerSnsAccount      func(childComplexity int, input gqlmodel.NewPlayerSnsAccount) int
 		UpdateChara                   func(childComplexity int, input gqlmodel.UpdateChara) int
 		UpdateCharaImage              func(childComplexity int, input gqlmodel.UpdateCharaImage) int
@@ -396,6 +395,7 @@ type ComplexityRoot struct {
 		Messages                              func(childComplexity int, gameID string, query gqlmodel.MessagesQuery) int
 		MessagesLatestUnixTimeMilli           func(childComplexity int, gameID string, query gqlmodel.MessagesQuery) int
 		MyGameParticipant                     func(childComplexity int, gameID string) int
+		MyPlayer                              func(childComplexity int) int
 		Player                                func(childComplexity int, id string) int
 	}
 
@@ -585,7 +585,6 @@ type MutationResolver interface {
 	DeleteGameParticipantFollow(ctx context.Context, input gqlmodel.DeleteGameParticipantFollow) (*gqlmodel.DeleteGameParticipantFollowPayload, error)
 	RegisterGameParticipantDiary(ctx context.Context, input gqlmodel.NewGameParticipantDiary) (*gqlmodel.RegisterGameParticipantDiaryPayload, error)
 	UpdateGameParticipantDiary(ctx context.Context, input gqlmodel.UpdateGameParticipantDiary) (*gqlmodel.UpdateGameParticipantDiaryPayload, error)
-	RegisterPlayerProfile(ctx context.Context, input gqlmodel.NewPlayerProfile) (*gqlmodel.RegisterPlayerProfilePayload, error)
 	UpdatePlayerProfile(ctx context.Context, input gqlmodel.UpdatePlayerProfile) (*gqlmodel.UpdatePlayerProfilePayload, error)
 	RegisterPlayerSnsAccount(ctx context.Context, input gqlmodel.NewPlayerSnsAccount) (*gqlmodel.RegisterPlayerSnsAccountPayload, error)
 	UpdatePlayerSnsAccount(ctx context.Context, input gqlmodel.UpdatePlayerSnsAccount) (*gqlmodel.UpdatePlayerSnsAccountPayload, error)
@@ -616,6 +615,7 @@ type QueryResolver interface {
 	GameDiaries(ctx context.Context, query gqlmodel.GameDiariesQuery) ([]*gqlmodel.GameParticipantDiary, error)
 	GameDiary(ctx context.Context, diaryID string) (*gqlmodel.GameParticipantDiary, error)
 	Player(ctx context.Context, id string) (*gqlmodel.Player, error)
+	MyPlayer(ctx context.Context) (*gqlmodel.Player, error)
 	Messages(ctx context.Context, gameID string, query gqlmodel.MessagesQuery) (*gqlmodel.Messages, error)
 	MessagesLatestUnixTimeMilli(ctx context.Context, gameID string, query gqlmodel.MessagesQuery) (uint64, error)
 	Message(ctx context.Context, gameID string, messageID string) (*gqlmodel.Message, error)
@@ -1850,18 +1850,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.RegisterMessageFavorite(childComplexity, args["input"].(gqlmodel.NewMessageFavorite)), true
 
-	case "Mutation.registerPlayerProfile":
-		if e.complexity.Mutation.RegisterPlayerProfile == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_registerPlayerProfile_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.RegisterPlayerProfile(childComplexity, args["input"].(gqlmodel.NewPlayerProfile)), true
-
 	case "Mutation.registerPlayerSnsAccount":
 		if e.complexity.Mutation.RegisterPlayerSnsAccount == nil {
 			break
@@ -2451,6 +2439,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.MyGameParticipant(childComplexity, args["gameId"].(string)), true
+
+	case "Query.myPlayer":
+		if e.complexity.Query.MyPlayer == nil {
+			break
+		}
+
+		return e.complexity.Query.MyPlayer(childComplexity), true
 
 	case "Query.player":
 		if e.complexity.Query.Player == nil {
@@ -3198,6 +3193,7 @@ type Query {
   gameDiaries(query: GameDiariesQuery!): [GameParticipantDiary!]!
   gameDiary(diaryId: ID!): GameParticipantDiary
   player(id: ID!): Player
+  myPlayer: Player
   messages(gameId: ID!, query: MessagesQuery!): Messages!
   messagesLatestUnixTimeMilli(gameId: ID!, query: MessagesQuery!): Long!
   message(gameId: ID!, messageId: ID!): Message
@@ -3243,6 +3239,7 @@ input DesignersQuery {
 input GamesQuery {
   ids: [ID!]
   name: String
+  statuses: [GameStatus!]
   paging: PageableQuery
 }
 
@@ -3357,9 +3354,6 @@ type Mutation {
   ): UpdateGameParticipantDiaryPayload! @isAuthenticated
 
   # player
-  registerPlayerProfile(
-    input: NewPlayerProfile!
-  ): RegisterPlayerProfilePayload! @isAuthenticated
   updatePlayerProfile(input: UpdatePlayerProfile!): UpdatePlayerProfilePayload!
     @isAuthenticated
   registerPlayerSnsAccount(
@@ -4234,21 +4228,6 @@ func (ec *executionContext) field_Mutation_registerMessage_args(ctx context.Cont
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewMessage(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_registerPlayerProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewPlayerProfile
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewPlayerProfile2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewPlayerProfile(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -13277,85 +13256,6 @@ func (ec *executionContext) fieldContext_Mutation_updateGameParticipantDiary(ctx
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_registerPlayerProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_registerPlayerProfile(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().RegisterPlayerProfile(rctx, fc.Args["input"].(gqlmodel.NewPlayerProfile))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
-			}
-			return ec.directives.IsAuthenticated(ctx, nil, directive0)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*gqlmodel.RegisterPlayerProfilePayload); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *chat-role-play/middleware/graph/gqlmodel.RegisterPlayerProfilePayload`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*gqlmodel.RegisterPlayerProfilePayload)
-	fc.Result = res
-	return ec.marshalNRegisterPlayerProfilePayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterPlayerProfilePayload(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_registerPlayerProfile(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "playerProfile":
-				return ec.fieldContext_RegisterPlayerProfilePayload_playerProfile(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type RegisterPlayerProfilePayload", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_registerPlayerProfile_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Mutation_updatePlayerProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_updatePlayerProfile(ctx, field)
 	if err != nil {
@@ -15995,6 +15895,57 @@ func (ec *executionContext) fieldContext_Query_player(ctx context.Context, field
 	if fc.Args, err = ec.field_Query_player_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_myPlayer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_myPlayer(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().MyPlayer(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.Player)
+	fc.Result = res
+	return ec.marshalOPlayer2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayer(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_myPlayer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Player_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Player_name(ctx, field)
+			case "profile":
+				return ec.fieldContext_Player_profile(ctx, field)
+			case "designer":
+				return ec.fieldContext_Player_designer(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Player", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -20918,7 +20869,7 @@ func (ec *executionContext) unmarshalInputGamesQuery(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"ids", "name", "paging"}
+	fieldsInOrder := [...]string{"ids", "name", "statuses", "paging"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20943,6 +20894,15 @@ func (ec *executionContext) unmarshalInputGamesQuery(ctx context.Context, obj in
 				return it, err
 			}
 			it.Name = data
+		case "statuses":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statuses"))
+			data, err := ec.unmarshalOGameStatus2ᚕchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameStatusᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Statuses = data
 		case "paging":
 			var err error
 
@@ -25571,15 +25531,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "registerPlayerProfile":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_registerPlayerProfile(ctx, field)
-			})
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "updatePlayerProfile":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -26219,6 +26170,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_player(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "myPlayer":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_myPlayer(ctx, field)
 				return res
 			}
 
@@ -29051,11 +29022,6 @@ func (ec *executionContext) unmarshalNNewMessageFavorite2chatᚑroleᚑplayᚋmi
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNNewPlayerProfile2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewPlayerProfile(ctx context.Context, v interface{}) (gqlmodel.NewPlayerProfile, error) {
-	res, err := ec.unmarshalInputNewPlayerProfile(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNNewPlayerSnsAccount2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewPlayerSnsAccount(ctx context.Context, v interface{}) (gqlmodel.NewPlayerSnsAccount, error) {
 	res, err := ec.unmarshalInputNewPlayerSnsAccount(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -29357,20 +29323,6 @@ func (ec *executionContext) marshalNRegisterMessagePayload2ᚖchatᚑroleᚑplay
 		return graphql.Null
 	}
 	return ec._RegisterMessagePayload(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNRegisterPlayerProfilePayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterPlayerProfilePayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterPlayerProfilePayload) graphql.Marshaler {
-	return ec._RegisterPlayerProfilePayload(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNRegisterPlayerProfilePayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterPlayerProfilePayload(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.RegisterPlayerProfilePayload) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._RegisterPlayerProfilePayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNRegisterPlayerSnsAccountPayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterPlayerSnsAccountPayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterPlayerSnsAccountPayload) graphql.Marshaler {
@@ -30187,6 +30139,73 @@ func (ec *executionContext) marshalOGameParticipantIcon2ᚖchatᚑroleᚑplayᚋ
 		return graphql.Null
 	}
 	return ec._GameParticipantIcon(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOGameStatus2ᚕchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameStatusᚄ(ctx context.Context, v interface{}) ([]gqlmodel.GameStatus, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]gqlmodel.GameStatus, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNGameStatus2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameStatus(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOGameStatus2ᚕchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameStatusᚄ(ctx context.Context, sel ast.SelectionSet, v []gqlmodel.GameStatus) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNGameStatus2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameStatus(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOID2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {

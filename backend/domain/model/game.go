@@ -64,9 +64,10 @@ func GameStatusValueOf(s string) *GameStatus {
 }
 
 type GamesQuery struct {
-	IDs    *[]uint32
-	Name   *string
-	Paging *PagingQuery
+	IDs      *[]uint32
+	Name     *string
+	Statuses *[]GameStatus
+	Paging   *PagingQuery
 }
 
 type GameMaster struct {

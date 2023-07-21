@@ -68,10 +68,23 @@ func (repo *PlayerRepository) FindProfile(ID uint32) (profile *model.PlayerProfi
 	return repo.findProfile(repo.db.Connection, ID)
 }
 
-func (repo *PlayerRepository) SaveProfile(ctx context.Context, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error) {
+func (repo *PlayerRepository) SaveProfile(ctx context.Context, name string, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
 		return nil, fmt.Errorf("failed to get tx from context")
+	}
+
+	rdbPlayer, err := repo.findRdbPlayer(tx, profile.PlayerID)
+	if err != nil {
+		return nil, err
+	}
+	if rdbPlayer == nil {
+		return nil, errors.New("player not found")
+	}
+	rdbPlayer.PlayerName = name
+	result := tx.Save(&rdbPlayer)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to save: %s \n", result.Error)
 	}
 
 	rdbPlayerProfile, err := repo.findRdbProfile(tx, profile.PlayerID)
@@ -83,7 +96,7 @@ func (repo *PlayerRepository) SaveProfile(ctx context.Context, profile *model.Pl
 	}
 	rdbPlayerProfile.ProfileImageUrl = profile.ProfileImageURL
 	rdbPlayerProfile.Introduction = profile.Introduction
-	result := tx.Save(&rdbPlayerProfile)
+	result = tx.Save(&rdbPlayerProfile)
 	if result.Error != nil {
 		return nil, fmt.Errorf("failed to save: %s \n", result.Error)
 	}

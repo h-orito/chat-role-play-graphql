@@ -110,6 +110,13 @@ func (q GamesQuery) MapToGamesQuery() (*model.GamesQuery, error) {
 		}
 		intids = &ids
 	}
+	var statuses *[]model.GameStatus
+	if q.Statuses != nil {
+		ses := array.Map(q.Statuses, func(status GameStatus) model.GameStatus {
+			return *model.GameStatusValueOf(status.String())
+		})
+		statuses = &ses
+	}
 	var paging *model.PagingQuery
 	if q.Paging != nil {
 		paging = &model.PagingQuery{
@@ -119,9 +126,10 @@ func (q GamesQuery) MapToGamesQuery() (*model.GamesQuery, error) {
 		}
 	}
 	return &model.GamesQuery{
-		IDs:    intids,
-		Name:   q.Name,
-		Paging: paging,
+		IDs:      intids,
+		Name:     q.Name,
+		Statuses: statuses,
+		Paging:   paging,
 	}, nil
 }
 

@@ -335,6 +335,7 @@ type Query {
   gameDiaries(query: GameDiariesQuery!): [GameParticipantDiary!]!
   gameDiary(diaryId: ID!): GameParticipantDiary
   player(id: ID!): Player
+  myPlayer: Player
   messages(gameId: ID!, query: MessagesQuery!): Messages!
   messagesLatestUnixTimeMilli(gameId: ID!, query: MessagesQuery!): Long!
   message(gameId: ID!, messageId: ID!): Message
@@ -380,6 +381,7 @@ input DesignersQuery {
 input GamesQuery {
   ids: [ID!]
   name: String
+  statuses: [GameStatus!]
   paging: PageableQuery
 }
 
@@ -494,9 +496,6 @@ type Mutation {
   ): UpdateGameParticipantDiaryPayload! @isAuthenticated
 
   # player
-  registerPlayerProfile(
-    input: NewPlayerProfile!
-  ): RegisterPlayerProfilePayload! @isAuthenticated
   updatePlayerProfile(input: UpdatePlayerProfile!): UpdatePlayerProfilePayload!
     @isAuthenticated
   registerPlayerSnsAccount(

@@ -257,9 +257,10 @@ type GameTimeSetting struct {
 }
 
 type GamesQuery struct {
-	Ids    []string       `json:"ids,omitempty"`
-	Name   *string        `json:"name,omitempty"`
-	Paging *PageableQuery `json:"paging,omitempty"`
+	Ids      []string       `json:"ids,omitempty"`
+	Name     *string        `json:"name,omitempty"`
+	Statuses []GameStatus   `json:"statuses,omitempty"`
+	Paging   *PageableQuery `json:"paging,omitempty"`
 }
 
 type Message struct {

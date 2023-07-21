@@ -70,7 +70,37 @@ func MapToSimpleGame(g *model.Game) *gqlmodel.SimpleGame {
 	return &gqlmodel.SimpleGame{
 		ID:                intIdToBase64(g.ID, "Game"),
 		Name:              g.Name,
+		Status:            gqlmodel.GameStatus(g.Status.String()),
 		ParticipantsCount: g.Participants.Count,
+		Periods: array.Map(g.Periods, func(p model.GamePeriod) *gqlmodel.GamePeriod {
+			return MapToGamePeriod(&p)
+		}),
+		Settings: &gqlmodel.GameSettings{
+			Chara: &gqlmodel.GameCharaSetting{
+				Charachips:           []*gqlmodel.Charachip{},
+				CanOriginalCharacter: g.Settings.Chara.CanOriginalCharacter,
+			},
+			Capacity: &gqlmodel.GameCapacity{
+				Min: int(g.Settings.Capacity.Min),
+				Max: int(g.Settings.Capacity.Max),
+			},
+			Time: &gqlmodel.GameTimeSetting{
+				PeriodPrefix:          g.Settings.Time.PeriodPrefix,
+				PeriodSuffix:          g.Settings.Time.PeriodSuffix,
+				PeriodIntervalSeconds: int(g.Settings.Time.PeriodIntervalSeconds),
+				OpenAt:                g.Settings.Time.OpenAt,
+				StartParticipateAt:    g.Settings.Time.StartParticipateAt,
+				StartGameAt:           g.Settings.Time.StartGameAt,
+			},
+			Rule: &gqlmodel.GameRuleSetting{
+				IsGameMasterProducer: false,
+				CanShorten:           g.Settings.Rule.CanShorten,
+				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
+			},
+			Password: &gqlmodel.GamePasswordSetting{
+				HasPassword: g.Settings.Password.HasPassword,
+			},
+		},
 	}
 }
 

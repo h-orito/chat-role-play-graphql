@@ -277,6 +277,12 @@ func findRdbGames(db *gorm.DB, query model.GamesQuery) (games []Game, err error)
 	if query.Name != nil {
 		result = result.Where("game_name like ?", fmt.Sprintf("%%%s%%", *query.Name))
 	}
+	if query.Statuses != nil {
+		statuses := array.Map(*query.Statuses, func(s model.GameStatus) string {
+			return s.String()
+		})
+		result = result.Where("game_status_code in (?)", statuses)
+	}
 	result = result.Find(&rdbGames)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {

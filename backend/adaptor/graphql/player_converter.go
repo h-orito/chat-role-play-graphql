@@ -6,13 +6,14 @@ import (
 	"chat-role-play/util/array"
 )
 
-func MapToPlayer(p *model.Player) *gqlmodel.Player {
+func MapToPlayer(p *model.Player, profile *model.PlayerProfile) *gqlmodel.Player {
 	if p == nil {
 		return nil
 	}
 	return &gqlmodel.Player{
-		ID:   intIdToBase64(p.ID, "Player"),
-		Name: p.Name,
+		ID:      intIdToBase64(p.ID, "Player"),
+		Name:    p.Name,
+		Profile: MapToPlayerProfile(profile),
 	}
 }
 

@@ -69,7 +69,13 @@ export default function DirectMessagesArea({
       } as GameParticipantGroupsQuery
     })
     if (data?.gameParticipantGroups == null) return
-    setGroups(data.gameParticipantGroups as GameParticipantGroup[])
+    const newGroups = (
+      data.gameParticipantGroups as GameParticipantGroup[]
+    ).sort((g1, g2) => {
+      // 最終発言が新しい順
+      return g2.latestUnixTimeMilli - g1.latestUnixTimeMilli
+    })
+    setGroups(newGroups)
     if (directMessageGroup != null) {
       const newGroup = data.gameParticipantGroups.find(
         (g) => g.id === directMessageGroup.id
@@ -95,7 +101,10 @@ export default function DirectMessagesArea({
         </PrimaryButton>
       </div>
       {groups.map((group: GameParticipantGroup) => (
-        <div key={group.id} className='border-t border-gray-300 p-4'>
+        <div
+          key={group.id}
+          className='border-t border-gray-300 p-4 last:border-b'
+        >
           <button onClick={() => openDirectMessageModal(group)}>
             <p className='hover:text-blue-500'>{group.name}</p>
           </button>

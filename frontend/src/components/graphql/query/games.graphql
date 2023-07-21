@@ -1,0 +1,46 @@
+query IndexGames($pageSize: Int!, $pageNumber: Int!, $statuses: [GameStatus!]) {
+  games(
+    query: {
+      statuses: $statuses
+      paging: { pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true }
+    }
+  ) {
+    id
+    name
+    status
+    participantsCount
+    periods {
+      id
+      name
+      startAt
+      endAt
+    }
+    settings {
+      chara {
+        charachips {
+          name
+        }
+        canOriginalCharacter
+      }
+      capacity {
+        min
+        max
+      }
+      rule {
+        canShorten
+        canSendDirectMessage
+      }
+      time {
+        periodPrefix
+        periodSuffix
+        periodIntervalSeconds
+        openAt
+        startParticipateAt
+        startGameAt
+      }
+      password {
+        hasPassword
+      }
+    }
+  }
+}

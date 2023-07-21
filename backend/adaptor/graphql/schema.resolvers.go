@@ -185,11 +185,6 @@ func (r *mutationResolver) UpdateGameParticipantDiary(ctx context.Context, input
 	return r.updateGameParticipantDiary(ctx, input)
 }
 
-// RegisterPlayerProfile is the resolver for the registerPlayerProfile field.
-func (r *mutationResolver) RegisterPlayerProfile(ctx context.Context, input gqlmodel.NewPlayerProfile) (*gqlmodel.RegisterPlayerProfilePayload, error) {
-	return r.registerPlayerProfile(ctx, input)
-}
-
 // UpdatePlayerProfile is the resolver for the updatePlayerProfile field.
 func (r *mutationResolver) UpdatePlayerProfile(ctx context.Context, input gqlmodel.UpdatePlayerProfile) (*gqlmodel.UpdatePlayerProfilePayload, error) {
 	return r.updatePlayerProfile(ctx, input)
@@ -328,6 +323,11 @@ func (r *queryResolver) GameDiary(ctx context.Context, diaryID string) (*gqlmode
 // Player is the resolver for the player field.
 func (r *queryResolver) Player(ctx context.Context, id string) (*gqlmodel.Player, error) {
 	return r.player(ctx, id)
+}
+
+// MyPlayer is the resolver for the myPlayer field.
+func (r *queryResolver) MyPlayer(ctx context.Context) (*gqlmodel.Player, error) {
+	return r.myPlayer(ctx)
 }
 
 // Messages is the resolver for the messages field.

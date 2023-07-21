@@ -56,7 +56,7 @@ func (repo *UserRepository) Signup(username string) (_ *model.User, err error) {
 	}
 
 	rdbPlayer := Player{
-		PlayerName: "dummy",
+		PlayerName: "未登録",
 	}
 	result := repo.db.Connection.Create(&rdbPlayer)
 	if result.Error != nil {
@@ -64,14 +64,22 @@ func (repo *UserRepository) Signup(username string) (_ *model.User, err error) {
 	}
 	pID := rdbPlayer.ID
 
+	// account
 	err = repo.savePlayerAccount(pID, username)
 	if err != nil {
-		return nil, fmt.Errorf("failed to save: %s \n", result.Error)
+		return nil, fmt.Errorf("failed to save: %s \n", err)
 	}
 
+	// authority
 	array.ForEach(model.DefaultAuthorites, func(authority model.PlayerAuthority) {
 		repo.savePlayerAuthority(pID, authority.String())
 	})
+
+	// profile
+	err = repo.saveProfile(pID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to save: %s \n", err)
+	}
 
 	return &model.User{
 		UserName:   username,
@@ -97,6 +105,17 @@ func (repo *UserRepository) savePlayerAuthority(playerID uint32, authority strin
 		AuthorityCode: authority,
 	}
 	result := repo.db.Connection.Create(&rdbPlayerAuthority)
+	if result.Error != nil {
+		return fmt.Errorf("failed to save: %s \n", result.Error)
+	}
+	return nil
+}
+
+func (repo *UserRepository) saveProfile(playerID uint32) error {
+	rdbPlayerProfile := PlayerProfile{
+		PlayerID: playerID,
+	}
+	result := repo.db.Connection.Save(&rdbPlayerProfile)
 	if result.Error != nil {
 		return fmt.Errorf("failed to save: %s \n", result.Error)
 	}

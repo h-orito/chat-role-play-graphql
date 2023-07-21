@@ -28,7 +28,6 @@ export default function ArticleMenu({
   const wrapperClass = footer
     ? 'flex md:hidden border-t'
     : 'hidden md:flex border-b'
-
   return (
     <div className={`${wrapperClass} border-gray-300`}>
       <div className={`flex flex-1 text-center md:hidden`}>

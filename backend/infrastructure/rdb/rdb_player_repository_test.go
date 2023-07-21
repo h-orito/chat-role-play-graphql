@@ -91,7 +91,7 @@ func TestSaveProfile(t *testing.T) {
 			ProfileImageURL: &url,
 			Introduction:    &introduction,
 		}
-		got, err := repo.SaveProfile(ctx, &profile)
+		got, err := repo.SaveProfile(ctx, "name", &profile)
 		if err != nil {
 			t.Errorf("failed to save profile: %s", err)
 		}

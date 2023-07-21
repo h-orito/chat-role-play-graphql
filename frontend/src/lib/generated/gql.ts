@@ -21,12 +21,14 @@ const documents = {
     "mutation Unfavorite($input: DeleteMessageFavorite!) {\n  deleteMessageFavorite(input: $input) {\n    ok\n  }\n}": types.UnfavoriteDocument,
     "mutation RegisterParticipantGroup($input: NewGameParticipantGroup!) {\n  registerGameParticipantGroup(input: $input) {\n    gameParticipantGroup {\n      id\n      name\n      participants {\n        id\n        name\n      }\n    }\n  }\n}": types.RegisterParticipantGroupDocument,
     "mutation RegisterGameParticipant($input: NewGameParticipant!) {\n  registerGameParticipant(input: $input) {\n    gameParticipant {\n      id\n    }\n  }\n}": types.RegisterGameParticipantDocument,
+    "mutation RegisterGame($input: NewGame!) {\n  registerGame(input: $input) {\n    game {\n      id\n    }\n  }\n}": types.RegisterGameDocument,
     "mutation TalkDirect($input: NewDirectMessage!) {\n  registerDirectMessage(input: $input) {\n    ok\n  }\n}": types.TalkDirectDocument,
     "mutation Talk($input: NewMessage!) {\n  registerMessage(input: $input) {\n    ok\n  }\n}": types.TalkDocument,
     "mutation Unfollow($input: DeleteGameParticipantFollow!) {\n  deleteGameParticipantFollow(input: $input) {\n    ok\n  }\n}": types.UnfollowDocument,
     "mutation UpdateParticipantGroup($input: UpdateGameParticipantGroup!) {\n  updateGameParticipantGroup(input: $input) {\n    ok\n  }\n}": types.UpdateParticipantGroupDocument,
     "mutation UpdateIcon($input: UpdateGameParticipantIcon!) {\n  updateGameParticipantIcon(input: $input) {\n    ok\n  }\n}": types.UpdateIconDocument,
     "mutation UpdateGameParticipantProfile($input: UpdateGameParticipantProfile!) {\n  updateGameParticipantProfile(input: $input) {\n    ok\n  }\n}": types.UpdateGameParticipantProfileDocument,
+    "mutation UpdatePlayerProfile($name: String!, $introduction: String) {\n  updatePlayerProfile(input: {name: $name, introduction: $introduction}) {\n    ok\n  }\n}": types.UpdatePlayerProfileDocument,
     "mutation UploadIcon($input: NewGameParticipantIcon!) {\n  registerGameParticipantIcon(input: $input) {\n    gameParticipantIcon {\n      id\n    }\n  }\n}": types.UploadIconDocument,
     "query DirectFavoriteParticipants($gameId: ID!, $directMessageId: ID!) {\n  directMessageFavoriteGameParticipants(\n    gameId: $gameId\n    directMessageId: $directMessageId\n  ) {\n    id\n    name\n    entryNumber\n    profileIcon {\n      id\n      url\n    }\n  }\n}": types.DirectFavoriteParticipantsDocument,
     "query DirectMessagesLatest($gameId: ID!, $query: DirectMessagesQuery!) {\n  directMessagesLatestUnixTimeMilli(gameId: $gameId, query: $query)\n}": types.DirectMessagesLatestDocument,
@@ -39,10 +41,12 @@ const documents = {
     "query Icons($participantId: ID!) {\n  gameParticipantIcons(participantId: $participantId) {\n    id\n    url\n    width\n    height\n    displayOrder\n  }\n}": types.IconsDocument,
     "query GameParticipantProfile($participantId: ID!) {\n  gameParticipantProfile(participantId: $participantId) {\n    participantId\n    name\n    profileImageUrl\n    introduction\n    followsCount\n    followersCount\n  }\n}": types.GameParticipantProfileDocument,
     "query Game($id: ID!) {\n  game(id: $id) {\n    id\n    name\n    status\n    participants {\n      id\n      name\n      entryNumber\n      profileIcon {\n        id\n        url\n      }\n    }\n    periods {\n      id\n    }\n    settings {\n      chara {\n        charachips {\n          name\n        }\n        canOriginalCharacter\n      }\n      capacity {\n        min\n        max\n      }\n      rule {\n        canShorten\n        canSendDirectMessage\n      }\n      time {\n        periodPrefix\n        periodSuffix\n        periodIntervalSeconds\n        openAt\n        startParticipateAt\n        startGameAt\n      }\n      password {\n        hasPassword\n      }\n    }\n  }\n}": types.GameDocument,
+    "query IndexGames($pageSize: Int!, $pageNumber: Int!, $statuses: [GameStatus!]) {\n  games(\n    query: {statuses: $statuses, paging: {pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true}}\n  ) {\n    id\n    name\n    status\n    participantsCount\n    periods {\n      id\n      name\n      startAt\n      endAt\n    }\n    settings {\n      chara {\n        charachips {\n          name\n        }\n        canOriginalCharacter\n      }\n      capacity {\n        min\n        max\n      }\n      rule {\n        canShorten\n        canSendDirectMessage\n      }\n      time {\n        periodPrefix\n        periodSuffix\n        periodIntervalSeconds\n        openAt\n        startParticipateAt\n        startGameAt\n      }\n      password {\n        hasPassword\n      }\n    }\n  }\n}": types.IndexGamesDocument,
     "query FavoriteParticipants($gameId: ID!, $messageId: ID!) {\n  messageFavoriteGameParticipants(gameId: $gameId, messageId: $messageId) {\n    id\n    name\n    entryNumber\n    profileIcon {\n      id\n      url\n    }\n  }\n}": types.FavoriteParticipantsDocument,
     "query MessageReplies($gameId: ID!, $messageId: ID!) {\n  messageReplies(gameId: $gameId, messageId: $messageId) {\n    id\n    content {\n      type\n      text\n      number\n      isConvertDisabled\n    }\n    time {\n      sendAt\n      sendUnixTimeMilli\n    }\n    sender {\n      participantId\n      name\n      icon {\n        url\n        width\n        height\n      }\n    }\n    replyTo {\n      messageId\n      participantId\n    }\n    reactions {\n      replyCount\n      favoriteCount\n      favoriteParticipantIds\n    }\n  }\n}": types.MessageRepliesDocument,
     "query MyGameParticipant($gameId: ID!) {\n  myGameParticipant(gameId: $gameId) {\n    id\n    name\n    entryNumber\n    player {\n      id\n    }\n    profileIcon {\n      id\n      url\n    }\n    followParticipantIds\n    followerParticipantIds\n  }\n}": types.MyGameParticipantDocument,
-    "\n  query IndexGames($pageSize: Int!, $pageNumber: Int!) {\n    games(\n      query: {\n        paging: { pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true }\n      }\n    ) {\n      id\n      name\n      participantsCount\n    }\n  }\n": types.IndexGamesDocument,
+    "query MyPlayer {\n  myPlayer {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}": types.MyPlayerDocument,
+    "query Player($id: ID!) {\n  player(id: $id) {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}": types.PlayerDocument,
 };
 
 /**
@@ -94,6 +98,10 @@ export function graphql(source: "mutation RegisterGameParticipant($input: NewGam
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "mutation RegisterGame($input: NewGame!) {\n  registerGame(input: $input) {\n    game {\n      id\n    }\n  }\n}"): (typeof documents)["mutation RegisterGame($input: NewGame!) {\n  registerGame(input: $input) {\n    game {\n      id\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "mutation TalkDirect($input: NewDirectMessage!) {\n  registerDirectMessage(input: $input) {\n    ok\n  }\n}"): (typeof documents)["mutation TalkDirect($input: NewDirectMessage!) {\n  registerDirectMessage(input: $input) {\n    ok\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -115,6 +123,10 @@ export function graphql(source: "mutation UpdateIcon($input: UpdateGameParticipa
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "mutation UpdateGameParticipantProfile($input: UpdateGameParticipantProfile!) {\n  updateGameParticipantProfile(input: $input) {\n    ok\n  }\n}"): (typeof documents)["mutation UpdateGameParticipantProfile($input: UpdateGameParticipantProfile!) {\n  updateGameParticipantProfile(input: $input) {\n    ok\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation UpdatePlayerProfile($name: String!, $introduction: String) {\n  updatePlayerProfile(input: {name: $name, introduction: $introduction}) {\n    ok\n  }\n}"): (typeof documents)["mutation UpdatePlayerProfile($name: String!, $introduction: String) {\n  updatePlayerProfile(input: {name: $name, introduction: $introduction}) {\n    ok\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -166,6 +178,10 @@ export function graphql(source: "query Game($id: ID!) {\n  game(id: $id) {\n    
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "query IndexGames($pageSize: Int!, $pageNumber: Int!, $statuses: [GameStatus!]) {\n  games(\n    query: {statuses: $statuses, paging: {pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true}}\n  ) {\n    id\n    name\n    status\n    participantsCount\n    periods {\n      id\n      name\n      startAt\n      endAt\n    }\n    settings {\n      chara {\n        charachips {\n          name\n        }\n        canOriginalCharacter\n      }\n      capacity {\n        min\n        max\n      }\n      rule {\n        canShorten\n        canSendDirectMessage\n      }\n      time {\n        periodPrefix\n        periodSuffix\n        periodIntervalSeconds\n        openAt\n        startParticipateAt\n        startGameAt\n      }\n      password {\n        hasPassword\n      }\n    }\n  }\n}"): (typeof documents)["query IndexGames($pageSize: Int!, $pageNumber: Int!, $statuses: [GameStatus!]) {\n  games(\n    query: {statuses: $statuses, paging: {pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true}}\n  ) {\n    id\n    name\n    status\n    participantsCount\n    periods {\n      id\n      name\n      startAt\n      endAt\n    }\n    settings {\n      chara {\n        charachips {\n          name\n        }\n        canOriginalCharacter\n      }\n      capacity {\n        min\n        max\n      }\n      rule {\n        canShorten\n        canSendDirectMessage\n      }\n      time {\n        periodPrefix\n        periodSuffix\n        periodIntervalSeconds\n        openAt\n        startParticipateAt\n        startGameAt\n      }\n      password {\n        hasPassword\n      }\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "query FavoriteParticipants($gameId: ID!, $messageId: ID!) {\n  messageFavoriteGameParticipants(gameId: $gameId, messageId: $messageId) {\n    id\n    name\n    entryNumber\n    profileIcon {\n      id\n      url\n    }\n  }\n}"): (typeof documents)["query FavoriteParticipants($gameId: ID!, $messageId: ID!) {\n  messageFavoriteGameParticipants(gameId: $gameId, messageId: $messageId) {\n    id\n    name\n    entryNumber\n    profileIcon {\n      id\n      url\n    }\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -178,7 +194,11 @@ export function graphql(source: "query MyGameParticipant($gameId: ID!) {\n  myGa
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query IndexGames($pageSize: Int!, $pageNumber: Int!) {\n    games(\n      query: {\n        paging: { pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true }\n      }\n    ) {\n      id\n      name\n      participantsCount\n    }\n  }\n"): (typeof documents)["\n  query IndexGames($pageSize: Int!, $pageNumber: Int!) {\n    games(\n      query: {\n        paging: { pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true }\n      }\n    ) {\n      id\n      name\n      participantsCount\n    }\n  }\n"];
+export function graphql(source: "query MyPlayer {\n  myPlayer {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}"): (typeof documents)["query MyPlayer {\n  myPlayer {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query Player($id: ID!) {\n  player(id: $id) {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}"): (typeof documents)["query Player($id: ID!) {\n  player(id: $id) {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

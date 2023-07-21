@@ -3,11 +3,10 @@ import {
   Game,
   GameParticipant,
   GameParticipantGroup,
-  MessageType,
-  MessagesQuery
+  MessageType
 } from '@/lib/generated/graphql'
 import { useState } from 'react'
-import InputDatetime from '@/components/form/input-datetime'
+import Datetime from '@/components/form/datetime'
 import PrimaryButton from '@/components/button/primary-button'
 import CheckGroup from '@/components/form/check-group'
 import Modal from '@/components/modal/modal'
@@ -128,11 +127,11 @@ export default function DirectSearchCondition({
         </div>
         <div className='my-4'>
           <label htmlFor=''>From</label>
-          <InputDatetime value={sinceAt} setValue={setSinceAt} />
+          <Datetime value={sinceAt} setValue={setSinceAt} />
         </div>
         <div className='my-4'>
           <label htmlFor=''>To</label>
-          <InputDatetime value={untilAt} setValue={setUntilAt} />
+          <Datetime value={untilAt} setValue={setUntilAt} />
         </div>
         <div className='flex justify-end'>
           <PrimaryButton click={handleSearch}>検索</PrimaryButton>{' '}

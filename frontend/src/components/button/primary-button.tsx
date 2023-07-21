@@ -1,5 +1,5 @@
 type Props = {
-  click: (e: any) => void
+  click?: (e: any) => void
   disabled?: boolean
   children: React.ReactNode
   className?: string

@@ -12,7 +12,7 @@ type PlayerUsecase interface {
 	FindByName(name string) (player *model.Player, err error)
 	FindByUserName(username string) (player *model.Player, err error)
 	FindProfile(ID uint32) (profile *model.PlayerProfile, err error)
-	SaveProfile(ctx context.Context, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error)
+	SaveProfile(ctx context.Context, name string, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error)
 	RegisterSnsAccount(ctx context.Context, playerID uint32, account *model.PlayerSnsAccount) (saved *model.PlayerSnsAccount, err error)
 	UpdateSnsAccount(ctx context.Context, ID uint32, account *model.PlayerSnsAccount) error
 	DeleteSnsAccount(ctx context.Context, ID uint32) error
@@ -53,9 +53,9 @@ func (s *playerUsecase) FindProfile(ID uint32) (profile *model.PlayerProfile, er
 }
 
 // SaveProfile implements PlayerUsecase.
-func (s *playerUsecase) SaveProfile(ctx context.Context, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error) {
+func (s *playerUsecase) SaveProfile(ctx context.Context, name string, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error) {
 	pp, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		return s.playerService.SaveProfile(ctx, profile)
+		return s.playerService.SaveProfile(ctx, name, profile)
 	})
 	return pp.(*model.PlayerProfile), err
 }

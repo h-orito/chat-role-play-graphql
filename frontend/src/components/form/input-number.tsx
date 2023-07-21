@@ -5,7 +5,7 @@ import { FieldByType } from './types'
 // see https://zukucode.com/2022/11/react-hook-form-typescript-control.html
 type Props<
   TFieldValues extends FieldValues,
-  TName extends FieldByType<TFieldValues, string>
+  TName extends FieldByType<TFieldValues, number>
 > = UseControllerProps<TFieldValues, TName> &
   Exclude<
     Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'name'>,
@@ -15,9 +15,9 @@ type Props<
     className?: string
   }
 
-const InputDateTime = <
+const InputText = <
   TFieldValues extends FieldValues,
-  TName extends FieldByType<TFieldValues, string>
+  TName extends FieldByType<TFieldValues, number>
 >(
   props: Props<TFieldValues, TName>
 ) => {
@@ -59,8 +59,10 @@ const InputDateTime = <
     <div>
       {label && <label className='block text-sm'>{label}</label>}
       <input
-        className={`${className ?? ''} rounded border ${borderClass} px-2 py-1`}
-        type='datetime-local'
+        type='number'
+        className={`${
+          className ?? ''
+        } rounded border ${borderClass} px-2 py-1 text-right`}
         name={field.name}
         ref={field.ref}
         value={field.value}
@@ -73,4 +75,4 @@ const InputDateTime = <
   )
 }
 
-export default InputDateTime
+export default InputText
