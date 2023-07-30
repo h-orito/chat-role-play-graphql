@@ -48,7 +48,7 @@ export default function GamesPage({ games }: Props) {
   return (
     // todo: paging
     <main className='w-full lg:flex lg:justify-center'>
-      <article className='w-full text-center lg:w-[960px] lg:justify-center lg:border-x lg:border-gray-300'>
+      <article className='min-h-screen w-full text-center lg:w-[960px] lg:justify-center lg:border-x lg:border-gray-300'>
         <PageHeader href='/' header='ゲーム一覧' />
         <div className='p-4'>
           {games.length > 0 ? (

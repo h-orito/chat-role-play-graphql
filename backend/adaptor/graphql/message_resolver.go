@@ -22,13 +22,13 @@ func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.N
 	messageType := model.MessageTypeValueOf(input.Type.String())
 	var sender *model.MessageSender
 	if !messageType.IsSystem() {
-		iconID, err := idToUint32(input.IconID)
+		iconID, err := idToUint32(*input.IconID)
 		if err != nil {
 			return nil, err
 		}
 		sender = &model.MessageSender{
 			SenderIconID: iconID,
-			SenderName:   input.Name,
+			SenderName:   *input.Name,
 		}
 	}
 	var replyTo *model.MessageReplyTo

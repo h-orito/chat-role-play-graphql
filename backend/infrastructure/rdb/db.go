@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"gorm.io/driver/mysql"
@@ -36,7 +37,13 @@ func NewDB() DB {
 		cfg.Db.Name,
 	)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Error),
+		Logger: logger.New(
+			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			logger.Config{
+				LogLevel:                  logger.Error,
+				IgnoreRecordNotFoundError: true,
+			},
+		),
 	})
 	if err != nil {
 		panic(err.Error())
@@ -63,7 +70,7 @@ func (t *tx) DoInTx(ctx context.Context, f func(ctx context.Context) (interface{
 	var result interface{} = nil
 	var err error = nil
 	t.db.Transaction(func(tx *gorm.DB) error {
-		log.Println("start transaction.")
+		// log.Println("start transaction.")
 
 		// contextにトランザクションを保存
 		ctx = context.WithValue(ctx, &txKey, tx)
@@ -71,10 +78,10 @@ func (t *tx) DoInTx(ctx context.Context, f func(ctx context.Context) (interface{
 		// トランザクションの対象処理へコンテキストを引き継ぎ
 		result, err = f(ctx)
 		if err != nil {
-			log.Println("transaction rollbacked.")
+			// log.Println("transaction rollbacked.")
 			return err // rollback
 		}
-		log.Println("transaction committed.")
+		// log.Println("transaction committed.")
 		return nil // commit
 	})
 	return result, err

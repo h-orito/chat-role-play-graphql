@@ -1,0 +1,5 @@
+mutation UpdateGameSettings($input: UpdateGameSetting!) {
+  updateGameSetting(input: $input) {
+    ok
+  }
+}

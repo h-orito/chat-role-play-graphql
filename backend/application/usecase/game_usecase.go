@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"chat-role-play/application/app_service"
+	"chat-role-play/domain/dom_service"
 	"chat-role-play/domain/model"
 	"chat-role-play/util/array"
 	"context"
@@ -14,18 +15,18 @@ type GameUsecase interface {
 	FindGames(query model.GamesQuery) (games []model.Game, err error)
 	FindGame(ID uint32) (game *model.Game, err error)
 	FindGamePeriods(IDs []uint32) (periods []model.GamePeriod, err error)
-	RegisterGame(ctx context.Context, game model.Game) (registered *model.Game, err error)
-	RegisterGameMaster(ctx context.Context, gameID uint32, playerID uint32, isProducer bool) (gameMaster *model.GameMaster, err error)
-	UpdateGameMaster(ctx context.Context, gameMasterID uint32, isProducer bool) (err error)
-	DeleteGameMaster(ctx context.Context, gameMasterID uint32) (err error)
-	UpdateGameStatus(ctx context.Context, gameID uint32, status model.GameStatus) (err error)
-	UpdateGameSetting(ctx context.Context, gameID uint32, settings model.GameSettings) (err error)
-	UpdateGamePeriod(ctx context.Context, gameID uint32, period model.GamePeriod) (err error)
+	RegisterGame(ctx context.Context, user model.User, game model.Game) (registered *model.Game, err error)
+	RegisterGameMaster(ctx context.Context, user model.User, gameID uint32, playerID uint32, isProducer bool) (gameMaster *model.GameMaster, err error)
+	UpdateGameMaster(ctx context.Context, user model.User, gameID uint32, gameMasterID uint32, isProducer bool) (err error)
+	DeleteGameMaster(ctx context.Context, user model.User, gameID uint32, gameMasterID uint32) (err error)
+	UpdateGameStatus(ctx context.Context, user model.User, gameID uint32, status model.GameStatus) (err error)
+	UpdateGameSetting(ctx context.Context, user model.User, gameID uint32, gameName string, settings model.GameSettings) (err error)
+	UpdateGamePeriod(ctx context.Context, user model.User, gameID uint32, period model.GamePeriod) (err error)
+	ChangePeriodIfNeeded(ctx context.Context, gameID uint32) error
 	// game participant
 	FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
 	FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error)
 	FindMyGameParticipant(gameID uint32, user model.User) (participant *model.GameParticipant, err error)
-	// Participate(ctx context.Context, gameID uint32, participant model.GameParticipant) (saved *model.GameParticipant, err error)
 	Participate(ctx context.Context, gameID uint32, user model.User, charaID *uint32, participant model.GameParticipant) (saved *model.GameParticipant, err error)
 	Leave(ctx context.Context, gameID uint32, user model.User) (err error)
 	// game participant profile
@@ -52,23 +53,26 @@ type GameUsecase interface {
 }
 
 type gameUsecase struct {
-	gameService   app_service.GameService
-	playerService app_service.PlayerService
-	charaService  app_service.CharaService
-	transaction   Transaction
+	gameService             app_service.GameService
+	playerService           app_service.PlayerService
+	charaService            app_service.CharaService
+	gameMasterDomainService dom_service.GameMasterDomainService
+	transaction             Transaction
 }
 
 func NewGameUsecase(
 	gameService app_service.GameService,
 	playerService app_service.PlayerService,
 	charaService app_service.CharaService,
+	gameMasterDomainService dom_service.GameMasterDomainService,
 	tx Transaction,
 ) GameUsecase {
 	return &gameUsecase{
-		gameService:   gameService,
-		playerService: playerService,
-		charaService:  charaService,
-		transaction:   tx,
+		gameService:             gameService,
+		playerService:           playerService,
+		charaService:            charaService,
+		gameMasterDomainService: gameMasterDomainService,
+		transaction:             tx,
 	}
 }
 
@@ -84,22 +88,79 @@ func (g *gameUsecase) FindGamePeriods(IDs []uint32) (periods []model.GamePeriod,
 	return g.gameService.FindGamePeriods(IDs)
 }
 
-func (g *gameUsecase) RegisterGame(ctx context.Context, game model.Game) (registered *model.Game, err error) {
+func (g *gameUsecase) RegisterGame(ctx context.Context, user model.User, game model.Game) (registered *model.Game, err error) {
 	gm, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		player, err := g.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		game.GameMasters = []model.GameMaster{
+			{
+				PlayerID:   player.ID,
+				IsProducer: false,
+			},
+		}
 		return g.gameService.RegisterGame(ctx, game)
 	})
 	return gm.(*model.Game), err
 }
 
-func (g *gameUsecase) RegisterGameMaster(ctx context.Context, gameID uint32, playerID uint32, isProducer bool) (gameMaster *model.GameMaster, err error) {
+func (g *gameUsecase) RegisterGameMaster(
+	ctx context.Context,
+	user model.User,
+	gameID uint32,
+	playerID uint32,
+	isProducer bool,
+) (gameMaster *model.GameMaster, err error) {
 	gm, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		game, err := g.gameService.FindGame(gameID)
+		if err != nil {
+			return nil, err
+		}
+		if g == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+		player, err := g.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
+			return nil, fmt.Errorf("you are not game master")
+		}
 		return g.gameService.RegisterGameMaster(ctx, gameID, playerID, isProducer)
 	})
 	return gm.(*model.GameMaster), err
 }
 
-func (g *gameUsecase) UpdateGameMaster(ctx context.Context, gameMasterID uint32, isProducer bool) (err error) {
+func (g *gameUsecase) UpdateGameMaster(
+	ctx context.Context,
+	user model.User,
+	gameID uint32,
+	gameMasterID uint32,
+	isProducer bool,
+) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		game, err := g.gameService.FindGame(gameID)
+		if err != nil {
+			return nil, err
+		}
+		if g == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+		player, err := g.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
+			return nil, fmt.Errorf("you are not game master")
+		}
+
 		return nil, g.gameService.UpdateGameMaster(ctx, model.GameMaster{
 			ID:         gameMasterID,
 			IsProducer: isProducer,
@@ -108,30 +169,130 @@ func (g *gameUsecase) UpdateGameMaster(ctx context.Context, gameMasterID uint32,
 	return err
 }
 
-func (g *gameUsecase) DeleteGameMaster(ctx context.Context, gameMasterID uint32) (err error) {
+func (g *gameUsecase) DeleteGameMaster(
+	ctx context.Context,
+	user model.User,
+	gameID uint32,
+	gameMasterID uint32,
+) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		game, err := g.gameService.FindGame(gameID)
+		if err != nil {
+			return nil, err
+		}
+		if g == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+		player, err := g.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
+			return nil, fmt.Errorf("you are not game master")
+		}
+
 		return nil, g.gameService.DeleteGameMaster(ctx, gameMasterID)
 	})
 	return err
 }
 
-func (g *gameUsecase) UpdateGameStatus(ctx context.Context, gameID uint32, status model.GameStatus) (err error) {
+func (g *gameUsecase) UpdateGameStatus(
+	ctx context.Context,
+	user model.User,
+	gameID uint32,
+	status model.GameStatus,
+) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		game, err := g.gameService.FindGame(gameID)
+		if err != nil {
+			return nil, err
+		}
+		if g == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+		player, err := g.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
+			return nil, fmt.Errorf("you are not game master")
+		}
+
 		return nil, g.gameService.UpdateGameStatus(ctx, gameID, status)
 	})
 	return err
 }
 
-func (g *gameUsecase) UpdateGameSetting(ctx context.Context, gameID uint32, settings model.GameSettings) (err error) {
+func (g *gameUsecase) UpdateGameSetting(
+	ctx context.Context,
+	user model.User,
+	gameID uint32,
+	gameName string,
+	settings model.GameSettings,
+) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		return nil, g.gameService.UpdateGameSettings(ctx, gameID, settings)
+		game, err := g.gameService.FindGame(gameID)
+		if err != nil {
+			return nil, err
+		}
+		if g == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+		player, err := g.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
+			return nil, fmt.Errorf("you are not game master")
+		}
+
+		return nil, g.gameService.UpdateGameSettings(ctx, gameID, gameName, settings)
 	})
 	return err
 }
 
-func (g *gameUsecase) UpdateGamePeriod(ctx context.Context, gameID uint32, period model.GamePeriod) (err error) {
+func (g *gameUsecase) UpdateGamePeriod(
+	ctx context.Context,
+	user model.User,
+	gameID uint32,
+	period model.GamePeriod,
+) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		game, err := g.gameService.FindGame(gameID)
+		if err != nil {
+			return nil, err
+		}
+		if g == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+		player, err := g.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
+			return nil, fmt.Errorf("you are not game master")
+		}
+
 		return nil, g.gameService.UpdateGamePeriod(ctx, gameID, period)
+	})
+	return err
+}
+
+func (g *gameUsecase) ChangePeriodIfNeeded(ctx context.Context, gameID uint32) error {
+	_, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		return nil, g.gameService.ChangePeriodIfNeeded(ctx, gameID)
 	})
 	return err
 }

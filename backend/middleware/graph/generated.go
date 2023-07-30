@@ -51,6 +51,10 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	ChangePeriodIfNeededPayload struct {
+		Ok func(childComplexity int) int
+	}
+
 	Chara struct {
 		ID     func(childComplexity int) int
 		Images func(childComplexity int) int
@@ -240,6 +244,7 @@ type ComplexityRoot struct {
 	}
 
 	GameTimeSetting struct {
+		FinishGameAt          func(childComplexity int) int
 		OpenAt                func(childComplexity int) int
 		PeriodIntervalSeconds func(childComplexity int) int
 		PeriodPrefix          func(childComplexity int) int
@@ -303,6 +308,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		ChangePeriodIfNeeded          func(childComplexity int, input gqlmodel.ChangePeriod) int
 		DeleteDirectMessageFavorite   func(childComplexity int, input gqlmodel.DeleteDirectMessageFavorite) int
 		DeleteGameMaster              func(childComplexity int, input gqlmodel.DeleteGameMaster) int
 		DeleteGameParticipant         func(childComplexity int, input gqlmodel.DeleteGameParticipant) int
@@ -574,6 +580,7 @@ type MutationResolver interface {
 	UpdateGameStatus(ctx context.Context, input gqlmodel.UpdateGameStatus) (*gqlmodel.UpdateGameStatusPayload, error)
 	UpdateGameSetting(ctx context.Context, input gqlmodel.UpdateGameSetting) (*gqlmodel.UpdateGameSettingPayload, error)
 	UpdateGamePeriod(ctx context.Context, input gqlmodel.UpdateGamePeriod) (*gqlmodel.UpdateGamePeriodPayload, error)
+	ChangePeriodIfNeeded(ctx context.Context, input gqlmodel.ChangePeriod) (*gqlmodel.ChangePeriodIfNeededPayload, error)
 	RegisterGameParticipant(ctx context.Context, input gqlmodel.NewGameParticipant) (*gqlmodel.RegisterGameParticipantPayload, error)
 	UpdateGameParticipantProfile(ctx context.Context, input gqlmodel.UpdateGameParticipantProfile) (*gqlmodel.UpdateGameParticipantProfilePayload, error)
 	RegisterGameParticipantIcon(ctx context.Context, input gqlmodel.NewGameParticipantIcon) (*gqlmodel.RegisterGameParticipantIconPayload, error)
@@ -642,6 +649,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "ChangePeriodIfNeededPayload.ok":
+		if e.complexity.ChangePeriodIfNeededPayload.Ok == nil {
+			break
+		}
+
+		return e.complexity.ChangePeriodIfNeededPayload.Ok(childComplexity), true
 
 	case "Chara.id":
 		if e.complexity.Chara.ID == nil {
@@ -1334,6 +1348,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GameSettings.Time(childComplexity), true
 
+	case "GameTimeSetting.finishGameAt":
+		if e.complexity.GameTimeSetting.FinishGameAt == nil {
+			break
+		}
+
+		return e.complexity.GameTimeSetting.FinishGameAt(childComplexity), true
+
 	case "GameTimeSetting.openAt":
 		if e.complexity.GameTimeSetting.OpenAt == nil {
 			break
@@ -1585,6 +1606,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Messages.List(childComplexity), true
+
+	case "Mutation.changePeriodIfNeeded":
+		if e.complexity.Mutation.ChangePeriodIfNeeded == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_changePeriodIfNeeded_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ChangePeriodIfNeeded(childComplexity, args["input"].(gqlmodel.ChangePeriod)), true
 
 	case "Mutation.deleteDirectMessageFavorite":
 		if e.complexity.Mutation.DeleteDirectMessageFavorite == nil {
@@ -2733,6 +2766,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputChangePeriod,
 		ec.unmarshalInputCharachipsQuery,
 		ec.unmarshalInputDeleteDirectMessageFavorite,
 		ec.unmarshalInputDeleteGameMaster,
@@ -3031,6 +3065,7 @@ type GameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  finishGameAt: DateTime!
 }
 
 type GameRuleSetting {
@@ -3317,6 +3352,8 @@ type Mutation {
     @isAuthenticated
   updateGamePeriod(input: UpdateGamePeriod!): UpdateGamePeriodPayload!
     @isAuthenticated
+  changePeriodIfNeeded(input: ChangePeriod!): ChangePeriodIfNeededPayload!
+    @isAuthenticated
 
   # game participant
   registerGameParticipant(
@@ -3503,6 +3540,7 @@ input NewGameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  finishGameAt: DateTime!
 }
 
 input NewGameRuleSetting {
@@ -3530,6 +3568,7 @@ type RegisterGameMasterPayload {
 }
 
 input UpdateGameMaster {
+  gameId: ID!
   id: ID!
   isProducer: Boolean!
 }
@@ -3539,6 +3578,7 @@ type UpdateGameMasterPayload {
 }
 
 input DeleteGameMaster {
+  gameId: ID!
   id: ID!
 }
 
@@ -3548,6 +3588,7 @@ type DeleteGameMasterPayload {
 
 input UpdateGameSetting {
   gameId: ID!
+  name: String!
   settings: UpdateGameSettings!
 }
 
@@ -3576,6 +3617,7 @@ input UpdateGameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  finishGameAt: DateTime!
 }
 
 input UpdateGameRuleSetting {
@@ -3609,6 +3651,14 @@ input UpdateGamePeriod {
 }
 
 type UpdateGamePeriodPayload {
+  ok: Boolean!
+}
+
+input ChangePeriod {
+  gameId: ID!
+}
+
+type ChangePeriodIfNeededPayload {
   ok: Boolean!
 }
 
@@ -3799,8 +3849,8 @@ type DeletePlayerSnsAccountPayload {
 input NewMessage {
   gameId: ID!
   type: MessageType!
-  iconId: ID!
-  name: String!
+  iconId: ID
+  name: String
   replyToMessageId: ID
   text: String!
   isConvertDisabled: Boolean!
@@ -3903,6 +3953,21 @@ func (ec *executionContext) field_Game_participants_args(ctx context.Context, ra
 		}
 	}
 	args["paging"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_changePeriodIfNeeded_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 gqlmodel.ChangePeriod
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNChangePeriod2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChangePeriod(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -5008,6 +5073,50 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _ChangePeriodIfNeededPayload_ok(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.ChangePeriodIfNeededPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ChangePeriodIfNeededPayload_ok(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Ok, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ChangePeriodIfNeededPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChangePeriodIfNeededPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
 
 func (ec *executionContext) _Chara_id(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.Chara) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Chara_id(ctx, field)
@@ -9482,6 +9591,8 @@ func (ec *executionContext) fieldContext_GameSettings_time(ctx context.Context, 
 				return ec.fieldContext_GameTimeSetting_startParticipateAt(ctx, field)
 			case "startGameAt":
 				return ec.fieldContext_GameTimeSetting_startGameAt(ctx, field)
+			case "finishGameAt":
+				return ec.fieldContext_GameTimeSetting_finishGameAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GameTimeSetting", field.Name)
 		},
@@ -9835,6 +9946,50 @@ func (ec *executionContext) _GameTimeSetting_startGameAt(ctx context.Context, fi
 }
 
 func (ec *executionContext) fieldContext_GameTimeSetting_startGameAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameTimeSetting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type DateTime does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameTimeSetting_finishGameAt(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameTimeSetting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameTimeSetting_finishGameAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FinishGameAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameTimeSetting_finishGameAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameTimeSetting",
 		Field:      field,
@@ -12381,6 +12536,85 @@ func (ec *executionContext) fieldContext_Mutation_updateGamePeriod(ctx context.C
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_updateGamePeriod_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_changePeriodIfNeeded(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_changePeriodIfNeeded(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().ChangePeriodIfNeeded(rctx, fc.Args["input"].(gqlmodel.ChangePeriod))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*gqlmodel.ChangePeriodIfNeededPayload); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *chat-role-play/middleware/graph/gqlmodel.ChangePeriodIfNeededPayload`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.ChangePeriodIfNeededPayload)
+	fc.Result = res
+	return ec.marshalNChangePeriodIfNeededPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChangePeriodIfNeededPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_changePeriodIfNeeded(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_ChangePeriodIfNeededPayload_ok(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChangePeriodIfNeededPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_changePeriodIfNeeded_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -20352,6 +20586,35 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputChangePeriod(ctx context.Context, obj interface{}) (gqlmodel.ChangePeriod, error) {
+	var it gqlmodel.ChangePeriod
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"gameId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "gameId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.GameID = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCharachipsQuery(ctx context.Context, obj interface{}) (gqlmodel.CharachipsQuery, error) {
 	var it gqlmodel.CharachipsQuery
 	asMap := map[string]interface{}{}
@@ -20444,13 +20707,22 @@ func (ec *executionContext) unmarshalInputDeleteGameMaster(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id"}
+	fieldsInOrder := [...]string{"gameId", "id"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "gameId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.GameID = data
 		case "id":
 			var err error
 
@@ -21872,7 +22144,7 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"periodPrefix", "periodSuffix", "periodIntervalSeconds", "openAt", "startParticipateAt", "startGameAt"}
+	fieldsInOrder := [...]string{"periodPrefix", "periodSuffix", "periodIntervalSeconds", "openAt", "startParticipateAt", "startGameAt", "finishGameAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -21933,6 +22205,15 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 				return it, err
 			}
 			it.StartGameAt = data
+		case "finishGameAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finishGameAt"))
+			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FinishGameAt = data
 		}
 	}
 
@@ -21975,7 +22256,7 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconId"))
-			data, err := ec.unmarshalNID2string(ctx, v)
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -21984,7 +22265,7 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -22510,13 +22791,22 @@ func (ec *executionContext) unmarshalInputUpdateGameMaster(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "isProducer"}
+	fieldsInOrder := [...]string{"gameId", "id", "isProducer"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "gameId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.GameID = data
 		case "id":
 			var err error
 
@@ -22989,7 +23279,7 @@ func (ec *executionContext) unmarshalInputUpdateGameSetting(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"gameId", "settings"}
+	fieldsInOrder := [...]string{"gameId", "name", "settings"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23005,6 +23295,15 @@ func (ec *executionContext) unmarshalInputUpdateGameSetting(ctx context.Context,
 				return it, err
 			}
 			it.GameID = data
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
 		case "settings":
 			var err error
 
@@ -23130,7 +23429,7 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"periodPrefix", "periodSuffix", "periodIntervalSeconds", "openAt", "startParticipateAt", "startGameAt"}
+	fieldsInOrder := [...]string{"periodPrefix", "periodSuffix", "periodIntervalSeconds", "openAt", "startParticipateAt", "startGameAt", "finishGameAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23191,6 +23490,15 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 				return it, err
 			}
 			it.StartGameAt = data
+		case "finishGameAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finishGameAt"))
+			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FinishGameAt = data
 		}
 	}
 
@@ -23433,6 +23741,34 @@ func (ec *executionContext) _Pageable(ctx context.Context, sel ast.SelectionSet,
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var changePeriodIfNeededPayloadImplementors = []string{"ChangePeriodIfNeededPayload"}
+
+func (ec *executionContext) _ChangePeriodIfNeededPayload(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.ChangePeriodIfNeededPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, changePeriodIfNeededPayloadImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ChangePeriodIfNeededPayload")
+		case "ok":
+
+			out.Values[i] = ec._ChangePeriodIfNeededPayload_ok(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
 
 var charaImplementors = []string{"Chara"}
 
@@ -24885,6 +25221,13 @@ func (ec *executionContext) _GameTimeSetting(ctx context.Context, sel ast.Select
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "finishGameAt":
+
+			out.Values[i] = ec._GameTimeSetting_finishGameAt(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -25427,6 +25770,15 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateGamePeriod(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "changePeriodIfNeeded":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_changePeriodIfNeeded(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -27737,6 +28089,25 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNChangePeriod2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChangePeriod(ctx context.Context, v interface{}) (gqlmodel.ChangePeriod, error) {
+	res, err := ec.unmarshalInputChangePeriod(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNChangePeriodIfNeededPayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChangePeriodIfNeededPayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.ChangePeriodIfNeededPayload) graphql.Marshaler {
+	return ec._ChangePeriodIfNeededPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNChangePeriodIfNeededPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChangePeriodIfNeededPayload(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.ChangePeriodIfNeededPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ChangePeriodIfNeededPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNChara2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐCharaᚄ(ctx context.Context, sel ast.SelectionSet, v []*gqlmodel.Chara) graphql.Marshaler {

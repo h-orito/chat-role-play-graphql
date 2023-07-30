@@ -72,17 +72,17 @@ export default function Index({ games }: Props) {
   }
 
   return (
-    <main className='w-full lg:flex lg:justify-center'>
-      <article className='w-full text-center lg:w-[960px] lg:justify-center lg:border-x lg:border-gray-300'>
+    <main className='min-h-screen w-full lg:flex lg:justify-center'>
+      <article className='flex w-full flex-col text-center lg:w-[960px] lg:justify-center lg:border-x lg:border-gray-300'>
         <div>
           <Image
-            src={'https://placehold.jp/cccccc/999/960x540.png?text=top%20image'}
+            src={`/chat-role-play/images/top.jpg`}
             width={960}
             height={540}
             alt='トップ画像'
           />
         </div>
-        <div className='p-2 lg:p-4'>
+        <div className='flex-1 p-2 lg:p-4'>
           <Introduction />
           <UserInfo />
           <div className='my-6'>
@@ -127,6 +127,13 @@ export default function Index({ games }: Props) {
             onClick={() => setIsOpenTipModal(true)}
           >
             投げ銭
+          </a>
+          <a
+            href='https://twitter.com/ort_dev'
+            target='_blank'
+            className='ml-2 cursor-pointer hover:text-blue-500'
+          >
+            問い合わせ
           </a>
         </footer>
         {isOpenTermModal && (

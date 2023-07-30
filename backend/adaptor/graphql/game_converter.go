@@ -11,10 +11,12 @@ func MapToGame(g *model.Game) *gqlmodel.Game {
 		return nil
 	}
 	return &gqlmodel.Game{
-		ID:          intIdToBase64(g.ID, "Game"),
-		Name:        g.Name,
-		Status:      gqlmodel.GameStatus(g.Status.String()),
-		GameMasters: []*gqlmodel.GameMaster{},
+		ID:     intIdToBase64(g.ID, "Game"),
+		Name:   g.Name,
+		Status: gqlmodel.GameStatus(g.Status.String()),
+		GameMasters: array.Map(g.GameMasters, func(gm model.GameMaster) *gqlmodel.GameMaster {
+			return MapToGameMaster(&gm)
+		}),
 		Participants: array.Map(g.Participants.List, func(gp model.GameParticipant) *gqlmodel.GameParticipant {
 			return MapToGameParticipant(gp)
 		}),
@@ -37,6 +39,7 @@ func MapToGame(g *model.Game) *gqlmodel.Game {
 				OpenAt:                g.Settings.Time.OpenAt,
 				StartParticipateAt:    g.Settings.Time.StartParticipateAt,
 				StartGameAt:           g.Settings.Time.StartGameAt,
+				FinishGameAt:          g.Settings.Time.FinishGameAt,
 			},
 			Rule: &gqlmodel.GameRuleSetting{
 				IsGameMasterProducer: false,

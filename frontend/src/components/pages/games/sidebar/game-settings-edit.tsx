@@ -1,8 +1,11 @@
 import {
-  RegisterGameMutation,
   RegisterGameMutationVariables,
   NewGame,
-  RegisterGameDocument
+  Game,
+  UpdateGameSettingsMutation,
+  UpdateGameSettingsDocument,
+  UpdateGameSetting,
+  UpdateGameSettingsMutationVariables
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
 import dayjs from 'dayjs'
@@ -11,39 +14,46 @@ import utc from 'dayjs/plugin/utc'
 import { useCallback } from 'react'
 import { useRouter } from 'next/router'
 import { SubmitHandler } from 'react-hook-form'
-import { base64ToId } from '@/components/graphql/convert'
 import GameEdit, {
   GameFormInput
 } from '@/components/pages/create-game/game-edit'
-import PageHeader from '@/components/pages/page-header'
 
-export default function CreateGame() {
+type Props = {
+  game: Game
+}
+
+export default function GameSettingsEdit({ game }: Props) {
   dayjs.extend(utc)
   dayjs.extend(timezone)
   dayjs.tz.setDefault('Asia/Tokyo')
-  const now = dayjs()
 
   const defaultValues = {
-    name: '',
-    openAt: now.add(7, 'day').startOf('hour').format('YYYY-MM-DDTHH:mm'),
-    startParticipateAt: now
-      .add(14, 'day')
-      .startOf('hour')
-      .format('YYYY-MM-DDTHH:mm'),
-    startGameAt: now.add(28, 'day').startOf('hour').format('YYYY-MM-DDTHH:mm'),
-    finishGameAt: now.add(56, 'day').startOf('hour').format('YYYY-MM-DDTHH:mm'),
-    capacityMin: 1,
-    capacityMax: 99,
-    periodPrefix: '',
-    periodSuffix: '日目',
-    periodIntervalDays: 1,
-    periodIntervalHours: 0,
-    periodIntervalMinutes: 0,
+    name: game.name,
+    openAt: dayjs(game.settings.time.openAt).format('YYYY-MM-DDTHH:mm'),
+    startParticipateAt: dayjs(game.settings.time.startParticipateAt).format(
+      'YYYY-MM-DDTHH:mm'
+    ),
+    startGameAt: dayjs(game.settings.time.startGameAt).format(
+      'YYYY-MM-DDTHH:mm'
+    ),
+    finishGameAt: dayjs(game.settings.time.finishGameAt).format(
+      'YYYY-MM-DDTHH:mm'
+    ),
+    capacityMin: game.settings.capacity.min,
+    capacityMax: game.settings.capacity.max,
+    periodPrefix: game.settings.time.periodPrefix || '',
+    periodSuffix: game.settings.time.periodSuffix || '',
+    periodIntervalDays: Math.floor(
+      game.settings.time.periodIntervalSeconds / 60 / 60 / 24
+    ),
+    periodIntervalHours:
+      (game.settings.time.periodIntervalSeconds / 60 / 60) % 24,
+    periodIntervalMinutes: (game.settings.time.periodIntervalSeconds / 60) % 60,
     password: ''
   } as GameFormInput
 
-  const [registerGame] = useMutation<RegisterGameMutation>(
-    RegisterGameDocument,
+  const [updateGameSettings] = useMutation<UpdateGameSettingsMutation>(
+    UpdateGameSettingsDocument,
     {
       onCompleted(e) {
         // TODO
@@ -56,9 +66,10 @@ export default function CreateGame() {
   const router = useRouter()
   const onSubmit: SubmitHandler<GameFormInput> = useCallback(
     async (data) => {
-      const { data: resData } = await registerGame({
+      await updateGameSettings({
         variables: {
           input: {
+            gameId: game.id,
             name: data.name,
             settings: {
               chara: {
@@ -92,30 +103,21 @@ export default function CreateGame() {
                 password: data.password.length > 0 ? data.password : null
               }
             }
-          } as NewGame
-        } as RegisterGameMutationVariables
+          } as UpdateGameSetting
+        } as UpdateGameSettingsMutationVariables
       })
-      const id = resData?.registerGame?.game?.id
-      if (!id) {
-        return
-      }
-      router.push(`/games/${base64ToId(id)}`)
+      router.reload()
     },
-    [registerGame]
+    [updateGameSettings]
   )
 
-  console.log(defaultValues)
-
   return (
-    <main className='w-full lg:flex lg:justify-center'>
-      <article className='min-h-screen w-full text-center lg:w-[960px] lg:justify-center lg:border-x lg:border-gray-300'>
-        <PageHeader href='/' header='ゲーム作成' />
-        <GameEdit
-          defaultValues={defaultValues}
-          onSubmit={onSubmit}
-          labelName='作成'
-        />
-      </article>
-    </main>
+    <div className='flex justify-center text-center'>
+      <GameEdit
+        defaultValues={defaultValues}
+        onSubmit={onSubmit}
+        labelName='更新'
+      />
+    </div>
   )
 }

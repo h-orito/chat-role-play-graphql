@@ -93,9 +93,7 @@ export default function Profile({
             />
           ) : (
             <Image
-              src={
-                'https://placehold.jp/cccccc/999/400x600.png?text=no%20image'
-              }
+              src={'/chat-role-play/images/profile.webp'}
               width={400}
               height={600}
               alt='プロフィール画像'

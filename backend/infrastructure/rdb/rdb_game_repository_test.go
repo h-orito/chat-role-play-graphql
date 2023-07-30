@@ -135,7 +135,7 @@ func TestUpdateGameSettings(t *testing.T) {
 	transaction := NewTestTransaction(database.Connection)
 	transaction.DoInTx(context.Background(), func(ctx context.Context) (interface{}, error) {
 		repo := db.NewGameRepository(&database)
-		err := repo.UpdateGameSettings(ctx, 1, model.GameSettings{
+		err := repo.UpdateGameSettings(ctx, 1, "name", model.GameSettings{
 			Chara:    model.GameCharaSettings{CharachipIDs: []uint32{1}, CanOriginalCharacter: true},
 			Capacity: model.GameCapacitySettings{Min: 1, Max: 10},
 			Time: model.GameTimeSettings{
@@ -155,105 +155,6 @@ func TestUpdateGameSettings(t *testing.T) {
 				Password:    nil,
 			},
 		})
-		if err != nil {
-			t.Errorf("failed to register designer: %s", err)
-		}
-		return nil, nil
-	})
-}
-
-func TestUpdatePeriodChange(t *testing.T) {
-	database := NewTestDB()
-	transaction := NewTestTransaction(database.Connection)
-	transaction.DoInTx(context.Background(), func(ctx context.Context) (interface{}, error) {
-		repo := db.NewGameRepository(&database)
-		before := model.Game{
-			ID:     1,
-			Name:   "test",
-			Status: model.GameStatusClosed,
-			GameMasters: []model.GameMaster{
-				{
-					PlayerID:   1,
-					IsProducer: true,
-				},
-			},
-			Participants: model.GameParticipants{},
-			Periods: []model.GamePeriod{
-				{
-					Count:   0,
-					Name:    "プロローグ",
-					StartAt: time.Now(),
-					EndAt:   time.Now(),
-				},
-			},
-			Settings: model.GameSettings{
-				Chara:    model.GameCharaSettings{CharachipIDs: []uint32{1}, CanOriginalCharacter: true},
-				Capacity: model.GameCapacitySettings{Min: 1, Max: 10},
-				Time: model.GameTimeSettings{
-					PeriodPrefix:          nil,
-					PeriodSuffix:          nil,
-					PeriodIntervalSeconds: 86400,
-					OpenAt:                time.Now(),
-					StartParticipateAt:    time.Now(),
-					StartGameAt:           time.Now(),
-				},
-				Rule: model.GameRuleSettings{
-					CanShorten:           true,
-					CanSendDirectMessage: true,
-				},
-				Password: model.GamePasswordSettings{
-					HasPassword: false,
-					Password:    nil,
-				},
-			},
-		}
-		after := model.Game{
-			ID:     1,
-			Name:   "test",
-			Status: model.GameStatusProgress,
-			GameMasters: []model.GameMaster{
-				{
-					PlayerID:   1,
-					IsProducer: true,
-				},
-			},
-			Participants: model.GameParticipants{},
-			Periods: []model.GamePeriod{
-				{
-					Count:   0,
-					Name:    "プロローグ",
-					StartAt: time.Now(),
-					EndAt:   time.Now(),
-				}, {
-					Count:   1,
-					Name:    "1日目",
-					StartAt: time.Now(),
-					EndAt:   time.Now(),
-				},
-			},
-			Settings: model.GameSettings{
-				Chara:    model.GameCharaSettings{CharachipIDs: []uint32{1}, CanOriginalCharacter: true},
-				Capacity: model.GameCapacitySettings{Min: 1, Max: 10},
-				Time: model.GameTimeSettings{
-					PeriodPrefix:          nil,
-					PeriodSuffix:          nil,
-					PeriodIntervalSeconds: 86400,
-					OpenAt:                time.Now(),
-					StartParticipateAt:    time.Now(),
-					StartGameAt:           time.Now(),
-				},
-				Rule: model.GameRuleSettings{
-					CanShorten:           true,
-					CanSendDirectMessage: true,
-				},
-				Password: model.GamePasswordSettings{
-					HasPassword: false,
-					Password:    nil,
-				},
-			},
-		}
-
-		err := repo.UpdatePeriodChange(ctx, before, after)
 		if err != nil {
 			t.Errorf("failed to register designer: %s", err)
 		}

@@ -3,6 +3,13 @@ query Game($id: ID!) {
     id
     name
     status
+    gameMasters {
+      id
+      player {
+        id
+        name
+      }
+    }
     participants {
       id
       name
@@ -37,6 +44,7 @@ query Game($id: ID!) {
         openAt
         startParticipateAt
         startGameAt
+        finishGameAt
       }
       password {
         hasPassword

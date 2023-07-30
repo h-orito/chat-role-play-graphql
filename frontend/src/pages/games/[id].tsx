@@ -6,17 +6,25 @@ import Article from '@/components/pages/games/article/article'
 import Profile from '@/components/pages/games/profile/profile'
 import Sidebar from '@/components/pages/games/sidebar/sidebar'
 import {
+  ChangePeriod,
+  ChangePeriodDocument,
+  ChangePeriodMutation,
+  ChangePeriodMutationVariables,
   Game,
   GameDocument,
   GameParticipant,
   GameQuery,
   GameQueryVariables,
+  MessagesQuery,
   MyGameParticipantDocument,
   MyGameParticipantQuery,
-  MyGameParticipantQueryVariables
+  MyGameParticipantQueryVariables,
+  MyPlayerDocument,
+  MyPlayerQuery,
+  Player
 } from '@/lib/generated/graphql'
-import { useLazyQuery } from '@apollo/client'
-import { useEffect, useState } from 'react'
+import { useLazyQuery, useMutation } from '@apollo/client'
+import { useEffect, useRef, useState } from 'react'
 
 export const getServerSideProps = async (context: any) => {
   const { id } = context.params
@@ -42,6 +50,7 @@ type Props = {
 export default function GamePage({ gameId, game }: Props) {
   const [loading, setLoading] = useState(false)
   const [myself, setMyself] = useState<GameParticipant | null>(null)
+  const [myPlayer, setMyPlayer] = useState<Player | null>(null)
 
   const [fetchMyself] = useLazyQuery<MyGameParticipantQuery>(
     MyGameParticipantDocument
@@ -54,10 +63,18 @@ export default function GamePage({ gameId, game }: Props) {
     else setMyself(data.myGameParticipant as GameParticipant)
   }
 
+  const [fetchMyPlayer] = useLazyQuery<MyPlayerQuery>(MyPlayerDocument)
+  const refetchMyPlayer = async () => {
+    const { data } = await fetchMyPlayer()
+    if (data?.myPlayer == null) return
+    setMyPlayer(data.myPlayer as Player)
+  }
+
   useEffect(() => {
     const fetch = async () => {
       setLoading(true)
       await refetchMyself()
+      await refetchMyPlayer()
       setLoading(false)
     }
     fetch()
@@ -78,6 +95,41 @@ export default function GamePage({ gameId, game }: Props) {
     setIsSidebarOpen(!isSidebarOpen)
   }
 
+  // 1分に1回ゲーム更新チェック
+  const usePollingPeriod = (callback: () => void) => {
+    const ref = useRef<() => void>(callback)
+    useEffect(() => {
+      ref.current = callback
+    }, [callback])
+
+    useEffect(() => {
+      const mutation = () => {
+        ref.current()
+      }
+      const timer = setInterval(mutation, 60000)
+      return () => clearInterval(timer)
+    }, [])
+  }
+  const [changePeriod] = useMutation<ChangePeriodMutation>(
+    ChangePeriodDocument,
+    {
+      onCompleted(e) {},
+      onError(error) {
+        console.error(error)
+      }
+    }
+  )
+  const changePeriodIfNeeded = async () => {
+    await changePeriod({
+      variables: {
+        input: {
+          gameId: game.id
+        } as ChangePeriod
+      } as ChangePeriodMutationVariables
+    })
+  }
+  usePollingPeriod(() => changePeriodIfNeeded())
+
   if (loading) return <div>loading...</div>
   return (
     <main className='flex w-full'>
@@ -89,6 +141,7 @@ export default function GamePage({ gameId, game }: Props) {
         toggleSidebar={toggleSidebar}
         game={game}
         myself={myself}
+        myPlayer={myPlayer}
         openProfileModal={openProfileModal}
       />
       <Article

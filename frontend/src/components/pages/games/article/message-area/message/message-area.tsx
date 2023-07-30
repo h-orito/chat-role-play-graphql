@@ -13,6 +13,7 @@ import Paging from '../paging'
 import { useEffect, useRef, useState } from 'react'
 import SearchCondition from './search-condition'
 import { LazyQueryExecFunction, OperationVariables } from '@apollo/client'
+import { GoogleAdsense } from '@/components/adsense/google-adsense'
 
 type Props = {
   game: Game
@@ -29,6 +30,7 @@ type Props = {
   existsUnread: boolean
   setExistUnread: (exist: boolean) => void
   onlyFollowing?: boolean
+  searchable?: boolean
 }
 
 export default function MessageArea({
@@ -42,7 +44,8 @@ export default function MessageArea({
   isViewing,
   existsUnread,
   setExistUnread,
-  onlyFollowing = false
+  onlyFollowing = false,
+  searchable = false
 }: Props) {
   const defaultMessageQuery: MessagesQuery = {
     senderIds: onlyFollowing
@@ -107,7 +110,7 @@ export default function MessageArea({
     search(defaultMessageQuery)
   }, [])
 
-  // 30秒ごとに最新をチェックして更新されていれば取得
+  // 30秒（検索タブは60秒）ごとに最新をチェックして更新されていれば取得
   const usePollingMessages = (callback: () => void) => {
     const ref = useRef<() => void>(callback)
     useEffect(() => {
@@ -118,7 +121,7 @@ export default function MessageArea({
       const fetch = () => {
         ref.current()
       }
-      const timer = setInterval(fetch, 30000)
+      const timer = setInterval(fetch, searchable ? 60000 : 30000)
       return () => clearInterval(timer)
     }, [])
   }
@@ -137,16 +140,20 @@ export default function MessageArea({
   }
 
   return (
-    <div className={`${className} flex flex-1 flex-col overflow-y-auto`}>
-      <div className='flex'>
-        <SearchCondition
-          game={game}
-          myself={myself}
-          messageQuery={messageQuery}
-          search={search}
-          onlyFollowing={onlyFollowing}
-        />
-      </div>
+    <div
+      className={`${className} mut-height-guard flex flex-1 flex-col overflow-y-auto`}
+    >
+      {searchable && (
+        <div className='flex'>
+          <SearchCondition
+            game={game}
+            myself={myself}
+            messageQuery={messageQuery}
+            search={search}
+            onlyFollowing={onlyFollowing}
+          />
+        </div>
+      )}
       <Paging
         messages={messages}
         query={messageQuery.paging as PageableQuery | undefined}
@@ -163,6 +170,9 @@ export default function MessageArea({
             openFavoritesModal={openFavoritesModal}
           />
         ))}
+        {isViewing && (
+          <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
+        )}
       </div>
       <Paging
         messages={messages}

@@ -198,6 +198,7 @@ type GameTimeSettings struct {
 	OpenAt                time.Time
 	StartParticipateAt    time.Time
 	StartGameAt           time.Time
+	FinishGameAt          time.Time
 }
 
 type GameRuleSettings struct {
@@ -210,6 +211,25 @@ type GamePasswordSettings struct {
 	Password    *string
 }
 
+// -----------------------
+
+func (g *Game) ShouldChangeStatus(now time.Time) (bool, GameStatus) {
+	switch g.Status {
+	case GameStatusClosed:
+		return now.After(g.Settings.Time.OpenAt), GameStatusOpening
+	case GameStatusOpening:
+		return now.After(g.Settings.Time.StartParticipateAt), GameStatusRecruiting
+	case GameStatusRecruiting:
+		return now.After(g.Settings.Time.StartGameAt), GameStatusProgress
+	case GameStatusProgress:
+		return now.After(g.Settings.Time.FinishGameAt), GameStatusFinished
+	default:
+		return false, g.Status
+	}
+}
+
+// -----------------------
+
 type GameRepository interface {
 	// game
 	FindGames(query GamesQuery) (games []Game, err error)
@@ -220,9 +240,9 @@ type GameRepository interface {
 	UpdateGameMaster(ctx context.Context, master GameMaster) (err error)
 	DeleteGameMaster(ctx context.Context, gameMasterID uint32) (err error)
 	UpdateGameStatus(ctx context.Context, gameID uint32, status GameStatus) (err error)
+	RegisterGamePeriod(ctx context.Context, gameID uint32, period GamePeriod) (err error)
 	UpdateGamePeriod(ctx context.Context, gameID uint32, period GamePeriod) (err error)
-	UpdateGameSettings(ctx context.Context, gameID uint32, settings GameSettings) (err error)
-	UpdatePeriodChange(ctx context.Context, current Game, changed Game) (err error)
+	UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, settings GameSettings) (err error)
 }
 
 type GameParticipantRepository interface {

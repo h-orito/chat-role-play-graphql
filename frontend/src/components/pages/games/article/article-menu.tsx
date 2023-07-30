@@ -3,7 +3,8 @@ import {
   HomeIcon,
   UsersIcon,
   EnvelopeIcon,
-  Bars4Icon
+  Bars4Icon,
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 
 type Props = {
@@ -45,20 +46,26 @@ export default function ArticleMenu({
         onClickTab={() => setTab('home')}
       />
       {myself != null && (
-        <>
-          <FollowsButton
-            isActive={tab === 'follow'}
-            isFooter={footer}
-            existsUnread={existsFollowsUnread}
-            onClickTab={() => setTab('follow')}
-          />
-          <DirectMessageButton
-            isActive={tab === 'dm'}
-            isFooter={footer}
-            existsUnread={false}
-            onClickTab={() => setTab('dm')}
-          />
-        </>
+        <FollowsButton
+          isActive={tab === 'follow'}
+          isFooter={footer}
+          existsUnread={existsFollowsUnread}
+          onClickTab={() => setTab('follow')}
+        />
+      )}
+      <SearchButton
+        isActive={tab === 'search'}
+        isFooter={footer}
+        existsUnread={false}
+        onClickTab={() => setTab('search')}
+      />
+      {myself != null && (
+        <DirectMessageButton
+          isActive={tab === 'dm'}
+          isFooter={footer}
+          existsUnread={false}
+          onClickTab={() => setTab('dm')}
+        />
       )}
     </div>
   )
@@ -117,6 +124,19 @@ const FollowsButton = (props: ButtonProps) => {
         }`}
       />
       <span className='hidden md:block'>フォロー中</span>
+    </MenuButton>
+  )
+}
+
+const SearchButton = (props: ButtonProps) => {
+  return (
+    <MenuButton {...props}>
+      <MagnifyingGlassIcon
+        className={`mr-1 h-6 w-6 ${
+          props.isActive && props.isFooter ? 'text-blue-500' : ''
+        }`}
+      />
+      <span className='hidden md:block'>検索</span>
     </MenuButton>
   )
 }

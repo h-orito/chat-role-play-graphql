@@ -14,6 +14,7 @@ export default function Participants({
 }: Props) {
   return (
     <div className={`${className} grid grid-cols-1 gap-4 md:grid-cols-2`}>
+      {participants.length === 0 && <p>まだ参加登録されていません。</p>}
       {participants.map((participant) => (
         <button
           key={participant.id}

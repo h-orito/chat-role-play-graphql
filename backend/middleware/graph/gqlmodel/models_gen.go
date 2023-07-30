@@ -20,6 +20,14 @@ type Pageable interface {
 	GetIsDesc() bool
 }
 
+type ChangePeriod struct {
+	GameID string `json:"gameId"`
+}
+
+type ChangePeriodIfNeededPayload struct {
+	Ok bool `json:"ok"`
+}
+
 type Chara struct {
 	ID     string        `json:"id"`
 	Name   string        `json:"name"`
@@ -61,7 +69,8 @@ type DeleteDirectMessageFavoritePayload struct {
 }
 
 type DeleteGameMaster struct {
-	ID string `json:"id"`
+	GameID string `json:"gameId"`
+	ID     string `json:"id"`
 }
 
 type DeleteGameMasterPayload struct {
@@ -254,6 +263,7 @@ type GameTimeSetting struct {
 	OpenAt                time.Time `json:"openAt"`
 	StartParticipateAt    time.Time `json:"startParticipateAt"`
 	StartGameAt           time.Time `json:"startGameAt"`
+	FinishGameAt          time.Time `json:"finishGameAt"`
 }
 
 type GamesQuery struct {
@@ -445,13 +455,14 @@ type NewGameTimeSetting struct {
 	OpenAt                time.Time `json:"openAt"`
 	StartParticipateAt    time.Time `json:"startParticipateAt"`
 	StartGameAt           time.Time `json:"startGameAt"`
+	FinishGameAt          time.Time `json:"finishGameAt"`
 }
 
 type NewMessage struct {
 	GameID            string      `json:"gameId"`
 	Type              MessageType `json:"type"`
-	IconID            string      `json:"iconId"`
-	Name              string      `json:"name"`
+	IconID            *string     `json:"iconId,omitempty"`
+	Name              *string     `json:"name,omitempty"`
 	ReplyToMessageID  *string     `json:"replyToMessageId,omitempty"`
 	Text              string      `json:"text"`
 	IsConvertDisabled bool        `json:"isConvertDisabled"`
@@ -639,6 +650,7 @@ type UpdateGameCapacity struct {
 }
 
 type UpdateGameMaster struct {
+	GameID     string `json:"gameId"`
 	ID         string `json:"id"`
 	IsProducer bool   `json:"isProducer"`
 }
@@ -729,6 +741,7 @@ type UpdateGameRuleSetting struct {
 
 type UpdateGameSetting struct {
 	GameID   string              `json:"gameId"`
+	Name     string              `json:"name"`
 	Settings *UpdateGameSettings `json:"settings"`
 }
 
@@ -760,6 +773,7 @@ type UpdateGameTimeSetting struct {
 	OpenAt                time.Time `json:"openAt"`
 	StartParticipateAt    time.Time `json:"startParticipateAt"`
 	StartGameAt           time.Time `json:"startGameAt"`
+	FinishGameAt          time.Time `json:"finishGameAt"`
 }
 
 type UpdateMessageNotificationCondition struct {

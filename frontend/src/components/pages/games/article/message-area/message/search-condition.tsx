@@ -28,6 +28,10 @@ const candidates = [
   {
     label: '独り言',
     value: MessageType.Monologue
+  },
+  {
+    label: 'システム',
+    value: MessageType.SystemPublic
   }
 ]
 
@@ -41,7 +45,11 @@ export default function SearchCondition({
   const [isOpen, setIsOpen] = useState(false)
 
   const [types, setTypes] = useState<MessageType[]>(
-    messageQuery.types || [MessageType.TalkNormal, MessageType.Monologue]
+    messageQuery.types || [
+      MessageType.TalkNormal,
+      MessageType.Monologue,
+      MessageType.SystemPublic
+    ]
   )
   const [senders, setSenders] = useState<GameParticipant[]>(
     messageQuery.senderIds
@@ -98,9 +106,10 @@ export default function SearchCondition({
         </button>
       </div>
       <div className={isOpen ? '' : 'hidden'}>
-        <div className='my-4'>
-          <label htmlFor=''>種別</label>
+        <div className='my-2'>
+          <label className='text-xs font-bold'>種別</label>
           <CheckGroup
+            className='mt-1 text-xs'
             name='search-say-type'
             candidates={candidates}
             selected={types}
@@ -108,34 +117,54 @@ export default function SearchCondition({
           />
         </div>
         {!onlyFollowing && (
-          <div className='my-4'>
-            <label htmlFor=''>発言者</label>
+          <div className='my-2'>
+            <label className='text-xs font-bold'>発言者</label>
             {senders.length === 0 ||
             senders.length === game.participants.length ? (
-              <p>全員</p>
+              <p className='text-xs'>全員</p>
             ) : (
-              <p>{senders.map((s) => s.name).join('、')}</p>
+              <p className='text-xs'>{senders.map((s) => s.name).join('、')}</p>
             )}
-            <PrimaryButton click={() => setIsOpenSenderModal(true)}>
+            <PrimaryButton
+              className='text-xs'
+              click={() => setIsOpenSenderModal(true)}
+            >
               選択
             </PrimaryButton>
           </div>
         )}
-        <div className='my-4'>
-          <label htmlFor=''>キーワード</label>
-          <input
-            className='rounded border border-gray-300 px-2 py-1'
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-          />
+        <div className='my-2'>
+          <label className='text-xs font-bold'>キーワード</label>
+          <div>
+            <input
+              className='w-full rounded border border-gray-300 px-2 py-1 text-xs'
+              value={keyword}
+              placeholder='スペース区切りでOR検索'
+              onChange={(e) => setKeyword(e.target.value)}
+            />
+          </div>
         </div>
-        <div className='my-4'>
-          <label htmlFor=''>From</label>
-          <Datetime value={sinceAt} setValue={setSinceAt} />
-        </div>
-        <div className='my-4'>
-          <label htmlFor=''>To</label>
-          <Datetime value={untilAt} setValue={setUntilAt} />
+        <div className='my-2 flex gap-4'>
+          <div>
+            <label className='text-xs font-bold'>From</label>
+            <div>
+              <Datetime
+                className='text-xs'
+                value={sinceAt}
+                setValue={setSinceAt}
+              />
+            </div>
+          </div>
+          <div>
+            <label className='text-xs font-bold'>To</label>
+            <div>
+              <Datetime
+                className='text-xs'
+                value={untilAt}
+                setValue={setUntilAt}
+              />
+            </div>
+          </div>
         </div>
         <div className='flex justify-end'>
           <PrimaryButton click={handleSearch}>検索</PrimaryButton>{' '}

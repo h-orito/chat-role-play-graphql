@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 type Props = {
+  className?: string
   name: string
   candidates: Array<Option>
   selected: any[]
@@ -13,6 +14,7 @@ type Option = {
 }
 
 export default function CheckGroup({
+  className,
   name,
   candidates,
   selected,
@@ -49,7 +51,7 @@ export default function CheckGroup({
             : 'border'
         const checkedClass = selected.includes(item.value) ? 'bg-blue-300' : ''
         return (
-          <div className='' key={index}>
+          <div className={`${className}`} key={index}>
             <input
               type='checkbox'
               name={name}

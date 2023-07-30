@@ -12,7 +12,11 @@ import (
 )
 
 func (r *mutationResolver) registerGame(ctx context.Context, input gqlmodel.NewGame) (*gqlmodel.RegisterGamePayload, error) {
-	game, err := r.gameUsecase.RegisterGame(ctx, input.MapToGame())
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, fmt.Errorf("not authenticated")
+	}
+	game, err := r.gameUsecase.RegisterGame(ctx, *user, input.MapToGame())
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +34,11 @@ func (r *mutationResolver) registerGameMaster(ctx context.Context, input gqlmode
 	if err != nil {
 		return nil, err
 	}
-	saved, err := r.gameUsecase.RegisterGameMaster(ctx, gameId, playerId, input.IsProducer)
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, fmt.Errorf("not authenticated")
+	}
+	saved, err := r.gameUsecase.RegisterGameMaster(ctx, *user, gameId, playerId, input.IsProducer)
 	if err != nil {
 		return nil, err
 	}
@@ -40,22 +48,38 @@ func (r *mutationResolver) registerGameMaster(ctx context.Context, input gqlmode
 }
 
 func (r *mutationResolver) updateGameMaster(ctx context.Context, input gqlmodel.UpdateGameMaster) (*gqlmodel.UpdateGameMasterPayload, error) {
+	gameID, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
 	gameMasterId, err := idToUint32(input.ID)
 	if err != nil {
 		return nil, err
 	}
-	if err := r.gameUsecase.UpdateGameMaster(ctx, gameMasterId, input.IsProducer); err != nil {
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, err
+	}
+	if err := r.gameUsecase.UpdateGameMaster(ctx, *user, gameID, gameMasterId, input.IsProducer); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.UpdateGameMasterPayload{Ok: true}, nil
 }
 
 func (r *mutationResolver) deleteGameMaster(ctx context.Context, input gqlmodel.DeleteGameMaster) (*gqlmodel.DeleteGameMasterPayload, error) {
+	gameID, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
 	gameMasterId, err := idToUint32(input.ID)
 	if err != nil {
 		return nil, err
 	}
-	if err := r.gameUsecase.DeleteGameMaster(ctx, gameMasterId); err != nil {
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, err
+	}
+	if err := r.gameUsecase.DeleteGameMaster(ctx, *user, gameID, gameMasterId); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.DeleteGameMasterPayload{Ok: true}, nil
@@ -66,7 +90,11 @@ func (r *mutationResolver) updateGameStatus(ctx context.Context, input gqlmodel.
 	if err != nil {
 		return nil, err
 	}
-	if err := r.gameUsecase.UpdateGameStatus(ctx, gameId, *model.GameStatusValueOf(input.Status.String())); err != nil {
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, err
+	}
+	if err := r.gameUsecase.UpdateGameStatus(ctx, *user, gameId, *model.GameStatusValueOf(input.Status.String())); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.UpdateGameStatusPayload{Ok: true}, nil
@@ -77,7 +105,11 @@ func (r *mutationResolver) updateGameSetting(ctx context.Context, input gqlmodel
 	if err != nil {
 		return nil, err
 	}
-	if err := r.gameUsecase.UpdateGameSetting(ctx, gameId, input.MapToGameSetting()); err != nil {
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, err
+	}
+	if err := r.gameUsecase.UpdateGameSetting(ctx, *user, gameId, input.Name, input.MapToGameSetting()); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.UpdateGameSettingPayload{Ok: true}, nil
@@ -88,7 +120,11 @@ func (r *mutationResolver) updateGamePeriod(ctx context.Context, input gqlmodel.
 	if err != nil {
 		return nil, err
 	}
-	if err := r.gameUsecase.UpdateGamePeriod(ctx, gameId, model.GamePeriod{
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, err
+	}
+	if err := r.gameUsecase.UpdateGamePeriod(ctx, *user, gameId, model.GamePeriod{
 		Name:    input.Name,
 		StartAt: input.StartAt,
 		EndAt:   input.EndAt,
@@ -374,6 +410,19 @@ func (r *mutationResolver) updateGameParticipantDiary(ctx context.Context, input
 		return nil, err
 	}
 	return &gqlmodel.UpdateGameParticipantDiaryPayload{
+		Ok: true,
+	}, nil
+}
+
+func (r *mutationResolver) changePeriodIfNeeded(ctx context.Context, input gqlmodel.ChangePeriod) (*gqlmodel.ChangePeriodIfNeededPayload, error) {
+	gameID, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
+	if err = r.gameUsecase.ChangePeriodIfNeeded(ctx, gameID); err != nil {
+		return nil, err
+	}
+	return &gqlmodel.ChangePeriodIfNeededPayload{
 		Ok: true,
 	}, nil
 }

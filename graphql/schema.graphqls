@@ -173,6 +173,7 @@ type GameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  finishGameAt: DateTime!
 }
 
 type GameRuleSetting {
@@ -459,6 +460,8 @@ type Mutation {
     @isAuthenticated
   updateGamePeriod(input: UpdateGamePeriod!): UpdateGamePeriodPayload!
     @isAuthenticated
+  changePeriodIfNeeded(input: ChangePeriod!): ChangePeriodIfNeededPayload!
+    @isAuthenticated
 
   # game participant
   registerGameParticipant(
@@ -645,6 +648,7 @@ input NewGameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  finishGameAt: DateTime!
 }
 
 input NewGameRuleSetting {
@@ -672,6 +676,7 @@ type RegisterGameMasterPayload {
 }
 
 input UpdateGameMaster {
+  gameId: ID!
   id: ID!
   isProducer: Boolean!
 }
@@ -681,6 +686,7 @@ type UpdateGameMasterPayload {
 }
 
 input DeleteGameMaster {
+  gameId: ID!
   id: ID!
 }
 
@@ -690,6 +696,7 @@ type DeleteGameMasterPayload {
 
 input UpdateGameSetting {
   gameId: ID!
+  name: String!
   settings: UpdateGameSettings!
 }
 
@@ -718,6 +725,7 @@ input UpdateGameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  finishGameAt: DateTime!
 }
 
 input UpdateGameRuleSetting {
@@ -751,6 +759,14 @@ input UpdateGamePeriod {
 }
 
 type UpdateGamePeriodPayload {
+  ok: Boolean!
+}
+
+input ChangePeriod {
+  gameId: ID!
+}
+
+type ChangePeriodIfNeededPayload {
   ok: Boolean!
 }
 
@@ -941,8 +957,8 @@ type DeletePlayerSnsAccountPayload {
 input NewMessage {
   gameId: ID!
   type: MessageType!
-  iconId: ID!
-  name: String!
+  iconId: ID
+  name: String
   replyToMessageId: ID
   text: String!
   isConvertDisabled: Boolean!

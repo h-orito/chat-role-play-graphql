@@ -3,11 +3,12 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 
 type Props = {
+  className?: string
   value: Date | null
   setValue: (value: Date | null) => void
 }
 
-export default function Datetime({ value, setValue }: Props) {
+export default function Datetime({ className, value, setValue }: Props) {
   const toDatetime = (date: Date | null) => {
     // yyyy-MM-ddThh:mm
     if (date === null) return ''
@@ -23,7 +24,7 @@ export default function Datetime({ value, setValue }: Props) {
   }
   return (
     <input
-      className='rounded border border-gray-300 px-2 py-1'
+      className={`${className} rounded border border-gray-300 px-2 py-1`}
       type='datetime-local'
       value={toDatetime(value)}
       onChange={handleChange}

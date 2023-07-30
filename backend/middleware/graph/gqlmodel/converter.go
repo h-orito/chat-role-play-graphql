@@ -50,6 +50,7 @@ func (g NewGame) MapToGame() model.Game {
 				OpenAt:                g.Settings.Time.OpenAt,
 				StartParticipateAt:    g.Settings.Time.StartParticipateAt,
 				StartGameAt:           g.Settings.Time.StartGameAt,
+				FinishGameAt:          g.Settings.Time.FinishGameAt,
 			},
 			Rule: model.GameRuleSettings{
 				CanShorten:           g.Settings.Rule.CanShorten,
@@ -82,6 +83,7 @@ func (g UpdateGameSetting) MapToGameSetting() model.GameSettings {
 			OpenAt:                g.Settings.Time.OpenAt,
 			StartParticipateAt:    g.Settings.Time.StartParticipateAt,
 			StartGameAt:           g.Settings.Time.StartGameAt,
+			FinishGameAt:          g.Settings.Time.FinishGameAt,
 		},
 		Rule: model.GameRuleSettings{
 			CanShorten:           g.Settings.Rule.CanShorten,

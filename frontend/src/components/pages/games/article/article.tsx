@@ -47,11 +47,12 @@ export default function Article({
 
   const [existsHomeUnread, setExistsHomeUnread] = useState(false)
   const [existFollowsUnread, setExistFollowsUnread] = useState(false)
+  const [existSearchUnread, setExistSearchUnread] = useState(false)
 
   return (
     <article
       id='article'
-      className='relative flex h-screen max-h-screen w-full flex-1 flex-col'
+      className='mut-height-guard relative flex h-screen max-h-screen w-full flex-1 flex-col'
     >
       <ArticleHeader tab={tab} />
       <ArticleMenu
@@ -75,27 +76,40 @@ export default function Article({
         setExistUnread={setExistsHomeUnread}
       />
       {myself && (
-        <>
-          <MessageArea
-            className={`${tab === 'follow' ? '' : 'hidden'}`}
-            game={game}
-            myself={myself}
-            fetchMessages={fetchMessages}
-            fetchMessagesLatest={fetchMessagesLatest}
-            openProfileModal={openProfileModal}
-            openFavoritesModal={openFavoritesModal}
-            isViewing={tab === 'follow'}
-            existsUnread={existFollowsUnread}
-            setExistUnread={setExistFollowsUnread}
-            onlyFollowing
-          />
-          <DirectMessagesArea
-            className={`${tab === 'dm' ? '' : 'hidden'}`}
-            game={game}
-            myself={myself}
-            openProfileModal={openProfileModal}
-          />
-        </>
+        <MessageArea
+          className={`${tab === 'follow' ? '' : 'hidden'}`}
+          game={game}
+          myself={myself}
+          fetchMessages={fetchMessages}
+          fetchMessagesLatest={fetchMessagesLatest}
+          openProfileModal={openProfileModal}
+          openFavoritesModal={openFavoritesModal}
+          isViewing={tab === 'follow'}
+          existsUnread={existFollowsUnread}
+          setExistUnread={setExistFollowsUnread}
+          onlyFollowing
+        />
+      )}
+      <MessageArea
+        className={`${tab === 'search' ? '' : 'hidden'}`}
+        game={game}
+        myself={myself}
+        fetchMessages={fetchMessages}
+        fetchMessagesLatest={fetchMessagesLatest}
+        openProfileModal={openProfileModal}
+        openFavoritesModal={openFavoritesModal}
+        isViewing={tab === 'search'}
+        existsUnread={existSearchUnread}
+        setExistUnread={setExistSearchUnread}
+        searchable
+      />
+      {myself && (
+        <DirectMessagesArea
+          className={`${tab === 'dm' ? '' : 'hidden'}`}
+          game={game}
+          myself={myself}
+          openProfileModal={openProfileModal}
+        />
       )}
       {isOpenFavoritesModal && (
         <Modal header='ふぁぼした人' close={toggleFavoritesModal} hideFooter>
@@ -128,9 +142,11 @@ const ArticleHeader = ({ tab }: HeaderProps) => {
       ? 'ホーム'
       : tab === 'follow'
       ? 'フォロー'
+      : tab === 'search'
+      ? '検索'
       : 'ダイレクトメッセージ'
   return (
-    <div className='block flex justify-center border-b border-gray-300 px-4 py-2 font-bold md:hidden'>
+    <div className='flex justify-center border-b border-gray-300 px-4 py-2 font-bold md:hidden'>
       {tabName}
     </div>
   )

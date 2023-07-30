@@ -1,0 +1,5 @@
+mutation ChangePeriod($input: ChangePeriod!) {
+  changePeriodIfNeeded(input: $input) {
+    ok
+  }
+}

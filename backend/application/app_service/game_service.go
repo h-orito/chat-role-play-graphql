@@ -4,6 +4,9 @@ import (
 	"chat-role-play/domain/model"
 	"chat-role-play/util/array"
 	"context"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type GameService interface {
@@ -17,8 +20,8 @@ type GameService interface {
 	DeleteGameMaster(ctx context.Context, gameMasterID uint32) (err error)
 	UpdateGameStatus(ctx context.Context, gameID uint32, status model.GameStatus) (err error)
 	UpdateGamePeriod(ctx context.Context, gameID uint32, period model.GamePeriod) (err error)
-	UpdateGameSettings(ctx context.Context, gameID uint32, settings model.GameSettings) (err error)
-	UpdatePeriodChange(ctx context.Context, current model.Game, changed model.Game) (err error)
+	UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, settings model.GameSettings) (err error)
+	ChangePeriodIfNeeded(ctx context.Context, gameID uint32) (err error)
 	// game participant
 	FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
 	FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error)
@@ -100,12 +103,58 @@ func (g *gameService) UpdateGamePeriod(ctx context.Context, gameID uint32, perio
 	return g.gameRepository.UpdateGamePeriod(ctx, gameID, period)
 }
 
-func (g *gameService) UpdateGameSettings(ctx context.Context, gameID uint32, settings model.GameSettings) (err error) {
-	return g.gameRepository.UpdateGameSettings(ctx, gameID, settings)
+func (g *gameService) UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, settings model.GameSettings) (err error) {
+	return g.gameRepository.UpdateGameSettings(ctx, gameID, gameName, settings)
 }
 
-func (g *gameService) UpdatePeriodChange(ctx context.Context, current model.Game, changed model.Game) (err error) {
-	return g.gameRepository.UpdatePeriodChange(ctx, current, changed)
+func (g *gameService) ChangePeriodIfNeeded(ctx context.Context, gameID uint32) (err error) {
+	game, err := g.gameRepository.FindGame(gameID)
+	if err != nil {
+		return err
+	}
+	now := time.Now()
+	shouldChange, status := game.ShouldChangeStatus(now)
+	if shouldChange {
+		if status == model.GameStatusProgress {
+			// ゲーム開始
+			g.startGame(ctx, *game)
+		} else {
+			// ステータスのみ更新
+			if err := g.UpdateGameStatus(ctx, gameID, status); err != nil {
+				return err
+			}
+		}
+	} else if game.Status == model.GameStatusProgress {
+		if game.Periods[len(game.Periods)-1].EndAt.Before(now) {
+			// 日付追加
+			count := game.Periods[len(game.Periods)-1].Count + 1
+			if err := g.gameRepository.RegisterGamePeriod(ctx, game.ID, model.GamePeriod{
+				Count:   count,
+				Name:    strings.Join([]string{*game.Settings.Time.PeriodPrefix, strconv.Itoa(int(count)), *game.Settings.Time.PeriodSuffix}, ""),
+				StartAt: now,
+				EndAt:   game.Periods[len(game.Periods)-1].EndAt.Add(time.Duration(game.Settings.Time.PeriodIntervalSeconds*count) * time.Second),
+			}); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (g *gameService) startGame(ctx context.Context, game model.Game) error {
+	if err := g.UpdateGameStatus(ctx, game.ID, model.GameStatusProgress); err != nil {
+		return err
+	}
+	if err := g.gameRepository.RegisterGamePeriod(ctx, game.ID, model.GamePeriod{
+		Count:   1,
+		Name:    strings.Join([]string{*game.Settings.Time.PeriodPrefix, "1", *game.Settings.Time.PeriodSuffix}, ""),
+		StartAt: time.Now(),
+		EndAt:   game.Settings.Time.StartGameAt.Add(time.Duration(game.Settings.Time.PeriodIntervalSeconds) * time.Second),
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (g *gameService) FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error) {

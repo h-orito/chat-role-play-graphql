@@ -47,19 +47,24 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
       break
   }
 
+  // TODO: ゲーム画像を設定できるようにする
+  const gameImage = '/chat-role-play/images/game.jpg'
+
   return (
     <Link href={`/games/${base64ToId(game.id)}`} className='relative'>
       <span
-        className='absolute  inset-0 block h-full w-full rounded-lg'
+        className='absolute inset-0 block h-full w-full rounded-lg'
         style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
       ></span>
       <button
         className='h-80 w-full rounded-lg border border-gray-300 bg-cover bg-no-repeat p-4'
         style={{
-          backgroundImage: `url('https://firewolf.netlify.app/_nuxt/img/top.e9bf747.jpg')`
+          backgroundImage: `url(${gameImage})`
         }}
       ></button>
-      <div className='absolute inset-0 h-full w-full rounded-lg text-gray-200'>
+      <div
+        className={`absolute inset-0 h-full w-full rounded-lg text-gray-200`}
+      >
         <div className='border-b border-gray-300 px-4 py-2'>
           <p className='text-left'>{game.name}</p>
         </div>

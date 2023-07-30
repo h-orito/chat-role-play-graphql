@@ -130,6 +130,11 @@ func (r *mutationResolver) UpdateGamePeriod(ctx context.Context, input gqlmodel.
 	return r.updateGamePeriod(ctx, input)
 }
 
+// ChangePeriodIfNeeded is the resolver for the changePeriodIfNeeded field.
+func (r *mutationResolver) ChangePeriodIfNeeded(ctx context.Context, input gqlmodel.ChangePeriod) (*gqlmodel.ChangePeriodIfNeededPayload, error) {
+	return r.changePeriodIfNeeded(ctx, input)
+}
+
 // RegisterGameParticipant is the resolver for the registerGameParticipant field.
 func (r *mutationResolver) RegisterGameParticipant(ctx context.Context, input gqlmodel.NewGameParticipant) (*gqlmodel.RegisterGameParticipantPayload, error) {
 	return r.registerGameParticipant(ctx, input)

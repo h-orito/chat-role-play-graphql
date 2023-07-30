@@ -16,7 +16,9 @@ export default function ParticipantsCheckbox({
     <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
       {participants.map((participant) => {
         const checked = selects.includes(participant)
-        const checkedClass = checked ? 'border-blue-500' : 'border-gray-300'
+        const checkedClass = checked
+          ? 'border-blue-500 bg-blue-100'
+          : 'border-gray-300'
         return (
           <label
             key={participant.id}

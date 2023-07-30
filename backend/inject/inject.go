@@ -5,6 +5,7 @@ import (
 	"chat-role-play/adaptor/graphql"
 	"chat-role-play/application/app_service"
 	"chat-role-play/application/usecase"
+	"chat-role-play/domain/dom_service"
 	"chat-role-play/domain/model"
 	db "chat-role-play/infrastructure/rdb"
 	"chat-role-play/middleware/auth0"
@@ -33,17 +34,22 @@ func InjectServer() http.Handler {
 // resolver
 func injectResolver(database db.DB) graphql.Resolver {
 	tx := db.NewTransaction(database.Connection)
+	// repository
 	charaRepository := injectCharaRepository(database)
 	gameRepository := injectGameRepository(database)
 	gameParticipantRepository := injectGameParticipantRepository(database)
 	playerRepository := injectPlayerRepository(database)
 	messageRepository := injectMessageRepository(database)
+	// domain service
+	gameMasterDomainService := injectGameMasterDomainService()
+	// application service
 	charaService := injectCharaService(charaRepository)
 	gameService := injectGameService(gameRepository, gameParticipantRepository)
 	playerService := injectPlayerService(playerRepository)
 	messageService := injectMessageService(messageRepository)
+	// usecase
 	charaUsecase := injectCharaUsecase(charaService, tx)
-	gameUsecase := injectGameUsecase(gameService, playerService, charaService, tx)
+	gameUsecase := injectGameUsecase(gameService, playerService, charaService, gameMasterDomainService, tx)
 	playerUsecase := injectPlayerUsecase(playerService, tx)
 	messageUsecase := injectMessageUsecase(messageService, gameService, playerService, tx)
 	imageUsecase := injectImageUsecase()
@@ -76,9 +82,10 @@ func injectGameUsecase(
 	gameService app_service.GameService,
 	playerService app_service.PlayerService,
 	charaService app_service.CharaService,
+	gameMasterDomainService dom_service.GameMasterDomainService,
 	tx usecase.Transaction,
 ) usecase.GameUsecase {
-	return usecase.NewGameUsecase(gameService, playerService, charaService, tx)
+	return usecase.NewGameUsecase(gameService, playerService, charaService, gameMasterDomainService, tx)
 }
 
 func injectPlayerUsecase(playerService app_service.PlayerService,
@@ -118,6 +125,11 @@ func injectPlayerService(playerRepository model.PlayerRepository) app_service.Pl
 
 func injectMessageService(messageRepository model.MessageRepository) app_service.MessageService {
 	return app_service.NewMessageService(messageRepository)
+}
+
+// domain service
+func injectGameMasterDomainService() dom_service.GameMasterDomainService {
+	return dom_service.NewGameMasterDomainService()
 }
 
 // repository
