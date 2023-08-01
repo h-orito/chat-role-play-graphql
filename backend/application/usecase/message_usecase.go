@@ -6,6 +6,7 @@ import (
 	"chat-role-play/util/array"
 	"context"
 	"errors"
+	"time"
 )
 
 type MessageUsecase interface {
@@ -15,6 +16,7 @@ type MessageUsecase interface {
 	FindMessageReplies(gameID uint32, messageID uint64) ([]model.Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error)
 	RegisterMessage(ctx context.Context, gameID uint32, user model.User, message model.Message) error
+	RegisterMessageDryRun(ctx context.Context, gameID uint32, user model.User, message model.Message) (*model.Message, error)
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, user model.User, messageID uint64) error
 	DeleteMessageFavorite(ctx context.Context, gameID uint32, user model.User, messageID uint64) error
 	// participant group
@@ -27,6 +29,7 @@ type MessageUsecase interface {
 	FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error)
 	FindDirectMessageFavoriteGameParticipants(gameID uint32, directMessageID uint64) (model.GameParticipants, error)
 	RegisterDirectMessage(ctx context.Context, gameID uint32, user model.User, message model.DirectMessage) error
+	RegisterDirectMessageDryRun(ctx context.Context, gameID uint32, user model.User, message model.DirectMessage) (*model.DirectMessage, error)
 	RegisterDirectMessageFavorite(ctx context.Context, gameID uint32, user model.User, directMessageID uint64) error
 	DeleteDirectMessageFavorite(ctx context.Context, gameID uint32, user model.User, directMessageID uint64) error
 }
@@ -78,41 +81,77 @@ func (s *messageUsecase) FindMessageFavoriteGameParticipants(gameID uint32, mess
 }
 
 // RegisterMessage implements MessageService.
-func (s *messageUsecase) RegisterMessage(ctx context.Context, gameID uint32, user model.User, message model.Message) error {
+func (s *messageUsecase) RegisterMessage(
+	ctx context.Context,
+	gameID uint32,
+	user model.User,
+	message model.Message,
+) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := s.gameService.FindGame(gameID)
+		msg, err := s.assertRegisterMessage(gameID, user, message)
 		if err != nil {
 			return nil, err
 		}
-		player, err := s.playerService.FindByUserName(user.UserName)
-		if err != nil {
-			return nil, err
-		}
-		myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
-			GameID:   &gameID,
-			PlayerID: &player.ID,
-		})
-		if err != nil {
-			return nil, err
-		}
-		latestPeriod := game.Periods[len(game.Periods)-1]
-		var sender *model.MessageSender
-		if !message.Type.IsSystem() {
-			sender = &model.MessageSender{
-				GameParticipantID: myself.ID,
-				SenderIconID:      message.Sender.SenderIconID,
-				SenderName:        message.Sender.SenderName,
-			}
-		}
-		return nil, s.messageService.RegisterMessage(ctx, gameID, model.Message{
-			GamePeriodID: latestPeriod.ID,
-			Type:         message.Type,
-			Sender:       sender,
-			ReplyTo:      message.ReplyTo,
-			Content:      message.Content,
-		})
+		return nil, s.messageService.RegisterMessage(ctx, gameID, *msg)
 	})
 	return err
+}
+
+func (s *messageUsecase) RegisterMessageDryRun(
+	ctx context.Context,
+	gameID uint32,
+	user model.User,
+	message model.Message,
+) (*model.Message, error) {
+	msg, err := s.assertRegisterMessage(gameID, user, message)
+	if err != nil {
+		return nil, err
+	}
+	// 登録の際決定される項目は適当に埋める
+	msg.Time = model.MessageTime{
+		SendAt:        time.Now(),
+		UnixtimeMilli: 0,
+	}
+	msg.Content.Number = 1
+	return msg, nil
+}
+
+func (s *messageUsecase) assertRegisterMessage(
+	gameID uint32,
+	user model.User,
+	message model.Message,
+) (*model.Message, error) {
+	game, err := s.gameService.FindGame(gameID)
+	if err != nil {
+		return nil, err
+	}
+	player, err := s.playerService.FindByUserName(user.UserName)
+	if err != nil {
+		return nil, err
+	}
+	myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
+		GameID:   &gameID,
+		PlayerID: &player.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	latestPeriod := game.Periods[len(game.Periods)-1]
+	var sender *model.MessageSender
+	if !message.Type.IsSystem() {
+		sender = &model.MessageSender{
+			GameParticipantID: myself.ID,
+			SenderIconID:      message.Sender.SenderIconID,
+			SenderName:        message.Sender.SenderName,
+		}
+	}
+	return &model.Message{
+		GamePeriodID: latestPeriod.ID,
+		Type:         message.Type,
+		Sender:       sender,
+		ReplyTo:      message.ReplyTo,
+		Content:      message.Content,
+	}, nil
 }
 
 // RegisterMessageFavorite implements MessageService.
@@ -283,39 +322,66 @@ func (s *messageUsecase) RegisterDirectMessage(
 	message model.DirectMessage,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := s.gameService.FindGame(gameID)
+		msg, err := s.assertRegisterDirectMessage(gameID, user, message)
 		if err != nil {
 			return nil, err
 		}
-		player, err := s.playerService.FindByUserName(user.UserName)
-		if err != nil {
-			return nil, err
-		}
-		myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
-			GameID:   &gameID,
-			PlayerID: &player.ID,
-		})
-		if err != nil {
-			return nil, err
-		}
-		latestPeriod := game.Periods[len(game.Periods)-1]
-		var sender *model.MessageSender
-		if !message.Type.IsSystem() {
-			sender = &model.MessageSender{
-				GameParticipantID: myself.ID,
-				SenderIconID:      message.Sender.SenderIconID,
-				SenderName:        message.Sender.SenderName,
-			}
-		}
-		return nil, s.messageService.RegisterDirectMessage(ctx, gameID, model.DirectMessage{
-			GameParticipantGroupID: message.GameParticipantGroupID,
-			GamePeriodID:           latestPeriod.ID,
-			Type:                   message.Type,
-			Sender:                 sender,
-			Content:                message.Content,
-		})
+		return nil, s.messageService.RegisterDirectMessage(ctx, gameID, *msg)
 	})
 	return err
+}
+
+// RegisterDirectMessageDryRun implements MessageUsecase.
+func (s *messageUsecase) RegisterDirectMessageDryRun(ctx context.Context, gameID uint32, user model.User, message model.DirectMessage) (*model.DirectMessage, error) {
+	msg, err := s.assertRegisterDirectMessage(gameID, user, message)
+	if err != nil {
+		return nil, err
+	}
+	// 登録の際決定される項目は適当に埋める
+	msg.Time = model.MessageTime{
+		SendAt:        time.Now(),
+		UnixtimeMilli: 0,
+	}
+	msg.Content.Number = 1
+	return msg, nil
+}
+
+func (s *messageUsecase) assertRegisterDirectMessage(
+	gameID uint32,
+	user model.User,
+	message model.DirectMessage,
+) (*model.DirectMessage, error) {
+	game, err := s.gameService.FindGame(gameID)
+	if err != nil {
+		return nil, err
+	}
+	player, err := s.playerService.FindByUserName(user.UserName)
+	if err != nil {
+		return nil, err
+	}
+	myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
+		GameID:   &gameID,
+		PlayerID: &player.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	latestPeriod := game.Periods[len(game.Periods)-1]
+	var sender *model.MessageSender
+	if !message.Type.IsSystem() {
+		sender = &model.MessageSender{
+			GameParticipantID: myself.ID,
+			SenderIconID:      message.Sender.SenderIconID,
+			SenderName:        message.Sender.SenderName,
+		}
+	}
+	return &model.DirectMessage{
+		GameParticipantGroupID: message.GameParticipantGroupID,
+		GamePeriodID:           latestPeriod.ID,
+		Type:                   message.Type,
+		Sender:                 sender,
+		Content:                message.Content,
+	}, nil
 }
 
 // RegisterDirectMessageFavorite implements MessageService.

@@ -210,6 +210,11 @@ func (r *mutationResolver) DeletePlayerSnsAccount(ctx context.Context, input gql
 	return r.deletePlayerSnsAccount(ctx, input)
 }
 
+// RegisterMessageDryRun is the resolver for the registerMessageDryRun field.
+func (r *mutationResolver) RegisterMessageDryRun(ctx context.Context, input gqlmodel.NewMessage) (*gqlmodel.RegisterMessageDryRunPayload, error) {
+	return r.registerMessageDryRun(ctx, input)
+}
+
 // RegisterMessage is the resolver for the registerMessage field.
 func (r *mutationResolver) RegisterMessage(ctx context.Context, input gqlmodel.NewMessage) (*gqlmodel.RegisterMessagePayload, error) {
 	return r.registerMessage(ctx, input)
@@ -223,6 +228,11 @@ func (r *mutationResolver) RegisterMessageFavorite(ctx context.Context, input gq
 // DeleteMessageFavorite is the resolver for the deleteMessageFavorite field.
 func (r *mutationResolver) DeleteMessageFavorite(ctx context.Context, input gqlmodel.DeleteMessageFavorite) (*gqlmodel.DeleteMessageFavoritePayload, error) {
 	return r.deleteMessageFavorite(ctx, input)
+}
+
+// RegisterDirectMessageDryRun is the resolver for the registerDirectMessageDryRun field.
+func (r *mutationResolver) RegisterDirectMessageDryRun(ctx context.Context, input gqlmodel.NewDirectMessage) (*gqlmodel.RegisterDirectMessageDryRunPayload, error) {
+	return r.registerDirectMessageDryRun(ctx, input)
 }
 
 // RegisterDirectMessage is the resolver for the registerDirectMessage field.

@@ -519,6 +519,8 @@ type Mutation {
   ): DeletePlayerSnsAccountPayload! @isAuthenticated
 
   # message
+  registerMessageDryRun(input: NewMessage!): RegisterMessageDryRunPayload!
+    @isAuthenticated
   registerMessage(input: NewMessage!): RegisterMessagePayload! @isAuthenticated
   # TODO: updateMessage（メッセージ編集機能）
   registerMessageFavorite(
@@ -527,6 +529,9 @@ type Mutation {
   deleteMessageFavorite(
     input: DeleteMessageFavorite!
   ): DeleteMessageFavoritePayload! @isAuthenticated
+  registerDirectMessageDryRun(
+    input: NewDirectMessage!
+  ): RegisterDirectMessageDryRunPayload! @isAuthenticated
   registerDirectMessage(
     input: NewDirectMessage!
   ): RegisterDirectMessagePayload! @isAuthenticated
@@ -971,6 +976,10 @@ input NewMessage {
   isConvertDisabled: Boolean!
 }
 
+type RegisterMessageDryRunPayload {
+  message: Message!
+}
+
 type RegisterMessagePayload {
   ok: Boolean!
 }
@@ -1001,6 +1010,10 @@ input NewDirectMessage {
   name: String!
   text: String!
   isConvertDisabled: Boolean!
+}
+
+type RegisterDirectMessageDryRunPayload {
+  directMessage: DirectMessage!
 }
 
 type RegisterDirectMessagePayload {

@@ -443,6 +443,7 @@ export type Mutation = {
   registerCharachipChara: RegisterCharaPayload;
   registerDesigner: RegisterDesignerPayload;
   registerDirectMessage: RegisterDirectMessagePayload;
+  registerDirectMessageDryRun: RegisterDirectMessageDryRunPayload;
   registerDirectMessageFavorite: RegisterDirectMessageFavoritePayload;
   registerGame: RegisterGamePayload;
   registerGameMaster: RegisterGameMasterPayload;
@@ -452,6 +453,7 @@ export type Mutation = {
   registerGameParticipantGroup: RegisterGameParticipantGroupPayload;
   registerGameParticipantIcon: RegisterGameParticipantIconPayload;
   registerMessage: RegisterMessagePayload;
+  registerMessageDryRun: RegisterMessageDryRunPayload;
   registerMessageFavorite: RegisterMessageFavoritePayload;
   registerPlayerSnsAccount: RegisterPlayerSnsAccountPayload;
   updateChara: UpdateCharaPayload;
@@ -537,6 +539,11 @@ export type MutationRegisterDirectMessageArgs = {
 };
 
 
+export type MutationRegisterDirectMessageDryRunArgs = {
+  input: NewDirectMessage;
+};
+
+
 export type MutationRegisterDirectMessageFavoriteArgs = {
   input: NewDirectMessageFavorite;
 };
@@ -578,6 +585,11 @@ export type MutationRegisterGameParticipantIconArgs = {
 
 
 export type MutationRegisterMessageArgs = {
+  input: NewMessage;
+};
+
+
+export type MutationRegisterMessageDryRunArgs = {
   input: NewMessage;
 };
 
@@ -1063,6 +1075,11 @@ export type RegisterDesignerPayload = {
   designer: Designer;
 };
 
+export type RegisterDirectMessageDryRunPayload = {
+  __typename?: 'RegisterDirectMessageDryRunPayload';
+  directMessage: DirectMessage;
+};
+
 export type RegisterDirectMessageFavoritePayload = {
   __typename?: 'RegisterDirectMessageFavoritePayload';
   ok: Scalars['Boolean']['output'];
@@ -1106,6 +1123,11 @@ export type RegisterGameParticipantPayload = {
 export type RegisterGamePayload = {
   __typename?: 'RegisterGamePayload';
   game: Game;
+};
+
+export type RegisterMessageDryRunPayload = {
+  __typename?: 'RegisterMessageDryRunPayload';
+  message: Message;
 };
 
 export type RegisterMessageFavoritePayload = {
@@ -1457,12 +1479,26 @@ export type RegisterGameMutationVariables = Exact<{
 
 export type RegisterGameMutation = { __typename?: 'Mutation', registerGame: { __typename?: 'RegisterGamePayload', game: { __typename?: 'Game', id: string } } };
 
+export type TalkDirectDryRunMutationVariables = Exact<{
+  input: NewDirectMessage;
+}>;
+
+
+export type TalkDirectDryRunMutation = { __typename?: 'Mutation', registerDirectMessageDryRun: { __typename?: 'RegisterDirectMessageDryRunPayload', directMessage: { __typename?: 'DirectMessage', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender: { __typename?: 'MessageSender', participantId: string, name: string, icon: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } }, reactions: { __typename?: 'DirectMessageReactions', favoriteCounts: number, favoriteParticipantIds: Array<string> } } } };
+
 export type TalkDirectMutationVariables = Exact<{
   input: NewDirectMessage;
 }>;
 
 
 export type TalkDirectMutation = { __typename?: 'Mutation', registerDirectMessage: { __typename?: 'RegisterDirectMessagePayload', ok: boolean } };
+
+export type TalkDryRunMutationVariables = Exact<{
+  input: NewMessage;
+}>;
+
+
+export type TalkDryRunMutation = { __typename?: 'Mutation', registerMessageDryRun: { __typename?: 'RegisterMessageDryRunPayload', message: { __typename?: 'Message', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender?: { __typename?: 'MessageSender', participantId: string, name: string, icon: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } } | null, replyTo?: { __typename?: 'MessageRecipient', messageId: string, participantId: string } | null, reactions: { __typename?: 'MessageReactions', replyCount: number, favoriteCount: number, favoriteParticipantIds: Array<string> } } } };
 
 export type TalkMutationVariables = Exact<{
   input: NewMessage;
@@ -1668,7 +1704,9 @@ export const RegisterGameMasterDocument = {"kind":"Document","definitions":[{"ki
 export const RegisterParticipantGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterParticipantGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewGameParticipantGroup"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerGameParticipantGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gameParticipantGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"participants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RegisterParticipantGroupMutation, RegisterParticipantGroupMutationVariables>;
 export const RegisterGameParticipantDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterGameParticipant"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewGameParticipant"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerGameParticipant"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gameParticipant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<RegisterGameParticipantMutation, RegisterGameParticipantMutationVariables>;
 export const RegisterGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewGame"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"game"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<RegisterGameMutation, RegisterGameMutationVariables>;
+export const TalkDirectDryRunDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TalkDirectDryRun"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewDirectMessage"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerDirectMessageDryRun"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"directMessage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"isConvertDisabled"}}]}},{"kind":"Field","name":{"kind":"Name","value":"time"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendUnixTimeMilli"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sender"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"participantId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"reactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"favoriteCounts"}},{"kind":"Field","name":{"kind":"Name","value":"favoriteParticipantIds"}}]}}]}}]}}]}}]} as unknown as DocumentNode<TalkDirectDryRunMutation, TalkDirectDryRunMutationVariables>;
 export const TalkDirectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TalkDirect"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewDirectMessage"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerDirectMessage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<TalkDirectMutation, TalkDirectMutationVariables>;
+export const TalkDryRunDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TalkDryRun"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewMessage"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerMessageDryRun"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"isConvertDisabled"}}]}},{"kind":"Field","name":{"kind":"Name","value":"time"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendAt"}},{"kind":"Field","name":{"kind":"Name","value":"sendUnixTimeMilli"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sender"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"participantId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"replyTo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"messageId"}},{"kind":"Field","name":{"kind":"Name","value":"participantId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"replyCount"}},{"kind":"Field","name":{"kind":"Name","value":"favoriteCount"}},{"kind":"Field","name":{"kind":"Name","value":"favoriteParticipantIds"}}]}}]}}]}}]}}]} as unknown as DocumentNode<TalkDryRunMutation, TalkDryRunMutationVariables>;
 export const TalkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Talk"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewMessage"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerMessage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<TalkMutation, TalkMutationVariables>;
 export const UnfollowDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Unfollow"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteGameParticipantFollow"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteGameParticipantFollow"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<UnfollowMutation, UnfollowMutationVariables>;
 export const UpdateParticipantGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateParticipantGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateGameParticipantGroup"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateGameParticipantGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<UpdateParticipantGroupMutation, UpdateParticipantGroupMutationVariables>;

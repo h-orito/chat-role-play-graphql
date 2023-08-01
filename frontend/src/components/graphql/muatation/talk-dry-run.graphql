@@ -1,0 +1,35 @@
+mutation TalkDryRun($input: NewMessage!) {
+  registerMessageDryRun(input: $input) {
+    message {
+      id
+      content {
+        type
+        text
+        number
+        isConvertDisabled
+      }
+      time {
+        sendAt
+        sendUnixTimeMilli
+      }
+      sender {
+        participantId
+        name
+        icon {
+          url
+          width
+          height
+        }
+      }
+      replyTo {
+        messageId
+        participantId
+      }
+      reactions {
+        replyCount
+        favoriteCount
+        favoriteParticipantIds
+      }
+    }
+  }
+}

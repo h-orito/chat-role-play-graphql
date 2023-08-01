@@ -55,9 +55,9 @@ export default function CreateGame() {
                   <li>
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
+                      <li>発言したら最新取得</li>
                       <li>返信</li>
                       <li>宛先</li>
-                      <li>発言プレビュー</li>
                       <li>PL発言（PL発言タイムライン）</li>
                       <li>発言装飾</li>
                       <li>

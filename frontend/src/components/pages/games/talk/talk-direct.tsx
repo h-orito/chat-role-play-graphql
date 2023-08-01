@@ -1,19 +1,20 @@
 import Image from 'next/image'
 import RadioGroup from '@/components/form/radio-group'
 import {
+  DirectMessage,
   Game,
   GameParticipant,
+  GameParticipantGroup,
   GameParticipantIcon,
   IconsDocument,
   IconsQuery,
-  Message,
   MessageType,
-  NewMessage,
-  TalkDocument,
-  TalkDryRunDocument,
-  TalkDryRunMutation,
-  TalkMutation,
-  TalkMutationVariables
+  NewDirectMessage,
+  TalkDirectDocument,
+  TalkDirectDryRunDocument,
+  TalkDirectDryRunMutation,
+  TalkDirectMutation,
+  TalkDirectMutationVariables
 } from '@/lib/generated/graphql'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useCallback, useEffect, useState } from 'react'
@@ -22,13 +23,14 @@ import InputTextarea from '@/components/form/input-textarea'
 import InputText from '@/components/form/input-text'
 import Modal from '@/components/modal/modal'
 import SubmitButton from '@/components/button/submit-button'
-import TalkMessage from '../article/message-area/message/talk-message'
+import DirectMessageComponent from '../article/message-area/direct-message/direct-message'
 import SecondaryButton from '@/components/button/scondary-button'
 
 type Props = {
   game: Game
   myself: GameParticipant
   close: (e: any) => void
+  gameParticipantGroup: GameParticipantGroup
 }
 
 const candidates = [
@@ -47,7 +49,12 @@ interface FormInput {
   talkMessage: string
 }
 
-export default function Talk({ game, myself, close }: Props) {
+export default function TalkDirect({
+  game,
+  myself,
+  close,
+  gameParticipantGroup
+}: Props) {
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
   const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
 
@@ -82,12 +89,15 @@ export default function Talk({ game, myself, close }: Props) {
     }
   }
 
-  const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument, {
-    onError(error) {
-      console.error(error)
+  const [talkDirectDryRun] = useMutation<TalkDirectDryRunMutation>(
+    TalkDirectDryRunDocument,
+    {
+      onError(error) {
+        console.error(error)
+      }
     }
-  })
-  const [talk] = useMutation<TalkMutation>(TalkDocument, {
+  )
+  const [talkDirect] = useMutation<TalkDirectMutation>(TalkDirectDocument, {
     onCompleted(e) {
       close(e)
     },
@@ -96,36 +106,38 @@ export default function Talk({ game, myself, close }: Props) {
     }
   })
 
-  const [preview, setPreview] = useState<Message | null>(null)
+  const [preview, setPreview] = useState<DirectMessage | null>(null)
   const onSubmit: SubmitHandler<FormInput> = useCallback(
     async (data) => {
-      const mes = {
+      const dm = {
         gameId: game.id,
+        gameParticipantGroupId: gameParticipantGroup.id,
         type: talkType,
         iconId: iconId,
         name: data.name,
-        replyToMessageId: null, // TODO
-        text: data.talkMessage.trim(),
+        text: data.talkMessage,
         isConvertDisabled: false // TODO
-      } as NewMessage
+      } as NewDirectMessage
 
       if (preview != null) {
-        talk({
+        talkDirect({
           variables: {
-            input: mes
-          } as TalkMutationVariables
+            input: dm
+          } as TalkDirectMutationVariables
         })
       } else {
-        const { data } = await talkDryRun({
+        const { data } = await talkDirectDryRun({
           variables: {
-            input: mes
-          } as TalkMutationVariables
+            input: dm
+          } as TalkDirectMutationVariables
         })
-        if (data?.registerMessageDryRun == null) return
-        setPreview(data.registerMessageDryRun.message as Message)
+        if (data?.registerDirectMessageDryRun == null) return
+        setPreview(
+          data.registerDirectMessageDryRun.directMessage as DirectMessage
+        )
       }
     },
-    [talk, talkType, iconId, formState]
+    [talkDirect, talkType, iconId, formState]
   )
 
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
@@ -135,6 +147,9 @@ export default function Talk({ game, myself, close }: Props) {
   return (
     <div className='py-2'>
       <form onSubmit={handleSubmit(onSubmit)}>
+        <div className='mb-2'>
+          <p>DM送信先: {gameParticipantGroup.name}</p>
+        </div>
         <div className='mb-2'>
           <RadioGroup
             name='talk-type'
@@ -208,13 +223,13 @@ export default function Talk({ game, myself, close }: Props) {
         </div>
       </form>
       {preview && (
-        <div className='my-4 border-t border-gray-300 pt-2'>
+        <div className='my-4'>
           <p className='font-bold'>プレビュー</p>
           <div className='rounded-md border border-gray-300'>
-            <TalkMessage
-              message={preview!}
-              game={game}
+            <DirectMessageComponent
+              directMessage={preview!}
               myself={myself}
+              game={game}
               openProfileModal={() => {}}
               openFavoritesModal={() => {}}
             />

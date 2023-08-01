@@ -13,12 +13,12 @@ type MessageProps = {
 export default function MessageComponent(props: MessageProps) {
   const isSystem = props.message.content.type.indexOf('System') !== -1
   return (
-    <>
+    <div className='border-t border-gray-300'>
       {isSystem ? (
         <SystemMessage message={props.message} />
       ) : (
         <TalkMessage {...props} />
       )}
-    </>
+    </div>
   )
 }

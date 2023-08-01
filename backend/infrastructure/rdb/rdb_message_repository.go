@@ -830,7 +830,7 @@ func registerDirectMessage(tx *gorm.DB, gameID uint32, message model.DirectMessa
 }
 
 func selectMaxDirectMessageNumber(db *gorm.DB, gameID uint32, message model.DirectMessage) (uint32, error) {
-	var max float64
+	var max *float64
 	result := db.Table("direct_messages").Select("MAX(message_number)").
 		Where("game_id = ?", gameID).
 		Where("message_type_code = ?", message.Type.String()).
@@ -838,7 +838,10 @@ func selectMaxDirectMessageNumber(db *gorm.DB, gameID uint32, message model.Dire
 	if result.Error != nil {
 		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
 	}
-	return uint32(max), nil
+	if max == nil {
+		return 0, nil
+	}
+	return uint32(*max), nil
 }
 
 func registerDirectMessageFavorite(tx *gorm.DB, gameID uint32, directMessageID uint64, gameParticipantID uint32) error {

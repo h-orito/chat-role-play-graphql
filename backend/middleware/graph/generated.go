@@ -321,6 +321,7 @@ type ComplexityRoot struct {
 		RegisterCharachipChara        func(childComplexity int, input gqlmodel.NewChara) int
 		RegisterDesigner              func(childComplexity int, input gqlmodel.NewDesigner) int
 		RegisterDirectMessage         func(childComplexity int, input gqlmodel.NewDirectMessage) int
+		RegisterDirectMessageDryRun   func(childComplexity int, input gqlmodel.NewDirectMessage) int
 		RegisterDirectMessageFavorite func(childComplexity int, input gqlmodel.NewDirectMessageFavorite) int
 		RegisterGame                  func(childComplexity int, input gqlmodel.NewGame) int
 		RegisterGameMaster            func(childComplexity int, input gqlmodel.NewGameMaster) int
@@ -330,6 +331,7 @@ type ComplexityRoot struct {
 		RegisterGameParticipantGroup  func(childComplexity int, input gqlmodel.NewGameParticipantGroup) int
 		RegisterGameParticipantIcon   func(childComplexity int, input gqlmodel.NewGameParticipantIcon) int
 		RegisterMessage               func(childComplexity int, input gqlmodel.NewMessage) int
+		RegisterMessageDryRun         func(childComplexity int, input gqlmodel.NewMessage) int
 		RegisterMessageFavorite       func(childComplexity int, input gqlmodel.NewMessageFavorite) int
 		RegisterPlayerSnsAccount      func(childComplexity int, input gqlmodel.NewPlayerSnsAccount) int
 		UpdateChara                   func(childComplexity int, input gqlmodel.UpdateChara) int
@@ -422,6 +424,10 @@ type ComplexityRoot struct {
 		Designer func(childComplexity int) int
 	}
 
+	RegisterDirectMessageDryRunPayload struct {
+		DirectMessage func(childComplexity int) int
+	}
+
 	RegisterDirectMessageFavoritePayload struct {
 		Ok func(childComplexity int) int
 	}
@@ -456,6 +462,10 @@ type ComplexityRoot struct {
 
 	RegisterGamePayload struct {
 		Game func(childComplexity int) int
+	}
+
+	RegisterMessageDryRunPayload struct {
+		Message func(childComplexity int) int
 	}
 
 	RegisterMessageFavoritePayload struct {
@@ -597,9 +607,11 @@ type MutationResolver interface {
 	RegisterPlayerSnsAccount(ctx context.Context, input gqlmodel.NewPlayerSnsAccount) (*gqlmodel.RegisterPlayerSnsAccountPayload, error)
 	UpdatePlayerSnsAccount(ctx context.Context, input gqlmodel.UpdatePlayerSnsAccount) (*gqlmodel.UpdatePlayerSnsAccountPayload, error)
 	DeletePlayerSnsAccount(ctx context.Context, input gqlmodel.DeletePlayerSnsAccount) (*gqlmodel.DeletePlayerSnsAccountPayload, error)
+	RegisterMessageDryRun(ctx context.Context, input gqlmodel.NewMessage) (*gqlmodel.RegisterMessageDryRunPayload, error)
 	RegisterMessage(ctx context.Context, input gqlmodel.NewMessage) (*gqlmodel.RegisterMessagePayload, error)
 	RegisterMessageFavorite(ctx context.Context, input gqlmodel.NewMessageFavorite) (*gqlmodel.RegisterMessageFavoritePayload, error)
 	DeleteMessageFavorite(ctx context.Context, input gqlmodel.DeleteMessageFavorite) (*gqlmodel.DeleteMessageFavoritePayload, error)
+	RegisterDirectMessageDryRun(ctx context.Context, input gqlmodel.NewDirectMessage) (*gqlmodel.RegisterDirectMessageDryRunPayload, error)
 	RegisterDirectMessage(ctx context.Context, input gqlmodel.NewDirectMessage) (*gqlmodel.RegisterDirectMessagePayload, error)
 	RegisterDirectMessageFavorite(ctx context.Context, input gqlmodel.NewDirectMessageFavorite) (*gqlmodel.RegisterDirectMessageFavoritePayload, error)
 	DeleteDirectMessageFavorite(ctx context.Context, input gqlmodel.DeleteDirectMessageFavorite) (*gqlmodel.DeleteDirectMessageFavoritePayload, error)
@@ -1765,6 +1777,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.RegisterDirectMessage(childComplexity, args["input"].(gqlmodel.NewDirectMessage)), true
 
+	case "Mutation.registerDirectMessageDryRun":
+		if e.complexity.Mutation.RegisterDirectMessageDryRun == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_registerDirectMessageDryRun_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RegisterDirectMessageDryRun(childComplexity, args["input"].(gqlmodel.NewDirectMessage)), true
+
 	case "Mutation.registerDirectMessageFavorite":
 		if e.complexity.Mutation.RegisterDirectMessageFavorite == nil {
 			break
@@ -1872,6 +1896,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.RegisterMessage(childComplexity, args["input"].(gqlmodel.NewMessage)), true
+
+	case "Mutation.registerMessageDryRun":
+		if e.complexity.Mutation.RegisterMessageDryRun == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_registerMessageDryRun_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RegisterMessageDryRun(childComplexity, args["input"].(gqlmodel.NewMessage)), true
 
 	case "Mutation.registerMessageFavorite":
 		if e.complexity.Mutation.RegisterMessageFavorite == nil {
@@ -2534,6 +2570,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.RegisterDesignerPayload.Designer(childComplexity), true
 
+	case "RegisterDirectMessageDryRunPayload.directMessage":
+		if e.complexity.RegisterDirectMessageDryRunPayload.DirectMessage == nil {
+			break
+		}
+
+		return e.complexity.RegisterDirectMessageDryRunPayload.DirectMessage(childComplexity), true
+
 	case "RegisterDirectMessageFavoritePayload.ok":
 		if e.complexity.RegisterDirectMessageFavoritePayload.Ok == nil {
 			break
@@ -2596,6 +2639,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.RegisterGamePayload.Game(childComplexity), true
+
+	case "RegisterMessageDryRunPayload.message":
+		if e.complexity.RegisterMessageDryRunPayload.Message == nil {
+			break
+		}
+
+		return e.complexity.RegisterMessageDryRunPayload.Message(childComplexity), true
 
 	case "RegisterMessageFavoritePayload.ok":
 		if e.complexity.RegisterMessageFavoritePayload.Ok == nil {
@@ -3426,6 +3476,8 @@ type Mutation {
   ): DeletePlayerSnsAccountPayload! @isAuthenticated
 
   # message
+  registerMessageDryRun(input: NewMessage!): RegisterMessageDryRunPayload!
+    @isAuthenticated
   registerMessage(input: NewMessage!): RegisterMessagePayload! @isAuthenticated
   # TODO: updateMessage（メッセージ編集機能）
   registerMessageFavorite(
@@ -3434,6 +3486,9 @@ type Mutation {
   deleteMessageFavorite(
     input: DeleteMessageFavorite!
   ): DeleteMessageFavoritePayload! @isAuthenticated
+  registerDirectMessageDryRun(
+    input: NewDirectMessage!
+  ): RegisterDirectMessageDryRunPayload! @isAuthenticated
   registerDirectMessage(
     input: NewDirectMessage!
   ): RegisterDirectMessagePayload! @isAuthenticated
@@ -3878,6 +3933,10 @@ input NewMessage {
   isConvertDisabled: Boolean!
 }
 
+type RegisterMessageDryRunPayload {
+  message: Message!
+}
+
 type RegisterMessagePayload {
   ok: Boolean!
 }
@@ -3908,6 +3967,10 @@ input NewDirectMessage {
   name: String!
   text: String!
   isConvertDisabled: Boolean!
+}
+
+type RegisterDirectMessageDryRunPayload {
+  directMessage: DirectMessage!
 }
 
 type RegisterDirectMessagePayload {
@@ -4158,6 +4221,21 @@ func (ec *executionContext) field_Mutation_registerDesigner_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_registerDirectMessageDryRun_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 gqlmodel.NewDirectMessage
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewDirectMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewDirectMessage(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_registerDirectMessageFavorite_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -4285,6 +4363,21 @@ func (ec *executionContext) field_Mutation_registerGame_args(ctx context.Context
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewGame2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGame(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_registerMessageDryRun_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 gqlmodel.NewMessage
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewMessage(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -13843,6 +13936,85 @@ func (ec *executionContext) fieldContext_Mutation_deletePlayerSnsAccount(ctx con
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_registerMessageDryRun(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_registerMessageDryRun(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().RegisterMessageDryRun(rctx, fc.Args["input"].(gqlmodel.NewMessage))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*gqlmodel.RegisterMessageDryRunPayload); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *chat-role-play/middleware/graph/gqlmodel.RegisterMessageDryRunPayload`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.RegisterMessageDryRunPayload)
+	fc.Result = res
+	return ec.marshalNRegisterMessageDryRunPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterMessageDryRunPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_registerMessageDryRun(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "message":
+				return ec.fieldContext_RegisterMessageDryRunPayload_message(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RegisterMessageDryRunPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_registerMessageDryRun_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_registerMessage(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_registerMessage(ctx, field)
 	if err != nil {
@@ -14074,6 +14246,85 @@ func (ec *executionContext) fieldContext_Mutation_deleteMessageFavorite(ctx cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteMessageFavorite_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_registerDirectMessageDryRun(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_registerDirectMessageDryRun(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().RegisterDirectMessageDryRun(rctx, fc.Args["input"].(gqlmodel.NewDirectMessage))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*gqlmodel.RegisterDirectMessageDryRunPayload); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *chat-role-play/middleware/graph/gqlmodel.RegisterDirectMessageDryRunPayload`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.RegisterDirectMessageDryRunPayload)
+	fc.Result = res
+	return ec.marshalNRegisterDirectMessageDryRunPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDirectMessageDryRunPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_registerDirectMessageDryRun(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "directMessage":
+				return ec.fieldContext_RegisterDirectMessageDryRunPayload_directMessage(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RegisterDirectMessageDryRunPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_registerDirectMessageDryRun_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -17297,6 +17548,64 @@ func (ec *executionContext) fieldContext_RegisterDesignerPayload_designer(ctx co
 	return fc, nil
 }
 
+func (ec *executionContext) _RegisterDirectMessageDryRunPayload_directMessage(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.RegisterDirectMessageDryRunPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RegisterDirectMessageDryRunPayload_directMessage(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DirectMessage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.DirectMessage)
+	fc.Result = res
+	return ec.marshalNDirectMessage2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDirectMessage(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RegisterDirectMessageDryRunPayload_directMessage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RegisterDirectMessageDryRunPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DirectMessage_id(ctx, field)
+			case "participantGroupId":
+				return ec.fieldContext_DirectMessage_participantGroupId(ctx, field)
+			case "content":
+				return ec.fieldContext_DirectMessage_content(ctx, field)
+			case "time":
+				return ec.fieldContext_DirectMessage_time(ctx, field)
+			case "sender":
+				return ec.fieldContext_DirectMessage_sender(ctx, field)
+			case "reactions":
+				return ec.fieldContext_DirectMessage_reactions(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DirectMessage", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _RegisterDirectMessageFavoritePayload_ok(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.RegisterDirectMessageFavoritePayload) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_RegisterDirectMessageFavoritePayload_ok(ctx, field)
 	if err != nil {
@@ -17768,6 +18077,64 @@ func (ec *executionContext) fieldContext_RegisterGamePayload_game(ctx context.Co
 				return ec.fieldContext_Game_settings(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Game", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RegisterMessageDryRunPayload_message(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.RegisterMessageDryRunPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RegisterMessageDryRunPayload_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.Message)
+	fc.Result = res
+	return ec.marshalNMessage2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessage(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RegisterMessageDryRunPayload_message(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RegisterMessageDryRunPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Message_id(ctx, field)
+			case "content":
+				return ec.fieldContext_Message_content(ctx, field)
+			case "time":
+				return ec.fieldContext_Message_time(ctx, field)
+			case "sender":
+				return ec.fieldContext_Message_sender(ctx, field)
+			case "replyTo":
+				return ec.fieldContext_Message_replyTo(ctx, field)
+			case "reactions":
+				return ec.fieldContext_Message_reactions(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
 		},
 	}
 	return fc, nil
@@ -26068,6 +26435,15 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "registerMessageDryRun":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_registerMessageDryRun(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "registerMessage":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -26090,6 +26466,15 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteMessageFavorite(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "registerDirectMessageDryRun":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_registerDirectMessageDryRun(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -27083,6 +27468,34 @@ func (ec *executionContext) _RegisterDesignerPayload(ctx context.Context, sel as
 	return out
 }
 
+var registerDirectMessageDryRunPayloadImplementors = []string{"RegisterDirectMessageDryRunPayload"}
+
+func (ec *executionContext) _RegisterDirectMessageDryRunPayload(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.RegisterDirectMessageDryRunPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, registerDirectMessageDryRunPayloadImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RegisterDirectMessageDryRunPayload")
+		case "directMessage":
+
+			out.Values[i] = ec._RegisterDirectMessageDryRunPayload_directMessage(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var registerDirectMessageFavoritePayloadImplementors = []string{"RegisterDirectMessageFavoritePayload"}
 
 func (ec *executionContext) _RegisterDirectMessageFavoritePayload(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.RegisterDirectMessageFavoritePayload) graphql.Marshaler {
@@ -27320,6 +27733,34 @@ func (ec *executionContext) _RegisterGamePayload(ctx context.Context, sel ast.Se
 		case "game":
 
 			out.Values[i] = ec._RegisterGamePayload_game(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var registerMessageDryRunPayloadImplementors = []string{"RegisterMessageDryRunPayload"}
+
+func (ec *executionContext) _RegisterMessageDryRunPayload(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.RegisterMessageDryRunPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, registerMessageDryRunPayloadImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RegisterMessageDryRunPayload")
+		case "message":
+
+			out.Values[i] = ec._RegisterMessageDryRunPayload_message(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -29763,6 +30204,20 @@ func (ec *executionContext) marshalNRegisterDesignerPayload2ᚖchatᚑroleᚑpla
 	return ec._RegisterDesignerPayload(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNRegisterDirectMessageDryRunPayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDirectMessageDryRunPayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterDirectMessageDryRunPayload) graphql.Marshaler {
+	return ec._RegisterDirectMessageDryRunPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRegisterDirectMessageDryRunPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDirectMessageDryRunPayload(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.RegisterDirectMessageDryRunPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._RegisterDirectMessageDryRunPayload(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNRegisterDirectMessageFavoritePayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDirectMessageFavoritePayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterDirectMessageFavoritePayload) graphql.Marshaler {
 	return ec._RegisterDirectMessageFavoritePayload(ctx, sel, &v)
 }
@@ -29887,6 +30342,20 @@ func (ec *executionContext) marshalNRegisterGamePayload2ᚖchatᚑroleᚑplayᚋ
 		return graphql.Null
 	}
 	return ec._RegisterGamePayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRegisterMessageDryRunPayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterMessageDryRunPayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterMessageDryRunPayload) graphql.Marshaler {
+	return ec._RegisterMessageDryRunPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRegisterMessageDryRunPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterMessageDryRunPayload(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.RegisterMessageDryRunPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._RegisterMessageDryRunPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNRegisterMessageFavoritePayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterMessageFavoritePayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterMessageFavoritePayload) graphql.Marshaler {

@@ -41,7 +41,7 @@ export default function TalkMessage({
 
   return (
     <div>
-      <div className='w-full border-t border-gray-300 p-4'>
+      <div className='w-full p-4'>
         {message.sender && (
           <div className='flex pb-1'>
             <button onClick={handleProfileClick}>

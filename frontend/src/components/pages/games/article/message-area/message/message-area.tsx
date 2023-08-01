@@ -87,7 +87,7 @@ export default function MessageArea({
   }
 
   const fetchLatestTime = async () => {
-    if (existsUnread) return
+    if (!isViewing && existsUnread) return
     const { data } = await fetchMessagesLatest({
       variables: {
         gameId: game.id,

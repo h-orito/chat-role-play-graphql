@@ -3,6 +3,7 @@ type Props = {
   candidates: Array<Option>
   selected: any
   setSelected: (value: any) => void
+  disabled?: boolean
 }
 
 type Option = {
@@ -14,7 +15,8 @@ export default function RadioGroup({
   name,
   candidates,
   selected,
-  setSelected
+  setSelected,
+  disabled
 }: Props) {
   return (
     <div className='flex'>
@@ -35,7 +37,8 @@ export default function RadioGroup({
               value={candidate.value}
               id={`${name}_${index}`}
               checked={selected === candidate.value}
-              onChange={(e) => setSelected(e.target.value)}
+              onChange={(e: any) => setSelected(e.target.value)}
+              disabled={disabled}
             />
             <label
               className={`cursor-pointer border-y border-blue-500 px-2 py-1 ${checkedClass} ${roundClass}`}

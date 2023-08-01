@@ -18,7 +18,7 @@ import DirectSearchCondition from './direct-search-condition'
 import { PencilIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import ParticipantGroupEdit from './participant-group-edit'
-import Talk from '../../../talk/talk'
+import TalkDirect from '../../../talk/talk-direct'
 
 type Props = {
   close: (e: any) => void
@@ -154,14 +154,16 @@ export default function DirectMessageArea({
       />
       <div className='flex-1 overflow-y-auto'>
         {directMessages.list.map((message: DirectMessage) => (
-          <DirectMessageComponent
-            game={game}
-            directMessage={message}
-            myself={myself}
-            key={message.id}
-            openProfileModal={openProfileModal}
-            openFavoritesModal={openFavoritesModal}
-          />
+          <div className='border-t border-gray-300 '>
+            <DirectMessageComponent
+              game={game}
+              directMessage={message}
+              myself={myself}
+              key={message.id}
+              openProfileModal={openProfileModal}
+              openFavoritesModal={openFavoritesModal}
+            />
+          </div>
         ))}
       </div>
       <Paging
@@ -181,7 +183,7 @@ export default function DirectMessageArea({
       )}
       {isOpenTalkModal && (
         <Modal close={toggleTalkModal} hideFooter>
-          <Talk
+          <TalkDirect
             game={game}
             myself={myself!}
             gameParticipantGroup={group!}

@@ -10,6 +10,28 @@ import (
 	"github.com/graph-gophers/dataloader"
 )
 
+func (r *mutationResolver) registerMessageDryRun(ctx context.Context, input gqlmodel.NewMessage) (*gqlmodel.RegisterMessageDryRunPayload, error) {
+	gameID, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, nil
+	}
+	msg, err := MapNewMessageToMessage(input)
+	if err != nil {
+		return nil, err
+	}
+	m, err := r.messageUsecase.RegisterMessageDryRun(ctx, gameID, *user, *msg)
+	if err != nil {
+		return nil, err
+	}
+	return &gqlmodel.RegisterMessageDryRunPayload{
+		Message: MapToMessage(m),
+	}, nil
+}
+
 func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.NewMessage) (*gqlmodel.RegisterMessagePayload, error) {
 	gameID, err := idToUint32(input.GameID)
 	if err != nil {
@@ -19,6 +41,19 @@ func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.N
 	if user == nil {
 		return nil, nil
 	}
+	msg, err := MapNewMessageToMessage(input)
+	if err != nil {
+		return nil, err
+	}
+	if err := r.messageUsecase.RegisterMessage(ctx, gameID, *user, *msg); err != nil {
+		return nil, err
+	}
+	return &gqlmodel.RegisterMessagePayload{
+		Ok: true,
+	}, nil
+}
+
+func MapNewMessageToMessage(input gqlmodel.NewMessage) (*model.Message, error) {
 	messageType := model.MessageTypeValueOf(input.Type.String())
 	var sender *model.MessageSender
 	if !messageType.IsSystem() {
@@ -41,7 +76,7 @@ func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.N
 			MessageID: rtID,
 		}
 	}
-	m := model.Message{
+	return &model.Message{
 		Type:    *messageType,
 		Sender:  sender,
 		ReplyTo: replyTo,
@@ -49,12 +84,6 @@ func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.N
 			Text:              input.Text,
 			IsConvertDisabled: input.IsConvertDisabled,
 		},
-	}
-	if err := r.messageUsecase.RegisterMessage(ctx, gameID, *user, m); err != nil {
-		return nil, err
-	}
-	return &gqlmodel.RegisterMessagePayload{
-		Ok: true,
 	}, nil
 }
 
@@ -100,6 +129,28 @@ func (r *mutationResolver) deleteMessageFavorite(ctx context.Context, input gqlm
 	}, nil
 }
 
+func (r *mutationResolver) registerDirectMessageDryRun(ctx context.Context, input gqlmodel.NewDirectMessage) (*gqlmodel.RegisterDirectMessageDryRunPayload, error) {
+	gameID, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, nil
+	}
+	msg, err := MapNewDirectMessageToDirectMessage(input)
+	if err != nil {
+		return nil, err
+	}
+	m, err := r.messageUsecase.RegisterDirectMessageDryRun(ctx, gameID, *user, *msg)
+	if err != nil {
+		return nil, err
+	}
+	return &gqlmodel.RegisterDirectMessageDryRunPayload{
+		DirectMessage: MapToDirectMessage(m),
+	}, nil
+}
+
 func (r *mutationResolver) registerDirectMessage(ctx context.Context, input gqlmodel.NewDirectMessage) (*gqlmodel.RegisterDirectMessagePayload, error) {
 	gameID, err := idToUint32(input.GameID)
 	if err != nil {
@@ -109,6 +160,19 @@ func (r *mutationResolver) registerDirectMessage(ctx context.Context, input gqlm
 	if user == nil {
 		return nil, nil
 	}
+	msg, err := MapNewDirectMessageToDirectMessage(input)
+	if err != nil {
+		return nil, err
+	}
+	if err := r.messageUsecase.RegisterDirectMessage(ctx, gameID, *user, *msg); err != nil {
+		return nil, err
+	}
+	return &gqlmodel.RegisterDirectMessagePayload{
+		Ok: true,
+	}, nil
+}
+
+func MapNewDirectMessageToDirectMessage(input gqlmodel.NewDirectMessage) (*model.DirectMessage, error) {
 	gameParticipantGroupID, err := idToUint32(input.GameParticipantGroupID)
 	if err != nil {
 		return nil, err
@@ -125,7 +189,7 @@ func (r *mutationResolver) registerDirectMessage(ctx context.Context, input gqlm
 			SenderName:   input.Name,
 		}
 	}
-	m := model.DirectMessage{
+	return &model.DirectMessage{
 		GameParticipantGroupID: gameParticipantGroupID,
 		Type:                   *messageType,
 		Sender:                 sender,
@@ -133,12 +197,6 @@ func (r *mutationResolver) registerDirectMessage(ctx context.Context, input gqlm
 			Text:              input.Text,
 			IsConvertDisabled: input.IsConvertDisabled,
 		},
-	}
-	if err := r.messageUsecase.RegisterDirectMessage(ctx, gameID, *user, m); err != nil {
-		return nil, err
-	}
-	return &gqlmodel.RegisterDirectMessagePayload{
-		Ok: true,
 	}, nil
 }
 

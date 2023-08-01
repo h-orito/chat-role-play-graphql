@@ -545,6 +545,10 @@ type RegisterDesignerPayload struct {
 	Designer *Designer `json:"designer"`
 }
 
+type RegisterDirectMessageDryRunPayload struct {
+	DirectMessage *DirectMessage `json:"directMessage"`
+}
+
 type RegisterDirectMessageFavoritePayload struct {
 	Ok bool `json:"ok"`
 }
@@ -579,6 +583,10 @@ type RegisterGameParticipantPayload struct {
 
 type RegisterGamePayload struct {
 	Game *Game `json:"game"`
+}
+
+type RegisterMessageDryRunPayload struct {
+	Message *Message `json:"message"`
 }
 
 type RegisterMessageFavoritePayload struct {
