@@ -1,12 +1,14 @@
 import Image from 'next/image'
 import RadioGroup from '@/components/form/radio-group'
 import {
+  DirectMessage,
   Game,
   GameParticipant,
   GameParticipantGroup,
   GameParticipantIcon,
   IconsDocument,
   IconsQuery,
+  Message,
   MessageType,
   NewDirectMessage,
   TalkDirectDocument,
@@ -23,6 +25,9 @@ import InputTextarea from '@/components/form/input-textarea'
 import InputText from '@/components/form/input-text'
 import Modal from '@/components/modal/modal'
 import SubmitButton from '@/components/button/submit-button'
+import TalkMessage from '../article/message-area/message/talk-message'
+import DirectMessage from '../article/message-area/direct-message/direct-message'
+import DirectMessageComponent from '../article/message-area/direct-message/direct-message'
 
 type Props = {
   game: Game
@@ -144,7 +149,7 @@ export default function Talk({
   const selectedIcon = icons.find((icon) => icon.id === iconId)
 
   return (
-    <div className='px-4 py-2'>
+    <div className='py-2'>
       <form onSubmit={handleSubmit(onSubmit)}>
         {gameParticipantGroup != null && (
           <div className='mb-2'>
@@ -212,6 +217,10 @@ export default function Talk({
           <SubmitButton label='送信' disabled={!canSubmit} />
         </div>
       </form>
+      <div className='mt-4'>
+        <p className='font-bold'>プレビュー</p>
+        {/* <PreviewMessage /> */}
+      </div>
       {isOpenIconSelectModal && (
         <Modal close={toggleIconSelectModal} hideFooter>
           <IconSelect
@@ -250,5 +259,90 @@ const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
         </button>
       ))}
     </div>
+  )
+}
+
+type PreviewMessageProps = {
+  game: Game
+  name: string
+  talkMessage: string
+  icons: Array<GameParticipantIcon>
+  iconId: string
+  talkType: MessageType
+  myself: GameParticipant
+  directMessage?: boolean
+}
+
+const PreviewMessage = ({
+  game,
+  name,
+  talkMessage,
+  icons,
+  iconId,
+  talkType,
+  myself,
+  directMessage
+}: PreviewMessageProps) => {
+  const message = directMessage
+    ? null
+    : ({
+        id: 'dummy',
+        content: {
+          type: talkType,
+          number: 1,
+          text: talkMessage,
+          isConvertDisabled: false // TODO
+        },
+        time: {
+          sendAt: new Date(),
+          sendUnixTimeMilli: 0
+        },
+        sender: {
+          participantId: myself.id,
+          name: name,
+          icon: icons.find((i) => i.id === iconId)
+        }
+      } as Message)
+  const dm = !directMessage
+    ? null
+    : ({
+        id: 'dummy',
+        content: {
+          type: talkType,
+          number: 1,
+          text: talkMessage,
+          isConvertDisabled: false // TODO
+        },
+        time: {
+          sendAt: new Date(),
+          sendUnixTimeMilli: 0
+        },
+        sender: {
+          participantId: myself.id,
+          name: name,
+          icon: icons.find((i) => i.id === iconId)
+        }
+      } as DirectMessage)
+
+  return (
+    <>
+      {directMessage ? (
+        <DirectMessageComponent
+          directMessage={dm!}
+          myself={myself}
+          game={game}
+          openProfileModal={() => {}}
+          openFavoritesModal={() => {}}
+        />
+      ) : (
+        <TalkMessage
+          message={message!}
+          game={game}
+          myself={myself}
+          openProfileModal={() => {}}
+          openFavoritesModal={() => {}}
+        />
+      )}
+    </>
   )
 }

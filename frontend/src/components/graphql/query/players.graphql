@@ -1,0 +1,6 @@
+query QPlayers($query: PlayersQuery!) {
+  players(query: $query) {
+    id
+    name
+  }
+}

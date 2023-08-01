@@ -7,7 +7,7 @@ import (
 )
 
 type PlayerUsecase interface {
-	FindPlayers(IDs []uint32) ([]model.Player, error)
+	FindPlayers(query model.PlayersQuery) ([]model.Player, error)
 	Find(ID uint32) (player *model.Player, err error)
 	FindByName(name string) (player *model.Player, err error)
 	FindByUserName(username string) (player *model.Player, err error)
@@ -31,8 +31,8 @@ func NewPlayerUsecase(playerService app_service.PlayerService,
 	}
 }
 
-func (s *playerUsecase) FindPlayers(IDs []uint32) ([]model.Player, error) {
-	return s.playerService.FindPlayers(IDs)
+func (s *playerUsecase) FindPlayers(query model.PlayersQuery) ([]model.Player, error) {
+	return s.playerService.FindPlayers(query)
 }
 
 func (s *playerUsecase) Find(ID uint32) (player *model.Player, err error) {

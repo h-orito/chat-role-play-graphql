@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 )
 
 type GameUsecase interface {
@@ -53,11 +54,12 @@ type GameUsecase interface {
 }
 
 type gameUsecase struct {
-	gameService             app_service.GameService
-	playerService           app_service.PlayerService
-	charaService            app_service.CharaService
-	gameMasterDomainService dom_service.GameMasterDomainService
-	transaction             Transaction
+	gameService              app_service.GameService
+	playerService            app_service.PlayerService
+	charaService             app_service.CharaService
+	gameMasterDomainService  dom_service.GameMasterDomainService
+	participateDomainService dom_service.ParticipateDomainService
+	transaction              Transaction
 }
 
 func NewGameUsecase(
@@ -65,14 +67,16 @@ func NewGameUsecase(
 	playerService app_service.PlayerService,
 	charaService app_service.CharaService,
 	gameMasterDomainService dom_service.GameMasterDomainService,
+	participateDomainService dom_service.ParticipateDomainService,
 	tx Transaction,
 ) GameUsecase {
 	return &gameUsecase{
-		gameService:             gameService,
-		playerService:           playerService,
-		charaService:            charaService,
-		gameMasterDomainService: gameMasterDomainService,
-		transaction:             tx,
+		gameService:              gameService,
+		playerService:            playerService,
+		charaService:             charaService,
+		gameMasterDomainService:  gameMasterDomainService,
+		participateDomainService: participateDomainService,
+		transaction:              tx,
 	}
 }
 
@@ -193,6 +197,7 @@ func (g *gameUsecase) DeleteGameMaster(
 		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
 			return nil, fmt.Errorf("you are not game master")
 		}
+		log.Printf("player id: %d delete game master id %d", player.ID, gameMasterID)
 
 		return nil, g.gameService.DeleteGameMaster(ctx, gameMasterID)
 	})
@@ -317,7 +322,21 @@ func (g *gameUsecase) Participate(
 	participant model.GameParticipant,
 ) (saved *model.GameParticipant, err error) {
 	p, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		game, err := g.gameService.FindGame(gameID)
+		if err != nil {
+			return nil, err
+		}
+		if game == nil {
+			return nil, fmt.Errorf("game not found")
+		}
 		player, err := g.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		err = g.participateDomainService.AssertParticipate(*game, *player)
 		if err != nil {
 			return nil, err
 		}

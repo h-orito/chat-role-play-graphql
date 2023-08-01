@@ -335,6 +335,7 @@ type Query {
   gameParticipantSetting(gameId: ID!): GameParticipantSetting!
   gameDiaries(query: GameDiariesQuery!): [GameParticipantDiary!]!
   gameDiary(diaryId: ID!): GameParticipantDiary
+  players(query: PlayersQuery!): [Player!]!
   player(id: ID!): Player
   myPlayer: Player
   messages(gameId: ID!, query: MessagesQuery!): Messages!
@@ -389,6 +390,12 @@ input GamesQuery {
 input GameDiariesQuery {
   participantId: ID
   periodId: ID
+}
+
+input PlayersQuery {
+  ids: [ID!]
+  name: String
+  paging: PageableQuery
 }
 
 input ParticipantsQuery {

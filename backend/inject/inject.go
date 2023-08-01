@@ -42,6 +42,7 @@ func injectResolver(database db.DB) graphql.Resolver {
 	messageRepository := injectMessageRepository(database)
 	// domain service
 	gameMasterDomainService := injectGameMasterDomainService()
+	participateDomainService := injectParticipateDomainService(gameMasterDomainService)
 	// application service
 	charaService := injectCharaService(charaRepository)
 	gameService := injectGameService(gameRepository, gameParticipantRepository)
@@ -49,7 +50,7 @@ func injectResolver(database db.DB) graphql.Resolver {
 	messageService := injectMessageService(messageRepository)
 	// usecase
 	charaUsecase := injectCharaUsecase(charaService, tx)
-	gameUsecase := injectGameUsecase(gameService, playerService, charaService, gameMasterDomainService, tx)
+	gameUsecase := injectGameUsecase(gameService, playerService, charaService, gameMasterDomainService, participateDomainService, tx)
 	playerUsecase := injectPlayerUsecase(playerService, tx)
 	messageUsecase := injectMessageUsecase(messageService, gameService, playerService, tx)
 	imageUsecase := injectImageUsecase()
@@ -83,9 +84,17 @@ func injectGameUsecase(
 	playerService app_service.PlayerService,
 	charaService app_service.CharaService,
 	gameMasterDomainService dom_service.GameMasterDomainService,
+	participateDomainService dom_service.ParticipateDomainService,
 	tx usecase.Transaction,
 ) usecase.GameUsecase {
-	return usecase.NewGameUsecase(gameService, playerService, charaService, gameMasterDomainService, tx)
+	return usecase.NewGameUsecase(
+		gameService,
+		playerService,
+		charaService,
+		gameMasterDomainService,
+		participateDomainService,
+		tx,
+	)
 }
 
 func injectPlayerUsecase(playerService app_service.PlayerService,
@@ -130,6 +139,12 @@ func injectMessageService(messageRepository model.MessageRepository) app_service
 // domain service
 func injectGameMasterDomainService() dom_service.GameMasterDomainService {
 	return dom_service.NewGameMasterDomainService()
+}
+
+func injectParticipateDomainService(
+	gmDomainService dom_service.GameMasterDomainService,
+) dom_service.ParticipateDomainService {
+	return dom_service.NewParticipateDomainService(gmDomainService)
 }
 
 // repository

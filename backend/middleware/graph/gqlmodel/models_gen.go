@@ -523,6 +523,12 @@ type PlayerSnsAccount struct {
 	URL  string  `json:"url"`
 }
 
+type PlayersQuery struct {
+	Ids    []string       `json:"ids,omitempty"`
+	Name   *string        `json:"name,omitempty"`
+	Paging *PageableQuery `json:"paging,omitempty"`
+}
+
 type RegisterCharaImagePayload struct {
 	CharaImage *CharaImage `json:"charaImage"`
 }

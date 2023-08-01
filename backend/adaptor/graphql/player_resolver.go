@@ -31,6 +31,43 @@ func (r *gameParticipantResolver) player(ctx context.Context, obj *gqlmodel.Game
 	return MapToPlayer(player, nil), nil
 }
 
+func (r *queryResolver) players(ctx context.Context, query gqlmodel.PlayersQuery) ([]*gqlmodel.Player, error) {
+	var intids *[]uint32
+	var err error
+	if query.Ids != nil {
+		ids := array.Map(query.Ids, func(id string) uint32 {
+			intid, e := idToUint32(id)
+			if e != nil {
+				err = e
+			}
+			return intid
+		})
+		if err != nil {
+			return nil, err
+		}
+		intids = &ids
+	}
+	var paging *model.PagingQuery
+	if query.Paging != nil {
+		paging = &model.PagingQuery{
+			PageSize:   query.Paging.PageSize,
+			PageNumber: query.Paging.PageNumber,
+			Desc:       query.Paging.IsDesc,
+		}
+	}
+	players, err := r.playerUsecase.FindPlayers(model.PlayersQuery{
+		IDs:    intids,
+		Name:   query.Name,
+		Paging: paging,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return array.Map(players, func(p model.Player) *gqlmodel.Player {
+		return MapToPlayer(&p, nil)
+	}), nil
+}
+
 func (r *queryResolver) player(ctx context.Context, id string) (*gqlmodel.Player, error) {
 	playerID, err := idToUint32(id)
 	if err != nil {

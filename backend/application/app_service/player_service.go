@@ -6,7 +6,7 @@ import (
 )
 
 type PlayerService interface {
-	FindPlayers(IDs []uint32) ([]model.Player, error)
+	FindPlayers(query model.PlayersQuery) ([]model.Player, error)
 	Find(ID uint32) (player *model.Player, err error)
 	FindByName(name string) (player *model.Player, err error)
 	FindByUserName(name string) (player *model.Player, err error)
@@ -28,8 +28,8 @@ func NewPlayerService(playerRepository model.PlayerRepository) PlayerService {
 	}
 }
 
-func (s *playerService) FindPlayers(IDs []uint32) ([]model.Player, error) {
-	return s.playerRepository.FindPlayers(IDs)
+func (s *playerService) FindPlayers(query model.PlayersQuery) ([]model.Player, error) {
+	return s.playerRepository.FindPlayers(query)
 }
 
 func (s *playerService) Find(ID uint32) (player *model.Player, err error) {

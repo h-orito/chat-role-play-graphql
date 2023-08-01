@@ -16,6 +16,7 @@ import Modal from '@/components/modal/modal'
 import Term from '@/components/pages/index/term'
 import Policy from '@/components/pages/index/policy'
 import Tip from '@/components/pages/index/tip'
+import Head from 'next/head'
 
 export const getServerSideProps = async () => {
   const client = createInnerClient()
@@ -73,6 +74,9 @@ export default function Index({ games }: Props) {
 
   return (
     <main className='min-h-screen w-full lg:flex lg:justify-center'>
+      <Head>
+        <title>ロールをプレイ！</title>
+      </Head>
       <article className='flex w-full flex-col text-center lg:w-[960px] lg:justify-center lg:border-x lg:border-gray-300'>
         <div>
           <Image
@@ -163,7 +167,11 @@ export default function Index({ games }: Props) {
 const Introduction = () => {
   return (
     <div className='my-6'>
-      <p className='text-xs leading-6'>ロールをプレイ！</p>
+      <h1 className='mb-2 text-lg font-bold'>ロールをプレイ！</h1>
+      <p className='text-xs leading-6'>
+        ロールをプレイ！
+        は、ゆるーくテキストでロールプレイを楽しめるサイトです。
+      </p>
     </div>
   )
 }

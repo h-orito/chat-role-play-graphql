@@ -8,6 +8,7 @@ import {
   SimpleGame,
   GameStatus
 } from '@/lib/generated/graphql'
+import Head from 'next/head'
 
 export const getServerSideProps = async () => {
   const client = createInnerClient()
@@ -46,8 +47,10 @@ type Props = {
 
 export default function GamesPage({ games }: Props) {
   return (
-    // todo: paging
     <main className='w-full lg:flex lg:justify-center'>
+      <Head>
+        <title>ロールをプレイ！ | ゲーム一覧</title>
+      </Head>
       <article className='min-h-screen w-full text-center lg:w-[960px] lg:justify-center lg:border-x lg:border-gray-300'>
         <PageHeader href='/' header='ゲーム一覧' />
         <div className='p-4'>

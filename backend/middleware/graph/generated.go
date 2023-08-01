@@ -403,6 +403,7 @@ type ComplexityRoot struct {
 		MyGameParticipant                     func(childComplexity int, gameID string) int
 		MyPlayer                              func(childComplexity int) int
 		Player                                func(childComplexity int, id string) int
+		Players                               func(childComplexity int, query gqlmodel.PlayersQuery) int
 	}
 
 	RegisterCharaImagePayload struct {
@@ -621,6 +622,7 @@ type QueryResolver interface {
 	GameParticipantSetting(ctx context.Context, gameID string) (*gqlmodel.GameParticipantSetting, error)
 	GameDiaries(ctx context.Context, query gqlmodel.GameDiariesQuery) ([]*gqlmodel.GameParticipantDiary, error)
 	GameDiary(ctx context.Context, diaryID string) (*gqlmodel.GameParticipantDiary, error)
+	Players(ctx context.Context, query gqlmodel.PlayersQuery) ([]*gqlmodel.Player, error)
 	Player(ctx context.Context, id string) (*gqlmodel.Player, error)
 	MyPlayer(ctx context.Context) (*gqlmodel.Player, error)
 	Messages(ctx context.Context, gameID string, query gqlmodel.MessagesQuery) (*gqlmodel.Messages, error)
@@ -2492,6 +2494,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Player(childComplexity, args["id"].(string)), true
 
+	case "Query.players":
+		if e.complexity.Query.Players == nil {
+			break
+		}
+
+		args, err := ec.field_Query_players_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Players(childComplexity, args["query"].(gqlmodel.PlayersQuery)), true
+
 	case "RegisterCharaImagePayload.charaImage":
 		if e.complexity.RegisterCharaImagePayload.CharaImage == nil {
 			break
@@ -2806,6 +2820,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewPlayerSnsAccount,
 		ec.unmarshalInputPageableQuery,
 		ec.unmarshalInputParticipantsQuery,
+		ec.unmarshalInputPlayersQuery,
 		ec.unmarshalInputUpdateChara,
 		ec.unmarshalInputUpdateCharaImage,
 		ec.unmarshalInputUpdateCharaSetting,
@@ -3227,6 +3242,7 @@ type Query {
   gameParticipantSetting(gameId: ID!): GameParticipantSetting!
   gameDiaries(query: GameDiariesQuery!): [GameParticipantDiary!]!
   gameDiary(diaryId: ID!): GameParticipantDiary
+  players(query: PlayersQuery!): [Player!]!
   player(id: ID!): Player
   myPlayer: Player
   messages(gameId: ID!, query: MessagesQuery!): Messages!
@@ -3281,6 +3297,12 @@ input GamesQuery {
 input GameDiariesQuery {
   participantId: ID
   periodId: ID
+}
+
+input PlayersQuery {
+  ids: [ID!]
+  name: String
+  paging: PageableQuery
 }
 
 input ParticipantsQuery {
@@ -5033,6 +5055,21 @@ func (ec *executionContext) field_Query_player_args(ctx context.Context, rawArgs
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_players_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 gqlmodel.PlayersQuery
+	if tmp, ok := rawArgs["query"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+		arg0, err = ec.unmarshalNPlayersQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayersQuery(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["query"] = arg0
 	return args, nil
 }
 
@@ -16071,6 +16108,71 @@ func (ec *executionContext) fieldContext_Query_gameDiary(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_players(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_players(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Players(rctx, fc.Args["query"].(gqlmodel.PlayersQuery))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*gqlmodel.Player)
+	fc.Result = res
+	return ec.marshalNPlayer2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayerᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_players(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Player_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Player_name(ctx, field)
+			case "profile":
+				return ec.fieldContext_Player_profile(ctx, field)
+			case "designer":
+				return ec.fieldContext_Player_designer(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Player", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_players_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_player(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_player(ctx, field)
 	if err != nil {
@@ -22529,6 +22631,53 @@ func (ec *executionContext) unmarshalInputParticipantsQuery(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPlayersQuery(ctx context.Context, obj interface{}) (gqlmodel.PlayersQuery, error) {
+	var it gqlmodel.PlayersQuery
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"ids", "name", "paging"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "ids":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
+			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Ids = data
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "paging":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paging"))
+			data, err := ec.unmarshalOPageableQuery2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPageableQuery(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Paging = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateChara(ctx context.Context, obj interface{}) (gqlmodel.UpdateChara, error) {
 	var it gqlmodel.UpdateChara
 	asMap := map[string]interface{}{}
@@ -26512,6 +26661,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "players":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_players(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "player":
 			field := field
 
@@ -29412,6 +29584,50 @@ func (ec *executionContext) marshalNPlayer2chatᚑroleᚑplayᚋmiddlewareᚋgra
 	return ec._Player(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNPlayer2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayerᚄ(ctx context.Context, sel ast.SelectionSet, v []*gqlmodel.Player) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPlayer2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayer(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNPlayer2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayer(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.Player) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -29484,6 +29700,11 @@ func (ec *executionContext) marshalNPlayerSnsAccount2ᚖchatᚑroleᚑplayᚋmid
 		return graphql.Null
 	}
 	return ec._PlayerSnsAccount(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNPlayersQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayersQuery(ctx context.Context, v interface{}) (gqlmodel.PlayersQuery, error) {
+	res, err := ec.unmarshalInputPlayersQuery(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNRegisterCharaImagePayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterCharaImagePayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterCharaImagePayload) graphql.Marshaler {

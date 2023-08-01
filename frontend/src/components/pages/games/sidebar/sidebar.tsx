@@ -23,6 +23,7 @@ import { convertToGameStatusName } from '@/components/graphql/convert'
 import { iso2display } from '@/components/util/datetime/datetime'
 import TalkSystem from '../talk/talk-system'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
+import GameMasterEdit from './game-master-edit'
 
 type SidebarProps = {
   isSidebarOpen: boolean
@@ -47,6 +48,12 @@ export default function Sidebar({
     (gm) => gm.player.id === myPlayer?.id
   )
 
+  const canParticipate =
+    isAuthenticated &&
+    !myself &&
+    ((['Closed', 'Opening'].includes(game.status) && isGameMaster) ||
+      ['Recruiting', 'Progress'].includes(game.status))
+
   const displayClass = isSidebarOpen
     ? 'fixed z-20 bg-white md:static flex'
     : 'hidden'
@@ -58,18 +65,20 @@ export default function Sidebar({
       >
         <h1 className='mb-2 px-4 text-xl font-bold'>{game.name}</h1>
         <GameStatus game={game} />
-        <ParticipantsButton game={game} openProfileModal={openProfileModal} />
-        <GameSettingsButton game={game} />
-        <UserSettingsButton />
-        <TopPageButton />
+        <div className='border-t border-gray-300 py-2'>
+          <ParticipantsButton game={game} openProfileModal={openProfileModal} />
+          <GameSettingsButton game={game} />
+          <UserSettingsButton />
+        </div>
         {isGameMaster && (
-          <div className='mt-4'>
+          <div className='border-t border-gray-300 py-2'>
             <GameSettingsEditButton game={game} />
+            <GameMasterEditButton game={game} />
             <SystemMessageButton game={game} />
           </div>
         )}
         {myself && (
-          <div className='my-4'>
+          <div className='border-t border-gray-300 py-2'>
             <TalkButton game={game} myself={myself} />
             <ProfileButton
               myself={myself}
@@ -77,11 +86,14 @@ export default function Sidebar({
             />
           </div>
         )}
-        {isAuthenticated && !myself && (
-          <div className='my-4'>
+        {canParticipate && (
+          <div className='border-t border-gray-300 py-2'>
             <ParticipateButton game={game} />
           </div>
         )}
+        <div className='border-t border-gray-300 py-2'>
+          <TopPageButton />
+        </div>
         {isSidebarOpen && (
           <div className='my-4'>
             <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
@@ -246,6 +258,35 @@ const GameSettingsEditButton = ({ game }: GameSettingsEditButtonProps) => {
       {isOpenGameSettingsEditModal && (
         <Modal close={toggleGameSettingsEditModal}>
           <GameSettingsEdit game={game} />
+        </Modal>
+      )}
+    </>
+  )
+}
+
+type GameMasterEditButtonProps = {
+  game: Game
+}
+
+const GameMasterEditButton = ({ game }: GameMasterEditButtonProps) => {
+  const [isOpenModal, setIsOpenModal] = useState(false)
+  const toggleModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenModal(!isOpenModal)
+    }
+  }
+  return (
+    <>
+      <button
+        className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+        onClick={() => setIsOpenModal(true)}
+      >
+        <LockClosedIcon className='mr-1 h-6 w-6' />
+        <p className='flex-1 self-center text-left'>GM追加削除</p>
+      </button>
+      {isOpenModal && (
+        <Modal close={toggleModal} header='ゲームマスター追加削除'>
+          <GameMasterEdit game={game} close={toggleModal} />
         </Modal>
       )}
     </>

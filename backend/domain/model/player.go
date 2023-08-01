@@ -10,6 +10,12 @@ type Player struct {
 	Name string
 }
 
+type PlayersQuery struct {
+	IDs    *[]uint32
+	Name   *string
+	Paging *PagingQuery
+}
+
 type PlayerProfile struct {
 	PlayerID        uint32
 	ProfileImageURL *string
@@ -74,7 +80,7 @@ func SnsTypeValueOf(s string) *SnsType {
 }
 
 type PlayerRepository interface {
-	FindPlayers(IDs []uint32) ([]Player, error)
+	FindPlayers(query PlayersQuery) ([]Player, error)
 	Find(ID uint32) (player *Player, err error)
 	FindByName(name string) (player *Player, err error)
 	FindByUserName(userName string) (player *Player, err error)

@@ -11,6 +11,7 @@ import { iso2display } from '@/components/util/datetime/datetime'
 import { useLazyQuery } from '@apollo/client'
 import { useState } from 'react'
 import FavoriteButton from './favorite-button'
+import MessageComponent from './message'
 
 type MessageProps = {
   game: Game
@@ -18,6 +19,7 @@ type MessageProps = {
   message: Message
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
+  preview?: boolean
 }
 
 export default function TalkMessage({
@@ -25,19 +27,24 @@ export default function TalkMessage({
   message,
   myself,
   openProfileModal,
-  openFavoritesModal
+  openFavoritesModal,
+  preview = false
 }: MessageProps) {
   const [showReplies, setShowReplies] = useState<boolean>(false)
   const [replies, setReplies] = useState<Message[]>([])
+
+  const handleProfileClick = (e: any) => {
+    e.preventDefault()
+    if (preview) return
+    openProfileModal(message.sender!.participantId)
+  }
 
   return (
     <div>
       <div className='w-full border-t border-gray-300 p-4'>
         {message.sender && (
           <div className='flex pb-1'>
-            <button
-              onClick={() => openProfileModal(message.sender!.participantId)}
-            >
+            <button onClick={handleProfileClick}>
               <p className='text-xs hover:text-blue-500'>
                 {message.sender.name}
               </p>
@@ -56,35 +63,37 @@ export default function TalkMessage({
                 width={message.sender.icon.width}
                 height={message.sender.icon.height}
                 alt='キャラアイコン'
-                onClick={() => openProfileModal(message.sender!.participantId)}
+                onClick={handleProfileClick}
               />
             </div>
           )}
-          <div className='ml-2 flex-1 text-sm'>
-            <div className='min-h-[60px] w-full whitespace-pre-wrap break-words rounded border border-gray-300 p-2 text-gray-700'>
-              {message.content.text}
-            </div>
-            <div className='flex pt-1'>
-              <div className='flex-1'>
-                <ReplyButton
-                  game={game}
-                  message={message}
-                  showReplies={showReplies}
-                  setShowReplies={setShowReplies}
-                  replies={replies}
-                  setReplies={setReplies}
-                />
+          {!preview && (
+            <div className='ml-2 flex-1 text-sm'>
+              <div className='min-h-[60px] w-full whitespace-pre-wrap break-words rounded border border-gray-300 p-2 text-gray-700'>
+                {message.content.text}
               </div>
-              <div className='flex flex-1'>
-                <FavoriteButton
-                  game={game}
-                  message={message}
-                  myself={myself}
-                  openFavoritesModal={openFavoritesModal}
-                />
+              <div className='flex pt-1'>
+                <div className='flex-1'>
+                  <ReplyButton
+                    game={game}
+                    message={message}
+                    showReplies={showReplies}
+                    setShowReplies={setShowReplies}
+                    replies={replies}
+                    setReplies={setReplies}
+                  />
+                </div>
+                <div className='flex flex-1'>
+                  <FavoriteButton
+                    game={game}
+                    message={message}
+                    myself={myself}
+                    openFavoritesModal={openFavoritesModal}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       {showReplies && (

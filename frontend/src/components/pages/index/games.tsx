@@ -52,26 +52,22 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
 
   return (
     <Link href={`/games/${base64ToId(game.id)}`} className='relative'>
-      <span
-        className='absolute inset-0 block h-full w-full rounded-lg'
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
-      ></span>
-      <button
-        className='h-80 w-full rounded-lg border border-gray-300 bg-cover bg-no-repeat p-4'
-        style={{
-          backgroundImage: `url(${gameImage})`
-        }}
-      ></button>
-      <div
-        className={`absolute inset-0 h-full w-full rounded-lg text-gray-200`}
-      >
-        <div className='border-b border-gray-300 px-4 py-2'>
-          <p className='text-left'>{game.name}</p>
-        </div>
-        <div className='px-4 py-2 text-left text-xs leading-6'>
-          {descriptions.map((d, idx) => (
-            <p key={idx}>{d}</p>
-          ))}
+      <div className='flex flex-col rounded-lg border border-gray-300 hover:border-blue-500'>
+        <div
+          className='h-60 w-full rounded-t-lg bg-cover bg-no-repeat p-4'
+          style={{
+            backgroundImage: `url(${gameImage})`
+          }}
+        ></div>
+        <div className='flex-1'>
+          <div className='border-b border-gray-300 px-4 py-2'>
+            <p className='text-left'>{game.name}</p>
+          </div>
+          <div className='px-4 py-2 text-left text-xs leading-6'>
+            {descriptions.map((d, idx) => (
+              <p key={idx}>{d}</p>
+            ))}
+          </div>
         </div>
       </div>
     </Link>

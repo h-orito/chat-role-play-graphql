@@ -163,7 +163,9 @@ func (p *playerBatcher) batchLoadPlayer(ctx context.Context, keys dataloader.Key
 	if err != nil {
 		return nil
 	}
-	players, err := p.playerUsecase.FindPlayers(intids)
+	players, err := p.playerUsecase.FindPlayers(model.PlayersQuery{
+		IDs: &intids,
+	})
 	if err != nil {
 		return nil
 	}

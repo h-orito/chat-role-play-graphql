@@ -1,0 +1,5 @@
+mutation DeleteGameMaster($input: DeleteGameMaster!) {
+  deleteGameMaster(input: $input) {
+    ok
+  }
+}

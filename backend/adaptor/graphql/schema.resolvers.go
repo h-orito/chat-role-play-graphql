@@ -325,6 +325,11 @@ func (r *queryResolver) GameDiary(ctx context.Context, diaryID string) (*gqlmode
 	return r.gameDiary(ctx, diaryID)
 }
 
+// Players is the resolver for the players field.
+func (r *queryResolver) Players(ctx context.Context, query gqlmodel.PlayersQuery) ([]*gqlmodel.Player, error) {
+	return r.players(ctx, query)
+}
+
 // Player is the resolver for the player field.
 func (r *queryResolver) Player(ctx context.Context, id string) (*gqlmodel.Player, error) {
 	return r.player(ctx, id)

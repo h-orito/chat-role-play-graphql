@@ -16,6 +16,7 @@ import GameEdit, {
   GameFormInput
 } from '@/components/pages/create-game/game-edit'
 import PageHeader from '@/components/pages/page-header'
+import Head from 'next/head'
 
 export default function CreateGame() {
   dayjs.extend(utc)
@@ -108,6 +109,9 @@ export default function CreateGame() {
 
   return (
     <main className='w-full lg:flex lg:justify-center'>
+      <Head>
+        <title>ロールをプレイ！ | ゲーム作成</title>
+      </Head>
       <article className='min-h-screen w-full text-center lg:w-[960px] lg:justify-center lg:border-x lg:border-gray-300'>
         <PageHeader href='/' header='ゲーム作成' />
         <GameEdit

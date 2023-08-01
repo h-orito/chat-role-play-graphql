@@ -23,6 +23,7 @@ type MessageProps = {
   directMessage: DirectMessage
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
+  preview?: boolean
 }
 
 export default function DirectMessageComponent({
@@ -30,7 +31,8 @@ export default function DirectMessageComponent({
   directMessage,
   myself,
   openProfileModal,
-  openFavoritesModal
+  openFavoritesModal,
+  preview = false
 }: MessageProps) {
   const canFav: boolean =
     myself != null && myself.id !== directMessage.sender?.participantId
@@ -99,16 +101,18 @@ export default function DirectMessageComponent({
     }
   }, [isFav, favorite, unfavorite])
 
+  const handleProfileClick = (e: any) => {
+    e.preventDefault()
+    if (preview) return
+    openProfileModal(directMessage.sender!.participantId)
+  }
+
   return (
     <div>
       <div className='w-full border-t border-gray-300 p-4'>
         {directMessage.sender && (
           <div className='flex pb-1'>
-            <button
-              onClick={() =>
-                openProfileModal(directMessage.sender!.participantId)
-              }
-            >
+            <button onClick={handleProfileClick}>
               <p className='text-xs hover:text-blue-500'>
                 {directMessage.sender.name}
               </p>
@@ -127,32 +131,36 @@ export default function DirectMessageComponent({
                 width={directMessage.sender.icon.width}
                 height={directMessage.sender.icon.height}
                 alt='キャラアイコン'
-                onClick={() =>
-                  openProfileModal(directMessage.sender!.participantId)
-                }
+                onClick={handleProfileClick}
               />
             </div>
           )}
-          <div className='ml-2 flex-1 text-sm'>
-            <div className='min-h-[60px] w-full whitespace-pre-wrap break-words rounded border border-gray-300 p-2 text-gray-700'>
-              {directMessage.content.text}
-            </div>
-            <div className='flex pt-1'>
-              <div className='flex flex-1'>
-                <button onClick={() => handleFav()} disabled={!canFav}>
-                  <StarIcon className={`y-6 h-6 text-gray-500 ${starClass}`} />
-                </button>
-                {favCount > 0 && (
-                  <button
-                    className='pr-2 hover:font-bold'
-                    onClick={() => openFavoritesModal(directMessage.id)}
-                  >
-                    <p className='ml-1 self-center text-gray-500'>{favCount}</p>
+          {!preview && (
+            <div className='ml-2 flex-1 text-sm'>
+              <div className='min-h-[60px] w-full whitespace-pre-wrap break-words rounded border border-gray-300 p-2 text-gray-700'>
+                {directMessage.content.text}
+              </div>
+              <div className='flex pt-1'>
+                <div className='flex flex-1'>
+                  <button onClick={() => handleFav()} disabled={!canFav}>
+                    <StarIcon
+                      className={`y-6 h-6 text-gray-500 ${starClass}`}
+                    />
                   </button>
-                )}
+                  {favCount > 0 && (
+                    <button
+                      className='pr-2 hover:font-bold'
+                      onClick={() => openFavoritesModal(directMessage.id)}
+                    >
+                      <p className='ml-1 self-center text-gray-500'>
+                        {favCount}
+                      </p>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

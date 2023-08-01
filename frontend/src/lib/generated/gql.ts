@@ -14,12 +14,14 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "mutation ChangePeriod($input: ChangePeriod!) {\n  changePeriodIfNeeded(input: $input) {\n    ok\n  }\n}": types.ChangePeriodDocument,
+    "mutation DeleteGameMaster($input: DeleteGameMaster!) {\n  deleteGameMaster(input: $input) {\n    ok\n  }\n}": types.DeleteGameMasterDocument,
     "mutation DeleteParticipantIcon($input: DeleteGameParticipantIcon!) {\n  deleteGameParticipantIcon(input: $input) {\n    ok\n  }\n}": types.DeleteParticipantIconDocument,
     "mutation FavoriteDirect($input: NewDirectMessageFavorite!) {\n  registerDirectMessageFavorite(input: $input) {\n    ok\n  }\n}": types.FavoriteDirectDocument,
     "mutation UnfavoriteDirect($input: DeleteDirectMessageFavorite!) {\n  deleteDirectMessageFavorite(input: $input) {\n    ok\n  }\n}": types.UnfavoriteDirectDocument,
     "mutation Follow($input: NewGameParticipantFollow!) {\n  registerGameParticipantFollow(input: $input) {\n    ok\n  }\n}": types.FollowDocument,
     "mutation Favorite($input: NewMessageFavorite!) {\n  registerMessageFavorite(input: $input) {\n    ok\n  }\n}": types.FavoriteDocument,
     "mutation Unfavorite($input: DeleteMessageFavorite!) {\n  deleteMessageFavorite(input: $input) {\n    ok\n  }\n}": types.UnfavoriteDocument,
+    "mutation RegisterGameMaster($input: NewGameMaster!) {\n  registerGameMaster(input: $input) {\n    gameMaster {\n      id\n      player {\n        id\n        name\n      }\n    }\n  }\n}": types.RegisterGameMasterDocument,
     "mutation RegisterParticipantGroup($input: NewGameParticipantGroup!) {\n  registerGameParticipantGroup(input: $input) {\n    gameParticipantGroup {\n      id\n      name\n      participants {\n        id\n        name\n      }\n    }\n  }\n}": types.RegisterParticipantGroupDocument,
     "mutation RegisterGameParticipant($input: NewGameParticipant!) {\n  registerGameParticipant(input: $input) {\n    gameParticipant {\n      id\n    }\n  }\n}": types.RegisterGameParticipantDocument,
     "mutation RegisterGame($input: NewGame!) {\n  registerGame(input: $input) {\n    game {\n      id\n    }\n  }\n}": types.RegisterGameDocument,
@@ -49,6 +51,7 @@ const documents = {
     "query MyGameParticipant($gameId: ID!) {\n  myGameParticipant(gameId: $gameId) {\n    id\n    name\n    entryNumber\n    player {\n      id\n    }\n    profileIcon {\n      id\n      url\n    }\n    followParticipantIds\n    followerParticipantIds\n  }\n}": types.MyGameParticipantDocument,
     "query MyPlayer {\n  myPlayer {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}": types.MyPlayerDocument,
     "query Player($id: ID!) {\n  player(id: $id) {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}": types.PlayerDocument,
+    "query QPlayers($query: PlayersQuery!) {\n  players(query: $query) {\n    id\n    name\n  }\n}": types.QPlayersDocument,
 };
 
 /**
@@ -69,6 +72,10 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "mutation ChangePeriod($input: ChangePeriod!) {\n  changePeriodIfNeeded(input: $input) {\n    ok\n  }\n}"): (typeof documents)["mutation ChangePeriod($input: ChangePeriod!) {\n  changePeriodIfNeeded(input: $input) {\n    ok\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation DeleteGameMaster($input: DeleteGameMaster!) {\n  deleteGameMaster(input: $input) {\n    ok\n  }\n}"): (typeof documents)["mutation DeleteGameMaster($input: DeleteGameMaster!) {\n  deleteGameMaster(input: $input) {\n    ok\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -93,6 +100,10 @@ export function graphql(source: "mutation Favorite($input: NewMessageFavorite!) 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "mutation Unfavorite($input: DeleteMessageFavorite!) {\n  deleteMessageFavorite(input: $input) {\n    ok\n  }\n}"): (typeof documents)["mutation Unfavorite($input: DeleteMessageFavorite!) {\n  deleteMessageFavorite(input: $input) {\n    ok\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation RegisterGameMaster($input: NewGameMaster!) {\n  registerGameMaster(input: $input) {\n    gameMaster {\n      id\n      player {\n        id\n        name\n      }\n    }\n  }\n}"): (typeof documents)["mutation RegisterGameMaster($input: NewGameMaster!) {\n  registerGameMaster(input: $input) {\n    gameMaster {\n      id\n      player {\n        id\n        name\n      }\n    }\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -209,6 +220,10 @@ export function graphql(source: "query MyPlayer {\n  myPlayer {\n    id\n    nam
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "query Player($id: ID!) {\n  player(id: $id) {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}"): (typeof documents)["query Player($id: ID!) {\n  player(id: $id) {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query QPlayers($query: PlayersQuery!) {\n  players(query: $query) {\n    id\n    name\n  }\n}"): (typeof documents)["query QPlayers($query: PlayersQuery!) {\n  players(query: $query) {\n    id\n    name\n  }\n}"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
