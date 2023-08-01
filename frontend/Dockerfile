@@ -7,6 +7,8 @@ COPY src src
 COPY tsconfig.json tsconfig.json
 COPY package*.json ./
 COPY next.config.js next.config.js
+COPY tailwind.config.js tailwind.config.js
+COPY postcss.config.js postcss.config.js
 COPY public public
 
 ARG AUTH0_AUDIENCE
