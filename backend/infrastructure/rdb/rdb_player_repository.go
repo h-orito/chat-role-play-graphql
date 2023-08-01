@@ -20,8 +20,8 @@ func NewPlayerRepository(db *DB) model.PlayerRepository {
 	}
 }
 
-func (repo *PlayerRepository) FindPlayers(IDs []uint32) ([]model.Player, error) {
-	return repo.findPlayers(repo.db.Connection, IDs)
+func (repo *PlayerRepository) FindPlayers(query model.PlayersQuery) ([]model.Player, error) {
+	return repo.findPlayers(repo.db.Connection, query)
 }
 
 func (repo *PlayerRepository) Find(ID uint32) (_ *model.Player, err error) {
@@ -68,10 +68,23 @@ func (repo *PlayerRepository) FindProfile(ID uint32) (profile *model.PlayerProfi
 	return repo.findProfile(repo.db.Connection, ID)
 }
 
-func (repo *PlayerRepository) SaveProfile(ctx context.Context, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error) {
+func (repo *PlayerRepository) SaveProfile(ctx context.Context, name string, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
 		return nil, fmt.Errorf("failed to get tx from context")
+	}
+
+	rdbPlayer, err := repo.findRdbPlayer(tx, profile.PlayerID)
+	if err != nil {
+		return nil, err
+	}
+	if rdbPlayer == nil {
+		return nil, errors.New("player not found")
+	}
+	rdbPlayer.PlayerName = name
+	result := tx.Save(&rdbPlayer)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to save: %s \n", result.Error)
 	}
 
 	rdbPlayerProfile, err := repo.findRdbProfile(tx, profile.PlayerID)
@@ -81,9 +94,9 @@ func (repo *PlayerRepository) SaveProfile(ctx context.Context, profile *model.Pl
 	if rdbPlayerProfile == nil {
 		return nil, nil
 	}
-	rdbPlayerProfile.IconUrl = profile.IconURL
+	rdbPlayerProfile.ProfileImageUrl = profile.ProfileImageURL
 	rdbPlayerProfile.Introduction = profile.Introduction
-	result := tx.Save(&rdbPlayerProfile)
+	result = tx.Save(&rdbPlayerProfile)
 	if result.Error != nil {
 		return nil, fmt.Errorf("failed to save: %s \n", result.Error)
 	}
@@ -153,8 +166,8 @@ func (*PlayerRepository) DeleteSnsAccount(ctx context.Context, ID uint32) error 
 
 // ----------------------------------------------------------------------------
 
-func (repo *PlayerRepository) findPlayers(db *gorm.DB, IDs []uint32) ([]model.Player, error) {
-	rdbPlayers, err := repo.findRdbPlayers(db, IDs)
+func (repo *PlayerRepository) findPlayers(db *gorm.DB, query model.PlayersQuery) ([]model.Player, error) {
+	rdbPlayers, err := repo.findRdbPlayers(db, query)
 	if err != nil {
 		return nil, err
 	}
@@ -171,9 +184,21 @@ func (repo *PlayerRepository) findPlayer(db *gorm.DB, ID uint32) (_ *model.Playe
 	return rdbPlayer.ToModel(), nil
 }
 
-func (repo *PlayerRepository) findRdbPlayers(db *gorm.DB, IDs []uint32) ([]Player, error) {
+func (repo *PlayerRepository) findRdbPlayers(db *gorm.DB, query model.PlayersQuery) ([]Player, error) {
 	var rdbPlayers []Player
-	result := db.Model(&Player{}).Where("id IN (?)", IDs).Find(&rdbPlayers)
+	result := db.Model(&Player{})
+	if query.IDs != nil {
+		result = result.Where("id IN (?)", *query.IDs)
+	}
+	if query.Name != nil {
+		result = result.Where("player_name LIKE ?", fmt.Sprintf("%%%s%%", *query.Name))
+	}
+	if query.Paging != nil {
+		result = result.Scopes(Paginate(query.Paging))
+	} else {
+		result = result.Scopes(Paginate(nil))
+	}
+	result = result.Find(&rdbPlayers)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}

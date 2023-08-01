@@ -24,6 +24,10 @@ func (repo *MessageRepository) FindMessages(gameID uint32, query model.MessagesQ
 	return findMessages(repo.db.Connection, gameID, query)
 }
 
+func (repo *MessageRepository) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error) {
+	return selectMaxMessageSendUnixTimeMilli(repo.db.Connection, gameID, query)
+}
+
 func (repo *MessageRepository) FindMessage(gameID uint32, ID uint64) (*model.Message, error) {
 	return findMessage(repo.db.Connection, gameID, ID)
 }
@@ -73,16 +77,28 @@ func (repo *MessageRepository) FindGameParticipantGroups(query model.GamePartici
 	return findGameParticipantGroups(repo.db.Connection, query)
 }
 
-func (repo *MessageRepository) RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) error {
+func (repo *MessageRepository) RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
-		return fmt.Errorf("failed to get tx from context")
+		return nil, fmt.Errorf("failed to get tx from context")
 	}
 	return registerGameParticipantGroup(tx, gameID, group)
 }
 
+func (repo *MessageRepository) UpdateGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) error {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return fmt.Errorf("failed to get tx from context")
+	}
+	return updateGameParticipantGroup(tx, gameID, group)
+}
+
 func (repo *MessageRepository) FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
 	return findDirectMessages(repo.db.Connection, gameID, query)
+}
+
+func (repo *MessageRepository) FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
+	return selectMaxDirectMessageSendUnixTimeMilli(repo.db.Connection, gameID, query)
 }
 
 func (repo *MessageRepository) FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error) {
@@ -125,16 +141,33 @@ func findMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) (model.
 	if err != nil {
 		return model.Messages{}, err
 	}
+	favs, err := findRdbMessageFavoritesByMessageIDs(db, gameID, array.Map(rdb, func(m Message) uint64 {
+		return m.ID
+	}))
+	if err != nil {
+		return model.Messages{}, err
+	}
 	list := array.Map(rdb, func(m Message) model.Message {
-		return *m.ToModel()
+		pIDs := array.Map(array.Filter(favs, func(fav MessageFavorite) bool {
+			return fav.MessageID == m.ID
+		}), func(fav MessageFavorite) uint32 {
+			return fav.GameParticipantID
+		})
+
+		return *m.ToModel(pIDs)
 	})
+	latestUnixTimeMilli, err := selectMaxMessageSendUnixTimeMilli(db, gameID, query)
+	if err != nil {
+		return model.Messages{}, err
+	}
 	ms := model.Messages{
-		List:              list,
-		AllPageCount:      1,
-		HasPrePage:        false,
-		HasNextPage:       false,
-		CurrentPageNumber: nil,
-		IsDesc:            false,
+		List:                list,
+		AllPageCount:        1,
+		HasPrePage:          false,
+		HasNextPage:         false,
+		CurrentPageNumber:   nil,
+		IsDesc:              false,
+		LatestUnixTimeMilli: latestUnixTimeMilli,
 	}
 	if query.Paging != nil {
 		allPageCount := uint32(math.Ceil(float64(allCount) / float64(query.Paging.PageSize)))
@@ -149,39 +182,19 @@ func findMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) (model.
 }
 
 // TODO: 独り言のことは後で考える
-func findRdbMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) ([]Message, int64, error) {
+func findRdbMessages(
+	db *gorm.DB,
+	gameID uint32,
+	query model.MessagesQuery,
+) (
+	list []Message,
+	allCount int64,
+	err error,
+) {
 	var rdb []Message
 	result := db.Model(&Message{}).Where("game_id = ?", gameID)
-	if query.IDs != nil {
-		result = result.Where("id IN (?)", *query.IDs)
-	}
-	if query.GamePeriodID != nil {
-		result = result.Where("game_period_id = ?", *query.GamePeriodID)
-	}
-	if query.Types != nil {
-		typeCodes := array.Map(*query.Types, func(t model.MessageType) string {
-			return t.String()
-		})
-		result = result.Where("message_type_code IN (?)", typeCodes)
-	}
-	if query.SenderIDs != nil {
-		result = result.Where("sender_game_participant_id IN (?)", *query.SenderIDs)
-	}
-	if query.ReplyToMessageID != nil {
-		result = result.Where("reply_to_message_id = ?", *query.ReplyToMessageID)
-	}
-	if query.Keywords != nil {
-		result = result.Scopes(Like("message_content", *query.Keywords))
-	}
-	if query.SinceAt != nil {
-		result = result.Where("send_at >= ?", *query.SinceAt)
-	}
-	if query.UntilAt != nil {
-		result = result.Where("send_at <= ?", *query.UntilAt)
-	}
-	if query.OffsetUnixtimeMilli != nil {
-		result = result.Where("send_unixtime_milli > ?", *query.OffsetUnixtimeMilli)
-	}
+	// paging以外のwhere句をセット
+	setMessageDbQuery(result, query)
 
 	var count int64
 	if query.Paging != nil {
@@ -207,6 +220,58 @@ func findRdbMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) ([]M
 	return rdb, count, nil
 }
 
+// paging以外のwhere句を追加
+func setMessageDbQuery(db *gorm.DB, query model.MessagesQuery) {
+	if query.IDs != nil {
+		db = db.Where("id IN (?)", *query.IDs)
+	}
+	if query.GamePeriodID != nil {
+		db = db.Where("game_period_id = ?", *query.GamePeriodID)
+	}
+	if query.Types != nil {
+		typeCodes := array.Map(*query.Types, func(t model.MessageType) string {
+			return t.String()
+		})
+		db = db.Where("message_type_code IN (?)", typeCodes)
+	}
+	if query.SenderIDs != nil {
+		db = db.Where("sender_game_participant_id IN (?)", *query.SenderIDs)
+	}
+	if query.ReplyToMessageID != nil {
+		db = db.Where("reply_to_message_id = ?", *query.ReplyToMessageID)
+	}
+	if query.Keywords != nil {
+		db = db.Scopes(Like("message_content", *query.Keywords))
+	}
+	if query.SinceAt != nil {
+		db = db.Where("send_at >= ?", *query.SinceAt)
+	}
+	if query.UntilAt != nil {
+		db = db.Where("send_at <= ?", *query.UntilAt)
+	}
+	if query.OffsetUnixtimeMilli != nil {
+		db = db.Where("send_unixtime_milli > ?", *query.OffsetUnixtimeMilli)
+	}
+}
+
+func selectMaxMessageSendUnixTimeMilli(db *gorm.DB, gameID uint32, query model.MessagesQuery) (uint64, error) {
+	var max *float64
+	result := db.Table("messages").Select("MAX(send_unixtime_milli)").Where("game_id = ?", gameID)
+	setMessageDbQuery(result, query)
+	result = result.Scan(&max)
+	if result.Error != nil {
+		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
+	}
+	if max == nil {
+		if query.OffsetUnixtimeMilli != nil {
+			return *query.OffsetUnixtimeMilli, nil
+		} else {
+			return 0, nil
+		}
+	}
+	return uint64(*max), nil
+}
+
 func findMessage(db *gorm.DB, gameID uint32, ID uint64) (*model.Message, error) {
 	rdb, err := findRdbMessage(db, gameID, ID)
 	if err != nil {
@@ -215,7 +280,14 @@ func findMessage(db *gorm.DB, gameID uint32, ID uint64) (*model.Message, error) 
 	if rdb == nil {
 		return nil, nil
 	}
-	return rdb.ToModel(), nil
+	favs, err := findRdbMessageFavorites(db, gameID, ID)
+	if err != nil {
+		return nil, err
+	}
+	favPIDs := array.Map(favs, func(fav MessageFavorite) uint32 {
+		return fav.GameParticipantID
+	})
+	return rdb.ToModel(favPIDs), nil
 }
 
 func findRdbMessage(db *gorm.DB, gameID uint32, ID uint64) (*Message, error) {
@@ -259,8 +331,8 @@ func registerMessage(tx *gorm.DB, gameID uint32, message model.Message) error {
 	}
 	if message.Sender != nil {
 		rdb.SenderGameParticipantID = &message.Sender.GameParticipantID
-		rdb.SenderCharaImageID = &message.Sender.CharaImageID
-		rdb.SenderCharaName = &message.Sender.CharaName
+		rdb.SenderIconID = &message.Sender.SenderIconID
+		rdb.SenderName = &message.Sender.SenderName
 	}
 	if message.ReplyTo != nil {
 		rdb.ReplyToMessageID = &message.ReplyTo.MessageID
@@ -294,7 +366,7 @@ func registerMessage(tx *gorm.DB, gameID uint32, message model.Message) error {
 }
 
 func selectMaxMessageNumber(db *gorm.DB, gameID uint32, message model.Message) (uint32, error) {
-	var max float64
+	var max *float64
 	result := db.Table("messages").Select("MAX(message_number)").
 		Where("game_id = ?", gameID).
 		Where("message_type_code = ?", message.Type.String()).
@@ -302,7 +374,10 @@ func selectMaxMessageNumber(db *gorm.DB, gameID uint32, message model.Message) (
 	if result.Error != nil {
 		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
 	}
-	return uint32(max), nil
+	if max == nil {
+		return 0, nil
+	}
+	return uint32(*max), nil
 }
 
 func updateReplyCount(tx *gorm.DB, messageID uint64) error {
@@ -316,6 +391,18 @@ func updateReplyCount(tx *gorm.DB, messageID uint64) error {
 		return fmt.Errorf("failed to update: %s \n", result.Error)
 	}
 	return nil
+}
+
+func findRdbMessageFavoritesByMessageIDs(db *gorm.DB, gameID uint32, messageIDs []uint64) ([]MessageFavorite, error) {
+	var rdb []MessageFavorite
+	result := db.Model(&MessageFavorite{}).Where("game_id = ?", gameID).Where("message_id in (?)", messageIDs).Find(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	return rdb, nil
 }
 
 func findRdbMessageFavorites(db *gorm.DB, gameID uint32, messageID uint64) ([]MessageFavorite, error) {
@@ -390,19 +477,51 @@ func findGameParticipantGroups(db *gorm.DB, query model.GameParticipantGroupsQue
 	if err != nil {
 		return nil, err
 	}
+	latests, err := selectGameParticipantGroupLatests(db, ids)
 	return array.Map(rdbs, func(rdb GameParticipantGroup) model.GameParticipantGroup {
 		m := array.Map(array.Filter(members, func(m GameParticipantGroupMember) bool {
 			return m.GameParticipantGroupID == rdb.ID
 		}), func(m GameParticipantGroupMember) uint32 {
 			return m.GameParticipantID
 		})
-		return *rdb.ToModel(m)
+		latest := array.Find(latests, func(latest GameParticipantGroupLatest) bool {
+			return latest.GameParticipantGroupID == rdb.ID
+		})
+		if latest == nil {
+			return *rdb.ToModel(m, 0)
+		} else {
+			return *rdb.ToModel(m, latest.LatestUnixTimeMilli)
+		}
 	}), nil
+}
+
+type GameParticipantGroupLatest struct {
+	GameParticipantGroupID uint32
+	LatestUnixTimeMilli    uint64
+}
+
+func selectGameParticipantGroupLatests(db *gorm.DB, ids []uint32) ([]GameParticipantGroupLatest, error) {
+	var rdb []GameParticipantGroupLatest
+	result := db.Table("direct_messages").
+		Select("game_participant_group_id, max(send_unixtime_milli) as latest_unix_time_milli").
+		Where("game_participant_group_id in (?)", ids).
+		Group("game_participant_group_id").
+		Find(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	return rdb, nil
 }
 
 func findRdbGameParticipantGroups(db *gorm.DB, query model.GameParticipantGroupsQuery) ([]GameParticipantGroup, error) {
 	var rdb []GameParticipantGroup
 	result := db.Model(&GameParticipantGroup{}).Where("game_id = ?", query.GameID)
+	if query.IDs != nil {
+		result = result.Where("id in (?)", *query.IDs)
+	}
 	if query.MemberGroupParticipantID != nil {
 		result = result.
 			Joins("inner join game_participant_group_members on game_participant_group_members.game_participant_group_id = game_participant_groups.id").
@@ -442,14 +561,38 @@ type GameParticipantGroupMembersQuery struct {
 	IDs *[]uint32
 }
 
-func registerGameParticipantGroup(tx *gorm.DB, gameID uint32, group model.GameParticipantGroup) error {
+func registerGameParticipantGroup(tx *gorm.DB, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error) {
 	rdb := GameParticipantGroup{
 		GameID:                   gameID,
 		GameParticipantGroupName: group.Name,
 	}
 	result := tx.Create(&rdb)
 	if result.Error != nil {
-		return fmt.Errorf("failed to create: %s \n", result.Error)
+		return nil, fmt.Errorf("failed to create: %s \n", result.Error)
+	}
+	var err error
+	array.ForEach(group.MemberIDs, func(id uint32) {
+		rdbMember := GameParticipantGroupMember{
+			GameParticipantGroupID: rdb.ID,
+			GameParticipantID:      id,
+		}
+		memberResult := tx.Create(&rdbMember)
+		if memberResult.Error != nil {
+			err = fmt.Errorf("failed to create member: %s \n", memberResult.Error)
+		}
+	})
+	if err != nil {
+		return nil, err
+	}
+	return rdb.ToModel(group.MemberIDs, 0), nil
+}
+
+func updateGameParticipantGroup(tx *gorm.DB, gameID uint32, group model.GameParticipantGroup) error {
+	if err := tx.Model(&GameParticipantGroup{}).
+		Where("id = ? and game_id = ?", group.ID, gameID).
+		Update("game_participant_group_name", group.Name).
+		Error; err != nil {
+		return err
 	}
 	return nil
 }
@@ -459,16 +602,32 @@ func findDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessagesQu
 	if err != nil {
 		return model.DirectMessages{}, err
 	}
+	favs, err := findRdbDirectMessageFavoritesByMessageIDs(db, gameID, array.Map(rdb, func(m DirectMessage) uint64 {
+		return m.ID
+	}))
+	if err != nil {
+		return model.DirectMessages{}, err
+	}
 	list := array.Map(rdb, func(m DirectMessage) model.DirectMessage {
-		return *m.ToModel()
+		favPIDs := array.Map(array.Filter(favs, func(f DirectMessageFavorite) bool {
+			return f.DirectMessageID == m.ID
+		}), func(f DirectMessageFavorite) uint32 {
+			return f.GameParticipantID
+		})
+		return *m.ToModel(favPIDs)
 	})
+	latest, err := selectMaxDirectMessageSendUnixTimeMilli(db, gameID, query)
+	if err != nil {
+		return model.DirectMessages{}, err
+	}
 	ms := model.DirectMessages{
-		List:              list,
-		AllPageCount:      1,
-		HasPrePage:        false,
-		HasNextPage:       false,
-		CurrentPageNumber: nil,
-		IsDesc:            false,
+		List:                list,
+		AllPageCount:        1,
+		HasPrePage:          false,
+		HasNextPage:         false,
+		CurrentPageNumber:   nil,
+		IsDesc:              false,
+		LatestUnixTimeMilli: latest,
 	}
 	if query.Paging != nil {
 		allPageCount := uint32(math.Ceil(float64(allCount) / float64(query.Paging.PageSize)))
@@ -485,33 +644,8 @@ func findDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessagesQu
 func findRdbDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessagesQuery) ([]DirectMessage, int64, error) {
 	var rdb []DirectMessage
 	result := db.Model(&DirectMessage{}).Where("game_id = ?", gameID)
-	if query.IDs != nil {
-		result = result.Where("id IN (?)", *query.IDs)
-	}
-	if query.GamePeriodID != nil {
-		result = result.Where("game_period_id = ?", *query.GamePeriodID)
-	}
-	if query.Types != nil {
-		typeCodes := array.Map(*query.Types, func(t model.MessageType) string {
-			return t.String()
-		})
-		result = result.Where("message_type_code IN (?)", typeCodes)
-	}
-	if query.SenderIDs != nil {
-		result = result.Where("sender_game_participant_id IN (?)", *query.SenderIDs)
-	}
-	if query.Keywords != nil {
-		result = result.Scopes(Like("message_content", *query.Keywords))
-	}
-	if query.SinceAt != nil {
-		result = result.Where("send_at >= ?", *query.SinceAt)
-	}
-	if query.UntilAt != nil {
-		result = result.Where("send_at <= ?", *query.UntilAt)
-	}
-	if query.OffsetUnixtimeMilli != nil {
-		result = result.Where("send_unixtime_milli > ?", *query.OffsetUnixtimeMilli)
-	}
+	// paging以外のwhere句セット
+	setDirectMessageDbQuery(result, query)
 
 	var count int64
 	if query.Paging != nil {
@@ -536,6 +670,57 @@ func findRdbDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessage
 	return rdb, count, nil
 }
 
+func setDirectMessageDbQuery(db *gorm.DB, query model.DirectMessagesQuery) {
+	if query.IDs != nil {
+		db = db.Where("id IN (?)", *query.IDs)
+	}
+	if query.GameParticipantGroupID != nil {
+		db = db.Where("game_participant_group_id = ?", *query.GameParticipantGroupID)
+	}
+	if query.GamePeriodID != nil {
+		db = db.Where("game_period_id = ?", *query.GamePeriodID)
+	}
+	if query.Types != nil {
+		typeCodes := array.Map(*query.Types, func(t model.MessageType) string {
+			return t.String()
+		})
+		db = db.Where("message_type_code IN (?)", typeCodes)
+	}
+	if query.SenderIDs != nil {
+		db = db.Where("sender_game_participant_id IN (?)", *query.SenderIDs)
+	}
+	if query.Keywords != nil {
+		db = db.Scopes(Like("message_content", *query.Keywords))
+	}
+	if query.SinceAt != nil {
+		db = db.Where("send_at >= ?", *query.SinceAt)
+	}
+	if query.UntilAt != nil {
+		db = db.Where("send_at <= ?", *query.UntilAt)
+	}
+	if query.OffsetUnixtimeMilli != nil {
+		db = db.Where("send_unixtime_milli > ?", *query.OffsetUnixtimeMilli)
+	}
+}
+
+func selectMaxDirectMessageSendUnixTimeMilli(db *gorm.DB, gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
+	var max *float64
+	result := db.Table("direct_messages").Select("MAX(send_unixtime_milli)").Where("game_id = ?", gameID)
+	setDirectMessageDbQuery(result, query)
+	result = result.Scan(&max)
+	if result.Error != nil {
+		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
+	}
+	if max == nil {
+		if query.OffsetUnixtimeMilli != nil {
+			return *query.OffsetUnixtimeMilli, nil
+		} else {
+			return 0, nil
+		}
+	}
+	return uint64(*max), nil
+}
+
 func findDirectMessage(db *gorm.DB, gameID uint32, ID uint64) (*model.DirectMessage, error) {
 	rdb, err := findRdbDirectMessage(db, gameID, ID)
 	if err != nil {
@@ -544,7 +729,14 @@ func findDirectMessage(db *gorm.DB, gameID uint32, ID uint64) (*model.DirectMess
 	if rdb == nil {
 		return nil, nil
 	}
-	return rdb.ToModel(), nil
+	favs, err := findRdbDirectMessageFavorites(db, gameID, ID)
+	if err != nil {
+		return nil, err
+	}
+	pIDs := array.Map(favs, func(f DirectMessageFavorite) uint32 {
+		return f.GameParticipantID
+	})
+	return rdb.ToModel(pIDs), nil
 }
 
 func findRdbDirectMessage(db *gorm.DB, gameID uint32, ID uint64) (*DirectMessage, error) {
@@ -576,6 +768,18 @@ func findDirectMessageFavoriteGameParticipants(db *gorm.DB, gameID uint32, direc
 
 }
 
+func findRdbDirectMessageFavoritesByMessageIDs(db *gorm.DB, gameID uint32, directMessageIDs []uint64) ([]DirectMessageFavorite, error) {
+	var rdb []DirectMessageFavorite
+	result := db.Model(&DirectMessageFavorite{}).Where("game_id = ?", gameID).Where("direct_message_id in (?)", directMessageIDs).Find(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	return rdb, nil
+}
+
 func findRdbDirectMessageFavorites(db *gorm.DB, gameID uint32, directMessageID uint64) ([]DirectMessageFavorite, error) {
 	var rdb []DirectMessageFavorite
 	result := db.Model(&DirectMessageFavorite{}).Where("game_id = ?", gameID).Where("direct_message_id = ?", directMessageID).Find(&rdb)
@@ -590,17 +794,18 @@ func findRdbDirectMessageFavorites(db *gorm.DB, gameID uint32, directMessageID u
 
 func registerDirectMessage(tx *gorm.DB, gameID uint32, message model.DirectMessage) error {
 	rdb := DirectMessage{
-		GameID:            gameID,
-		GamePeriodID:      message.GamePeriodID,
-		MessageTypeCode:   message.Type.String(),
-		MessageContent:    message.Content.Text,
-		IsConvertDisabled: message.Content.IsConvertDisabled,
-		FavoriteCount:     0,
+		GameID:                 gameID,
+		GameParticipantGroupID: message.GameParticipantGroupID,
+		GamePeriodID:           message.GamePeriodID,
+		MessageTypeCode:        message.Type.String(),
+		MessageContent:         message.Content.Text,
+		IsConvertDisabled:      message.Content.IsConvertDisabled,
+		FavoriteCount:          0,
 	}
 	if message.Sender != nil {
 		rdb.SenderGameParticipantID = &message.Sender.GameParticipantID
-		rdb.SenderCharaImageID = &message.Sender.CharaImageID
-		rdb.SenderCharaName = &message.Sender.CharaName
+		rdb.SenderIconID = &message.Sender.SenderIconID
+		rdb.SenderName = &message.Sender.SenderName
 	}
 	now := time.Now()
 	rdb.SendAt = now
@@ -625,7 +830,7 @@ func registerDirectMessage(tx *gorm.DB, gameID uint32, message model.DirectMessa
 }
 
 func selectMaxDirectMessageNumber(db *gorm.DB, gameID uint32, message model.DirectMessage) (uint32, error) {
-	var max float64
+	var max *float64
 	result := db.Table("direct_messages").Select("MAX(message_number)").
 		Where("game_id = ?", gameID).
 		Where("message_type_code = ?", message.Type.String()).
@@ -633,7 +838,10 @@ func selectMaxDirectMessageNumber(db *gorm.DB, gameID uint32, message model.Dire
 	if result.Error != nil {
 		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
 	}
-	return uint32(max), nil
+	if max == nil {
+		return 0, nil
+	}
+	return uint32(*max), nil
 }
 
 func registerDirectMessageFavorite(tx *gorm.DB, gameID uint32, directMessageID uint64, gameParticipantID uint32) error {

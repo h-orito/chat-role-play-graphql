@@ -87,11 +87,11 @@ func TestSaveProfile(t *testing.T) {
 		url := "test icon url"
 		introduction := "test introduction"
 		profile := model.PlayerProfile{
-			PlayerID:     1,
-			IconURL:      &url,
-			Introduction: &introduction,
+			PlayerID:        1,
+			ProfileImageURL: &url,
+			Introduction:    &introduction,
 		}
-		got, err := repo.SaveProfile(ctx, &profile)
+		got, err := repo.SaveProfile(ctx, "name", &profile)
 		if err != nil {
 			t.Errorf("failed to save profile: %s", err)
 		}

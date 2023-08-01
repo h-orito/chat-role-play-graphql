@@ -1,0 +1,5 @@
+mutation Favorite($input: NewMessageFavorite!) {
+  registerMessageFavorite(input: $input) {
+    ok
+  }
+}

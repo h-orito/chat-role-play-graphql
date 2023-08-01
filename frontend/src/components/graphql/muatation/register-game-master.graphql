@@ -1,0 +1,11 @@
+mutation RegisterGameMaster($input: NewGameMaster!) {
+  registerGameMaster(input: $input) {
+    gameMaster {
+      id
+      player {
+        id
+        name
+      }
+    }
+  }
+}

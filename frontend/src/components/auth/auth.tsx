@@ -1,5 +1,7 @@
 import { Auth0Provider } from '@auth0/auth0-react'
 import { useAuth0 } from '@auth0/auth0-react'
+import PrimaryButton from '../button/primary-button'
+import DangerButton from '../button/danger-button'
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   if (typeof window === 'undefined') return <>{children}</>
@@ -19,21 +21,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const LoginButton = () => {
   const { loginWithRedirect } = useAuth0()
-  return <button onClick={() => loginWithRedirect()}>Log In</button>
+  return (
+    <PrimaryButton click={() => loginWithRedirect()}>ログイン</PrimaryButton>
+  )
 }
 
-export const LogoutButton = () => {
+type LogoutButtonProps = {
+  className?: string
+}
+export const LogoutButton = ({ className }: LogoutButtonProps) => {
   const { logout } = useAuth0()
+  const doLogout = (e: any) => {
+    logout({
+      logoutParams: { returnTo: window.location.origin + '/chat-role-play' }
+    })
+  }
 
   return (
-    <button
-      onClick={() =>
-        logout({
-          logoutParams: { returnTo: window.location.origin + '/chat-role-play' }
-        })
-      }
-    >
-      Logout
-    </button>
+    <DangerButton className={`${className}`} click={doLogout}>
+      ログアウト
+    </DangerButton>
   )
 }

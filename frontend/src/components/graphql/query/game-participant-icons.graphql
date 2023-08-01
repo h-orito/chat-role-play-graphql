@@ -1,0 +1,9 @@
+query Icons($participantId: ID!) {
+  gameParticipantIcons(participantId: $participantId) {
+    id
+    url
+    width
+    height
+    displayOrder
+  }
+}

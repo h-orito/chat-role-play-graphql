@@ -13,3 +13,20 @@ export const base64ToId = (str: string): number => {
 export const idToBase64 = (id: number, prefix: string): string => {
   return btoa(`${prefix}:${id}`)
 }
+
+type Enum = {
+  code: string
+  value: string
+}
+
+const gameStatuses = new Map<string, string>([
+  ['Closed', '公開前'],
+  ['Opening', '公開中'],
+  ['Recruiting', '参加者募集中'],
+  ['Progress', '開催中'],
+  ['Finished', '終了'],
+  ['Canceled', '中止']
+])
+
+export const convertToGameStatusName = (code: string): string | null =>
+  gameStatuses.get(code) || null

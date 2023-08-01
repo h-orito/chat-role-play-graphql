@@ -30,6 +30,10 @@ func (repo *GameRepository) FindGame(ID uint32) (_ *model.Game, err error) {
 	return findGame(repo.db.Connection, ID)
 }
 
+func (repo *GameRepository) FindGamePeriods(IDs []uint32) (periods []model.GamePeriod, err error) {
+	return findGamePeriods(repo.db.Connection, IDs)
+}
+
 func (repo *GameRepository) RegisterGame(ctx context.Context, game model.Game) (saved *model.Game, err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
@@ -100,6 +104,14 @@ func (repo *GameRepository) UpdateGameStatus(ctx context.Context, ID uint32, sta
 	return nil
 }
 
+func (repo *GameRepository) RegisterGamePeriod(ctx context.Context, gameID uint32, period model.GamePeriod) (err error) {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return fmt.Errorf("failed to get tx from context")
+	}
+	return registerGamePeriod(tx, gameID, period)
+}
+
 func (repo *GameRepository) UpdateGamePeriod(ctx context.Context, gameID uint32, period model.GamePeriod) (err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
@@ -114,43 +126,16 @@ func (repo *GameRepository) UpdateGamePeriod(ctx context.Context, gameID uint32,
 	return nil
 }
 
-func (repo *GameRepository) UpdateGameSettings(ctx context.Context, ID uint32, settings model.GameSettings) (err error) {
+func (repo *GameRepository) UpdateGameSettings(ctx context.Context, ID uint32, gameName string, settings model.GameSettings) (err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get tx from context")
+	}
+	if err := tx.Model(&Game{}).Where("id = ?", ID).Update("game_name", gameName).Error; err != nil {
+		return err
 	}
 	if err := updateGameSettings(tx, ID, settings); err != nil {
 		return err
-	}
-	return nil
-}
-
-func (repo *GameRepository) UpdatePeriodChange(ctx context.Context, current model.Game, changed model.Game) (err error) {
-	tx, ok := GetTx(ctx)
-	if !ok {
-		return fmt.Errorf("failed to get tx from context")
-	}
-	// game_statusが変わっていたら更新
-	if current.Status != changed.Status {
-		if err := updateGameStatus(tx, changed.ID, changed.Status); err != nil {
-			return err
-		}
-	}
-	// 日付が増えていたら追加
-	if len(current.Periods) != len(changed.Periods) {
-		news := array.Filter(changed.Periods, func(p model.GamePeriod) bool {
-			return array.None(current.Periods, func(cp model.GamePeriod) bool {
-				return cp.Count == p.Count
-			})
-		})
-		array.ForEach(news, func(p model.GamePeriod) {
-			if e := registerGamePeriod(tx, changed.ID, p); e != nil {
-				err = e
-			}
-		})
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }
@@ -273,6 +258,12 @@ func findRdbGames(db *gorm.DB, query model.GamesQuery) (games []Game, err error)
 	if query.Name != nil {
 		result = result.Where("game_name like ?", fmt.Sprintf("%%%s%%", *query.Name))
 	}
+	if query.Statuses != nil {
+		statuses := array.Map(*query.Statuses, func(s model.GameStatus) string {
+			return s.String()
+		})
+		result = result.Where("game_status_code in (?)", statuses)
+	}
 	result = result.Find(&rdbGames)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -295,6 +286,16 @@ func findRdbGame(db *gorm.DB, ID uint32) (_ *Game, err error) {
 		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
 	}
 	return &rdbGame, nil
+}
+
+func findGamePeriods(db *gorm.DB, IDs []uint32) (_ []model.GamePeriod, err error) {
+	rdbPeriods, err := findRdbGamePeriods(db, gamePeriodsQuery{IDs: &IDs})
+	if err != nil {
+		return nil, err
+	}
+	return array.Map(rdbPeriods, func(p GamePeriod) model.GamePeriod {
+		return *p.ToModel()
+	}), nil
 }
 
 func registerGame(db *gorm.DB, game model.Game) (_ *Game, err error) {
@@ -372,6 +373,9 @@ func findLatestGamePeriod(db *gorm.DB, gameID uint32) (period *GamePeriod, err e
 func findRdbGamePeriods(db *gorm.DB, query gamePeriodsQuery) (_ []GamePeriod, err error) {
 	var rdbs []GamePeriod
 	result := db.Model(&GamePeriod{})
+	if query.IDs != nil {
+		result = result.Where("id in (?)", *query.IDs)
+	}
 	if query.GameIDs != nil {
 		result = result.Where("game_id in (?)", *query.GameIDs)
 	}
@@ -389,6 +393,7 @@ func findRdbGamePeriods(db *gorm.DB, query gamePeriodsQuery) (_ []GamePeriod, er
 }
 
 type gamePeriodsQuery struct {
+	IDs     *[]uint32
 	GameIDs *[]uint32
 	GameID  *uint32
 }
@@ -469,6 +474,9 @@ func registerGameSettings(db *gorm.DB, ID uint32, settings model.GameSettings) (
 	if err := registerGameSetting(db, ID, GameSettingKeyStartGameAt, timeToString(settings.Time.StartGameAt)); err != nil {
 		return err
 	}
+	if err := registerGameSetting(db, ID, GameSettingKeyFinishGameAt, timeToString(settings.Time.FinishGameAt)); err != nil {
+		return err
+	}
 	if err := registerGameSetting(db, ID, GameSettingKeyCanShorten, boolToString(settings.Rule.CanShorten)); err != nil {
 		return err
 	}
@@ -507,6 +515,9 @@ func updateGameSettings(db *gorm.DB, gameID uint32, settings model.GameSettings)
 		return err
 	}
 	if err := updateGameSetting(db, gameID, GameSettingKeyStartGameAt, timeToString(settings.Time.StartGameAt)); err != nil {
+		return err
+	}
+	if err := updateGameSetting(db, gameID, GameSettingKeyFinishGameAt, timeToString(settings.Time.FinishGameAt)); err != nil {
 		return err
 	}
 	if err := updateGameSetting(db, gameID, GameSettingKeyCanShorten, boolToString(settings.Rule.CanShorten)); err != nil {

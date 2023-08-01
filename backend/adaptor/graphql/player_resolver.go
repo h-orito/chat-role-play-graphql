@@ -11,6 +11,16 @@ import (
 	"github.com/graph-gophers/dataloader"
 )
 
+func (r *gameMasterResolver) player(ctx context.Context, obj *gqlmodel.GameMaster) (*gqlmodel.Player, error) {
+	thunk := r.loaders.PlayerLoader.Load(ctx, dataloader.StringKey(obj.PlayerID))
+	p, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+	player := p.(*model.Player)
+	return MapToPlayer(player, nil), nil
+}
+
 func (r *gameParticipantResolver) player(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.Player, error) {
 	thunk := r.loaders.PlayerLoader.Load(ctx, dataloader.StringKey(obj.PlayerID))
 	p, err := thunk()
@@ -18,7 +28,44 @@ func (r *gameParticipantResolver) player(ctx context.Context, obj *gqlmodel.Game
 		return nil, err
 	}
 	player := p.(*model.Player)
-	return gqlmodel.MapToPlayer(player), nil
+	return MapToPlayer(player, nil), nil
+}
+
+func (r *queryResolver) players(ctx context.Context, query gqlmodel.PlayersQuery) ([]*gqlmodel.Player, error) {
+	var intids *[]uint32
+	var err error
+	if query.Ids != nil {
+		ids := array.Map(query.Ids, func(id string) uint32 {
+			intid, e := idToUint32(id)
+			if e != nil {
+				err = e
+			}
+			return intid
+		})
+		if err != nil {
+			return nil, err
+		}
+		intids = &ids
+	}
+	var paging *model.PagingQuery
+	if query.Paging != nil {
+		paging = &model.PagingQuery{
+			PageSize:   query.Paging.PageSize,
+			PageNumber: query.Paging.PageNumber,
+			Desc:       query.Paging.IsDesc,
+		}
+	}
+	players, err := r.playerUsecase.FindPlayers(model.PlayersQuery{
+		IDs:    intids,
+		Name:   query.Name,
+		Paging: paging,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return array.Map(players, func(p model.Player) *gqlmodel.Player {
+		return MapToPlayer(&p, nil)
+	}), nil
 }
 
 func (r *queryResolver) player(ctx context.Context, id string) (*gqlmodel.Player, error) {
@@ -30,30 +77,27 @@ func (r *queryResolver) player(ctx context.Context, id string) (*gqlmodel.Player
 	if err != nil {
 		return nil, err
 	}
-	return gqlmodel.MapToPlayer(p), nil
+	profile, err := r.playerUsecase.FindProfile(playerID)
+	if err != nil {
+		return nil, err
+	}
+	return MapToPlayer(p, profile), nil
 }
 
-func (r *mutationResolver) registerPlayerProfile(ctx context.Context, input gqlmodel.NewPlayerProfile) (*gqlmodel.RegisterPlayerProfilePayload, error) {
+func (r *queryResolver) myPlayer(ctx context.Context) (*gqlmodel.Player, error) {
 	user := auth.GetUser(ctx)
 	if user == nil {
 		return nil, fmt.Errorf("user not found")
 	}
-	player, err := r.playerUsecase.FindByUserName(user.UserName)
+	p, err := r.playerUsecase.FindByUserName(user.UserName)
 	if err != nil {
 		return nil, err
 	}
-	saved, err := r.playerUsecase.SaveProfile(ctx, &model.PlayerProfile{
-		PlayerID:     player.ID,
-		IconURL:      input.IconURL,
-		Introduction: input.Introduction,
-		SnsAccounts:  []model.PlayerSnsAccount{},
-	})
+	profile, err := r.playerUsecase.FindProfile(p.ID)
 	if err != nil {
 		return nil, err
 	}
-	return &gqlmodel.RegisterPlayerProfilePayload{
-		PlayerProfile: gqlmodel.MapToPlayerProfile(saved),
-	}, nil
+	return MapToPlayer(p, profile), nil
 }
 
 func (r *mutationResolver) updatePlayerProfile(ctx context.Context, input gqlmodel.UpdatePlayerProfile) (*gqlmodel.UpdatePlayerProfilePayload, error) {
@@ -65,11 +109,21 @@ func (r *mutationResolver) updatePlayerProfile(ctx context.Context, input gqlmod
 	if err != nil {
 		return nil, err
 	}
-	if _, err := r.playerUsecase.SaveProfile(ctx, &model.PlayerProfile{
-		PlayerID:     player.ID,
-		IconURL:      input.IconURL,
-		Introduction: input.Introduction,
-		SnsAccounts:  []model.PlayerSnsAccount{},
+	var imageUrl *string
+	if input.ProfileImageURL != nil {
+		imageUrl = input.ProfileImageURL
+	} else if input.ProfileImageFile != nil {
+		url, err := r.imageUsecase.Upload(input.ProfileImageFile.File)
+		if err != nil {
+			return nil, err
+		}
+		imageUrl = url
+	}
+	if _, err := r.playerUsecase.SaveProfile(ctx, input.Name, &model.PlayerProfile{
+		PlayerID:        player.ID,
+		ProfileImageURL: imageUrl,
+		Introduction:    input.Introduction,
+		SnsAccounts:     []model.PlayerSnsAccount{},
 	}); err != nil {
 		return nil, err
 	}
@@ -96,7 +150,7 @@ func (r *mutationResolver) registerPlayerSnsAccount(ctx context.Context, input g
 		return nil, err
 	}
 	return &gqlmodel.RegisterPlayerSnsAccountPayload{
-		PlayerSnsAccount: gqlmodel.MapToPlayerSnsAccount(*saved),
+		PlayerSnsAccount: MapToPlayerSnsAccount(*saved),
 	}, nil
 }
 

@@ -88,20 +88,34 @@ models:
   Uint32:
     model:
       - github.com/99designs/gqlgen/graphql.Uint32
+  Long:
+    model:
+      - github.com/99designs/gqlgen/graphql.Uint64
   GameParticipant:
     fields:
       player:
         resolver: true
-      chara:
+      profileIcon:
+        resolver: true
+      followParticipantIds:
+        resolver: true
+      followerParticipantIds:
         resolver: true
   MessageSender:
     fields:
-      charaImage:
+      icon:
         resolver: true
-  # Game:
-  #   fields:
-  #     participants:
-  #       resolver: true
-  # custom models
-  # GameParticipant:
-  #   model: chat-role-play/gqlmodel.GameParticipant
+  GameMaster:
+    fields:
+      player:
+        resolver: true
+  GameParticipantDiary:
+    fields:
+      participant:
+        resolver: true
+      period:
+        resolver: true
+  GameParticipantGroup:
+    fields:
+      participants:
+        resolver: true

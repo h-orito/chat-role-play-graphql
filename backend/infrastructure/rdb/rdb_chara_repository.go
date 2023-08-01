@@ -80,13 +80,12 @@ func (repo *CharaRepository) RegisterChara(
 	ctx context.Context,
 	chara model.Chara,
 	charachipID *uint32,
-	playerID *uint32,
 ) (saved *model.Chara, err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
 		return nil, fmt.Errorf("failed to get tx from context")
 	}
-	return registerChara(tx, chara, charachipID, playerID)
+	return registerChara(tx, chara, charachipID)
 }
 
 func (*CharaRepository) UpdateChara(ctx context.Context, chara model.Chara) (saved *model.Chara, err error) {
@@ -414,12 +413,10 @@ func registerChara(
 	db *gorm.DB,
 	chara model.Chara,
 	charachipID *uint32,
-	playerID *uint32,
 ) (saved *model.Chara, err error) {
 	rdbChara := Chara{
 		CharaName:   chara.Name,
 		CharachipId: charachipID,
-		PlayerId:    playerID,
 	}
 	result := db.Create(&rdbChara)
 	if result.Error != nil {

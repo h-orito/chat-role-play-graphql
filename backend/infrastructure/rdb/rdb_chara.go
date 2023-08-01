@@ -43,7 +43,6 @@ type Chara struct {
 	ID          uint32
 	CharaName   string
 	CharachipId *uint32
-	PlayerId    *uint32
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

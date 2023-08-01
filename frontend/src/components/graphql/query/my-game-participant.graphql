@@ -1,0 +1,16 @@
+query MyGameParticipant($gameId: ID!) {
+  myGameParticipant(gameId: $gameId) {
+    id
+    name
+    entryNumber
+    player {
+      id
+    }
+    profileIcon {
+      id
+      url
+    }
+    followParticipantIds
+    followerParticipantIds
+  }
+}

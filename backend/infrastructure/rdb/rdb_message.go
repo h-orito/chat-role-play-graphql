@@ -10,8 +10,8 @@ type Message struct {
 	GameID                   uint32
 	GamePeriodID             uint32
 	SenderGameParticipantID  *uint32
-	SenderCharaImageID       *uint32
-	SenderCharaName          *string
+	SenderIconID             *uint32
+	SenderName               *string
 	ReplyToMessageID         *uint64
 	ReplyToGameParticipantID *uint32
 	MessageTypeCode          string
@@ -26,13 +26,13 @@ type Message struct {
 	UpdatedAt                time.Time
 }
 
-func (m Message) ToModel() *model.Message {
+func (m Message) ToModel(favParticipantIDs []uint32) *model.Message {
 	var sender *model.MessageSender
 	if m.SenderGameParticipantID != nil {
 		sender = &model.MessageSender{
 			GameParticipantID: *m.SenderGameParticipantID,
-			CharaImageID:      *m.SenderCharaImageID,
-			CharaName:         *m.SenderCharaName,
+			SenderIconID:      *m.SenderIconID,
+			SenderName:        *m.SenderName,
 		}
 	}
 	var replyTo *model.MessageReplyTo
@@ -58,8 +58,9 @@ func (m Message) ToModel() *model.Message {
 			UnixtimeMilli: m.SendUnixtimeMilli,
 		},
 		Reactions: model.MessageReactions{
-			ReplyCount:    m.ReplyCount,
-			FavoriteCount: m.FavoriteCount,
+			ReplyCount:             m.ReplyCount,
+			FavoriteCount:          m.FavoriteCount,
+			FavoriteParticipantIDs: favParticipantIDs,
 		},
 	}
 }
@@ -92,8 +93,8 @@ type DirectMessage struct {
 	GameParticipantGroupID  uint32
 	GamePeriodID            uint32
 	SenderGameParticipantID *uint32
-	SenderCharaImageID      *uint32
-	SenderCharaName         *string
+	SenderIconID            *uint32
+	SenderName              *string
 	MessageTypeCode         string
 	MessageNumber           uint32
 	MessageContent          string
@@ -105,13 +106,13 @@ type DirectMessage struct {
 	UpdatedAt               time.Time
 }
 
-func (m DirectMessage) ToModel() *model.DirectMessage {
+func (m DirectMessage) ToModel(favParticipantIDs []uint32) *model.DirectMessage {
 	var sender *model.MessageSender
 	if m.SenderGameParticipantID != nil {
 		sender = &model.MessageSender{
 			GameParticipantID: *m.SenderGameParticipantID,
-			CharaImageID:      *m.SenderCharaImageID,
-			CharaName:         *m.SenderCharaName,
+			SenderIconID:      *m.SenderIconID,
+			SenderName:        *m.SenderName,
 		}
 	}
 	return &model.DirectMessage{
@@ -129,7 +130,8 @@ func (m DirectMessage) ToModel() *model.DirectMessage {
 			UnixtimeMilli: m.SendUnixtimeMilli,
 		},
 		Reactions: model.DirectMessageReactions{
-			FavoriteCount: m.FavoriteCount,
+			FavoriteCount:          m.FavoriteCount,
+			FavoriteParticipantIDs: favParticipantIDs,
 		},
 	}
 }
@@ -153,11 +155,13 @@ type GameParticipantGroup struct {
 
 func (g GameParticipantGroup) ToModel(
 	gameParticipantIDs []uint32,
+	latestUnixTimeMilli uint64,
 ) *model.GameParticipantGroup {
 	return &model.GameParticipantGroup{
-		ID:        g.ID,
-		Name:      g.GameParticipantGroupName,
-		MemberIDs: gameParticipantIDs,
+		ID:                  g.ID,
+		Name:                g.GameParticipantGroupName,
+		MemberIDs:           gameParticipantIDs,
+		LatestUnixTimeMilli: latestUnixTimeMilli,
 	}
 }
 

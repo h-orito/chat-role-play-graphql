@@ -1,0 +1,12 @@
+mutation RegisterParticipantGroup($input: NewGameParticipantGroup!) {
+  registerGameParticipantGroup(input: $input) {
+    gameParticipantGroup {
+      id
+      name
+      participants {
+        id
+        name
+      }
+    }
+  }
+}

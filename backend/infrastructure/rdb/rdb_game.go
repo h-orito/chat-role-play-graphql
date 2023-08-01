@@ -73,9 +73,10 @@ type GameParticipant struct {
 	ID                  uint32
 	GameID              uint32
 	PlayerID            uint32
-	CharaID             uint32
 	GameParticipantName string
 	EntryNumber         uint32
+	Memo                *string
+	ProfileIconID       *uint32
 	IsGone              bool
 	LastAccessedAt      time.Time
 	CreatedAt           time.Time
@@ -85,10 +86,11 @@ type GameParticipant struct {
 func (p GameParticipant) ToModel() *model.GameParticipant {
 	return &model.GameParticipant{
 		ID:             p.ID,
+		PlayerID:       p.PlayerID,
 		Name:           p.GameParticipantName,
 		EntryNumber:    p.EntryNumber,
-		PlayerID:       p.PlayerID,
-		CharaID:        p.CharaID,
+		Memo:           p.Memo,
+		ProfileIconID:  p.ProfileIconID,
 		IsGone:         p.IsGone,
 		LastAccessedAt: p.LastAccessedAt,
 	}
@@ -96,9 +98,8 @@ func (p GameParticipant) ToModel() *model.GameParticipant {
 
 type GameParticipantProfile struct {
 	GameParticipantID uint32 `gorm:"primaryKey"`
-	IconUrl           *string
+	ProfileImageUrl   *string
 	Introduction      *string
-	Memo              *string
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 }
@@ -109,11 +110,32 @@ func (p GameParticipantProfile) ToModel(
 ) *model.GameParticipantProfile {
 	return &model.GameParticipantProfile{
 		GameParticipantID: p.GameParticipantID,
-		IconURL:           p.IconUrl,
+		ProfileImageURL:   p.ProfileImageUrl,
 		Introduction:      p.Introduction,
-		Memo:              p.Memo,
 		FollowsCount:      followsCount,
 		FollowersCount:    followersCount,
+	}
+}
+
+type GameParticipantIcon struct {
+	ID                uint32
+	GameParticipantID uint32
+	IconImageUrl      string
+	Width             uint32
+	Height            uint32
+	DisplayOrder      uint32
+	IsDeleted         bool
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+}
+
+func (i GameParticipantIcon) ToModel() *model.GameParticipantIcon {
+	return &model.GameParticipantIcon{
+		ID:           i.ID,
+		IconImageURL: i.IconImageUrl,
+		Width:        i.Width,
+		Height:       i.Height,
+		DisplayOrder: i.DisplayOrder,
 	}
 }
 
@@ -228,6 +250,7 @@ const (
 	GameSettingKeyOpenAt
 	GameSettingKeyStartParticipateAt
 	GameSettingKeyStartGameAt
+	GameSettingKeyFinishGameAt
 	GameSettingKeyCanShorten
 	GameSettingKeyCanSendDirectMessage
 	GameSettingKeyPassword
@@ -253,6 +276,8 @@ func (pa GameSettingKey) String() string {
 		return "StartParticipateAt"
 	case GameSettingKeyStartGameAt:
 		return "StartGameAt"
+	case GameSettingKeyFinishGameAt:
+		return "FinishGameAt"
 	case GameSettingKeyCanShorten:
 		return "CanShorten"
 	case GameSettingKeyCanSendDirectMessage:
@@ -275,6 +300,7 @@ func GameSettingKeyValues() []GameSettingKey {
 		GameSettingKeyOpenAt,
 		GameSettingKeyStartParticipateAt,
 		GameSettingKeyStartGameAt,
+		GameSettingKeyFinishGameAt,
 		GameSettingKeyCanShorten,
 		GameSettingKeyCanSendDirectMessage,
 		GameSettingKeyPassword,
@@ -307,6 +333,7 @@ func ToGameSettingsModel(
 			OpenAt:                gameSettingsToTime(settings, GameSettingKeyOpenAt, time.Now()),
 			StartParticipateAt:    gameSettingsToTime(settings, GameSettingKeyStartParticipateAt, time.Now()),
 			StartGameAt:           gameSettingsToTime(settings, GameSettingKeyStartGameAt, time.Now()),
+			FinishGameAt:          gameSettingsToTime(settings, GameSettingKeyFinishGameAt, time.Now()),
 		},
 		Rule: model.GameRuleSettings{
 			CanShorten:           gameSettingsToBool(settings, GameSettingKeyCanShorten, false),

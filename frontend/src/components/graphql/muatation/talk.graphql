@@ -1,0 +1,5 @@
+mutation Talk($input: NewMessage!) {
+  registerMessage(input: $input) {
+    ok
+  }
+}

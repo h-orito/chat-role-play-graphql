@@ -1,0 +1,5 @@
+mutation UnfavoriteDirect($input: DeleteDirectMessageFavorite!) {
+  deleteDirectMessageFavorite(input: $input) {
+    ok
+  }
+}

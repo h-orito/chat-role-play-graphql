@@ -10,11 +10,17 @@ type Player struct {
 	Name string
 }
 
+type PlayersQuery struct {
+	IDs    *[]uint32
+	Name   *string
+	Paging *PagingQuery
+}
+
 type PlayerProfile struct {
-	PlayerID     uint32
-	IconURL      *string
-	Introduction *string
-	SnsAccounts  []PlayerSnsAccount
+	PlayerID        uint32
+	ProfileImageURL *string
+	Introduction    *string
+	SnsAccounts     []PlayerSnsAccount
 }
 
 type PlayerSnsAccount struct {
@@ -74,13 +80,13 @@ func SnsTypeValueOf(s string) *SnsType {
 }
 
 type PlayerRepository interface {
-	FindPlayers(IDs []uint32) ([]Player, error)
+	FindPlayers(query PlayersQuery) ([]Player, error)
 	Find(ID uint32) (player *Player, err error)
 	FindByName(name string) (player *Player, err error)
 	FindByUserName(userName string) (player *Player, err error)
 	Save(ctx context.Context, player *Player) (saved *Player, err error)
 	FindProfile(ID uint32) (profile *PlayerProfile, err error)
-	SaveProfile(ctx context.Context, profile *PlayerProfile) (saved *PlayerProfile, err error)
+	SaveProfile(ctx context.Context, name string, profile *PlayerProfile) (saved *PlayerProfile, err error)
 	RegisterSnsAccount(ctx context.Context, playerID uint32, account *PlayerSnsAccount) (saved *PlayerSnsAccount, err error)
 	UpdateSnsAccount(ctx context.Context, ID uint32, account *PlayerSnsAccount) error
 	DeleteSnsAccount(ctx context.Context, ID uint32) error

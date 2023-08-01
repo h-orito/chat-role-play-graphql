@@ -17,7 +17,7 @@ type CharaUsecase interface {
 	UpdateCharachip(ctx context.Context, charachip model.Charachip) (*model.Charachip, error)
 	FindCharas(IDs []uint32) ([]model.Chara, error)
 	FindChara(ID uint32) (*model.Chara, error)
-	RegisterChara(ctx context.Context, chara model.Chara, charachipID *uint32, playerID *uint32) (*model.Chara, error)
+	RegisterChara(ctx context.Context, chara model.Chara, charachipID *uint32) (*model.Chara, error)
 	UpdateChara(ctx context.Context, chara model.Chara) (*model.Chara, error)
 	FindCharaImages(query model.CharaImageQuery) ([]model.CharaImage, error)
 	RegisterCharaImage(ctx context.Context, image model.CharaImage, charaID uint32) (*model.CharaImage, error)
@@ -45,11 +45,17 @@ func (c *charaUsecase) FindDesigner(ID uint32) (*model.Designer, error) {
 }
 
 func (c *charaUsecase) RegisterDesigner(ctx context.Context, designer model.Designer) (*model.Designer, error) {
-	return c.charaService.RegisterDesigner(ctx, designer)
+	d, err := c.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		return c.charaService.RegisterDesigner(ctx, designer)
+	})
+	return d.(*model.Designer), err
 }
 
 func (c *charaUsecase) UpdateDesigner(ctx context.Context, designer model.Designer) (*model.Designer, error) {
-	return c.charaService.UpdateDesigner(ctx, designer)
+	d, err := c.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		return c.charaService.UpdateDesigner(ctx, designer)
+	})
+	return d.(*model.Designer), err
 }
 
 func (c *charaUsecase) FindCharachips(query model.CharachipQuery) ([]model.Charachip, error) {
@@ -61,11 +67,17 @@ func (c *charaUsecase) FindCharachip(ID uint32) (*model.Charachip, error) {
 }
 
 func (c *charaUsecase) RegisterCharachip(ctx context.Context, charachip model.Charachip) (*model.Charachip, error) {
-	return c.charaService.RegisterCharachip(ctx, charachip)
+	d, err := c.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		return c.charaService.RegisterCharachip(ctx, charachip)
+	})
+	return d.(*model.Charachip), err
 }
 
 func (c *charaUsecase) UpdateCharachip(ctx context.Context, charachip model.Charachip) (*model.Charachip, error) {
-	return c.charaService.UpdateCharachip(ctx, charachip)
+	d, err := c.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		return c.charaService.UpdateCharachip(ctx, charachip)
+	})
+	return d.(*model.Charachip), err
 }
 
 func (c *charaUsecase) FindCharas(IDs []uint32) ([]model.Chara, error) {
@@ -76,12 +88,18 @@ func (c *charaUsecase) FindChara(ID uint32) (*model.Chara, error) {
 	return c.charaService.FindChara(ID)
 }
 
-func (c *charaUsecase) RegisterChara(ctx context.Context, chara model.Chara, charachipID *uint32, playerID *uint32) (*model.Chara, error) {
-	return c.charaService.RegisterChara(ctx, chara, charachipID, playerID)
+func (c *charaUsecase) RegisterChara(ctx context.Context, chara model.Chara, charachipID *uint32) (*model.Chara, error) {
+	d, err := c.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		return c.charaService.RegisterChara(ctx, chara, charachipID)
+	})
+	return d.(*model.Chara), err
 }
 
 func (c *charaUsecase) UpdateChara(ctx context.Context, chara model.Chara) (*model.Chara, error) {
-	return c.charaService.UpdateChara(ctx, chara)
+	d, err := c.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		return c.charaService.UpdateChara(ctx, chara)
+	})
+	return d.(*model.Chara), err
 }
 
 func (c *charaUsecase) FindCharaImages(query model.CharaImageQuery) ([]model.CharaImage, error) {
@@ -89,9 +107,15 @@ func (c *charaUsecase) FindCharaImages(query model.CharaImageQuery) ([]model.Cha
 }
 
 func (c *charaUsecase) RegisterCharaImage(ctx context.Context, image model.CharaImage, charaID uint32) (*model.CharaImage, error) {
-	return c.charaService.RegisterCharaImage(ctx, image, charaID)
+	d, err := c.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		return c.charaService.RegisterCharaImage(ctx, image, charaID)
+	})
+	return d.(*model.CharaImage), err
 }
 
 func (c *charaUsecase) UpdateCharaImage(ctx context.Context, image model.CharaImage) (*model.CharaImage, error) {
-	return c.charaService.UpdateCharaImage(ctx, image)
+	d, err := c.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		return c.charaService.UpdateCharaImage(ctx, image)
+	})
+	return d.(*model.CharaImage), err
 }

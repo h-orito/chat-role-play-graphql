@@ -1,0 +1,10 @@
+query GameParticipantProfile($participantId: ID!) {
+  gameParticipantProfile(participantId: $participantId) {
+    participantId
+    name
+    profileImageUrl
+    introduction
+    followsCount
+    followersCount
+  }
+}

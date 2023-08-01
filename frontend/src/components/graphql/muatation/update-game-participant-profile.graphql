@@ -1,0 +1,5 @@
+mutation UpdateGameParticipantProfile($input: UpdateGameParticipantProfile!) {
+  updateGameParticipantProfile(input: $input) {
+    ok
+  }
+}

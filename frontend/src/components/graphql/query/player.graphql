@@ -1,0 +1,9 @@
+query Player($id: ID!) {
+  player(id: $id) {
+    id
+    name
+    profile {
+      introduction
+    }
+  }
+}

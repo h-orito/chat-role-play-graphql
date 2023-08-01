@@ -31,8 +31,9 @@ func TestFindGameParticipants(t *testing.T) {
 func TestFindGameParticipant(t *testing.T) {
 	repo := newGameParticipantRepository()
 	var ID uint32 = 1
+	var gameID uint32 = 1
 	got, err := repo.FindGameParticipant(model.GameParticipantQuery{
-		GameID: 1,
+		GameID: &gameID,
 		ID:     &ID,
 	})
 	if err != nil {
@@ -51,7 +52,6 @@ func TestRegisterGameParticipant(t *testing.T) {
 		gp := model.GameParticipant{
 			Name:           "test",
 			PlayerID:       1,
-			CharaID:        1,
 			IsGone:         false,
 			LastAccessedAt: time.Now(),
 		}
@@ -66,12 +66,12 @@ func TestRegisterGameParticipant(t *testing.T) {
 	})
 }
 
-func TestUpdateGameParticipantName(t *testing.T) {
+func TestUpdateGameParticipant(t *testing.T) {
 	database := NewTestDB()
 	transaction := NewTestTransaction(database.Connection)
 	transaction.DoInTx(context.Background(), func(ctx context.Context) (interface{}, error) {
 		repo := db.NewGameParticipantRepository(&database)
-		err := repo.UpdateGameParticipantName(ctx, 1, "name")
+		err := repo.UpdateGameParticipant(ctx, 1, "name", nil, nil)
 		if err != nil {
 			t.Errorf("failed to register game participant: %s", err)
 		}
@@ -97,12 +97,10 @@ func TestUpdateGameParticipantProfile(t *testing.T) {
 		repo := db.NewGameParticipantRepository(&database)
 		icon := "https://example.com/icon.png"
 		intro := "introduction"
-		memo := "memo"
 		gp := model.GameParticipantProfile{
 			GameParticipantID: 1,
-			IconURL:           &icon,
+			ProfileImageURL:   &icon,
 			Introduction:      &intro,
-			Memo:              &memo,
 			FollowsCount:      0,
 			FollowersCount:    0,
 		}

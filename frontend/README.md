@@ -37,6 +37,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 - 状態管理: jotai
 - 認証認可: auth0
+- CSS: https://tailwindcss.com/
+- アイコン: https://heroicons.com/
 
 ## GraphQL code generate
 

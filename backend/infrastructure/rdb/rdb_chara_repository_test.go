@@ -133,7 +133,7 @@ func TestRegisterChara(t *testing.T) {
 			Images: []model.CharaImage{},
 		}
 		var charachipID uint32 = 1
-		got, err := repo.RegisterChara(ctx, chara, &charachipID, nil)
+		got, err := repo.RegisterChara(ctx, chara, &charachipID)
 		if err != nil {
 			t.Errorf("failed to register chara: %s", err)
 		}

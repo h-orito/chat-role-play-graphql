@@ -64,9 +64,10 @@ func GameStatusValueOf(s string) *GameStatus {
 }
 
 type GamesQuery struct {
-	IDs    *[]uint32
-	Name   *string
-	Paging *PagingQuery
+	IDs      *[]uint32
+	Name     *string
+	Statuses *[]GameStatus
+	Paging   *PagingQuery
 }
 
 type GameMaster struct {
@@ -92,13 +93,14 @@ type GameParticipant struct {
 	Name           string
 	EntryNumber    uint32
 	PlayerID       uint32
-	CharaID        uint32
-	IsGone         bool
+	Memo           *string
+	ProfileIconID  *uint32
 	LastAccessedAt time.Time
+	IsGone         bool
 }
 
 type GameParticipantQuery struct {
-	GameID   uint32
+	GameID   *uint32
 	ID       *uint32
 	PlayerID *uint32
 	CharaID  *uint32
@@ -106,11 +108,24 @@ type GameParticipantQuery struct {
 
 type GameParticipantProfile struct {
 	GameParticipantID uint32
-	IconURL           *string
+	ProfileImageURL   *string
 	Introduction      *string
-	Memo              *string
 	FollowsCount      int
 	FollowersCount    int
+}
+
+type GameParticipantIcon struct {
+	ID           uint32
+	IconImageURL string
+	Width        uint32
+	Height       uint32
+	DisplayOrder uint32
+}
+
+type GameParticipantIconsQuery struct {
+	GameParticipantID *uint32
+	IDs               *[]uint32
+	IsContainDeleted  *bool
 }
 
 type GameParticipantNotification struct {
@@ -183,6 +198,7 @@ type GameTimeSettings struct {
 	OpenAt                time.Time
 	StartParticipateAt    time.Time
 	StartGameAt           time.Time
+	FinishGameAt          time.Time
 }
 
 type GameRuleSettings struct {
@@ -195,18 +211,38 @@ type GamePasswordSettings struct {
 	Password    *string
 }
 
+// -----------------------
+
+func (g *Game) ShouldChangeStatus(now time.Time) (bool, GameStatus) {
+	switch g.Status {
+	case GameStatusClosed:
+		return now.After(g.Settings.Time.OpenAt), GameStatusOpening
+	case GameStatusOpening:
+		return now.After(g.Settings.Time.StartParticipateAt), GameStatusRecruiting
+	case GameStatusRecruiting:
+		return now.After(g.Settings.Time.StartGameAt), GameStatusProgress
+	case GameStatusProgress:
+		return now.After(g.Settings.Time.FinishGameAt), GameStatusFinished
+	default:
+		return false, g.Status
+	}
+}
+
+// -----------------------
+
 type GameRepository interface {
 	// game
 	FindGames(query GamesQuery) (games []Game, err error)
 	FindGame(ID uint32) (game *Game, err error)
+	FindGamePeriods(IDs []uint32) (periods []GamePeriod, err error)
 	RegisterGame(ctx context.Context, game Game) (saved *Game, err error)
 	RegisterGameMaster(ctx context.Context, gameID uint32, master GameMaster) (saved *GameMaster, err error)
 	UpdateGameMaster(ctx context.Context, master GameMaster) (err error)
 	DeleteGameMaster(ctx context.Context, gameMasterID uint32) (err error)
 	UpdateGameStatus(ctx context.Context, gameID uint32, status GameStatus) (err error)
+	RegisterGamePeriod(ctx context.Context, gameID uint32, period GamePeriod) (err error)
 	UpdateGamePeriod(ctx context.Context, gameID uint32, period GamePeriod) (err error)
-	UpdateGameSettings(ctx context.Context, gameID uint32, settings GameSettings) (err error)
-	UpdatePeriodChange(ctx context.Context, current Game, changed Game) (err error)
+	UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, settings GameSettings) (err error)
 }
 
 type GameParticipantRepository interface {
@@ -214,10 +250,15 @@ type GameParticipantRepository interface {
 	FindGameParticipants(query GameParticipantsQuery) (participants GameParticipants, err error)
 	FindGameParticipant(query GameParticipantQuery) (participant *GameParticipant, err error)
 	RegisterGameParticipant(ctx context.Context, gameID uint32, participant GameParticipant) (saved *GameParticipant, err error)
-	UpdateGameParticipantName(ctx context.Context, ID uint32, name string) (err error)
+	UpdateGameParticipant(ctx context.Context, ID uint32, name string, memo *string, iconId *uint32) (err error)
 	// participant profile
 	FindGameParticipantProfile(gameParticipantID uint32) (profile *GameParticipantProfile, err error)
 	UpdateGameParticipantProfile(ctx context.Context, ID uint32, profile GameParticipantProfile) (err error)
+	// participant icon
+	FindGameParticipantIcons(query GameParticipantIconsQuery) (icons []GameParticipantIcon, err error)
+	RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon GameParticipantIcon) (saved *GameParticipantIcon, err error)
+	UpdateGameParticipantIcon(ctx context.Context, icon GameParticipantIcon) (err error)
+	DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error)
 	// participant notification
 	FindGameParticipantNotificationSetting(gameParticipantID uint32) (notification *GameParticipantNotification, err error)
 	UpdateGameParticipantNotificationSetting(ctx context.Context, ID uint32, setting GameParticipantNotification) (err error)

@@ -1,0 +1,3 @@
+query MessagesLatest($gameId: ID!, $query: MessagesQuery!) {
+  messagesLatestUnixTimeMilli(gameId: $gameId, query: $query)
+}

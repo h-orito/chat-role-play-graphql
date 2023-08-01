@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -42,7 +41,6 @@ func (*GameParticipantRepository) RegisterGameParticipant(ctx context.Context, g
 		return nil, err
 	}
 	// game_participant_profile
-	log.Printf("id: %d", p.ID)
 	if err := registerGameParticipantProfile(tx, p.ID, model.GameParticipantProfile{
 		GameParticipantID: p.ID,
 	}); err != nil {
@@ -58,12 +56,16 @@ func (*GameParticipantRepository) RegisterGameParticipant(ctx context.Context, g
 	return p, nil
 }
 
-func (*GameParticipantRepository) UpdateGameParticipantName(ctx context.Context, ID uint32, name string) (err error) {
+func (*GameParticipantRepository) UpdateGameParticipant(ctx context.Context, ID uint32, name string, memo *string, iconId *uint32) (err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get tx from context")
 	}
-	tx.Model(&GameParticipant{}).Where("id = ?", ID).Update("game_participant_name", name)
+	tx.Model(&GameParticipant{}).Where("id = ?", ID).Updates(GameParticipant{
+		GameParticipantName: name,
+		Memo:                memo,
+		ProfileIconID:       iconId,
+	})
 	return nil
 }
 
@@ -80,6 +82,34 @@ func (*GameParticipantRepository) UpdateGameParticipantProfile(ctx context.Conte
 		return err
 	}
 	return nil
+}
+
+func (repo *GameParticipantRepository) FindGameParticipantIcons(query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {
+	return findGameParticipantIcons(repo.db.Connection, query)
+}
+
+func (*GameParticipantRepository) RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error) {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return nil, fmt.Errorf("failed to get tx from context")
+	}
+	return registerGameParticipantIcon(tx, gameParticipantID, icon)
+}
+
+func (*GameParticipantRepository) UpdateGameParticipantIcon(ctx context.Context, icon model.GameParticipantIcon) (err error) {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return fmt.Errorf("failed to get tx from context")
+	}
+	return updateGameParticipantIcon(tx, icon)
+}
+
+func (*GameParticipantRepository) DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error) {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return fmt.Errorf("failed to get tx from context")
+	}
+	return deleteGameParticipantIcon(tx, iconID)
 }
 
 func (repo *GameParticipantRepository) FindGameParticipantNotificationSetting(gameParticipantID uint32) (setting *model.GameParticipantNotification, err error) {
@@ -235,7 +265,10 @@ func findRdbGameParticipants(db *gorm.DB, query model.GameParticipantsQuery) (_ 
 
 func findRdbGameParticipant(db *gorm.DB, query model.GameParticipantQuery) (_ *GameParticipant, err error) {
 	var rdbGameParticipant GameParticipant
-	result := db.Model(&GameParticipant{}).Where("game_id = ? and is_gone = ?", query.GameID, false)
+	result := db.Model(&GameParticipant{}).Where("is_gone = ?", false)
+	if query.GameID != nil {
+		result = result.Where("game_id = ?", *query.GameID)
+	}
 	if query.ID != nil {
 		result = result.Where("id = ?", *query.ID)
 	}
@@ -245,7 +278,7 @@ func findRdbGameParticipant(db *gorm.DB, query model.GameParticipantQuery) (_ *G
 	if query.CharaID != nil {
 		result = result.Where("chara_id = ?", *query.CharaID)
 	}
-	result = result.First(&rdbGameParticipant)
+	result = result.Find(&rdbGameParticipant)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
@@ -259,10 +292,10 @@ func registerGameParticipant(db *gorm.DB, gameID uint32, participant model.GameP
 	rdb := GameParticipant{
 		GameID:              gameID,
 		PlayerID:            participant.PlayerID,
-		CharaID:             participant.CharaID,
 		GameParticipantName: participant.Name,
-		IsGone:              false,
+		Memo:                participant.Memo,
 		LastAccessedAt:      time.Now(),
+		IsGone:              false,
 	}
 
 	var entryNumber uint32
@@ -280,20 +313,23 @@ func registerGameParticipant(db *gorm.DB, gameID uint32, participant model.GameP
 		if result.Error != nil {
 			return nil, fmt.Errorf("failed to create: %s \n", result.Error)
 		}
-		return findGameParticipant(db, model.GameParticipantQuery{GameID: gameID, ID: &rdb.ID})
+		return findGameParticipant(db, model.GameParticipantQuery{GameID: &gameID, ID: &rdb.ID})
 	}
 	return nil, fmt.Errorf("failed to create: %s \n", "too many duplicated key")
 }
 
 func selectMaxEntryNumber(db *gorm.DB, gameID uint32) (uint32, error) {
-	var max float64
+	var max *float64
 	result := db.Table("game_participants").Select("MAX(entry_number)").
 		Where("game_id = ?", gameID).
 		Scan(&max)
 	if result.Error != nil {
 		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
 	}
-	return uint32(max), nil
+	if max == nil {
+		return 0, nil
+	}
+	return uint32(*max), nil
 }
 
 func findGameParticipantProfile(db *gorm.DB, gameParticipantID uint32) (profile *model.GameParticipantProfile, err error) {
@@ -330,9 +366,8 @@ func findRdbGameParticipantProfile(db *gorm.DB, gameParticipantID uint32) (profi
 func registerGameParticipantProfile(db *gorm.DB, ID uint32, profile model.GameParticipantProfile) (err error) {
 	rdb := GameParticipantProfile{
 		GameParticipantID: ID,
-		IconUrl:           profile.IconURL,
+		ProfileImageUrl:   profile.ProfileImageURL,
 		Introduction:      profile.Introduction,
-		Memo:              profile.Memo,
 	}
 	if result := db.Create(&rdb); result.Error != nil {
 		return fmt.Errorf("failed to save: %s \n", result.Error)
@@ -345,12 +380,105 @@ func updateGameParticipantProfile(db *gorm.DB, ID uint32, profile model.GamePart
 	if err != nil {
 		return err
 	}
-	rdb.IconUrl = profile.IconURL
+	rdb.ProfileImageUrl = profile.ProfileImageURL
 	rdb.Introduction = profile.Introduction
-	rdb.Memo = profile.Memo
 	if result := db.Save(&rdb); result.Error != nil {
 		return fmt.Errorf("failed to save: %s \n", result.Error)
 	}
+	return nil
+}
+
+func findGameParticipantIcons(db *gorm.DB, query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {
+	rdbIcons, err := findRdbGameParticipantIcons(db, query)
+	if err != nil {
+		return nil, err
+	}
+	return array.Map(rdbIcons, func(rdbIcon GameParticipantIcon) model.GameParticipantIcon {
+		return *rdbIcon.ToModel()
+	}), nil
+}
+
+func findRdbGameParticipantIcons(db *gorm.DB, query model.GameParticipantIconsQuery) (icons []GameParticipantIcon, err error) {
+	var rdb []GameParticipantIcon
+	result := db.Model(&GameParticipantIcon{})
+	if query.GameParticipantID != nil {
+		result = result.Where("game_participant_id = ?", *query.GameParticipantID)
+	}
+	if query.IDs != nil {
+		result = result.Where("id IN (?)", *query.IDs)
+	}
+	if query.IsContainDeleted == nil || !*query.IsContainDeleted {
+		result = result.Where("is_deleted = ?", false)
+	}
+	result = result.Order("display_order").Find(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	return rdb, nil
+}
+
+func registerGameParticipantIcon(tx *gorm.DB, gameParticipantID uint32, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error) {
+	maxDisplayOrder, err := selectMaxIconsDisplayOrder(tx, gameParticipantID)
+	rdb := GameParticipantIcon{
+		GameParticipantID: gameParticipantID,
+		IconImageUrl:      icon.IconImageURL,
+		Width:             icon.Width,
+		Height:            icon.Height,
+		DisplayOrder:      maxDisplayOrder + 1,
+		IsDeleted:         false,
+	}
+	if result := tx.Create(&rdb); result.Error != nil {
+		return nil, fmt.Errorf("failed to save: %s \n", result.Error)
+	}
+	return rdb.ToModel(), nil
+}
+
+func selectMaxIconsDisplayOrder(db *gorm.DB, gameParticipantID uint32) (uint32, error) {
+	var max *float64
+	result := db.Table("game_participant_icons").Select("MAX(display_order)").
+		Where("game_participant_id = ?", gameParticipantID).
+		Scan(&max)
+	if result.Error != nil {
+		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
+	}
+	if max == nil {
+		return 0, nil
+	}
+	return uint32(*max), nil
+}
+
+func updateGameParticipantIcon(tx *gorm.DB, icon model.GameParticipantIcon) (err error) {
+	tx.Model(&GameParticipantIcon{}).Where("id = ?", icon.ID).Update("display_order", icon.DisplayOrder)
+	return nil
+}
+
+func deleteGameParticipantIcon(tx *gorm.DB, iconID uint32) (err error) {
+	// game_participant.profile_icon_idに使われていたら先に削除
+	var rdb GameParticipantIcon
+	result := tx.Model(&GameParticipantIcon{}).Where("id = ?", iconID).First(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil
+	}
+	if result.Error != nil {
+		return fmt.Errorf("failed to find icon: %s \n", result.Error)
+	}
+	participant, err := findRdbGameParticipant(tx, model.GameParticipantQuery{
+		ID: &rdb.GameParticipantID,
+	})
+	if err != nil {
+		return err
+	}
+	if participant == nil {
+		return fmt.Errorf("failed to find participant: %d \n", rdb.GameParticipantID)
+	}
+	if participant.ProfileIconID != nil && *participant.ProfileIconID == iconID {
+		tx.Model(&GameParticipant{}).Where("id = ?", rdb.GameParticipantID).Update("profile_icon_id", nil)
+	}
+	// icon自体を論理削除
+	tx.Model(&GameParticipantIcon{}).Where("id = ?", iconID).Update("is_deleted", true)
 	return nil
 }
 

@@ -11,18 +11,48 @@ import (
 )
 
 // Player is the resolver for the player field.
+func (r *gameMasterResolver) Player(ctx context.Context, obj *gqlmodel.GameMaster) (*gqlmodel.Player, error) {
+	return r.player(ctx, obj)
+}
+
+// Player is the resolver for the player field.
 func (r *gameParticipantResolver) Player(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.Player, error) {
 	return r.player(ctx, obj)
 }
 
-// Chara is the resolver for the chara field.
-func (r *gameParticipantResolver) Chara(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.Chara, error) {
-	return r.chara(ctx, obj)
+// ProfileIcon is the resolver for the profileIcon field.
+func (r *gameParticipantResolver) ProfileIcon(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.GameParticipantIcon, error) {
+	return r.profileIcon(ctx, obj)
 }
 
-// CharaImage is the resolver for the charaImage field.
-func (r *messageSenderResolver) CharaImage(ctx context.Context, obj *gqlmodel.MessageSender) (*gqlmodel.CharaImage, error) {
-	return r.charaImage(ctx, obj)
+// FollowParticipantIds is the resolver for the followParticipantIds field.
+func (r *gameParticipantResolver) FollowParticipantIds(ctx context.Context, obj *gqlmodel.GameParticipant) ([]string, error) {
+	return r.followParticipantIds(ctx, obj)
+}
+
+// FollowerParticipantIds is the resolver for the followerParticipantIds field.
+func (r *gameParticipantResolver) FollowerParticipantIds(ctx context.Context, obj *gqlmodel.GameParticipant) ([]string, error) {
+	return r.followerParticipantIds(ctx, obj)
+}
+
+// Participant is the resolver for the participant field.
+func (r *gameParticipantDiaryResolver) Participant(ctx context.Context, obj *gqlmodel.GameParticipantDiary) (*gqlmodel.GameParticipant, error) {
+	return r.participant(ctx, obj)
+}
+
+// Period is the resolver for the period field.
+func (r *gameParticipantDiaryResolver) Period(ctx context.Context, obj *gqlmodel.GameParticipantDiary) (*gqlmodel.GamePeriod, error) {
+	return r.period(ctx, obj)
+}
+
+// Participants is the resolver for the participants field.
+func (r *gameParticipantGroupResolver) Participants(ctx context.Context, obj *gqlmodel.GameParticipantGroup) ([]*gqlmodel.GameParticipant, error) {
+	return r.participants(ctx, obj)
+}
+
+// Icon is the resolver for the icon field.
+func (r *messageSenderResolver) Icon(ctx context.Context, obj *gqlmodel.MessageSender) (*gqlmodel.GameParticipantIcon, error) {
+	return r.icon(ctx, obj)
 }
 
 // RegisterDesigner is the resolver for the registerDesigner field.
@@ -100,6 +130,11 @@ func (r *mutationResolver) UpdateGamePeriod(ctx context.Context, input gqlmodel.
 	return r.updateGamePeriod(ctx, input)
 }
 
+// ChangePeriodIfNeeded is the resolver for the changePeriodIfNeeded field.
+func (r *mutationResolver) ChangePeriodIfNeeded(ctx context.Context, input gqlmodel.ChangePeriod) (*gqlmodel.ChangePeriodIfNeededPayload, error) {
+	return r.changePeriodIfNeeded(ctx, input)
+}
+
 // RegisterGameParticipant is the resolver for the registerGameParticipant field.
 func (r *mutationResolver) RegisterGameParticipant(ctx context.Context, input gqlmodel.NewGameParticipant) (*gqlmodel.RegisterGameParticipantPayload, error) {
 	return r.registerGameParticipant(ctx, input)
@@ -108,6 +143,21 @@ func (r *mutationResolver) RegisterGameParticipant(ctx context.Context, input gq
 // UpdateGameParticipantProfile is the resolver for the updateGameParticipantProfile field.
 func (r *mutationResolver) UpdateGameParticipantProfile(ctx context.Context, input gqlmodel.UpdateGameParticipantProfile) (*gqlmodel.UpdateGameParticipantProfilePayload, error) {
 	return r.updateGameParticipantProfile(ctx, input)
+}
+
+// RegisterGameParticipantIcon is the resolver for the registerGameParticipantIcon field.
+func (r *mutationResolver) RegisterGameParticipantIcon(ctx context.Context, input gqlmodel.NewGameParticipantIcon) (*gqlmodel.RegisterGameParticipantIconPayload, error) {
+	return r.registerGameParticipantIcon(ctx, input)
+}
+
+// UpdateGameParticipantIcon is the resolver for the updateGameParticipantIcon field.
+func (r *mutationResolver) UpdateGameParticipantIcon(ctx context.Context, input gqlmodel.UpdateGameParticipantIcon) (*gqlmodel.UpdateGameParticipantIconPayload, error) {
+	return r.updateGameParticipantIcon(ctx, input)
+}
+
+// DeleteGameParticipantIcon is the resolver for the deleteGameParticipantIcon field.
+func (r *mutationResolver) DeleteGameParticipantIcon(ctx context.Context, input gqlmodel.DeleteGameParticipantIcon) (*gqlmodel.DeleteGameParticipantIconPayload, error) {
+	return r.deleteGameParticipantIcon(ctx, input)
 }
 
 // UpdateGameParticipantSetting is the resolver for the updateGameParticipantSetting field.
@@ -140,11 +190,6 @@ func (r *mutationResolver) UpdateGameParticipantDiary(ctx context.Context, input
 	return r.updateGameParticipantDiary(ctx, input)
 }
 
-// RegisterPlayerProfile is the resolver for the registerPlayerProfile field.
-func (r *mutationResolver) RegisterPlayerProfile(ctx context.Context, input gqlmodel.NewPlayerProfile) (*gqlmodel.RegisterPlayerProfilePayload, error) {
-	return r.registerPlayerProfile(ctx, input)
-}
-
 // UpdatePlayerProfile is the resolver for the updatePlayerProfile field.
 func (r *mutationResolver) UpdatePlayerProfile(ctx context.Context, input gqlmodel.UpdatePlayerProfile) (*gqlmodel.UpdatePlayerProfilePayload, error) {
 	return r.updatePlayerProfile(ctx, input)
@@ -165,6 +210,11 @@ func (r *mutationResolver) DeletePlayerSnsAccount(ctx context.Context, input gql
 	return r.deletePlayerSnsAccount(ctx, input)
 }
 
+// RegisterMessageDryRun is the resolver for the registerMessageDryRun field.
+func (r *mutationResolver) RegisterMessageDryRun(ctx context.Context, input gqlmodel.NewMessage) (*gqlmodel.RegisterMessageDryRunPayload, error) {
+	return r.registerMessageDryRun(ctx, input)
+}
+
 // RegisterMessage is the resolver for the registerMessage field.
 func (r *mutationResolver) RegisterMessage(ctx context.Context, input gqlmodel.NewMessage) (*gqlmodel.RegisterMessagePayload, error) {
 	return r.registerMessage(ctx, input)
@@ -180,6 +230,11 @@ func (r *mutationResolver) DeleteMessageFavorite(ctx context.Context, input gqlm
 	return r.deleteMessageFavorite(ctx, input)
 }
 
+// RegisterDirectMessageDryRun is the resolver for the registerDirectMessageDryRun field.
+func (r *mutationResolver) RegisterDirectMessageDryRun(ctx context.Context, input gqlmodel.NewDirectMessage) (*gqlmodel.RegisterDirectMessageDryRunPayload, error) {
+	return r.registerDirectMessageDryRun(ctx, input)
+}
+
 // RegisterDirectMessage is the resolver for the registerDirectMessage field.
 func (r *mutationResolver) RegisterDirectMessage(ctx context.Context, input gqlmodel.NewDirectMessage) (*gqlmodel.RegisterDirectMessagePayload, error) {
 	return r.registerDirectMessage(ctx, input)
@@ -192,7 +247,17 @@ func (r *mutationResolver) RegisterDirectMessageFavorite(ctx context.Context, in
 
 // DeleteDirectMessageFavorite is the resolver for the deleteDirectMessageFavorite field.
 func (r *mutationResolver) DeleteDirectMessageFavorite(ctx context.Context, input gqlmodel.DeleteDirectMessageFavorite) (*gqlmodel.DeleteDirectMessageFavoritePayload, error) {
-	return r.DeleteDirectMessageFavorite(ctx, input)
+	return r.deleteDirectMessageFavorite(ctx, input)
+}
+
+// RegisterGameParticipantGroup is the resolver for the registerGameParticipantGroup field.
+func (r *mutationResolver) RegisterGameParticipantGroup(ctx context.Context, input gqlmodel.NewGameParticipantGroup) (*gqlmodel.RegisterGameParticipantGroupPayload, error) {
+	return r.registerGameParticipantGroup(ctx, input)
+}
+
+// UpdateGameParticipantGroup is the resolver for the updateGameParticipantGroup field.
+func (r *mutationResolver) UpdateGameParticipantGroup(ctx context.Context, input gqlmodel.UpdateGameParticipantGroup) (*gqlmodel.UpdateGameParticipantGroupPayload, error) {
+	return r.updateGameParticipantGroup(ctx, input)
 }
 
 // Designers is the resolver for the designers field.
@@ -240,6 +305,11 @@ func (r *queryResolver) GameParticipantProfile(ctx context.Context, participantI
 	return r.gameParticipantProfile(ctx, participantID)
 }
 
+// GameParticipantIcons is the resolver for the gameParticipantIcons field.
+func (r *queryResolver) GameParticipantIcons(ctx context.Context, participantID string) ([]*gqlmodel.GameParticipantIcon, error) {
+	return r.gameParticipantIcons(ctx, participantID)
+}
+
 // GameParticipantFollows is the resolver for the gameParticipantFollows field.
 func (r *queryResolver) GameParticipantFollows(ctx context.Context, participantID string) ([]*gqlmodel.GameParticipant, error) {
 	return r.gameParticipantFollows(ctx, participantID)
@@ -256,13 +326,18 @@ func (r *queryResolver) GameParticipantSetting(ctx context.Context, gameID strin
 }
 
 // GameDiaries is the resolver for the gameDiaries field.
-func (r *queryResolver) GameDiaries(ctx context.Context, gameID string, query gqlmodel.GameDiariesQuery) ([]*gqlmodel.GameParticipantDiary, error) {
-	return r.gameDiaries(ctx, gameID, query)
+func (r *queryResolver) GameDiaries(ctx context.Context, query gqlmodel.GameDiariesQuery) ([]*gqlmodel.GameParticipantDiary, error) {
+	return r.gameDiaries(ctx, query)
 }
 
 // GameDiary is the resolver for the gameDiary field.
-func (r *queryResolver) GameDiary(ctx context.Context, gameID string, diaryID string) (*gqlmodel.GameParticipantDiary, error) {
-	return r.gameDiary(ctx, gameID, diaryID)
+func (r *queryResolver) GameDiary(ctx context.Context, diaryID string) (*gqlmodel.GameParticipantDiary, error) {
+	return r.gameDiary(ctx, diaryID)
+}
+
+// Players is the resolver for the players field.
+func (r *queryResolver) Players(ctx context.Context, query gqlmodel.PlayersQuery) ([]*gqlmodel.Player, error) {
+	return r.players(ctx, query)
 }
 
 // Player is the resolver for the player field.
@@ -270,9 +345,19 @@ func (r *queryResolver) Player(ctx context.Context, id string) (*gqlmodel.Player
 	return r.player(ctx, id)
 }
 
+// MyPlayer is the resolver for the myPlayer field.
+func (r *queryResolver) MyPlayer(ctx context.Context) (*gqlmodel.Player, error) {
+	return r.myPlayer(ctx)
+}
+
 // Messages is the resolver for the messages field.
 func (r *queryResolver) Messages(ctx context.Context, gameID string, query gqlmodel.MessagesQuery) (*gqlmodel.Messages, error) {
 	return r.messages(ctx, gameID, query)
+}
+
+// MessagesLatestUnixTimeMilli is the resolver for the messagesLatestUnixTimeMilli field.
+func (r *queryResolver) MessagesLatestUnixTimeMilli(ctx context.Context, gameID string, query gqlmodel.MessagesQuery) (uint64, error) {
+	return r.messagesLatestUnixTimeMilli(ctx, gameID, query)
 }
 
 // Message is the resolver for the message field.
@@ -300,6 +385,11 @@ func (r *queryResolver) DirectMessages(ctx context.Context, gameID string, query
 	return r.directMessages(ctx, gameID, query)
 }
 
+// DirectMessagesLatestUnixTimeMilli is the resolver for the directMessagesLatestUnixTimeMilli field.
+func (r *queryResolver) DirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID string, query gqlmodel.DirectMessagesQuery) (uint64, error) {
+	return r.directMessagesLatestUnixTimeMilli(ctx, gameID, query)
+}
+
 // DirectMessage is the resolver for the directMessage field.
 func (r *queryResolver) DirectMessage(ctx context.Context, gameID string, directMessageID string) (*gqlmodel.DirectMessage, error) {
 	return r.directMessage(ctx, gameID, directMessageID)
@@ -310,9 +400,22 @@ func (r *queryResolver) DirectMessageFavoriteGameParticipants(ctx context.Contex
 	return r.directMessageFavoriteGameParticipants(ctx, gameID, directMessageID)
 }
 
+// GameMaster returns graph1.GameMasterResolver implementation.
+func (r *Resolver) GameMaster() graph1.GameMasterResolver { return &gameMasterResolver{r} }
+
 // GameParticipant returns graph1.GameParticipantResolver implementation.
 func (r *Resolver) GameParticipant() graph1.GameParticipantResolver {
 	return &gameParticipantResolver{r}
+}
+
+// GameParticipantDiary returns graph1.GameParticipantDiaryResolver implementation.
+func (r *Resolver) GameParticipantDiary() graph1.GameParticipantDiaryResolver {
+	return &gameParticipantDiaryResolver{r}
+}
+
+// GameParticipantGroup returns graph1.GameParticipantGroupResolver implementation.
+func (r *Resolver) GameParticipantGroup() graph1.GameParticipantGroupResolver {
+	return &gameParticipantGroupResolver{r}
 }
 
 // MessageSender returns graph1.MessageSenderResolver implementation.
@@ -324,7 +427,10 @@ func (r *Resolver) Mutation() graph1.MutationResolver { return &mutationResolver
 // Query returns graph1.QueryResolver implementation.
 func (r *Resolver) Query() graph1.QueryResolver { return &queryResolver{r} }
 
+type gameMasterResolver struct{ *Resolver }
 type gameParticipantResolver struct{ *Resolver }
+type gameParticipantDiaryResolver struct{ *Resolver }
+type gameParticipantGroupResolver struct{ *Resolver }
 type messageSenderResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

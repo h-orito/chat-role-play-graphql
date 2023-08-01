@@ -1,0 +1,14 @@
+query DirectFavoriteParticipants($gameId: ID!, $directMessageId: ID!) {
+  directMessageFavoriteGameParticipants(
+    gameId: $gameId
+    directMessageId: $directMessageId
+  ) {
+    id
+    name
+    entryNumber
+    profileIcon {
+      id
+      url
+    }
+  }
+}

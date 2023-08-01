@@ -1,6 +1,5 @@
 import {
   ApolloClient,
-  createHttpLink,
   InMemoryCache,
   NormalizedCacheObject
 } from '@apollo/client'
@@ -20,23 +19,33 @@ export const createClient = async (
     }
   })
 
-  const httpLink = createHttpLink({
+  const { createUploadLink } = require('apollo-upload-client')
+  const httpLink = createUploadLink({
     uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
   })
   return new ApolloClient({
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: 'no-cache'
+      }
+    }
   })
 }
 
 let innerClient: ApolloClient<NormalizedCacheObject> | null = null
 export const createInnerClient = () => {
-  console.log(process.env.NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT)
   if (innerClient) return innerClient
   innerClient = new ApolloClient({
     ssrMode: true,
     uri: process.env.NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT,
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: 'no-cache'
+      }
+    }
   })
   return innerClient
 }

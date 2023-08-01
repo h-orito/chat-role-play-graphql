@@ -10,115 +10,6 @@ import (
 	"time"
 )
 
-func MapToDesigner(d *model.Designer) *Designer {
-	if d == nil {
-		return nil
-	}
-	return &Designer{
-		ID:   intIdToBase64(d.ID, "Designer"),
-		Name: d.Name,
-	}
-}
-
-func MapToCharachip(c *model.Charachip) *Charachip {
-	if c == nil {
-		return nil
-	}
-	return &Charachip{
-		ID:       intIdToBase64(c.ID, "Charachip"),
-		Name:     c.Name,
-		Designer: MapToDesigner(&c.Designer),
-		Charas: array.Map(c.Charas, func(c model.Chara) *Chara {
-			return MapToChara(&c)
-		}),
-	}
-}
-
-func MapToChara(c *model.Chara) *Chara {
-	if c == nil {
-		return nil
-	}
-	return &Chara{
-		ID:   intIdToBase64(c.ID, "Chara"),
-		Name: c.Name,
-		Images: array.Map(c.Images, func(i model.CharaImage) *CharaImage {
-			return MapToCharaImage(&i)
-		}),
-	}
-}
-
-func MapToCharaImage(ci *model.CharaImage) *CharaImage {
-	if ci == nil {
-		return nil
-	}
-	return &CharaImage{
-		ID:   intIdToBase64(ci.ID, "CharaImage"),
-		Type: ci.Type,
-		Size: &CharaSize{
-			Width:  int(ci.Size.Width),
-			Height: int(ci.Size.Height),
-		},
-		URL: ci.URL,
-	}
-}
-
-func MapToGame(g *model.Game) *Game {
-	if g == nil {
-		return nil
-	}
-	return &Game{
-		ID:          intIdToBase64(g.ID, "Game"),
-		Name:        g.Name,
-		Status:      GameStatus(g.Status.String()),
-		GameMasters: []*GameMaster{},
-		Participants: array.Map(g.Participants.List, func(gp model.GameParticipant) *GameParticipant {
-			return MapToGameParticipant(gp)
-		}),
-		Periods: array.Map(g.Periods, func(p model.GamePeriod) *GamePeriod {
-			return MapToGamePeriod(&p)
-		}),
-		Settings: &GameSettings{
-			Chara: &GameCharaSetting{
-				Charachips:           []*Charachip{},
-				CanOriginalCharacter: g.Settings.Chara.CanOriginalCharacter,
-			},
-			Capacity: &GameCapacity{
-				Min: int(g.Settings.Capacity.Min),
-				Max: int(g.Settings.Capacity.Max),
-			},
-			Time: &GameTimeSetting{
-				PeriodPrefix:          g.Settings.Time.PeriodPrefix,
-				PeriodSuffix:          g.Settings.Time.PeriodSuffix,
-				PeriodIntervalSeconds: int(g.Settings.Time.PeriodIntervalSeconds),
-				OpenAt:                g.Settings.Time.OpenAt,
-				StartParticipateAt:    g.Settings.Time.StartParticipateAt,
-				StartGameAt:           g.Settings.Time.StartGameAt,
-			},
-			Rule: &GameRuleSetting{
-				IsGameMasterProducer: false,
-				CanShorten:           g.Settings.Rule.CanShorten,
-				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
-			},
-			Password: &GamePasswordSetting{
-				HasPassword: g.Settings.Password.HasPassword,
-			},
-		},
-	}
-}
-
-func MapToGamePeriod(p *model.GamePeriod) *GamePeriod {
-	if p == nil {
-		return nil
-	}
-	return &GamePeriod{
-		ID:      intIdToBase64(p.ID, "GamePeriod"),
-		Count:   int(p.Count),
-		Name:    p.Name,
-		StartAt: p.StartAt,
-		EndAt:   p.EndAt,
-	}
-}
-
 func (g NewGame) MapToGame() model.Game {
 	periodPrefix := ""
 	if g.Settings.Time.PeriodPrefix != nil {
@@ -159,6 +50,7 @@ func (g NewGame) MapToGame() model.Game {
 				OpenAt:                g.Settings.Time.OpenAt,
 				StartParticipateAt:    g.Settings.Time.StartParticipateAt,
 				StartGameAt:           g.Settings.Time.StartGameAt,
+				FinishGameAt:          g.Settings.Time.FinishGameAt,
 			},
 			Rule: model.GameRuleSettings{
 				CanShorten:           g.Settings.Rule.CanShorten,
@@ -191,6 +83,7 @@ func (g UpdateGameSetting) MapToGameSetting() model.GameSettings {
 			OpenAt:                g.Settings.Time.OpenAt,
 			StartParticipateAt:    g.Settings.Time.StartParticipateAt,
 			StartGameAt:           g.Settings.Time.StartGameAt,
+			FinishGameAt:          g.Settings.Time.FinishGameAt,
 		},
 		Rule: model.GameRuleSettings{
 			CanShorten:           g.Settings.Rule.CanShorten,
@@ -203,279 +96,75 @@ func (g UpdateGameSetting) MapToGameSetting() model.GameSettings {
 	}
 }
 
-func MapToSimpleGame(g *model.Game) *SimpleGame {
-	if g == nil {
-		return nil
-	}
-	return &SimpleGame{
-		ID:                intIdToBase64(g.ID, "Game"),
-		Name:              g.Name,
-		ParticipantsCount: g.Participants.Count,
-	}
-}
-
-func MapToGameMaster(gm *model.GameMaster, player *model.Player) *GameMaster {
-	if gm == nil {
-		return nil
-	}
-	return &GameMaster{
-		ID:         intIdToBase64(gm.ID, "GameMaster"),
-		Player:     MapToPlayer(player),
-		IsProducer: gm.IsProducer,
-	}
-}
-
-func MapToGameParticipants(
-	participants []model.GameParticipant,
-) []*GameParticipant {
-	if participants == nil {
-		return nil
-	}
-	return array.Map(participants, func(p model.GameParticipant) *GameParticipant {
-		return MapToGameParticipant(p)
-	})
-}
-
-func MapToGameParticipant(
-	p model.GameParticipant,
-) *GameParticipant {
-	return &GameParticipant{
-		ID:             intIdToBase64(p.ID, "GameParticipant"),
-		Name:           p.Name,
-		EntryNumber:    int(p.EntryNumber),
-		PlayerID:       intIdToBase64(p.PlayerID, "Player"),
-		CharaID:        intIdToBase64(p.CharaID, "Chara"),
-		IsGone:         p.IsGone,
-		LastAccessedAt: p.LastAccessedAt,
-	}
-}
-
-func MapToGameParticipantProfile(p model.GameParticipantProfile) *GameParticipantProfile {
-	return &GameParticipantProfile{
-		IconURL:        p.IconURL,
-		Introduction:   p.Introduction,
-		Memo:           p.Memo,
-		FollowsCount:   p.FollowsCount,
-		FollowersCount: p.FollowersCount,
-	}
-}
-
-func MapToGameParticipantSetting(p model.GameParticipantNotification) *GameParticipantSetting {
-	return &GameParticipantSetting{
-		Notification: &NotificationCondition{
-			DiscordWebhookURL: p.DiscordWebhookUrl,
-			Game: &GameNotificationCondition{
-				Participate: p.Game.Participate,
-				Start:       p.Game.Start,
-			},
-			Message: &MessageNotificationCondition{
-				Reply:         p.Message.Reply,
-				DirectMessage: p.Message.DirectMessage,
-				Keywords:      p.Message.Keywords,
-			},
-		},
-	}
-}
-
-func MapToGameParticipantDiaries(
-	diaries []model.GameParticipantDiary,
-	participants []model.GameParticipant,
-	periods []model.GamePeriod,
-) []*GameParticipantDiary {
-	if diaries == nil {
-		return nil
-	}
-	return array.Map(diaries, func(d model.GameParticipantDiary) *GameParticipantDiary {
-		participant := array.Find(participants, func(p model.GameParticipant) bool {
-			return p.ID == d.GameParticipantID
+func (q GamesQuery) MapToGamesQuery() (*model.GamesQuery, error) {
+	var intids *[]uint32
+	var err error
+	if q.Ids != nil {
+		ids := array.Map(q.Ids, func(id string) uint32 {
+			intid, e := idToUint32(id)
+			if e != nil {
+				err = e
+			}
+			return intid
 		})
-		period := array.Find(periods, func(period model.GamePeriod) bool {
-			return period.ID == d.GamePeriodID
+		if err != nil {
+			return nil, err
+		}
+		intids = &ids
+	}
+	var statuses *[]model.GameStatus
+	if q.Statuses != nil {
+		ses := array.Map(q.Statuses, func(status GameStatus) model.GameStatus {
+			return *model.GameStatusValueOf(status.String())
 		})
-		return MapToGameParticipantDiary(d, participant, period)
-	})
-}
-
-func MapToGameParticipantDiary(
-	p model.GameParticipantDiary,
-	participant *model.GameParticipant,
-	period *model.GamePeriod,
-) *GameParticipantDiary {
-	return &GameParticipantDiary{
-		ID:          intIdToBase64(p.ID, "GameParticipantDiary"),
-		Participant: MapToGameParticipant(*participant),
-		Period:      MapToGamePeriod(period),
-		Title:       p.Title,
-		Body:        p.Body,
+		statuses = &ses
 	}
-}
-
-func MapToPlayer(p *model.Player) *Player {
-	if p == nil {
-		return nil
-	}
-	return &Player{
-		ID:   intIdToBase64(p.ID, "Player"),
-		Name: p.Name,
-	}
-}
-
-func MapToPlayerProfile(p *model.PlayerProfile) *PlayerProfile {
-	if p == nil {
-		return nil
-	}
-	return &PlayerProfile{
-		IconURL:      p.IconURL,
-		Introduction: p.Introduction,
-		SnsAccounts: array.Map(p.SnsAccounts, func(s model.PlayerSnsAccount) *PlayerSnsAccount {
-			return MapToPlayerSnsAccount(s)
-		}),
-	}
-}
-
-func MapToPlayerSnsAccount(s model.PlayerSnsAccount) *PlayerSnsAccount {
-	return &PlayerSnsAccount{
-		ID:   intIdToBase64(s.ID, "PlayerSnsAccount"),
-		Type: SnsType(s.SnsType.String()),
-		Name: &s.AccountName,
-		URL:  s.AccountURL,
-	}
-}
-
-func MapToMessages(ms model.Messages) Messages {
-	list := array.Map(ms.List, func(m model.Message) *Message {
-		return MapToMessage(&m)
-	})
-
-	var currentPageNumber *int
-	if ms.CurrentPageNumber != nil {
-		n := int(*ms.CurrentPageNumber)
-		currentPageNumber = &n
-	}
-	return Messages{
-		List:              list,
-		AllPageCount:      int(ms.AllPageCount),
-		HasPrePage:        ms.HasNextPage,
-		HasNextPage:       ms.HasNextPage,
-		CurrentPageNumber: currentPageNumber,
-		IsDesc:            ms.IsDesc,
-	}
-
-}
-func MapToMessage(m *model.Message) *Message {
-	if m == nil {
-		return nil
-	}
-	var sender *MessageSender
-	if m.Sender != nil {
-		sender = &MessageSender{
-			ParticipantID: intIdToBase64(m.Sender.GameParticipantID, "GameParticipant"),
-			CharaName:     m.Sender.CharaName,
-			CharaImageID:  intIdToBase64(m.Sender.CharaImageID, "CharaImage"),
+	var paging *model.PagingQuery
+	if q.Paging != nil {
+		paging = &model.PagingQuery{
+			PageSize:   q.Paging.PageSize,
+			PageNumber: q.Paging.PageNumber,
+			Desc:       q.Paging.IsDesc,
 		}
 	}
-	var replyTo *MessageRecipient
-	if m.ReplyTo != nil {
-		replyTo = &MessageRecipient{
-			MessageID:     int64IdToBase64(m.ReplyTo.MessageID, "Message"),
-			ParticipantID: intIdToBase64(m.ReplyTo.GameParticipantID, "GameParticipant"),
+	return &model.GamesQuery{
+		IDs:      intids,
+		Name:     q.Name,
+		Statuses: statuses,
+		Paging:   paging,
+	}, nil
+}
+
+func idToUint32(id string) (uint32, error) {
+	byte, err := base64.StdEncoding.DecodeString(id)
+	if err != nil {
+		return 0, err
+	}
+	parts := strings.Split(string(byte), ":")
+	if len(parts) == 2 {
+		number, err := strconv.ParseUint(parts[1], 10, 32)
+		if err != nil {
+			return 0, err
 		}
-	}
-	return &Message{
-		ID: int64IdToBase64(m.ID, "Message"),
-		Content: &MessageContent{
-			Type:              MessageType(m.Type.String()),
-			Number:            int(m.Content.Number),
-			Text:              m.Content.Text,
-			IsConvertDisabled: m.Content.IsConvertDisabled,
-		},
-		Time: &MessageTime{
-			SendAt:            m.Time.SendAt,
-			SendUnixTimeMilli: strconv.FormatUint(m.Time.UnixtimeMilli, 10),
-		},
-		Sender:  sender,
-		ReplyTo: replyTo,
-		Reactions: &MessageReactions{
-			ReplyCount:    int(m.Reactions.ReplyCount),
-			FavoriteCount: int(m.Reactions.FavoriteCount),
-		},
+		return uint32(number), nil
+	} else {
+		return 0, fmt.Errorf("Invalid input format")
 	}
 }
 
-func MapToGameParticipantGroup(g *model.GameParticipantGroup, participants []*GameParticipant) *GameParticipantGroup {
-	if g == nil {
-		return nil
+func idToUint64(id string) (uint64, error) {
+	byte, err := base64.StdEncoding.DecodeString(id)
+	if err != nil {
+		return 0, err
 	}
-	return &GameParticipantGroup{
-		ID:   intIdToBase64(g.ID, "GameParticipantGroup"),
-		Name: g.Name,
-		Participants: array.Map(g.MemberIDs, func(id uint32) *GameParticipant {
-			strid := intIdToBase64(id, "GameParticipant")
-			p := array.Find(participants, func(p *GameParticipant) bool {
-				return p.ID == strid
-			})
-			return *p
-		}),
-	}
-}
-
-func MapToDirectMessages(ms model.DirectMessages) DirectMessages {
-	list := array.Map(ms.List, func(m model.DirectMessage) *DirectMessage {
-		return MapToDirectMessage(&m)
-	})
-
-	var currentPageNumber *int
-	if ms.CurrentPageNumber != nil {
-		n := int(*ms.CurrentPageNumber)
-		currentPageNumber = &n
-	}
-	return DirectMessages{
-		List:              list,
-		AllPageCount:      int(ms.AllPageCount),
-		HasPrePage:        ms.HasNextPage,
-		HasNextPage:       ms.HasNextPage,
-		CurrentPageNumber: currentPageNumber,
-		IsDesc:            ms.IsDesc,
-	}
-
-}
-func MapToDirectMessage(m *model.DirectMessage) *DirectMessage {
-	if m == nil {
-		return nil
-	}
-	var sender *MessageSender
-	if m.Sender != nil {
-		sender = &MessageSender{
-			ParticipantID: intIdToBase64(m.Sender.GameParticipantID, "GameParticipant"),
-			CharaName:     m.Sender.CharaName,
-			CharaImageID:  intIdToBase64(m.Sender.CharaImageID, "CharaImage"),
+	parts := strings.Split(string(byte), ":")
+	if len(parts) == 2 {
+		number, err := strconv.ParseUint(parts[1], 10, 64)
+		if err != nil {
+			return 0, err
 		}
+		return number, nil
+	} else {
+		return 0, fmt.Errorf("Invalid input format")
 	}
-	return &DirectMessage{
-		ID: int64IdToBase64(m.ID, "DirectMessage"),
-		Content: &MessageContent{
-			Type:              MessageType(m.Type.String()),
-			Number:            int(m.Content.Number),
-			Text:              m.Content.Text,
-			IsConvertDisabled: m.Content.IsConvertDisabled,
-		},
-		Time: &MessageTime{
-			SendAt:            m.Time.SendAt,
-			SendUnixTimeMilli: strconv.FormatUint(m.Time.UnixtimeMilli, 10),
-		},
-		Sender: sender,
-		Reactions: &DirectMessageReactions{
-			FavoriteCounts: int(m.Reactions.FavoriteCount),
-		},
-	}
-}
-
-func intIdToBase64(id uint32, prefix string) string {
-	str := fmt.Sprintf("%s:%d", prefix, id)
-	return base64.StdEncoding.EncodeToString([]byte(str))
-}
-
-func int64IdToBase64(id uint64, prefix string) string {
-	str := fmt.Sprintf("%s:%d", prefix, id)
-	return base64.StdEncoding.EncodeToString([]byte(str))
 }

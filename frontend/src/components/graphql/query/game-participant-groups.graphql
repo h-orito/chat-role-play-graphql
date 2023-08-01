@@ -1,0 +1,18 @@
+query ParticipantGroups($gameId: ID!, $participantId: ID) {
+  gameParticipantGroups(
+    gameId: $gameId
+    query: { memberParticipantId: $participantId }
+  ) {
+    id
+    name
+    participants {
+      id
+      name
+      profileIcon {
+        id
+        url
+      }
+    }
+    latestUnixTimeMilli
+  }
+}

@@ -1,0 +1,11 @@
+query FavoriteParticipants($gameId: ID!, $messageId: ID!) {
+  messageFavoriteGameParticipants(gameId: $gameId, messageId: $messageId) {
+    id
+    name
+    entryNumber
+    profileIcon {
+      id
+      url
+    }
+  }
+}

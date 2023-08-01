@@ -1,0 +1,30 @@
+mutation TalkDirectDryRun($input: NewDirectMessage!) {
+  registerDirectMessageDryRun(input: $input) {
+    directMessage {
+      id
+      content {
+        type
+        text
+        number
+        isConvertDisabled
+      }
+      time {
+        sendAt
+        sendUnixTimeMilli
+      }
+      sender {
+        participantId
+        name
+        icon {
+          url
+          width
+          height
+        }
+      }
+      reactions {
+        favoriteCounts
+        favoriteParticipantIds
+      }
+    }
+  }
+}

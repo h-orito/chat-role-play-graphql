@@ -6,13 +6,13 @@ import (
 )
 
 type PlayerService interface {
-	FindPlayers(IDs []uint32) ([]model.Player, error)
+	FindPlayers(query model.PlayersQuery) ([]model.Player, error)
 	Find(ID uint32) (player *model.Player, err error)
 	FindByName(name string) (player *model.Player, err error)
 	FindByUserName(name string) (player *model.Player, err error)
 	Save(ctx context.Context, player model.Player) (saved *model.Player, err error)
 	FindProfile(ID uint32) (profile *model.PlayerProfile, err error)
-	SaveProfile(ctx context.Context, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error)
+	SaveProfile(ctx context.Context, name string, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error)
 	RegisterSnsAccount(ctx context.Context, playerID uint32, account *model.PlayerSnsAccount) (saved *model.PlayerSnsAccount, err error)
 	UpdateSnsAccount(ctx context.Context, ID uint32, account *model.PlayerSnsAccount) error
 	DeleteSnsAccount(ctx context.Context, ID uint32) error
@@ -28,8 +28,8 @@ func NewPlayerService(playerRepository model.PlayerRepository) PlayerService {
 	}
 }
 
-func (s *playerService) FindPlayers(IDs []uint32) ([]model.Player, error) {
-	return s.playerRepository.FindPlayers(IDs)
+func (s *playerService) FindPlayers(query model.PlayersQuery) ([]model.Player, error) {
+	return s.playerRepository.FindPlayers(query)
 }
 
 func (s *playerService) Find(ID uint32) (player *model.Player, err error) {
@@ -54,8 +54,8 @@ func (s *playerService) FindProfile(ID uint32) (profile *model.PlayerProfile, er
 }
 
 // SaveProfile implements PlayerService.
-func (s *playerService) SaveProfile(ctx context.Context, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error) {
-	return s.playerRepository.SaveProfile(ctx, profile)
+func (s *playerService) SaveProfile(ctx context.Context, name string, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error) {
+	return s.playerRepository.SaveProfile(ctx, name, profile)
 }
 
 // RegisterSnsAccount implements PlayerService.
