@@ -12,6 +12,7 @@ import { useLazyQuery } from '@apollo/client'
 import { useState } from 'react'
 import FavoriteButton from './favorite-button'
 import MessageComponent from './message'
+import MessageText from '../message-text/message-text'
 
 type MessageProps = {
   game: Game
@@ -70,7 +71,10 @@ export default function TalkMessage({
           {!preview && (
             <div className='ml-2 flex-1 text-sm'>
               <div className='min-h-[60px] w-full whitespace-pre-wrap break-words rounded border border-gray-300 p-2 text-gray-700'>
-                {message.content.text}
+                <MessageText
+                  rawText={message.content.text}
+                  isConvertDisabled={message.content.isConvertDisabled}
+                />
               </div>
               <div className='flex pt-1'>
                 <div className='flex-1'>
