@@ -105,8 +105,6 @@ export default function CreateGame() {
     [registerGame]
   )
 
-  console.log(defaultValues)
-
   return (
     <main className='w-full lg:flex lg:justify-center'>
       <Head>

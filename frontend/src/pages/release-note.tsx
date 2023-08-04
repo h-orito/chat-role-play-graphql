@@ -59,7 +59,6 @@ export default function CreateGame() {
                       <li>返信</li>
                       <li>宛先</li>
                       <li>PL発言（PL発言タイムライン）</li>
-                      <li>発言装飾の入力支援</li>
                       <li>
                         ランダム発言（ゲームごとに追加削除、diceなど全体で使えるものも）
                       </li>

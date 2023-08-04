@@ -24,6 +24,7 @@ import Modal from '@/components/modal/modal'
 import SubmitButton from '@/components/button/submit-button'
 import TalkMessage from '../article/message-area/message/talk-message'
 import SecondaryButton from '@/components/button/scondary-button'
+import TalkTextDecorators from './talk-text-decorators'
 
 type Props = {
   game: Game
@@ -64,7 +65,7 @@ export default function Talk({ game, myself, close }: Props) {
     fetch()
   }, [])
 
-  const { control, formState, handleSubmit } = useForm<FormInput>({
+  const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
     defaultValues: {
       name: myself.name,
       talkMessage: ''
@@ -128,6 +129,8 @@ export default function Talk({ game, myself, close }: Props) {
     [talk, talkType, iconId, formState]
   )
 
+  const updateTalkMessage = (str: string) => setValue('talkMessage', str)
+
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
 
   const selectedIcon = icons.find((icon) => icon.id === iconId)
@@ -136,6 +139,7 @@ export default function Talk({ game, myself, close }: Props) {
     <div className='py-2'>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='mb-2'>
+          <p className='mb-1 text-xs font-bold'>種別</p>
           <RadioGroup
             name='talk-type'
             candidates={candidates}
@@ -145,6 +149,7 @@ export default function Talk({ game, myself, close }: Props) {
           />
         </div>
         <div className='my-2'>
+          <p className='text-xs font-bold'>名前</p>
           <InputText
             name='name'
             control={control}
@@ -157,6 +162,15 @@ export default function Talk({ game, myself, close }: Props) {
             }}
             disabled={preview != null}
           />
+        </div>
+        <div className='mb-1'>
+          <p className='text-xs font-bold'>発言装飾</p>
+          <div className='flex'>
+            <TalkTextDecorators
+              selector='#talkMessage'
+              setMessage={updateTalkMessage}
+            />
+          </div>
         </div>
         <div className='flex'>
           <div>
