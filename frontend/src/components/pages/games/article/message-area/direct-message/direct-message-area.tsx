@@ -115,6 +115,8 @@ export default function DirectMessageArea({
     }
   }
 
+  const canModify = ['Opening', 'Recruiting', 'Progress'].includes(game.status)
+
   return (
     <div className={`flex flex-1 flex-col overflow-y-auto`}>
       <div className='flex border-b border-gray-300 px-4 py-2'>
@@ -122,22 +124,26 @@ export default function DirectMessageArea({
           メンバー:{' '}
           {group.participants.map((p: GameParticipant) => p.name).join('、')}
         </p>
-        <button
-          className='ml-auto pl-4 hover:bg-slate-200'
-          onClick={() => openModifyGroupModal(group)}
-        >
-          <PencilIcon className='mr-1 h-4 w-4' />
-        </button>
+        {canModify && (
+          <button
+            className='ml-auto pl-4 hover:bg-slate-200'
+            onClick={() => openModifyGroupModal(group)}
+          >
+            <PencilIcon className='mr-1 h-4 w-4' />
+          </button>
+        )}
       </div>
-      <div className='flex border-b border-gray-300'>
-        <button
-          className='flex w-full justify-start py-2 pl-4 hover:bg-slate-200'
-          onClick={() => setIsOpenTalkModal(true)}
-        >
-          <PencilSquareIcon className='mr-1 h-6 w-6' />
-          <p className='flex-1 self-center text-left'>発言</p>
-        </button>
-      </div>
+      {canModify && (
+        <div className='flex border-b border-gray-300'>
+          <button
+            className='flex w-full justify-start py-2 pl-4 hover:bg-slate-200'
+            onClick={() => setIsOpenTalkModal(true)}
+          >
+            <PencilSquareIcon className='mr-1 h-6 w-6' />
+            <p className='flex-1 self-center text-left'>発言</p>
+          </button>
+        </div>
+      )}
       <div className='flex border-b border-gray-300'>
         <DirectSearchCondition
           game={game}

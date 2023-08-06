@@ -96,12 +96,15 @@ export default function SearchCondition({
   return (
     <div className='w-full border-b border-gray-300 px-4 py-2'>
       <div className='flex'>
-        <label className='font-bold'>検索条件</label>
-        <button className='ml-auto' onClick={() => setIsOpen(!isOpen)}>
+        <button
+          className='flex w-full justify-start'
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <p className='text-sm font-bold'>検索条件</p>
           {isOpen ? (
-            <ChevronDownIcon className='h-5 w-5' />
+            <ChevronDownIcon className='ml-auto h-5 w-5' />
           ) : (
-            <ChevronRightIcon className='h-5 w-5' />
+            <ChevronRightIcon className='ml-auto h-5 w-5' />
           )}
         </button>
       </div>

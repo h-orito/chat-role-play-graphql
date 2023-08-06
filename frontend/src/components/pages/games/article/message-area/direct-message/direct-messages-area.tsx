@@ -90,16 +90,20 @@ export default function DirectMessagesArea({
     refetchGroups()
   }, [])
 
+  const canCreate = ['Opening', 'Recruiting', 'Progress'].includes(game.status)
+
   return (
     <div
       id='direct-message-area'
       className={`${className} relative h-full w-full`}
     >
-      <div className='flex p-4'>
-        <PrimaryButton click={() => setIsOpenCreateModal(true)}>
-          グループ作成
-        </PrimaryButton>
-      </div>
+      {canCreate && (
+        <div className='flex p-4'>
+          <PrimaryButton click={() => setIsOpenCreateModal(true)}>
+            グループ作成
+          </PrimaryButton>
+        </div>
+      )}
       {groups.map((group: GameParticipantGroup) => (
         <div
           key={group.id}

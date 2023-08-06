@@ -54,6 +54,8 @@ export default function Sidebar({
     ((['Closed', 'Opening'].includes(game.status) && isGameMaster) ||
       ['Recruiting', 'Progress'].includes(game.status))
 
+  const canTalk = ['Opening', 'Recruiting', 'Progress'].includes(game.status)
+
   const displayClass = isSidebarOpen
     ? 'fixed z-20 bg-white md:static flex'
     : 'hidden'
@@ -79,7 +81,7 @@ export default function Sidebar({
         )}
         {myself && (
           <div className='border-t border-gray-300 py-2'>
-            <TalkButton game={game} myself={myself} />
+            {canTalk && <TalkButton game={game} myself={myself} />}
             <ProfileButton
               myself={myself}
               openProfileModal={openProfileModal}
