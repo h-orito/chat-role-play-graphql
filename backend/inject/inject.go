@@ -43,6 +43,7 @@ func injectResolver(database db.DB) graphql.Resolver {
 	// domain service
 	gameMasterDomainService := injectGameMasterDomainService()
 	participateDomainService := injectParticipateDomainService(gameMasterDomainService)
+	messageDomainService := injectMessageDomainService()
 	// application service
 	charaService := injectCharaService(charaRepository)
 	gameService := injectGameService(gameRepository, gameParticipantRepository)
@@ -52,7 +53,7 @@ func injectResolver(database db.DB) graphql.Resolver {
 	charaUsecase := injectCharaUsecase(charaService, tx)
 	gameUsecase := injectGameUsecase(gameService, playerService, charaService, gameMasterDomainService, participateDomainService, tx)
 	playerUsecase := injectPlayerUsecase(playerService, tx)
-	messageUsecase := injectMessageUsecase(messageService, gameService, playerService, tx)
+	messageUsecase := injectMessageUsecase(messageService, gameService, playerService, messageDomainService, tx)
 	imageUsecase := injectImageUsecase()
 	loaders := injectLoaders(playerUsecase, gameUsecase, charaUsecase)
 	return graphql.NewResolver(
@@ -107,9 +108,16 @@ func injectMessageUsecase(
 	messageService app_service.MessageService,
 	gameService app_service.GameService,
 	playerService app_service.PlayerService,
+	messageDomainService dom_service.MessageDomainService,
 	tx usecase.Transaction,
 ) usecase.MessageUsecase {
-	return usecase.NewMessageUsecase(messageService, gameService, playerService, tx)
+	return usecase.NewMessageUsecase(
+		messageService,
+		gameService,
+		playerService,
+		messageDomainService,
+		tx,
+	)
 }
 
 func injectImageUsecase() usecase.ImageUsecase {
@@ -145,6 +153,10 @@ func injectParticipateDomainService(
 	gmDomainService dom_service.GameMasterDomainService,
 ) dom_service.ParticipateDomainService {
 	return dom_service.NewParticipateDomainService(gmDomainService)
+}
+
+func injectMessageDomainService() dom_service.MessageDomainService {
+	return dom_service.NewMessageDomainService()
 }
 
 // repository

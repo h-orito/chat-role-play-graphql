@@ -46,6 +46,10 @@ func (gs GameStatus) String() string {
 	}
 }
 
+func (gs GameStatus) IsNotFinished() bool {
+	return gs != GameStatusFinished && gs != GameStatusCancelled
+}
+
 func GameStatusValues() []GameStatus {
 	return []GameStatus{
 		GameStatusClosed,

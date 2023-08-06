@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"chat-role-play/application/app_service"
+	"chat-role-play/domain/dom_service"
 	"chat-role-play/domain/model"
 	"chat-role-play/util/array"
 	"context"
@@ -35,23 +36,26 @@ type MessageUsecase interface {
 }
 
 type messageUsecase struct {
-	messageService app_service.MessageService
-	gameService    app_service.GameService
-	playerService  app_service.PlayerService
-	transaction    Transaction
+	messageService       app_service.MessageService
+	gameService          app_service.GameService
+	playerService        app_service.PlayerService
+	messageDomainService dom_service.MessageDomainService
+	transaction          Transaction
 }
 
 func NewMessageUsecase(
 	messageService app_service.MessageService,
 	gameService app_service.GameService,
 	playerService app_service.PlayerService,
+	messageDomainService dom_service.MessageDomainService,
 	tx Transaction,
 ) MessageUsecase {
 	return &messageUsecase{
-		messageService: messageService,
-		gameService:    gameService,
-		playerService:  playerService,
-		transaction:    tx,
+		messageService:       messageService,
+		gameService:          gameService,
+		playerService:        playerService,
+		messageDomainService: messageDomainService,
+		transaction:          tx,
 	}
 }
 
@@ -146,13 +150,18 @@ func (s *messageUsecase) assertRegisterMessage(
 			SenderEntryNumber: myself.EntryNumber,
 		}
 	}
-	return &model.Message{
+	msg := model.Message{
 		GamePeriodID: latestPeriod.ID,
 		Type:         message.Type,
 		Sender:       sender,
 		ReplyTo:      message.ReplyTo,
 		Content:      message.Content,
-	}, nil
+	}
+	err = s.messageDomainService.AssertRegisterMessage(*game, *player, msg)
+	if err != nil {
+		return nil, err
+	}
+	return &msg, nil
 }
 
 // RegisterMessageFavorite implements MessageService.
@@ -377,13 +386,19 @@ func (s *messageUsecase) assertRegisterDirectMessage(
 			SenderEntryNumber: myself.EntryNumber,
 		}
 	}
-	return &model.DirectMessage{
+	msg := model.DirectMessage{
 		GameParticipantGroupID: message.GameParticipantGroupID,
 		GamePeriodID:           latestPeriod.ID,
 		Type:                   message.Type,
 		Sender:                 sender,
 		Content:                message.Content,
-	}, nil
+	}
+	err = s.messageDomainService.AssertRegisterDirectMessage(*game, *player, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &msg, nil
 }
 
 // RegisterDirectMessageFavorite implements MessageService.

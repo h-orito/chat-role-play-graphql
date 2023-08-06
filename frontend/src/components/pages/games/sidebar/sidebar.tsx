@@ -54,7 +54,7 @@ export default function Sidebar({
     ((['Closed', 'Opening'].includes(game.status) && isGameMaster) ||
       ['Recruiting', 'Progress'].includes(game.status))
 
-  const canTalk = ['Opening', 'Recruiting', 'Progress'].includes(game.status)
+  const canModify = ['Opening', 'Recruiting', 'Progress'].includes(game.status)
 
   const displayClass = isSidebarOpen
     ? 'fixed z-20 bg-white md:static flex'
@@ -75,13 +75,13 @@ export default function Sidebar({
         {isGameMaster && (
           <div className='border-t border-gray-300 py-2'>
             <GameSettingsEditButton game={game} />
-            <GameMasterEditButton game={game} />
+            {canModify && <GameMasterEditButton game={game} />}
             <SystemMessageButton game={game} />
           </div>
         )}
         {myself && (
           <div className='border-t border-gray-300 py-2'>
-            {canTalk && <TalkButton game={game} myself={myself} />}
+            {canModify && <TalkButton game={game} myself={myself} />}
             <ProfileButton
               myself={myself}
               openProfileModal={openProfileModal}

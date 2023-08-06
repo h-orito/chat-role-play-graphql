@@ -161,10 +161,10 @@ func (g *gameUsecase) UpdateGameMaster(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
-			return nil, fmt.Errorf("you are not game master")
+		err = g.gameMasterDomainService.AssertModifyGameMaster(*game, *player)
+		if err != nil {
+			return nil, err
 		}
-
 		return nil, g.gameService.UpdateGameMaster(ctx, model.GameMaster{
 			ID:         gameMasterID,
 			IsProducer: isProducer,
@@ -194,8 +194,9 @@ func (g *gameUsecase) DeleteGameMaster(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
-			return nil, fmt.Errorf("you are not game master")
+		err = g.gameMasterDomainService.AssertModifyGameMaster(*game, *player)
+		if err != nil {
+			return nil, err
 		}
 		log.Printf("player id: %d delete game master id %d", player.ID, gameMasterID)
 
@@ -286,8 +287,9 @@ func (g *gameUsecase) UpdateGamePeriod(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
-			return nil, fmt.Errorf("you are not game master")
+		err = g.gameMasterDomainService.AssertModifyGameMaster(*game, *player)
+		if err != nil {
+			return nil, err
 		}
 
 		return nil, g.gameService.UpdateGamePeriod(ctx, gameID, period)
