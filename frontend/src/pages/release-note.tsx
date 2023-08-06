@@ -35,6 +35,7 @@ export default function CreateGame() {
               <li>
                 ゲーム内機能
                 <ul className='list-inside list-disc pl-4 text-left text-xs'>
+                  <li>期間表示</li>
                   <li>
                     GM機能
                     <ul className='list-inside list-disc pl-4 text-left text-xs'>

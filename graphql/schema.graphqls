@@ -269,6 +269,7 @@ type MessageTime {
 type MessageSender {
   participantId: ID!
   name: String!
+  entryNumber: Int!
   icon: GameParticipantIcon!
 }
 

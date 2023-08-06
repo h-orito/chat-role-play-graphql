@@ -143,6 +143,7 @@ func (s *messageUsecase) assertRegisterMessage(
 			GameParticipantID: myself.ID,
 			SenderIconID:      message.Sender.SenderIconID,
 			SenderName:        message.Sender.SenderName,
+			SenderEntryNumber: myself.EntryNumber,
 		}
 	}
 	return &model.Message{
@@ -373,6 +374,7 @@ func (s *messageUsecase) assertRegisterDirectMessage(
 			GameParticipantID: myself.ID,
 			SenderIconID:      message.Sender.SenderIconID,
 			SenderName:        message.Sender.SenderName,
+			SenderEntryNumber: myself.EntryNumber,
 		}
 	}
 	return &model.DirectMessage{

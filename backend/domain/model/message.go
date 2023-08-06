@@ -91,6 +91,7 @@ type MessageSender struct {
 	GameParticipantID uint32
 	SenderIconID      uint32
 	SenderName        string
+	SenderEntryNumber uint32
 }
 
 type MessageReplyTo struct {

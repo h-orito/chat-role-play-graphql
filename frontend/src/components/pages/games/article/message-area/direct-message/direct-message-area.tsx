@@ -154,16 +154,14 @@ export default function DirectMessageArea({
       />
       <div className='flex-1 overflow-y-auto'>
         {directMessages.list.map((message: DirectMessage) => (
-          <div className='border-t border-gray-300 '>
-            <DirectMessageComponent
-              game={game}
-              directMessage={message}
-              myself={myself}
-              key={message.id}
-              openProfileModal={openProfileModal}
-              openFavoritesModal={openFavoritesModal}
-            />
-          </div>
+          <DirectMessageComponent
+            game={game}
+            directMessage={message}
+            myself={myself}
+            key={message.id}
+            openProfileModal={openProfileModal}
+            openFavoritesModal={openFavoritesModal}
+          />
         ))}
       </div>
       <Paging

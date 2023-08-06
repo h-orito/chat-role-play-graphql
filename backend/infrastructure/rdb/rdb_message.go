@@ -12,6 +12,7 @@ type Message struct {
 	SenderGameParticipantID  *uint32
 	SenderIconID             *uint32
 	SenderName               *string
+	SenderEntryNumber        *uint32
 	ReplyToMessageID         *uint64
 	ReplyToGameParticipantID *uint32
 	MessageTypeCode          string
@@ -33,6 +34,7 @@ func (m Message) ToModel(favParticipantIDs []uint32) *model.Message {
 			GameParticipantID: *m.SenderGameParticipantID,
 			SenderIconID:      *m.SenderIconID,
 			SenderName:        *m.SenderName,
+			SenderEntryNumber: *m.SenderEntryNumber,
 		}
 	}
 	var replyTo *model.MessageReplyTo
@@ -95,6 +97,7 @@ type DirectMessage struct {
 	SenderGameParticipantID *uint32
 	SenderIconID            *uint32
 	SenderName              *string
+	SenderEntryNumber       *uint32
 	MessageTypeCode         string
 	MessageNumber           uint32
 	MessageContent          string
@@ -113,6 +116,7 @@ func (m DirectMessage) ToModel(favParticipantIDs []uint32) *model.DirectMessage 
 			GameParticipantID: *m.SenderGameParticipantID,
 			SenderIconID:      *m.SenderIconID,
 			SenderName:        *m.SenderName,
+			SenderEntryNumber: *m.SenderEntryNumber,
 		}
 	}
 	return &model.DirectMessage{

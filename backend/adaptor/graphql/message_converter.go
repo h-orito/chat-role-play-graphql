@@ -36,6 +36,7 @@ func MapToMessage(m *model.Message) *gqlmodel.Message {
 		sender = &gqlmodel.MessageSender{
 			ParticipantID: intIdToBase64(m.Sender.GameParticipantID, "GameParticipant"),
 			Name:          m.Sender.SenderName,
+			EntryNumber:   int(m.Sender.SenderEntryNumber),
 			IconID:        intIdToBase64(m.Sender.SenderIconID, "GameParticipantIcon"),
 		}
 	}
@@ -114,6 +115,7 @@ func MapToDirectMessage(m *model.DirectMessage) *gqlmodel.DirectMessage {
 		sender = &gqlmodel.MessageSender{
 			ParticipantID: intIdToBase64(m.Sender.GameParticipantID, "GameParticipant"),
 			Name:          m.Sender.SenderName,
+			EntryNumber:   int(m.Sender.SenderEntryNumber),
 			IconID:        intIdToBase64(m.Sender.SenderIconID, "GameParticipantIcon"),
 		}
 	}

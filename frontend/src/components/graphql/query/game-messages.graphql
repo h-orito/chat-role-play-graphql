@@ -15,6 +15,7 @@ query GameMessages($gameId: ID!, $query: MessagesQuery!) {
       sender {
         participantId
         name
+        entryNumber
         icon {
           url
           width

@@ -106,6 +106,7 @@ export default function GamePage({ gameId, game }: Props) {
       const mutation = () => {
         ref.current()
       }
+      mutation() // 初回だけ即時実行
       const timer = setInterval(mutation, 60000)
       return () => clearInterval(timer)
     }, [])

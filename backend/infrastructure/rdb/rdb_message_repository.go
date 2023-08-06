@@ -333,6 +333,7 @@ func registerMessage(tx *gorm.DB, gameID uint32, message model.Message) error {
 		rdb.SenderGameParticipantID = &message.Sender.GameParticipantID
 		rdb.SenderIconID = &message.Sender.SenderIconID
 		rdb.SenderName = &message.Sender.SenderName
+		rdb.SenderEntryNumber = &message.Sender.SenderEntryNumber
 	}
 	if message.ReplyTo != nil {
 		rdb.ReplyToMessageID = &message.ReplyTo.MessageID
@@ -806,6 +807,7 @@ func registerDirectMessage(tx *gorm.DB, gameID uint32, message model.DirectMessa
 		rdb.SenderGameParticipantID = &message.Sender.GameParticipantID
 		rdb.SenderIconID = &message.Sender.SenderIconID
 		rdb.SenderName = &message.Sender.SenderName
+		rdb.SenderEntryNumber = &message.Sender.SenderEntryNumber
 	}
 	now := time.Now()
 	rdb.SendAt = now

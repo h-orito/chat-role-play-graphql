@@ -287,6 +287,7 @@ type ComplexityRoot struct {
 	}
 
 	MessageSender struct {
+		EntryNumber   func(childComplexity int) int
 		Icon          func(childComplexity int) int
 		Name          func(childComplexity int) int
 		ParticipantID func(childComplexity int) int
@@ -1536,6 +1537,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.MessageRecipient.ParticipantID(childComplexity), true
+
+	case "MessageSender.entryNumber":
+		if e.complexity.MessageSender.EntryNumber == nil {
+			break
+		}
+
+		return e.complexity.MessageSender.EntryNumber(childComplexity), true
 
 	case "MessageSender.icon":
 		if e.complexity.MessageSender.Icon == nil {
@@ -3226,6 +3234,7 @@ type MessageTime {
 type MessageSender {
   participantId: ID!
   name: String!
+  entryNumber: Int!
   icon: GameParticipantIcon!
 }
 
@@ -6481,6 +6490,8 @@ func (ec *executionContext) fieldContext_DirectMessage_sender(ctx context.Contex
 				return ec.fieldContext_MessageSender_participantId(ctx, field)
 			case "name":
 				return ec.fieldContext_MessageSender_name(ctx, field)
+			case "entryNumber":
+				return ec.fieldContext_MessageSender_entryNumber(ctx, field)
 			case "icon":
 				return ec.fieldContext_MessageSender_icon(ctx, field)
 			}
@@ -10320,6 +10331,8 @@ func (ec *executionContext) fieldContext_Message_sender(ctx context.Context, fie
 				return ec.fieldContext_MessageSender_participantId(ctx, field)
 			case "name":
 				return ec.fieldContext_MessageSender_name(ctx, field)
+			case "entryNumber":
+				return ec.fieldContext_MessageSender_entryNumber(ctx, field)
 			case "icon":
 				return ec.fieldContext_MessageSender_icon(ctx, field)
 			}
@@ -11039,6 +11052,50 @@ func (ec *executionContext) fieldContext_MessageSender_name(ctx context.Context,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MessageSender_entryNumber(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.MessageSender) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MessageSender_entryNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EntryNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MessageSender_entryNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MessageSender",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -26000,6 +26057,13 @@ func (ec *executionContext) _MessageSender(ctx context.Context, sel ast.Selectio
 		case "name":
 
 			out.Values[i] = ec._MessageSender_name(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "entryNumber":
+
+			out.Values[i] = ec._MessageSender_entryNumber(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)

@@ -18,7 +18,7 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
       <ul className='flex py-2 text-xs'>
         <li>
           <button
-            className='w-12 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
+            className='w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
             onClick={() => setQuery(1)}
             disabled={!messages.hasPrePage}
           >
@@ -27,7 +27,7 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
         </li>
         <li>
           <button
-            className='w-12 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
+            className='w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
             onClick={() =>
               setQuery(messages.currentPageNumber ?? messages.allPageCount - 1)
             }
@@ -39,7 +39,7 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
         {pageCounts.map((pageCount) => (
           <li key={pageCount}>
             <button
-              className={`w-12 border border-gray-300 px-2 py-1 hover:bg-slate-200 ${
+              className={`w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 ${
                 pageCount === messages.currentPageNumber ? 'bg-blue-300' : ''
               }`}
               onClick={() => setQuery(pageCount)}
@@ -50,7 +50,7 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
         ))}
         <li>
           <button
-            className='w-12 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
+            className='w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
             onClick={() =>
               setQuery(messages.currentPageNumber ?? messages.allPageCount + 1)
             }
@@ -61,7 +61,7 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
         </li>
         <li>
           <button
-            className='w-12 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
+            className='w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
             onClick={() => setQuery(messages.allPageCount)}
             disabled={!messages.hasNextPage}
           >

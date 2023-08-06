@@ -35,7 +35,7 @@ export default function Participants({
           </div>
           <div className='ml-2 flex-1'>
             <p className='text-left'>
-              Eno.{participant.entryNumber} {participant.name}
+              ENo.{participant.entryNumber} {participant.name}
             </p>
             {participant.memo && (
               <p className='text-left'>{participant.memo}</p>

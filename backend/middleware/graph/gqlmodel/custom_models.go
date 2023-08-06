@@ -20,6 +20,7 @@ type GameParticipant struct {
 type MessageSender struct {
 	ParticipantID string               `json:"participantId"`
 	Name          string               `json:"name"`
+	EntryNumber   int                  `json:"entryNumber"`
 	IconID        string               `json:"iconId"`
 	Icon          *GameParticipantIcon `json:"icon"`
 }

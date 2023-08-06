@@ -42,12 +42,12 @@ export default function TalkMessage({
 
   return (
     <div>
-      <div className='w-full p-4'>
+      <div className='w-full px-4 py-2'>
         {message.sender && (
           <div className='flex pb-1'>
             <button onClick={handleProfileClick}>
               <p className='text-xs hover:text-blue-500'>
-                {message.sender.name}
+                ENo.{message.sender.entryNumber}&nbsp;{message.sender.name}
               </p>
             </button>
             <p className='ml-auto self-end text-xs text-gray-500'>

@@ -110,11 +110,12 @@ export default function DirectMessageComponent({
 
   return (
     <div>
-      <div className='w-full p-4'>
+      <div className='w-full px-4 py-2'>
         {directMessage.sender && (
           <div className='flex pb-1'>
             <button onClick={handleProfileClick}>
               <p className='text-xs hover:text-blue-500'>
+                ENo.{directMessage.sender.entryNumber}&nbsp;
                 {directMessage.sender.name}
               </p>
             </button>

@@ -94,7 +94,7 @@ export default function SearchCondition({
   }
 
   return (
-    <div className='w-full px-4 py-2'>
+    <div className='w-full border-b border-gray-300 px-4 py-2'>
       <div className='flex'>
         <label className='font-bold'>検索条件</label>
         <button className='ml-auto' onClick={() => setIsOpen(!isOpen)}>

@@ -63,13 +63,13 @@ INSERT INTO game_participant_groups VALUES (null, 1, 'group name', NOW(), NOW())
 
 INSERT INTO game_participant_group_members VALUES (NULL, 1, 1, NOW(), NOW());
 
-INSERT INTO messages VALUES (NULL, 1, 1, 1, 1, 'chara name', NULL, NULL, 'TalkNormal', 1, 'message content', NOW(), 12345, FALSE, 1, 1, NOW(), NOW());
-INSERT INTO messages VALUES (NULL, 1, 1, 1, 1, 'chara name', 1, 1, 'TalkNormal', 2, 'message content', NOW(), 12346, FALSE, 0, 0, NOW(), NOW());
+INSERT INTO messages VALUES (NULL, 1, 1, 1, 1, 'chara name', 1, NULL, NULL, 'TalkNormal', 1, 'message content', NOW(), 12345, FALSE, 1, 1, NOW(), NOW());
+INSERT INTO messages VALUES (NULL, 1, 1, 1, 1, 'chara name', 1, 1, 1, 'TalkNormal', 2, 'message content', NOW(), 12346, FALSE, 0, 0, NOW(), NOW());
 
 INSERT INTO message_replies VALUES (NULL, 1, 1, 2, NOW(), NOW());
 
 INSERT INTO message_favorites VALUES (null, 1, 1, 1, NOW(), NOW());
 
-INSERT INTO direct_messages VALUES (NULL, 1, 1, 1, 1, 1, 'chara name', 'TalkNormal', 1, 'message content', NOW(), 12345, FALSE, 1, NOW(), NOW());
+INSERT INTO direct_messages VALUES (NULL, 1, 1, 1, 1, 1, 'chara name', 1, 'TalkNormal', 1, 'message content', NOW(), 12345, FALSE, 1, NOW(), NOW());
 
 INSERT INTO direct_message_favorites VALUES (NULL, 1, 1, 1, NOW(), NOW());
