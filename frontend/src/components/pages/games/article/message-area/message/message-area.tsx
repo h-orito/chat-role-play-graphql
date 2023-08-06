@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from 'react'
 import SearchCondition from './search-condition'
 import { LazyQueryExecFunction, OperationVariables } from '@apollo/client'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
+import GamePeriodLinks from '../game-period-links'
 
 type Props = {
   game: Game
@@ -51,6 +52,7 @@ export default function MessageArea({
     senderIds: onlyFollowing
       ? [...myself!.followParticipantIds, myself!.id]
       : null,
+    periodId: searchable ? null : game.periods[0].id,
     paging: {
       pageSize: 10,
       pageNumber: 1,
@@ -107,7 +109,7 @@ export default function MessageArea({
 
   // 初回の取得
   useEffect(() => {
-    search(defaultMessageQuery)
+    if (!searchable) search(defaultMessageQuery)
   }, [])
 
   // 30秒（検索タブは60秒）ごとに最新をチェックして更新されていれば取得
@@ -126,6 +128,15 @@ export default function MessageArea({
     }, [])
   }
   usePollingMessages(() => fetchLatestTime())
+
+  const setPeriodQuery = (periodId: string) => {
+    const newQuery = {
+      ...messageQuery,
+      periodId
+    } as MessagesQuery
+    setMessageQuery(newQuery)
+    search(newQuery)
+  }
 
   const setPageableQuery = (pageNumber: number) => {
     const newQuery = {
@@ -153,6 +164,13 @@ export default function MessageArea({
             onlyFollowing={onlyFollowing}
           />
         </div>
+      )}
+      {!searchable && (
+        <GamePeriodLinks
+          game={game}
+          periodId={messageQuery.periodId}
+          setQuery={setPeriodQuery}
+        />
       )}
       <Paging
         messages={messages}

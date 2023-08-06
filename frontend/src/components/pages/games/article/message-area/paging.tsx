@@ -14,7 +14,7 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
   }
 
   return (
-    <div className='flex justify-center border-t border-gray-300'>
+    <div className='flex justify-center border-b border-gray-300'>
       <ul className='flex py-2 text-xs'>
         <li>
           <button

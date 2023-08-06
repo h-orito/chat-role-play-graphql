@@ -35,7 +35,6 @@ export default function CreateGame() {
               <li>
                 ゲーム内機能
                 <ul className='list-inside list-disc pl-4 text-left text-xs'>
-                  <li>期間表示</li>
                   <li>
                     GM機能
                     <ul className='list-inside list-disc pl-4 text-left text-xs'>
@@ -79,7 +78,15 @@ export default function CreateGame() {
                     </ul>
                   </li>
                   <li>日記</li>
-                  <li>通知</li>
+                  <li>
+                    ユーザー設定
+                    <ul className='list-inside list-disc pl-8 text-left text-xs'>
+                      <li>通知</li>
+                      <li>表示設定</li>
+                      <li>ミュート</li>
+                    </ul>
+                  </li>
+                  <li>開いているタブの保持</li>
                 </ul>
               </li>
             </ul>

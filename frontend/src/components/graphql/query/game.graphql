@@ -21,6 +21,8 @@ query Game($id: ID!) {
     }
     periods {
       id
+      name
+      count
     }
     settings {
       chara {

@@ -211,14 +211,28 @@ const GameSettingsButton = ({ game }: GameSettingsButtonProps) => {
 type UserSettingsButtonProps = {}
 
 const UserSettingsButton = ({}: UserSettingsButtonProps) => {
+  const [isOpenModal, setIsOpenModal] = useState(false)
+  const toggleModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenModal(!isOpenModal)
+    }
+  }
   return (
     <>
       <div>
-        <button className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'>
+        <button
+          className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+          onClick={() => setIsOpenModal(true)}
+        >
           <WrenchIcon className='mr-1 h-6 w-6' />
           <p className='flex-1 self-center text-left'>ユーザー設定</p>
         </button>
       </div>
+      {isOpenModal && (
+        <Modal close={toggleModal} hideFooter>
+          <div>準備中</div>
+        </Modal>
+      )}
     </>
   )
 }

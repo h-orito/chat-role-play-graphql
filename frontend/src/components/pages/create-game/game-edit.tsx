@@ -202,7 +202,7 @@ export default function GameEdit(props: Props) {
                 <br />
                 例. 1日目, 2日目, ..
                 <br />
-                ゲーム開始直後に1つ目の期間が始まります。
+                ゲーム開始までは「プロローグ」固定で、ゲーム開始直後に1つ目の期間が始まります。
               </p>
             </div>
             <div className='flex justify-center'>
