@@ -14,7 +14,6 @@ import GameSettings from './game-settings'
 import Modal from '@/components/modal/modal'
 import Participate from './participate'
 import { useAuth0 } from '@auth0/auth0-react'
-import Talk from '../talk/talk'
 import ArticleModal from '@/components/modal/article-modal'
 import Participants from '../participant/participants'
 import Link from 'next/link'
@@ -81,7 +80,6 @@ export default function Sidebar({
         )}
         {myself && (
           <div className='border-t border-gray-300 py-2'>
-            {canModify && <TalkButton game={game} myself={myself} />}
             <ProfileButton
               myself={myself}
               openProfileModal={openProfileModal}
@@ -332,36 +330,6 @@ const SystemMessageButton = ({ game }: SystemMessageButtonProps) => {
       {isOpenModal && (
         <Modal close={toggleModal} hideFooter>
           <TalkSystem game={game} close={toggleModal} />
-        </Modal>
-      )}
-    </>
-  )
-}
-
-type TalkButtonProps = {
-  game: Game
-  myself: GameParticipant | null
-}
-
-const TalkButton = ({ game, myself }: TalkButtonProps) => {
-  const [isOpenTalkModal, setIsOpenTalkModal] = useState(false)
-  const toggleTalkModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenTalkModal(!isOpenTalkModal)
-    }
-  }
-  return (
-    <>
-      <button
-        className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
-        onClick={() => setIsOpenTalkModal(true)}
-      >
-        <PencilSquareIcon className='mr-1 h-6 w-6' />
-        <p className='flex-1 self-center text-left'>発言</p>
-      </button>
-      {isOpenTalkModal && (
-        <Modal close={toggleTalkModal} hideFooter>
-          <Talk game={game} myself={myself!} close={toggleTalkModal} />
         </Modal>
       )}
     </>

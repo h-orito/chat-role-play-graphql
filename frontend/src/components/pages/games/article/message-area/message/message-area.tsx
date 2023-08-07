@@ -15,6 +15,9 @@ import SearchCondition from './search-condition'
 import { LazyQueryExecFunction, OperationVariables } from '@apollo/client'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import GamePeriodLinks from '../game-period-links'
+import Modal from '@/components/modal/modal'
+import { PencilSquareIcon } from '@heroicons/react/24/outline'
+import Talk from '../../../talk/talk'
 
 type Props = {
   game: Game
@@ -71,7 +74,7 @@ export default function MessageArea({
   const [latestTime, setLatestTime] = useState<number>(0)
   const [messageQuery, setMessageQuery] = useState(defaultMessageQuery)
 
-  const search = async (query: MessagesQuery) => {
+  const search = async (query: MessagesQuery = messageQuery) => {
     const newQuery = {
       ...query
     }
@@ -102,14 +105,14 @@ export default function MessageArea({
     if (data?.messagesLatestUnixTimeMilli == null) return
     const latest = data.messagesLatestUnixTimeMilli as number
     if (latestTime < latest) {
-      if (isViewing) search(messageQuery)
+      if (isViewing) search()
       else setExistUnread(true)
     }
   }
 
   // 初回の取得
   useEffect(() => {
-    if (!searchable) search(defaultMessageQuery)
+    if (!searchable) search()
   }, [])
 
   // 30秒（検索タブは60秒）ごとに最新をチェックして更新されていれば取得
@@ -134,7 +137,6 @@ export default function MessageArea({
       ...messageQuery,
       periodId
     } as MessagesQuery
-    setMessageQuery(newQuery)
     search(newQuery)
   }
 
@@ -146,13 +148,15 @@ export default function MessageArea({
         pageNumber
       } as PageableQuery
     } as MessagesQuery
-    setMessageQuery(newQuery)
     search(newQuery)
   }
 
+  const canTalk =
+    myself && ['Opening', 'Recruiting', 'Progress'].includes(game.status)
+
   return (
     <div
-      className={`${className} mut-height-guard flex flex-1 flex-col overflow-y-auto`}
+      className={`${className} mut-height-guard relative flex flex-1 flex-col overflow-y-auto`}
     >
       {searchable && (
         <div className='flex'>
@@ -165,6 +169,7 @@ export default function MessageArea({
           />
         </div>
       )}
+      {canTalk && <TalkButton game={game} myself={myself!} search={search} />}
       {!searchable && (
         <GamePeriodLinks
           game={game}
@@ -198,5 +203,40 @@ export default function MessageArea({
         setQuery={setPageableQuery}
       />
     </div>
+  )
+}
+
+type TalkButtonProps = {
+  game: Game
+  myself: GameParticipant | null
+  search: (query?: MessagesQuery) => void
+}
+
+const TalkButton = ({ game, myself, search }: TalkButtonProps) => {
+  const [isOpenTalkModal, setIsOpenTalkModal] = useState(false)
+  const toggleTalkModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenTalkModal(!isOpenTalkModal)
+    }
+  }
+  return (
+    <>
+      <button
+        className='absolute bottom-4 right-4 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+        onClick={() => setIsOpenTalkModal(true)}
+      >
+        <PencilSquareIcon className='h-8 w-8' />
+      </button>
+      {isOpenTalkModal && (
+        <Modal close={toggleTalkModal} hideFooter>
+          <Talk
+            game={game}
+            myself={myself!}
+            close={toggleTalkModal}
+            search={search}
+          />
+        </Modal>
+      )}
+    </>
   )
 }

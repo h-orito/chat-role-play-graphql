@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react'
 import Paging from '../paging'
 import DirectMessageComponent from './direct-message'
 import DirectSearchCondition from './direct-search-condition'
-import { PencilIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
+import { EnvelopeIcon, PencilIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import ParticipantGroupEdit from './participant-group-edit'
 import TalkDirect from '../../../talk/talk-direct'
@@ -24,7 +24,7 @@ type Props = {
   close: (e: any) => void
   game: Game
   myself: GameParticipant
-  group: GameParticipantGroup | null
+  group: GameParticipantGroup
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   refetchGroups: () => void
@@ -39,18 +39,15 @@ export default function DirectMessageArea({
   openFavoritesModal,
   refetchGroups
 }: Props) {
-  const defaultQuery: DirectMessagesQuery | null =
-    group == null
-      ? null
-      : {
-          participantGroupId: group.id,
-          paging: {
-            pageSize: 10,
-            pageNumber: 1,
-            isDesc: true
-          }
-        }
-  const [query, setQuery] = useState<DirectMessagesQuery | null>(defaultQuery)
+  const defaultQuery: DirectMessagesQuery | null = {
+    participantGroupId: group.id,
+    paging: {
+      pageSize: 10,
+      pageNumber: 1,
+      isDesc: true
+    }
+  }
+  const [query, setQuery] = useState<DirectMessagesQuery>(defaultQuery)
   const [directMessages, setDirectMessages] = useState<DirectMessages>({
     list: [],
     allPageCount: 0,
@@ -64,15 +61,15 @@ export default function DirectMessageArea({
     GameDirectMessagesDocument
   )
 
-  const search = async (query: DirectMessagesQuery) => {
+  const search = async (q: DirectMessagesQuery = query) => {
     const newQuery = {
-      ...query
+      ...q
     }
-    setQuery(newQuery)
+    setQuery(q)
     const { data } = await fetchDirectMessages({
       variables: {
         gameId: game.id,
-        query: query
+        query: q
       } as GameDirectMessagesQueryVariables
     })
     if (data?.directMessages == null) return
@@ -118,7 +115,7 @@ export default function DirectMessageArea({
   const canModify = ['Opening', 'Recruiting', 'Progress'].includes(game.status)
 
   return (
-    <div className={`flex flex-1 flex-col overflow-y-auto`}>
+    <div className='flex flex-1 flex-col overflow-y-auto'>
       <div className='flex border-b border-gray-300 px-4 py-2'>
         <p className='self-center'>
           メンバー:{' '}
@@ -134,15 +131,12 @@ export default function DirectMessageArea({
         )}
       </div>
       {canModify && (
-        <div className='flex border-b border-gray-300'>
-          <button
-            className='flex w-full justify-start py-2 pl-4 hover:bg-slate-200'
-            onClick={() => setIsOpenTalkModal(true)}
-          >
-            <PencilSquareIcon className='mr-1 h-6 w-6' />
-            <p className='flex-1 self-center text-left'>発言</p>
-          </button>
-        </div>
+        <button
+          className='absolute bottom-4 right-4 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+          onClick={() => setIsOpenTalkModal(true)}
+        >
+          <EnvelopeIcon className='h-6 w-6' />
+        </button>
       )}
       <div className='flex border-b border-gray-300'>
         <DirectSearchCondition
@@ -192,6 +186,7 @@ export default function DirectMessageArea({
             myself={myself!}
             gameParticipantGroup={group!}
             close={toggleTalkModal}
+            search={search}
           />
         </Modal>
       )}

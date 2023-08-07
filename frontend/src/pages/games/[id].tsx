@@ -15,7 +15,6 @@ import {
   GameParticipant,
   GameQuery,
   GameQueryVariables,
-  MessagesQuery,
   MyGameParticipantDocument,
   MyGameParticipantQuery,
   MyGameParticipantQueryVariables,
@@ -121,7 +120,8 @@ export default function GamePage({ gameId, game }: Props) {
     }
   )
   const changePeriodIfNeeded = async () => {
-    if (!['Opening', 'Recruiting', 'Progress'].includes(game.status)) return
+    if (!['Closed', 'Opening', 'Recruiting', 'Progress'].includes(game.status))
+      return
     await changePeriod({
       variables: {
         input: {

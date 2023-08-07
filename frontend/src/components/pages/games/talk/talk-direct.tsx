@@ -31,6 +31,7 @@ type Props = {
   game: Game
   myself: GameParticipant
   close: (e: any) => void
+  search: () => void
   gameParticipantGroup: GameParticipantGroup
 }
 
@@ -54,6 +55,7 @@ export default function TalkDirect({
   game,
   myself,
   close,
+  search,
   gameParticipantGroup
 }: Props) {
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
@@ -101,6 +103,7 @@ export default function TalkDirect({
   const [talkDirect] = useMutation<TalkDirectMutation>(TalkDirectDocument, {
     onCompleted(e) {
       close(e)
+      search()
     },
     onError(error) {
       console.error(error)

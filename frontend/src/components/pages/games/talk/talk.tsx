@@ -30,6 +30,7 @@ type Props = {
   game: Game
   myself: GameParticipant
   close: (e: any) => void
+  search: () => void
 }
 
 const candidates = [
@@ -48,7 +49,7 @@ interface FormInput {
   talkMessage: string
 }
 
-export default function Talk({ game, myself, close }: Props) {
+export default function Talk({ game, myself, close, search }: Props) {
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
   const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
 
@@ -91,6 +92,7 @@ export default function Talk({ game, myself, close }: Props) {
   const [talk] = useMutation<TalkMutation>(TalkDocument, {
     onCompleted(e) {
       close(e)
+      search()
     },
     onError(error) {
       console.error(error)
