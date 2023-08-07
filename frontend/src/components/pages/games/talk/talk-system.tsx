@@ -108,9 +108,10 @@ export default function TalkSystem({ game, close }: Props) {
               }
             }}
             minRows={5}
+            maxLength={1000}
           />
         </div>
-        <div className='flex justify-end'>
+        <div className='mt-4 flex justify-end'>
           <SubmitButton
             label={preview ? 'プレビュー内容で送信' : 'プレビュー'}
             disabled={!canSubmit}
@@ -124,7 +125,7 @@ export default function TalkSystem({ game, close }: Props) {
         {preview && (
           <div className='my-4 border-t border-gray-300 pt-2'>
             <p className='font-bold'>プレビュー</p>
-            <div className='border border-gray-300'>
+            <div>
               <SystemMessage message={preview!} />
             </div>
           </div>

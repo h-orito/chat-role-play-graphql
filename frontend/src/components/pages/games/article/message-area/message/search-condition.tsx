@@ -25,10 +25,10 @@ const candidates = [
     label: '通常',
     value: MessageType.TalkNormal
   },
-  {
-    label: '独り言',
-    value: MessageType.Monologue
-  },
+  // {
+  //   label: '独り言',
+  //   value: MessageType.Monologue
+  // },
   {
     label: 'システム',
     value: MessageType.SystemPublic

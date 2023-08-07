@@ -35,16 +35,16 @@ type Props = {
   gameParticipantGroup: GameParticipantGroup
 }
 
-const candidates = [
-  {
-    label: '通常',
-    value: MessageType.TalkNormal
-  },
-  {
-    label: '独り言',
-    value: MessageType.Monologue
-  }
-]
+// const candidates = [
+//   {
+//     label: '通常',
+//     value: MessageType.TalkNormal
+//   },
+//   {
+//     label: '独り言',
+//     value: MessageType.Monologue
+//   }
+// ]
 
 interface FormInput {
   name: string
@@ -156,7 +156,7 @@ export default function TalkDirect({
         <div className='mb-2'>
           <p>DM送信先: {gameParticipantGroup.name}</p>
         </div>
-        <div className='mb-2'>
+        {/* <div className='mb-2'>
           <p className='mb-1 text-xs font-bold'>種別</p>
           <RadioGroup
             name='talk-type'
@@ -165,7 +165,7 @@ export default function TalkDirect({
             setSelected={setTalkType}
             disabled={preview != null}
           />
-        </div>
+        </div> */}
         <div className='my-2'>
           <p className='text-xs font-bold'>名前</p>
           <InputText
@@ -223,11 +223,12 @@ export default function TalkDirect({
                 }
               }}
               minRows={5}
+              maxLength={1000}
               disabled={preview != null}
             />
           </div>
         </div>
-        <div className='flex justify-end'>
+        <div className='mt-4 flex justify-end'>
           <SubmitButton
             label={preview ? 'プレビュー内容で送信' : 'プレビュー'}
             disabled={!canSubmit}
@@ -240,9 +241,9 @@ export default function TalkDirect({
         </div>
       </form>
       {preview && (
-        <div className='my-4'>
+        <div className='my-4 border-t border-gray-300 pt-2'>
           <p className='font-bold'>プレビュー</p>
-          <div className='rounded-md border border-gray-300'>
+          <div>
             <DirectMessageComponent
               directMessage={preview!}
               myself={myself}

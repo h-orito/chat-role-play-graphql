@@ -24,6 +24,7 @@ import DangerButton from '@/components/button/danger-button'
 import FollowsCount from './follows-count'
 import FollowersCount from './followers-count'
 import ParticipantIcons from './participant-icons'
+import MessageText from '../article/message-area/message-text/message-text'
 
 type Props = {
   close: (e: any) => void
@@ -131,7 +132,7 @@ export default function Profile({
           </div>
           {profile.introduction && (
             <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-xs text-gray-700'>
-              {profile.introduction}
+              <MessageText rawText={profile.introduction} />
             </p>
           )}
           <div>

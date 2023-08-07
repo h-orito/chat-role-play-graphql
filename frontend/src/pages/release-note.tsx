@@ -14,7 +14,7 @@ export default function CreateGame() {
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>公開</p>
               <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/07/25
+                2023/08/07
               </p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
@@ -38,7 +38,7 @@ export default function CreateGame() {
                   <li>
                     GM機能
                     <ul className='list-inside list-disc pl-4 text-left text-xs'>
-                      <li>ゲーム削除</li>
+                      <li>ゲーム削除（いわゆる廃村）</li>
                       <li>手動期間更新、ステータス更新</li>
                     </ul>
                   </li>
@@ -55,7 +55,6 @@ export default function CreateGame() {
                   <li>
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
-                      <li>発言したら最新取得</li>
                       <li>返信</li>
                       <li>宛先</li>
                       <li>PL発言（PL発言タイムライン）</li>
@@ -87,6 +86,13 @@ export default function CreateGame() {
                     </ul>
                   </li>
                   <li>開いているタブの保持</li>
+                  <li>
+                    プロフィール
+                    <ul className='list-inside list-disc pl-8 text-left text-xs'>
+                      <li>ひとことメモ</li>
+                      <li>フォローフリーとか連れ出し歓迎とかのタグ機能</li>
+                    </ul>
+                  </li>
                 </ul>
               </li>
             </ul>

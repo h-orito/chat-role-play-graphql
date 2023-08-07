@@ -194,7 +194,7 @@ export default function ParticipantIconEdit({
   return (
     <div>
       <div className='mb-1'>
-        <p>並び替え</p>
+        <label className='text-xs font-bold'>並び替え</label>
         {icons.length === 0 && <p>アイコンが登録されていません。</p>}
         {icons.length > 0 && (
           <>
@@ -228,19 +228,22 @@ export default function ParticipantIconEdit({
         )}
       </div>
       <form onSubmit={onSubmit}>
-        <InputImage
-          label='追加'
-          name='iconImage'
-          images={images}
-          setImages={setImages}
-        />
+        <div className='my-4'>
+          <label className='text-xs font-bold'>追加</label>
+          <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+            jpeg, jpg, png形式かつ1MB以下の画像を選択してください。
+            <br />
+            縦横ともに60pxで表示されます。
+          </p>
+          <InputImage name='iconImage' images={images} setImages={setImages} />
+        </div>
         <div className='flex justify-end'>
           <SubmitButton label='追加' disabled={!canSubmit} />
         </div>
       </form>
       {icons.length > 0 && (
         <div className='mb-1'>
-          <p>削除</p>
+          <label className='text-xs font-bold'>削除</label>
           <div className='flex'>
             {icons.map((icon) => (
               <div className='relative flex' key={icon.id}>

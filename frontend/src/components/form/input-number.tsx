@@ -57,7 +57,7 @@ const InputText = <
 
   return (
     <div>
-      {label && <label className='block text-sm'>{label}</label>}
+      {label && <label className='block text-xs font-bold'>{label}</label>}
       <input
         type='number'
         className={`${

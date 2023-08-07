@@ -10,6 +10,7 @@ import { FieldByType } from './types'
 import TextareaAutosize, {
   TextareaAutosizeProps
 } from 'react-textarea-autosize'
+import { valueFromAST } from 'graphql'
 
 // see https://zukucode.com/2022/11/react-hook-form-typescript-control.html
 type Props<
@@ -21,6 +22,7 @@ type Props<
     UseControllerProps<TFieldValues, TName>
   > & {
     label?: string
+    maxLength?: number
   } & TextareaAutosizeProps
 
 const InputTextarea = <
@@ -29,7 +31,16 @@ const InputTextarea = <
 >(
   props: Props<TFieldValues, TName>
 ) => {
-  const { name, control, rules, onChange, onBlur, label, ...fieldProps } = props
+  const {
+    name,
+    control,
+    rules,
+    onChange,
+    onBlur,
+    label,
+    maxLength,
+    ...fieldProps
+  } = props
   const {
     field,
     formState: { errors }
@@ -56,7 +67,7 @@ const InputTextarea = <
 
   return (
     <div>
-      {label && <label className='block text-sm'>{label}</label>}
+      {label && <label className='block text-xs font-bold'>{label}</label>}
       <TextareaAutosize
         id={field.name}
         className={`rounded border ${borderClass} w-full px-2 py-1`}
@@ -66,9 +77,19 @@ const InputTextarea = <
         onBlur={handleBlur}
         {...props}
       />
+      {maxLength && <TextCount maxLength={maxLength} value={field.value} />}
       {errorMessage && <p className='text-xs text-red-500'>{errorMessage}</p>}
     </div>
   )
 }
 
 export default InputTextarea
+
+const TextCount = (props: { maxLength: number; value: string }) => {
+  const isOver = props.value.length > props.maxLength
+  return (
+    <p className={`flex justify-end ${isOver ? 'text-red-500' : ''}`}>
+      {props.value.length} / {props.maxLength}
+    </p>
+  )
+}

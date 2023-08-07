@@ -33,16 +33,16 @@ type Props = {
   search: () => void
 }
 
-const candidates = [
-  {
-    label: '通常',
-    value: MessageType.TalkNormal
-  },
-  {
-    label: '独り言',
-    value: MessageType.Monologue
-  }
-]
+// const candidates = [
+//   {
+//     label: '通常',
+//     value: MessageType.TalkNormal
+//   },
+//   {
+//     label: '独り言',
+//     value: MessageType.Monologue
+//   }
+// ]
 
 interface FormInput {
   name: string
@@ -140,7 +140,7 @@ export default function Talk({ game, myself, close, search }: Props) {
   return (
     <div className='py-2'>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className='mb-2'>
+        {/* <div className='mb-2'>
           <p className='mb-1 text-xs font-bold'>種別</p>
           <RadioGroup
             name='talk-type'
@@ -149,7 +149,7 @@ export default function Talk({ game, myself, close, search }: Props) {
             setSelected={setTalkType}
             disabled={preview != null}
           />
-        </div>
+        </div> */}
         <div className='my-2'>
           <p className='text-xs font-bold'>名前</p>
           <InputText
@@ -207,11 +207,12 @@ export default function Talk({ game, myself, close, search }: Props) {
                 }
               }}
               minRows={5}
+              maxLength={1000}
               disabled={preview != null}
             />
           </div>
         </div>
-        <div className='flex justify-end'>
+        <div className='mt-4 flex justify-end'>
           <SubmitButton
             label={preview ? 'プレビュー内容で送信' : 'プレビュー'}
             disabled={!canSubmit}
@@ -226,7 +227,7 @@ export default function Talk({ game, myself, close, search }: Props) {
       {preview && (
         <div className='my-4 border-t border-gray-300 pt-2'>
           <p className='font-bold'>プレビュー</p>
-          <div className='rounded-md border border-gray-300'>
+          <div className=''>
             <TalkMessage
               message={preview!}
               game={game}

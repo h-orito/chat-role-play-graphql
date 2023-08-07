@@ -73,7 +73,7 @@ const replaceTargets: Array<ReplaceTarget> = [
   },
   {
     regex: /\[kusodeka\](.*?)\[\/kusodeka\]/g,
-    replace: `<span style="font-size: 300%;">$1</span>`
+    replace: `<span style="font-size: 250%;">$1</span>`
   },
   {
     regex: /\[ruby\](.*?)\[rt\](.*?)\[\/rt\]\[\/ruby\]/g,

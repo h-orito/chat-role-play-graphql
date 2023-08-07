@@ -21,16 +21,16 @@ type Props = {
   search: (query: DirectMessagesQuery) => void
 }
 
-const candidates = [
-  {
-    label: '通常',
-    value: MessageType.TalkNormal
-  },
-  {
-    label: '独り言',
-    value: MessageType.Monologue
-  }
-]
+// const candidates = [
+//   {
+//     label: '通常',
+//     value: MessageType.TalkNormal
+//   },
+//   {
+//     label: '独り言',
+//     value: MessageType.Monologue
+//   }
+// ]
 
 export default function DirectSearchCondition({
   game,
@@ -42,7 +42,7 @@ export default function DirectSearchCondition({
   const [isOpen, setIsOpen] = useState(false)
 
   const [types, setTypes] = useState<MessageType[]>(
-    query.types || [MessageType.TalkNormal, MessageType.Monologue]
+    query.types || [MessageType.TalkNormal]
   )
   const [senders, setSenders] = useState<GameParticipant[]>(
     query.senderIds
@@ -70,8 +70,8 @@ export default function DirectSearchCondition({
     const keywords = keyword.split(' ').filter((k) => k.length !== 0)
     const newQuery: DirectMessagesQuery = {
       ...query,
-      types:
-        types.length > 0 && types.length !== candidates.length ? types : null,
+      types: null,
+      // types.length > 0 && types.length !== candidates.length ? types : null,
       senderIds:
         senders.length > 0 && senders.length !== group.participants.length
           ? senders.map((s) => s.id)
@@ -99,7 +99,7 @@ export default function DirectSearchCondition({
         </button>
       </div>
       <div className={isOpen ? '' : 'hidden'}>
-        <div className='my-2'>
+        {/* <div className='my-2'>
           <label className='text-xs font-bold'>種別</label>
           <CheckGroup
             className='mt-1 text-xs'
@@ -108,7 +108,7 @@ export default function DirectSearchCondition({
             selected={types}
             setSelected={setTypes}
           />
-        </div>
+        </div> */}
         <div className='my-2'>
           <label className='text-xs font-bold'>発言者</label>
           {senders.length === 0 ||
@@ -124,7 +124,7 @@ export default function DirectSearchCondition({
         <div className='my-2'>
           <label className='text-xs font-bold'>キーワード</label>
           <input
-            className='w-full rounded border border-gray-300 px-2 py-1'
+            className='w-full rounded border border-gray-300 px-2 py-1 text-xs'
             value={keyword}
             placeholder='スペース区切りでOR検索'
             onChange={(e) => setKeyword(e.target.value)}

@@ -61,8 +61,8 @@ export default function InputImage({
   }
 
   return (
-    <div className='my-4'>
-      {label && <label className='block text-sm'>{label}</label>}
+    <div>
+      {label && <label className='block text-xs font-bold'>{label}</label>}
       {previewImageUrl && (
         <img
           className='mb-2 w-32'

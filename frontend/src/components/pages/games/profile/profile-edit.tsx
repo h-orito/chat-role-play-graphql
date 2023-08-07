@@ -17,6 +17,7 @@ import { useMutation } from '@apollo/client'
 import { useCallback, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Modal from '@/components/modal/modal'
+import TalkTextDecorators from '../talk/talk-text-decorators'
 
 type Props = {
   close: (e: any) => void
@@ -42,7 +43,7 @@ export default function ProfileEdit({
   icons,
   refetchProfile
 }: Props) {
-  const { control, formState, handleSubmit } = useForm<FormInput>({
+  const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
     defaultValues: {
       name: profile.name,
       introduction: profile.introduction ?? ''
@@ -95,6 +96,8 @@ export default function ProfileEdit({
 
   const selectedIcon = icons.find((icon) => icon.id === iconId)
 
+  const updateIntroduction = (str: string) => setValue('introduction', str)
+
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -113,23 +116,39 @@ export default function ProfileEdit({
           />
         </div>
         <div className='my-4'>
+          <label className='text-xs font-bold'>自己紹介</label>
+          <div className='mb-1 flex'>
+            <TalkTextDecorators
+              selector='#introduction'
+              setMessage={updateIntroduction}
+            />
+          </div>
           <InputTextarea
-            label='自己紹介'
             name='introduction'
             control={control}
             rules={{}}
             minRows={5}
           />
         </div>
-        <InputImage
-          label='プロフィール画像'
-          name='profileImage'
-          images={images}
-          setImages={setImages}
-          defaultImageUrl={profile.profileImageUrl}
-        />
+        <div className='my-4'>
+          <label className='text-xs font-bold'>プロフィール画像</label>
+          <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+            jpeg, jpg, png形式かつ1MB以下の画像を選択してください。
+            <br />
+            横400pxで表示されます。
+          </p>
+          <InputImage
+            name='profileImage'
+            images={images}
+            setImages={setImages}
+            defaultImageUrl={profile.profileImageUrl}
+          />
+        </div>
         <div>
-          <label>プロフィールアイコン</label>
+          <label className='text-xs font-bold'>プロフィールアイコン</label>
+          <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs'>
+            登録済みのアイコンから選択してください。
+          </p>
           {icons.length <= 0 && (
             <Image
               src={

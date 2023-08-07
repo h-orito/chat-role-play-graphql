@@ -62,9 +62,6 @@ export default function DirectMessageArea({
   )
 
   const search = async (q: DirectMessagesQuery = query) => {
-    const newQuery = {
-      ...q
-    }
     setQuery(q)
     const { data } = await fetchDirectMessages({
       variables: {
