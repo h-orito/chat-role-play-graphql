@@ -28,8 +28,7 @@ export default function CreateGame() {
             <ul className='list-inside list-disc py-2 text-left text-xs'>
               <li>エラーハンドリングもろもろ</li>
               <li>サイト紹介</li>
-              <li>利用規約</li>
-              <li>プライバシーポリシー</li>
+              <li>説明書</li>
               <li>FAQ</li>
               <li>プレイヤープロフィール（参加履歴的な）</li>
               <li>
@@ -50,11 +49,14 @@ export default function CreateGame() {
                       <li>キャッチ画像</li>
                       <li>テーマ（最低限ライトとダークモード）</li>
                       <li>キャラチップ利用</li>
+                      <li>終了後DM公開</li>
                     </ul>
                   </li>
+                  <li>参加時の利用規約プライバシーポリシー同意</li>
                   <li>
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
+                      <li>独り言</li>
                       <li>返信</li>
                       <li>宛先</li>
                       <li>PL発言（PL発言タイムライン）</li>
