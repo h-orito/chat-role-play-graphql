@@ -1,9 +1,0 @@
-query game($id: ID!) {
-  game(id: $id) {
-    id
-    name
-    participants(paging: { pageSize: 10, pageNumber: 1, isDesc: true }) {
-      id
-    }
-  }
-}

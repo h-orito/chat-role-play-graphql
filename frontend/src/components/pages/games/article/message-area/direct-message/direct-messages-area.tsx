@@ -140,7 +140,7 @@ export default function DirectMessagesArea({
           <DirectMessageArea
             game={game}
             myself={myself}
-            group={directMessageGroup}
+            group={directMessageGroup!}
             close={toggleDirectMessageModal}
             openProfileModal={openProfileModal}
             openFavoritesModal={openFavoritesModal}

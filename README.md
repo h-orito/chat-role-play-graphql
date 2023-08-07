@@ -5,13 +5,9 @@ GraphQL で遊びつつロールプレイしやすいチャット環境を作っ
 ## backend
 
 - Go
+- GraphQL
 - MySQL
 
 ## frontend
 
-- Vue3(Nuxt3)
-
-## やりたいことメモ
-
-- 絵文字リアクション
-- ふぁぼしたメッセージ一覧
+- Next.js
