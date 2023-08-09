@@ -26,7 +26,7 @@ export default function Participants({
               className='cursor-pointer'
               src={
                 participant.profileIcon?.url ??
-                'https://placehold.jp/cccccc/999/120x120.png?text=no%20image'
+                '/chat-role-play/images/no-image-icon.png'
               }
               width={60}
               height={60}

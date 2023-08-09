@@ -14,7 +14,7 @@ export default function CreateGame() {
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>公開</p>
               <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/08/07
+                2023/08/10
               </p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
