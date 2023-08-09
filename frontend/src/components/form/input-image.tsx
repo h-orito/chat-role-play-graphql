@@ -5,10 +5,9 @@ import PrimaryButton from '../button/primary-button'
 interface Props {
   label?: string
   name: string
-  componentRef?: (instance: HTMLInputElement | null) => void
-  images: File[]
   setImages: Dispatch<SetStateAction<File[]>>
   defaultImageUrl?: string | null
+  maxFileKByte?: number
 }
 
 const allowImageTypes = ['image/jpeg', 'image/png', 'image/jpg']
@@ -16,10 +15,9 @@ const allowImageTypes = ['image/jpeg', 'image/png', 'image/jpg']
 export default function InputImage({
   label,
   name,
-  componentRef,
-  images,
   setImages,
-  defaultImageUrl
+  defaultImageUrl,
+  maxFileKByte = 1024
 }: Props) {
   const [errorMessage, setErrorMessage] = useState('')
   const [previewImageUrl, setPreviewImageUrl] = useState(defaultImageUrl)
@@ -44,8 +42,8 @@ export default function InputImage({
       return
     }
 
-    if (file.size > 1024 * 1024) {
-      setErrorMessage('1MB以下のファイルを選択してください')
+    if (file.size > maxFileKByte * 1024) {
+      setErrorMessage(`${maxFileKByte}kByte以下のファイルを選択してください`)
       return
     }
 

@@ -133,13 +133,12 @@ export default function ProfileEdit({
         <div className='my-4'>
           <label className='text-xs font-bold'>プロフィール画像</label>
           <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
-            jpeg, jpg, png形式かつ1MB以下の画像を選択してください。
+            jpeg, jpg, png形式かつ1MByte以下の画像を選択してください。
             <br />
             横400pxで表示されます。
           </p>
           <InputImage
             name='profileImage'
-            images={images}
             setImages={setImages}
             defaultImageUrl={profile.profileImageUrl}
           />
