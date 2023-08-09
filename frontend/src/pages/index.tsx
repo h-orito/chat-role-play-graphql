@@ -17,6 +17,7 @@ import Term from '@/components/pages/index/term'
 import Policy from '@/components/pages/index/policy'
 import Tip from '@/components/pages/index/tip'
 import Head from 'next/head'
+import { useAuth0 } from '@auth0/auth0-react'
 
 export const getServerSideProps = async () => {
   const client = createInnerClient()
@@ -48,6 +49,7 @@ type Props = {
 }
 
 export default function Index({ games }: Props) {
+  const { isAuthenticated } = useAuth0()
   const [isOpenTermModal, setIsOpenTermModal] = useState(false)
   const toggleTermModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -92,16 +94,26 @@ export default function Index({ games }: Props) {
               <p className='text-xs'>開催中のゲームはありません。</p>
             )}
             <div className='mt-2 flex justify-center gap-2'>
-              <div className='flex flex-1 justify-end'>
-                <Link href='/create-game'>
-                  <PrimaryButton>ゲーム作成</PrimaryButton>
-                </Link>
-              </div>
-              <div className='flex flex-1 justify-start'>
-                <Link href='/games'>
-                  <PrimaryButton>ゲーム一覧</PrimaryButton>
-                </Link>
-              </div>
+              {isAuthenticated ? (
+                <>
+                  <div className='flex flex-1 justify-end'>
+                    <Link href='/create-game'>
+                      <PrimaryButton>ゲーム作成</PrimaryButton>
+                    </Link>
+                  </div>
+                  <div className='flex flex-1 justify-start'>
+                    <Link href='/games'>
+                      <PrimaryButton>ゲーム一覧</PrimaryButton>
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className='flex flex-1 justify-center'>
+                  <Link href='/games'>
+                    <PrimaryButton>ゲーム一覧</PrimaryButton>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -167,6 +179,11 @@ const Introduction = () => {
         ロールをプレイ！
         は、ゆるーくテキストでロールプレイを楽しめるサイトです。
       </p>
+      <div className='flex justify-center'>
+        <Link href={'/instructions'}>
+          <PrimaryButton>説明書</PrimaryButton>
+        </Link>
+      </div>
     </div>
   )
 }

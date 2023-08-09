@@ -203,7 +203,7 @@ export default function TalkDirect({
                 src={
                   selectedIcon
                     ? selectedIcon.url
-                    : 'https://placehold.jp/120x120.png'
+                    : '/chat-role-play/images/no-image-icon.png'
                 }
                 width={selectedIcon ? selectedIcon.width : 60}
                 height={selectedIcon ? selectedIcon.height : 60}

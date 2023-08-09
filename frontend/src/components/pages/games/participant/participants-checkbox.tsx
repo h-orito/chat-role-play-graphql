@@ -43,7 +43,7 @@ export default function ParticipantsCheckbox({
                 className='cursor-pointer'
                 src={
                   participant.profileIcon?.url ??
-                  'https://placehold.jp/120x120.png'
+                  '/chat-role-play/images/no-image-icon.png'
                 }
                 width={60}
                 height={60}

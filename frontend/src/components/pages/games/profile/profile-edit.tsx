@@ -150,9 +150,7 @@ export default function ProfileEdit({
           </p>
           {icons.length <= 0 && (
             <Image
-              src={
-                'https://placehold.jp/cccccc/999/120x120.png?text=no%20image'
-              }
+              src={'/chat-role-play/images/no-image-icon.png'}
               width={60}
               height={60}
               alt='アイコン'
@@ -171,7 +169,7 @@ export default function ProfileEdit({
                   src={
                     selectedIcon
                       ? selectedIcon.url
-                      : 'https://placehold.jp/cccccc/999/120x120.png?text=no%20image'
+                      : '/chat-role-play/images/no-image-icon.png'
                   }
                   width={selectedIcon ? selectedIcon.width : 60}
                   height={selectedIcon ? selectedIcon.height : 60}

@@ -60,6 +60,7 @@ export default function Participate({ close, game }: Props) {
       <div className='my-4 rounded-sm border border-gray-200 bg-gray-200 px-2 py-4'>
         <ul className='list-inside list-disc text-sm'>
           <li>キャラクター名は後で変更可能です。</li>
+          <li>プロフィール等は参加登録後に編集可能になります。</li>
         </ul>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>

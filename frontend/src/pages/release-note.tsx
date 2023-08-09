@@ -28,7 +28,6 @@ export default function CreateGame() {
             <ul className='list-inside list-disc py-2 text-left text-xs'>
               <li>エラーハンドリングもろもろ</li>
               <li>サイト紹介</li>
-              <li>説明書</li>
               <li>FAQ</li>
               <li>プレイヤープロフィール（参加履歴的な）</li>
               <li>

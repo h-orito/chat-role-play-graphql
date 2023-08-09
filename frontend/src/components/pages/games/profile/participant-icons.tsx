@@ -39,9 +39,7 @@ export default function ParticipantIcons({
           <div className='relative flex'>
             <Image
               className='block w-full'
-              src={
-                'https://placehold.jp/cccccc/999/120x120.png?text=no%20image'
-              }
+              src={'/chat-role-play/images/no-image-icon.png'}
               width={60}
               height={60}
               alt='アイコン'
