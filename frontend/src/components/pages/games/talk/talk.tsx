@@ -16,7 +16,13 @@ import {
   TalkMutationVariables
 } from '@/lib/generated/graphql'
 import { useLazyQuery, useMutation } from '@apollo/client'
-import { useCallback, useEffect, useState } from 'react'
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState
+} from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import InputTextarea from '@/components/form/input-textarea'
 import InputText from '@/components/form/input-text'
@@ -49,7 +55,12 @@ interface FormInput {
   talkMessage: string
 }
 
-export default function Talk({ game, myself, close, search }: Props) {
+export interface TalkRefHandle {
+  isTalkMessageEmpty(): boolean
+}
+
+const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
+  const { game, myself, close, search } = props
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
   const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
 
@@ -66,12 +77,13 @@ export default function Talk({ game, myself, close, search }: Props) {
     fetch()
   }, [])
 
-  const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
-    defaultValues: {
-      name: myself.name,
-      talkMessage: ''
-    }
-  })
+  const { control, formState, handleSubmit, setValue, watch } =
+    useForm<FormInput>({
+      defaultValues: {
+        name: myself.name,
+        talkMessage: ''
+      }
+    })
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting
   const [talkType, setTalkType] = useState(MessageType.TalkNormal)
   const [iconId, setIconId] = useState<string>(
@@ -131,10 +143,16 @@ export default function Talk({ game, myself, close, search }: Props) {
     [talk, talkType, iconId, formState]
   )
 
+  const talkMessage = watch('talkMessage')
+  useImperativeHandle(ref, () => ({
+    isTalkMessageEmpty() {
+      return talkMessage.length <= 0
+    }
+  }))
+
   const updateTalkMessage = (str: string) => setValue('talkMessage', str)
 
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
-
   const selectedIcon = icons.find((icon) => icon.id === iconId)
 
   return (
@@ -249,7 +267,9 @@ export default function Talk({ game, myself, close, search }: Props) {
       )}
     </div>
   )
-}
+})
+
+export default Talk
 
 type IconSelectProps = {
   icons: Array<GameParticipantIcon>

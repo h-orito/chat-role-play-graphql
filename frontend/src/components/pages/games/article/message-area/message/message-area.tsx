@@ -13,11 +13,10 @@ import Paging from '../paging'
 import { useEffect, useRef, useState } from 'react'
 import SearchCondition from './search-condition'
 import { LazyQueryExecFunction, OperationVariables } from '@apollo/client'
-import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import GamePeriodLinks from '../game-period-links'
 import Modal from '@/components/modal/modal'
 import { PencilSquareIcon } from '@heroicons/react/24/outline'
-import Talk from '../../../talk/talk'
+import Talk, { TalkRefHandle } from '../../../talk/talk'
 
 type Props = {
   game: Game
@@ -214,8 +213,16 @@ type TalkButtonProps = {
 
 const TalkButton = ({ game, myself, search }: TalkButtonProps) => {
   const [isOpenTalkModal, setIsOpenTalkModal] = useState(false)
+  const talkRef = useRef({} as TalkRefHandle)
   const toggleTalkModal = (e: any) => {
     if (e.target === e.currentTarget) {
+      const shouldWarning =
+        talkRef.current && !talkRef.current.isTalkMessageEmpty()
+      if (
+        shouldWarning &&
+        !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
+      )
+        return
       setIsOpenTalkModal(!isOpenTalkModal)
     }
   }
@@ -234,6 +241,7 @@ const TalkButton = ({ game, myself, search }: TalkButtonProps) => {
             myself={myself!}
             close={toggleTalkModal}
             search={search}
+            ref={talkRef}
           />
         </Modal>
       )}

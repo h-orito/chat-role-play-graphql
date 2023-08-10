@@ -9,7 +9,7 @@ import {
   HomeIcon,
   LockClosedIcon
 } from '@heroicons/react/24/outline'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import GameSettings from './game-settings'
 import Modal from '@/components/modal/modal'
 import Participate from './participate'
@@ -20,7 +20,7 @@ import Link from 'next/link'
 import GameSettingsEdit from './game-settings-edit'
 import { convertToGameStatusName } from '@/components/graphql/convert'
 import { iso2display } from '@/components/util/datetime/datetime'
-import TalkSystem from '../talk/talk-system'
+import TalkSystem, { TalkSystemRefHandle } from '../talk/talk-system'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import GameMasterEdit from './game-master-edit'
 
@@ -313,11 +313,20 @@ type SystemMessageButtonProps = {
 
 const SystemMessageButton = ({ game }: SystemMessageButtonProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false)
+  const talkRef = useRef({} as TalkSystemRefHandle)
   const toggleModal = (e: any) => {
     if (e.target === e.currentTarget) {
+      const shouldWarning =
+        talkRef.current && !talkRef.current.isTalkMessageEmpty()
+      if (
+        shouldWarning &&
+        !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
+      )
+        return
       setIsOpenModal(!isOpenModal)
     }
   }
+
   return (
     <>
       <button
@@ -329,7 +338,7 @@ const SystemMessageButton = ({ game }: SystemMessageButtonProps) => {
       </button>
       {isOpenModal && (
         <Modal close={toggleModal} hideFooter>
-          <TalkSystem game={game} close={toggleModal} />
+          <TalkSystem game={game} close={toggleModal} ref={talkRef} />
         </Modal>
       )}
     </>

@@ -11,14 +11,14 @@ import {
   DirectMessage
 } from '@/lib/generated/graphql'
 import { useLazyQuery } from '@apollo/client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Paging from '../paging'
 import DirectMessageComponent from './direct-message'
 import DirectSearchCondition from './direct-search-condition'
 import { EnvelopeIcon, PencilIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import ParticipantGroupEdit from './participant-group-edit'
-import TalkDirect from '../../../talk/talk-direct'
+import TalkDirect, { TalkDirectRefHandle } from '../../../talk/talk-direct'
 
 type Props = {
   close: (e: any) => void
@@ -103,10 +103,16 @@ export default function DirectMessageArea({
   }
 
   const [isOpenTalkModal, setIsOpenTalkModal] = useState(false)
+  const talkRef = useRef({} as TalkDirectRefHandle)
   const toggleTalkModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenTalkModal(!isOpenTalkModal)
-    }
+    const shouldWarning =
+      talkRef.current && !talkRef.current.isTalkMessageEmpty()
+    if (
+      shouldWarning &&
+      !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
+    )
+      return
+    setIsOpenTalkModal(!isOpenTalkModal)
   }
 
   const canModify = ['Opening', 'Recruiting', 'Progress'].includes(game.status)
@@ -184,6 +190,7 @@ export default function DirectMessageArea({
             gameParticipantGroup={group!}
             close={toggleTalkModal}
             search={search}
+            ref={talkRef}
           />
         </Modal>
       )}
