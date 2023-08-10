@@ -117,35 +117,48 @@ export default function Index({ games }: Props) {
             </div>
           </div>
         </div>
-        <footer className='flex justify-center border-t border-gray-300 px-4 py-2 text-xs'>
-          <Link className='hover:text-blue-500' href='/release-note'>
-            更新履歴
-          </Link>
-          <a
-            className='ml-2 cursor-pointer hover:text-blue-500'
-            onClick={() => setIsOpenTermModal(true)}
-          >
-            利用規約
-          </a>
-          <a
-            className='ml-2 cursor-pointer hover:text-blue-500'
-            onClick={() => setIsOpenPolicyModal(true)}
-          >
-            プライバシーポリシー
-          </a>
-          <a
-            className='ml-2 cursor-pointer hover:text-blue-500'
-            onClick={() => setIsOpenTipModal(true)}
-          >
-            投げ銭
-          </a>
-          <a
-            href='https://twitter.com/ort_dev'
-            target='_blank'
-            className='ml-2 cursor-pointer hover:text-blue-500'
-          >
-            問い合わせ
-          </a>
+        <footer className='border-t border-gray-300 px-4 py-2 text-xs'>
+          <div className='flex justify-center'>
+            <Link className='hover:text-blue-500' href='/release-note'>
+              更新履歴
+            </Link>
+            <a
+              className='ml-2 cursor-pointer hover:text-blue-500'
+              onClick={() => setIsOpenTermModal(true)}
+            >
+              利用規約
+            </a>
+            <a
+              className='ml-2 cursor-pointer hover:text-blue-500'
+              onClick={() => setIsOpenPolicyModal(true)}
+            >
+              プライバシーポリシー
+            </a>
+            <a
+              className='ml-2 cursor-pointer hover:text-blue-500'
+              onClick={() => setIsOpenTipModal(true)}
+            >
+              投げ銭
+            </a>
+            <a
+              href='https://twitter.com/ort_dev'
+              target='_blank'
+              className='ml-2 cursor-pointer hover:text-blue-500'
+            >
+              問い合わせ
+            </a>
+          </div>
+          <div className='flex justify-center'>
+            © 2023- ort (
+            <a
+              href='https://github.com/h-orito/chat-role-play-graphql'
+              target='_blank'
+              className='cursor-pointer hover:text-blue-500'
+            >
+              GitHub
+            </a>
+            )
+          </div>
         </footer>
         {isOpenTermModal && (
           <Modal header='利用規約' close={toggleTermModal} hideFooter>
