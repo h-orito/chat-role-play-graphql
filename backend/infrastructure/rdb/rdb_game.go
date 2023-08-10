@@ -317,6 +317,7 @@ func ToGameSettingsModel(
 	settings []GameSetting,
 	charachipIds []uint32,
 ) *model.GameSettings {
+	password := gameSettingsToString(settings, GameSettingKeyPassword, nil)
 	return &model.GameSettings{
 		Chara: model.GameCharaSettings{
 			CharachipIDs:         charachipIds,
@@ -340,8 +341,8 @@ func ToGameSettingsModel(
 			CanSendDirectMessage: gameSettingsToBool(settings, GameSettingKeyCanSendDirectMessage, false),
 		},
 		Password: model.GamePasswordSettings{
-			HasPassword: gameSettingsToString(settings, GameSettingKeyPassword, nil) != nil,
-			Password:    gameSettingsToString(settings, GameSettingKeyPassword, nil),
+			HasPassword: password != nil && len(*password) > 0,
+			Password:    password,
 		},
 	}
 }
