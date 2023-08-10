@@ -54,10 +54,6 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
     value: iso2display(settings.time.finishGameAt)
   })
   items.push({
-    name: '期間短縮',
-    value: settings.rule.canShorten ? '可能' : '不可'
-  })
-  items.push({
     name: 'ダイレクトメッセージ',
     value: settings.rule.canSendDirectMessage ? '可能' : '不可'
   })
