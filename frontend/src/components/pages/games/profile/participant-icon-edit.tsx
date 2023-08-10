@@ -195,12 +195,12 @@ export default function ParticipantIconEdit({
     <div>
       <div className='mb-1'>
         <label className='text-xs font-bold'>並び替え</label>
-        <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
-          ドラッグアンドドロップで並び替えて「反映」ボタンを押してください。
-        </p>
         {icons.length === 0 && <p>アイコンが登録されていません。</p>}
         {icons.length > 0 && (
           <>
+            <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+              ドラッグアンドドロップで並び替えて「反映」ボタンを押してください。
+            </p>
             <div className='flex'>
               <DndContext
                 sensors={sensors}
