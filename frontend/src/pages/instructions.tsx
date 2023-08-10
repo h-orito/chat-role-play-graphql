@@ -20,7 +20,7 @@ export default function Instructions() {
               <li>
                 トップページ「Register /
                 Login」より「ログイン」してください（新規登録もこのボタンです）
-                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs'>
+                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
                   <li>
                     未登録の場合は表示された画面下側の「サインアップ」より新規登録してください
                   </li>
@@ -35,7 +35,7 @@ export default function Instructions() {
               <li>
                 ロールをプレイ！トップページに戻ってきたら、「ようこそ
                 未登録さん」になっているはずなので、「ユーザー編集」よりユーザー名を変更してください
-                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs'>
+                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
                   <li>
                     このユーザー名は公開情報です（現状は他人のユーザー名が参照できる導線がありませんが、いずれ増えます）
                   </li>
@@ -46,7 +46,7 @@ export default function Instructions() {
               </li>
               <li>
                 いよいよゲームへの参加です
-                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs'>
+                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
                   <li>開催中のゲームを選択し、ゲーム画面に遷移してください</li>
                   <li>
                     状態が「公開中」の場合、ゲーム自体は閲覧できますが、まだ参加することはできません
@@ -65,7 +65,7 @@ export default function Instructions() {
               </li>
               <li>
                 プロフィールの編集
-                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs'>
+                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
                   <li>
                     参加登録後、同じく左メニューから自分のプロフィール画面を開くと、アイコン登録やプロフィール編集などが行なえます
                   </li>
@@ -76,7 +76,7 @@ export default function Instructions() {
               </li>
               <li>
                 発言
-                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs'>
+                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
                   <li>アイコンを1つ以上登録しないと発言することができません</li>
                   <li>
                     ホーム画面またはフォロー画面の右下に表示される{' '}
@@ -91,7 +91,7 @@ export default function Instructions() {
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>ゲーム作成</p>
             </div>
-            <ul className='list-inside list-disc py-2 text-left text-xs'>
+            <ul className='list-inside list-disc py-2 text-left text-xs leading-5'>
               <li>
                 トップページ「Register /
                 Login」より「ログイン」してください（新規登録もこのボタンです）
@@ -111,12 +111,18 @@ export default function Instructions() {
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>その他</p>
             </div>
-            <ul className='list-inside list-disc py-2 text-left text-xs'>
+            <ul className='list-inside list-disc py-2 text-left text-xs leading-5'>
               <li>
                 <Link className='text-blue-500' href='/release-note'>
                   更新履歴
                 </Link>
                 に更新情報や実装予定の機能などを記載しています
+              </li>
+              <li>
+                動作確認はGoogle Chrome（Windows, iPhone）で行っています。
+              </li>
+              <li>
+                個人開発のため、全体的にベストエフォートでの対応となります。
               </li>
             </ul>
           </div>

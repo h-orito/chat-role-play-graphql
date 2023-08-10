@@ -51,7 +51,6 @@ export default function CreateGame() {
                       <li>終了後DM公開</li>
                     </ul>
                   </li>
-                  <li>参加時の利用規約プライバシーポリシー同意</li>
                   <li>
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>

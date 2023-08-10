@@ -179,10 +179,17 @@ const Introduction = () => {
         ロールをプレイ！
         は、ゆるーくテキストでロールプレイを楽しめるサイトです。
       </p>
-      <div className='flex justify-center'>
-        <Link href={'/instructions'}>
-          <PrimaryButton>説明書</PrimaryButton>
-        </Link>
+      <div className='mt-2 flex gap-2'>
+        <div className='flex flex-1 justify-end'>
+          <Link href={'/instructions'}>
+            <PrimaryButton>説明書</PrimaryButton>
+          </Link>
+        </div>
+        <div className='flex flex-1 justify-start'>
+          <Link href={'/rules'}>
+            <PrimaryButton>ルール</PrimaryButton>
+          </Link>
+        </div>
       </div>
     </div>
   )

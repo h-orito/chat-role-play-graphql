@@ -193,9 +193,9 @@ export default function MessageArea({
             openFavoritesModal={openFavoritesModal}
           />
         ))}
-        {isViewing && (
+        {/* {isViewing && (
           <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
-        )}
+        )} */}
       </div>
       <Paging
         messages={messages}
