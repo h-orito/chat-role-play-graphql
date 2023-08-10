@@ -35,7 +35,7 @@ import TalkTextDecorators from './talk-text-decorators'
 type Props = {
   game: Game
   myself: GameParticipant
-  close: (e: any) => void
+  closeWithoutWarning: () => void
   search: () => void
 }
 
@@ -56,11 +56,11 @@ interface FormInput {
 }
 
 export interface TalkRefHandle {
-  isTalkMessageEmpty(): boolean
+  shouldWarnClose(): boolean
 }
 
 const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
-  const { game, myself, close, search } = props
+  const { game, myself, closeWithoutWarning, search } = props
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
   const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
 
@@ -84,6 +84,8 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
         talkMessage: ''
       }
     })
+
+  const updateTalkMessage = (str: string) => setValue('talkMessage', str)
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting
   const [talkType, setTalkType] = useState(MessageType.TalkNormal)
   const [iconId, setIconId] = useState<string>(
@@ -102,8 +104,8 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
     }
   })
   const [talk] = useMutation<TalkMutation>(TalkDocument, {
-    onCompleted(e) {
-      close(e)
+    onCompleted() {
+      closeWithoutWarning()
       search()
     },
     onError(error) {
@@ -145,12 +147,10 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
 
   const talkMessage = watch('talkMessage')
   useImperativeHandle(ref, () => ({
-    isTalkMessageEmpty() {
-      return talkMessage.length <= 0
+    shouldWarnClose() {
+      return 0 < talkMessage.length
     }
   }))
-
-  const updateTalkMessage = (str: string) => setValue('talkMessage', str)
 
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
   const selectedIcon = icons.find((icon) => icon.id === iconId)

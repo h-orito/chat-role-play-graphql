@@ -8,6 +8,7 @@ type ModalProps = {
   header?: string
   close: (e: any) => void
   children: React.ReactNode
+  zindex?: number
   hideFooter?: boolean
 }
 
@@ -16,11 +17,15 @@ export default function ArticleModal({
   header,
   close,
   children,
+  zindex = 50,
   hideFooter
 }: ModalProps) {
+  const zindexClass = `z-${zindex}`
   return (
     <Portal target={target}>
-      <div className='absolute inset-x-0 inset-y-0 z-50 h-full w-full overflow-y-auto bg-white text-sm'>
+      <div
+        className={`absolute inset-x-0 inset-y-0 h-full w-full overflow-y-auto bg-white text-sm ${zindexClass}`}
+      >
         <div className='flex border-b border-gray-300 p-2'>
           <button className='px-2' onClick={close}>
             <ArrowLeftIcon className='mr-1 h-6 w-6' />

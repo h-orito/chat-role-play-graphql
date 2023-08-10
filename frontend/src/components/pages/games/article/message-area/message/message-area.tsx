@@ -216,8 +216,7 @@ const TalkButton = ({ game, myself, search }: TalkButtonProps) => {
   const talkRef = useRef({} as TalkRefHandle)
   const toggleTalkModal = (e: any) => {
     if (e.target === e.currentTarget) {
-      const shouldWarning =
-        talkRef.current && !talkRef.current.isTalkMessageEmpty()
+      const shouldWarning = talkRef.current && talkRef.current.shouldWarnClose()
       if (
         shouldWarning &&
         !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
@@ -239,7 +238,7 @@ const TalkButton = ({ game, myself, search }: TalkButtonProps) => {
           <Talk
             game={game}
             myself={myself!}
-            close={toggleTalkModal}
+            closeWithoutWarning={() => setIsOpenTalkModal(false)}
             search={search}
             ref={talkRef}
           />

@@ -316,8 +316,7 @@ const SystemMessageButton = ({ game }: SystemMessageButtonProps) => {
   const talkRef = useRef({} as TalkSystemRefHandle)
   const toggleModal = (e: any) => {
     if (e.target === e.currentTarget) {
-      const shouldWarning =
-        talkRef.current && !talkRef.current.isTalkMessageEmpty()
+      const shouldWarning = talkRef.current && talkRef.current.shouldWarnClose()
       if (
         shouldWarning &&
         !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
@@ -338,7 +337,11 @@ const SystemMessageButton = ({ game }: SystemMessageButtonProps) => {
       </button>
       {isOpenModal && (
         <Modal close={toggleModal} hideFooter>
-          <TalkSystem game={game} close={toggleModal} ref={talkRef} />
+          <TalkSystem
+            game={game}
+            closeWithoutWarning={() => setIsOpenModal(false)}
+            ref={talkRef}
+          />
         </Modal>
       )}
     </>

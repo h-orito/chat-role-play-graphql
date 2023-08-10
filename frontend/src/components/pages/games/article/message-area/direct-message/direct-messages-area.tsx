@@ -134,6 +134,7 @@ export default function DirectMessagesArea({
         <ArticleModal
           target='#direct-message-area'
           header={`${directMessageGroup ? directMessageGroup.name : ''}`}
+          zindex={40}
           close={toggleDirectMessageModal}
           hideFooter
         >

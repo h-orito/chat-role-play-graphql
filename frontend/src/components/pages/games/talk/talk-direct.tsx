@@ -36,7 +36,7 @@ import TalkTextDecorators from './talk-text-decorators'
 type Props = {
   game: Game
   myself: GameParticipant
-  close: (e: any) => void
+  closeWithoutWarning: () => void
   search: () => void
   gameParticipantGroup: GameParticipantGroup
 }
@@ -58,12 +58,13 @@ interface FormInput {
 }
 
 export interface TalkDirectRefHandle {
-  isTalkMessageEmpty(): boolean
+  shouldWarnClose(): boolean
 }
 
 const TalkDirect = forwardRef<TalkDirectRefHandle, Props>(
   (props: Props, ref: any) => {
-    const { game, myself, close, search, gameParticipantGroup } = props
+    const { game, myself, closeWithoutWarning, search, gameParticipantGroup } =
+      props
     const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
     const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
 
@@ -87,6 +88,8 @@ const TalkDirect = forwardRef<TalkDirectRefHandle, Props>(
           talkMessage: ''
         }
       })
+
+    const updateTalkMessage = (str: string) => setValue('talkMessage', str)
     const canSubmit: boolean = formState.isValid && !formState.isSubmitting
     const [talkType, setTalkType] = useState(MessageType.TalkNormal)
     const [iconId, setIconId] = useState<string>(
@@ -108,8 +111,8 @@ const TalkDirect = forwardRef<TalkDirectRefHandle, Props>(
       }
     )
     const [talkDirect] = useMutation<TalkDirectMutation>(TalkDirectDocument, {
-      onCompleted(e) {
-        close(e)
+      onCompleted() {
+        closeWithoutWarning()
         search()
       },
       onError(error) {
@@ -153,11 +156,10 @@ const TalkDirect = forwardRef<TalkDirectRefHandle, Props>(
 
     const talkMessage = watch('talkMessage')
     useImperativeHandle(ref, () => ({
-      isTalkMessageEmpty() {
-        return talkMessage.length <= 0
+      shouldWarnClose() {
+        return 0 < talkMessage.length
       }
     }))
-    const updateTalkMessage = (str: string) => setValue('talkMessage', str)
 
     if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
     const selectedIcon = icons.find((icon) => icon.id === iconId)

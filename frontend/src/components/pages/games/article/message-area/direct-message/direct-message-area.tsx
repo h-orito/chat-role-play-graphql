@@ -105,8 +105,7 @@ export default function DirectMessageArea({
   const [isOpenTalkModal, setIsOpenTalkModal] = useState(false)
   const talkRef = useRef({} as TalkDirectRefHandle)
   const toggleTalkModal = (e: any) => {
-    const shouldWarning =
-      talkRef.current && !talkRef.current.isTalkMessageEmpty()
+    const shouldWarning = talkRef.current && talkRef.current.shouldWarnClose()
     if (
       shouldWarning &&
       !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
@@ -188,7 +187,7 @@ export default function DirectMessageArea({
             game={game}
             myself={myself!}
             gameParticipantGroup={group!}
-            close={toggleTalkModal}
+            closeWithoutWarning={() => setIsOpenTalkModal(false)}
             search={search}
             ref={talkRef}
           />

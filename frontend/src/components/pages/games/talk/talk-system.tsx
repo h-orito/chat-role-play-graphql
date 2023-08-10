@@ -20,21 +20,20 @@ import TalkTextDecorators from './talk-text-decorators'
 
 type Props = {
   game: Game
-  close: (e: any) => void
+  closeWithoutWarning: () => void
 }
 
 interface FormInput {
-  name: string
   talkMessage: string
 }
 
 export interface TalkSystemRefHandle {
-  isTalkMessageEmpty(): boolean
+  shouldWarnClose(): boolean
 }
 
 const TalkSystem = forwardRef<TalkSystemRefHandle, Props>(
   (props: Props, ref: any) => {
-    const { game, close } = props
+    const { game, closeWithoutWarning } = props
     const { control, formState, handleSubmit, setValue, watch } =
       useForm<FormInput>({
         defaultValues: {
@@ -49,8 +48,8 @@ const TalkSystem = forwardRef<TalkSystemRefHandle, Props>(
       }
     })
     const [talk] = useMutation<TalkMutation>(TalkDocument, {
-      onCompleted(e) {
-        close(e)
+      onCompleted() {
+        closeWithoutWarning()
       },
       onError(error) {
         console.error(error)
@@ -90,8 +89,8 @@ const TalkSystem = forwardRef<TalkSystemRefHandle, Props>(
 
     const talkMessage = watch('talkMessage')
     useImperativeHandle(ref, () => ({
-      isTalkMessageEmpty() {
-        return talkMessage.length <= 0
+      shouldWarnClose() {
+        return 0 < talkMessage.length
       }
     }))
     const updateTalkMessage = (str: string) => setValue('talkMessage', str)
@@ -122,6 +121,7 @@ const TalkSystem = forwardRef<TalkSystemRefHandle, Props>(
               }}
               minRows={5}
               maxLength={1000}
+              disabled={preview != null}
             />
           </div>
           <div className='mt-4 flex justify-end'>

@@ -23,6 +23,17 @@ export default function CreateGame() {
           </div>
           <div className='my-4 bg-gray-200 px-4 py-2'>
             <div className='flex border-b border-gray-500'>
+              <p className='font-bold'>既知の不具合</p>
+              <p className='ml-auto mt-auto text-xs text-gray-500'>
+                2023/08/10
+              </p>
+            </div>
+            <ul className='list-inside list-disc py-2 text-left text-xs'>
+              <li>参加パスワードを設定しても未実装のため機能しない</li>
+            </ul>
+          </div>
+          <div className='my-4 bg-gray-200 px-4 py-2'>
+            <div className='flex border-b border-gray-500'>
               <p className='font-bold'>未実装なものたち</p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
@@ -47,7 +58,22 @@ export default function CreateGame() {
                       <li>レーティング</li>
                       <li>キャッチ画像</li>
                       <li>テーマ（最低限ライトとダークモード）</li>
-                      <li>キャラチップ利用</li>
+                      <li>
+                        キャラチップ利用
+                        <ul className='ml-8 list-inside list-disc text-left text-xs'>
+                          <li>現在許可いただいているキャラチップ</li>
+                          <li>灰色の研究</li>
+                          <li>メトロポリス</li>
+                          <li>バビロン</li>
+                          <li>ギルガメシュ</li>
+                          <li>ヴァルハラ</li>
+                          <li>わんダフル</li>
+                          <li>Mad Party</li>
+                          <li>Fragment of Jewels</li>
+                          <li>feel 僧 good</li>
+                          <li>御常紀学園</li>
+                        </ul>
+                      </li>
                       <li>終了後DM公開</li>
                     </ul>
                   </li>
@@ -68,6 +94,7 @@ export default function CreateGame() {
                           <li>GMのみ、誰でも追加可能、発言可能などの設定</li>
                         </ul>
                       </li>
+                      <li>DM未読管理</li>
                     </ul>
                   </li>
                   <li>
