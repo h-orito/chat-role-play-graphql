@@ -400,9 +400,10 @@ type NewGameMaster struct {
 }
 
 type NewGameParticipant struct {
-	GameID  string  `json:"gameId"`
-	Name    string  `json:"name"`
-	CharaID *string `json:"charaId,omitempty"`
+	GameID   string  `json:"gameId"`
+	Name     string  `json:"name"`
+	CharaID  *string `json:"charaId,omitempty"`
+	Password *string `json:"password,omitempty"`
 }
 
 type NewGameParticipantDiary struct {

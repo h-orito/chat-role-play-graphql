@@ -6,9 +6,12 @@ import (
 	"chat-role-play/middleware/graph/gqlmodel"
 	"chat-role-play/util/array"
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/graph-gophers/dataloader"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 func (r *mutationResolver) registerGame(ctx context.Context, input gqlmodel.NewGame) (*gqlmodel.RegisterGamePayload, error) {
@@ -153,8 +156,20 @@ func (r *mutationResolver) registerGameParticipant(ctx context.Context, input gq
 	}
 	saved, err := r.gameUsecase.Participate(ctx, gameId, *user, charaID, model.GameParticipant{
 		Name: input.Name,
-	})
+	}, input.Password)
 	if err != nil {
+		var bize *model.ErrBusiness
+		if errors.As(err, &bize) {
+			e := err.(*model.ErrBusiness)
+			graphql.AddError(ctx, &gqlerror.Error{
+				Path:    graphql.GetPath(ctx),
+				Message: e.Message,
+				Extensions: map[string]interface{}{
+					"code": "PARTICIPATE_ERROR",
+				},
+			})
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &gqlmodel.RegisterGameParticipantPayload{

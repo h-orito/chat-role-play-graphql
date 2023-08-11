@@ -789,6 +789,7 @@ input NewGameParticipant {
   gameId: ID!
   name: String!
   charaId: ID
+  password: String
 }
 
 type RegisterGameParticipantPayload {

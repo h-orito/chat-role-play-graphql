@@ -57,7 +57,10 @@ func (s *playerUsecase) SaveProfile(ctx context.Context, name string, profile *m
 	pp, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
 		return s.playerService.SaveProfile(ctx, name, profile)
 	})
-	return pp.(*model.PlayerProfile), err
+	if err != nil {
+		return nil, err
+	}
+	return pp.(*model.PlayerProfile), nil
 }
 
 // RegisterSnsAccount implements PlayerUsecase.
@@ -65,7 +68,10 @@ func (s *playerUsecase) RegisterSnsAccount(ctx context.Context, playerID uint32,
 	ps, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
 		return s.playerService.RegisterSnsAccount(ctx, playerID, account)
 	})
-	return ps.(*model.PlayerSnsAccount), err
+	if err != nil {
+		return nil, err
+	}
+	return ps.(*model.PlayerSnsAccount), nil
 }
 
 // UpdateSnsAccount implements PlayerUsecase.

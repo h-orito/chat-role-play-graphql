@@ -3754,6 +3754,7 @@ input NewGameParticipant {
   gameId: ID!
   name: String!
   charaId: ID
+  password: String
 }
 
 type RegisterGameParticipantPayload {
@@ -22285,7 +22286,7 @@ func (ec *executionContext) unmarshalInputNewGameParticipant(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"gameId", "name", "charaId"}
+	fieldsInOrder := [...]string{"gameId", "name", "charaId", "password"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22319,6 +22320,15 @@ func (ec *executionContext) unmarshalInputNewGameParticipant(ctx context.Context
 				return it, err
 			}
 			it.CharaID = data
+		case "password":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Password = data
 		}
 	}
 

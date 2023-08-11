@@ -12,6 +12,18 @@ export default function CreateGame() {
         <div className='p-4'>
           <div className='my-4 bg-gray-200 px-4 py-2'>
             <div className='flex border-b border-gray-500'>
+              <p className='font-bold'>追加実装</p>
+              <p className='ml-auto mt-auto text-xs text-gray-500'>
+                2023/08/11
+              </p>
+            </div>
+            <ul className='list-inside list-disc py-2 text-left text-xs'>
+              <li>追加: GMプレイヤー名をゲーム設定一覧に表示</li>
+              <li>追加: 参加パスワードを実装</li>
+            </ul>
+          </div>
+          <div className='my-4 bg-gray-200 px-4 py-2'>
+            <div className='flex border-b border-gray-500'>
               <p className='font-bold'>公開</p>
               <p className='ml-auto mt-auto text-xs text-gray-500'>
                 2023/08/10
@@ -21,7 +33,10 @@ export default function CreateGame() {
               <li>公開してみました。</li>
             </ul>
           </div>
-          <div className='my-4 bg-gray-200 px-4 py-2'>
+
+          <hr />
+
+          <div className='my-4 bg-red-200 px-4 py-2'>
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>既知の不具合</p>
               <p className='ml-auto mt-auto text-xs text-gray-500'>
@@ -29,7 +44,7 @@ export default function CreateGame() {
               </p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
-              <li>参加パスワードを設定しても未実装のため機能しない</li>
+              <li>なし</li>
             </ul>
           </div>
           <div className='my-4 bg-gray-200 px-4 py-2'>
@@ -54,7 +69,6 @@ export default function CreateGame() {
                   <li>
                     ゲーム設定
                     <ul className='list-inside list-disc pl-4 text-left text-xs'>
-                      <li>参加パスワード（あるけど機能してない）</li>
                       <li>レーティング</li>
                       <li>キャッチ画像</li>
                       <li>テーマ（最低限ライトとダークモード）</li>
@@ -72,6 +86,10 @@ export default function CreateGame() {
                           <li>Fragment of Jewels</li>
                           <li>feel 僧 good</li>
                           <li>御常紀学園</li>
+                          <li>他種族孤児院</li>
+                          <li>花園女学院</li>
+                          <li>おりふし学園</li>
+                          <li>salute</li>
                         </ul>
                       </li>
                       <li>終了後DM公開</li>
@@ -84,6 +102,7 @@ export default function CreateGame() {
                       <li>返信</li>
                       <li>宛先</li>
                       <li>PL発言（PL発言タイムライン）</li>
+                      <li>カットイン</li>
                       <li>
                         ランダム発言（ゲームごとに追加削除、diceなど全体で使えるものも）
                       </li>
@@ -94,7 +113,7 @@ export default function CreateGame() {
                           <li>GMのみ、誰でも追加可能、発言可能などの設定</li>
                         </ul>
                       </li>
-                      <li>DM未読管理</li>
+                      <li>DM未読通知・管理</li>
                     </ul>
                   </li>
                   <li>

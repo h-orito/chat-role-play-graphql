@@ -28,7 +28,7 @@ type GameUsecase interface {
 	FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
 	FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error)
 	FindMyGameParticipant(gameID uint32, user model.User) (participant *model.GameParticipant, err error)
-	Participate(ctx context.Context, gameID uint32, user model.User, charaID *uint32, participant model.GameParticipant) (saved *model.GameParticipant, err error)
+	Participate(ctx context.Context, gameID uint32, user model.User, charaID *uint32, participant model.GameParticipant, password *string) (saved *model.GameParticipant, err error)
 	Leave(ctx context.Context, gameID uint32, user model.User) (err error)
 	// game participant profile
 	FindParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, participant *model.GameParticipant, err error)
@@ -106,7 +106,10 @@ func (g *gameUsecase) RegisterGame(ctx context.Context, user model.User, game mo
 		}
 		return g.gameService.RegisterGame(ctx, game)
 	})
-	return gm.(*model.Game), err
+	if err != nil {
+		return nil, err
+	}
+	return gm.(*model.Game), nil
 }
 
 func (g *gameUsecase) RegisterGameMaster(
@@ -136,7 +139,10 @@ func (g *gameUsecase) RegisterGameMaster(
 		}
 		return g.gameService.RegisterGameMaster(ctx, gameID, playerID, isProducer)
 	})
-	return gm.(*model.GameMaster), err
+	if err != nil {
+		return nil, err
+	}
+	return gm.(*model.GameMaster), nil
 }
 
 func (g *gameUsecase) UpdateGameMaster(
@@ -322,6 +328,7 @@ func (g *gameUsecase) Participate(
 	user model.User,
 	charaID *uint32,
 	participant model.GameParticipant,
+	password *string,
 ) (saved *model.GameParticipant, err error) {
 	p, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
 		game, err := g.gameService.FindGame(gameID)
@@ -338,7 +345,7 @@ func (g *gameUsecase) Participate(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		err = g.participateDomainService.AssertParticipate(*game, *player)
+		err = g.participateDomainService.AssertParticipate(*game, *player, password)
 		if err != nil {
 			return nil, err
 		}
@@ -347,7 +354,10 @@ func (g *gameUsecase) Participate(
 			PlayerID: player.ID,
 		})
 	})
-	return p.(*model.GameParticipant), err
+	if err != nil {
+		return nil, err
+	}
+	return p.(*model.GameParticipant), nil
 }
 
 func (g *gameUsecase) Leave(ctx context.Context, gameID uint32, user model.User) (err error) {
@@ -413,7 +423,10 @@ func (g *gameUsecase) RegisterGameParticipantIcon(ctx context.Context, gameID ui
 		}
 		return g.gameService.RegisterGameParticipantIcon(ctx, myself.ID, icon)
 	})
-	return i.(*model.GameParticipantIcon), err
+	if err != nil {
+		return nil, err
+	}
+	return i.(*model.GameParticipantIcon), nil
 }
 
 func (g *gameUsecase) UpdateGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, icon model.GameParticipantIcon) error {
@@ -560,7 +573,10 @@ func (g *gameUsecase) RegisterParticipantDiary(
 			Body:              diary.Body,
 		})
 	})
-	return d.(*model.GameParticipantDiary), err
+	if err != nil {
+		return nil, err
+	}
+	return d.(*model.GameParticipantDiary), nil
 }
 
 func (g *gameUsecase) UpdateParticipantDiary(

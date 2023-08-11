@@ -21,13 +21,15 @@ type Props = {
 
 interface FormInput {
   participantName: string
+  password: string
 }
 
 export default function Participate({ close, game }: Props) {
   const router = useRouter()
   const { control, formState, handleSubmit } = useForm<FormInput>({
     defaultValues: {
-      participantName: ''
+      participantName: '',
+      password: ''
     }
   })
   const [checkedTerm, setCheckedTerm] = useState(false)
@@ -35,32 +37,43 @@ export default function Participate({ close, game }: Props) {
   const canSubmit: boolean =
     formState.isValid && !formState.isSubmitting && checkedTerm && checkedPolicy
   const [participate] = useMutation<RegisterGameParticipantMutation>(
-    RegisterGameParticipantDocument,
-    {
-      onCompleted(_) {
-        router.reload()
-      },
-      onError(error) {
-        console.error(error)
-      }
-    }
+    RegisterGameParticipantDocument
   )
+  const [bizError, setBizError] = useState<string | null>(null)
   const onSubmit: SubmitHandler<FormInput> = useCallback(
-    (data) => {
-      participate({
+    async (data) => {
+      setBizError(null)
+      const { errors } = await participate({
         variables: {
           input: {
             gameId: game.id,
-            name: data.participantName
+            name: data.participantName,
+            password: data.password
           } as NewGameParticipant
         } as RegisterGameParticipantMutationVariables
       })
+      if (errors) {
+        if (errors[0].extensions?.code === 'PARTICIPATE_ERROR') {
+          setBizError(errors[0].message)
+        }
+      } else {
+        router.reload()
+      }
     },
     [participate]
   )
 
   return (
     <div>
+      {bizError && (
+        <div className='my-4'>
+          <div className='my-1 rounded-sm bg-red-200 p-2'>
+            <ul className='list-inside list-disc text-xs'>
+              <li>{bizError}</li>
+            </ul>
+          </div>
+        </div>
+      )}
       <div className='my-4'>
         <div className='my-1'>
           <input
@@ -89,24 +102,42 @@ export default function Participate({ close, game }: Props) {
         </div>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className='text-xs font-bold'>キャラクター名</label>
-        <div className='my-1 rounded-sm border border-gray-200 bg-gray-200 p-2'>
-          <ul className='list-inside list-disc text-xs'>
-            <li>後で変更可能です。</li>
-            <li>プロフィール等は参加登録後に編集可能になります。</li>
-          </ul>
+        <div className='my-4'>
+          <label className='text-xs font-bold'>キャラクター名</label>
+          <div className='my-1 rounded-sm border border-gray-200 bg-gray-200 p-2'>
+            <ul className='list-inside list-disc text-xs'>
+              <li>後で変更可能です。</li>
+              <li>プロフィール等は参加登録後に編集可能になります。</li>
+            </ul>
+          </div>
+          <InputText
+            name='participantName'
+            control={control}
+            rules={{
+              required: '必須です',
+              maxLength: {
+                value: 50,
+                message: `50文字以内で入力してください`
+              }
+            }}
+          />
         </div>
-        <InputText
-          name='participantName'
-          control={control}
-          rules={{
-            required: '必須です',
-            maxLength: {
-              value: 50,
-              message: `50文字以内で入力してください`
-            }
-          }}
-        />
+        {game.settings.password.hasPassword && (
+          <div className='my-4'>
+            <label className='text-xs font-bold'>参加パスワード</label>
+            <InputText
+              name='password'
+              control={control}
+              rules={{
+                required: '必須です',
+                maxLength: {
+                  value: 50,
+                  message: `50文字以内で入力してください`
+                }
+              }}
+            />
+          </div>
+        )}
         <div className='flex justify-end'>
           <SubmitButton label='参加登録' disabled={!canSubmit} />
         </div>

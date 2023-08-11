@@ -28,7 +28,12 @@ export const createClient = async (
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {
-        fetchPolicy: 'no-cache'
+        fetchPolicy: 'no-cache',
+        errorPolicy: 'all'
+      },
+      mutate: {
+        fetchPolicy: 'no-cache',
+        errorPolicy: 'all'
       }
     }
   })
@@ -43,7 +48,8 @@ export const createInnerClient = () => {
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {
-        fetchPolicy: 'no-cache'
+        fetchPolicy: 'no-cache',
+        errorPolicy: 'all'
       }
     }
   })

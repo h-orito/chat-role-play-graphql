@@ -124,6 +124,9 @@ export default function Instructions() {
               <li>
                 個人開発のため、全体的にベストエフォートでの対応となります。
               </li>
+              <li>
+                サイト名略称は「ロルオプ」「をプ」と呼んでいただけると（エゴサ的に）ありがたいです。
+              </li>
             </ul>
           </div>
         </div>

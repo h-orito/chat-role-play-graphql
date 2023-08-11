@@ -741,6 +741,7 @@ export type NewGameParticipant = {
   charaId?: InputMaybe<Scalars['ID']['input']>;
   gameId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type NewGameParticipantDiary = {

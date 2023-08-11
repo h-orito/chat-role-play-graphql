@@ -2,11 +2,10 @@ package dom_service
 
 import (
 	"chat-role-play/domain/model"
-	"fmt"
 )
 
 type ParticipateDomainService interface {
-	AssertParticipate(game model.Game, player model.Player) error
+	AssertParticipate(game model.Game, player model.Player, password *string) error
 }
 
 type participateDomainService struct {
@@ -21,19 +20,26 @@ func NewParticipateDomainService(
 	}
 }
 
-func (s *participateDomainService) AssertParticipate(game model.Game, player model.Player) error {
+func (s *participateDomainService) AssertParticipate(game model.Game, player model.Player, password *string) error {
 	if game.Status == model.GameStatusClosed || game.Status == model.GameStatusOpening {
 		// 参加登録可能になるまではGMのみ参加可能
 		if s.gameMasterDomainService.IsGameMaster(game, player) {
 			return nil
 		} else {
-			return fmt.Errorf("you cannot participate. status: %s", game.Status)
+			return model.NewErrBusiness("参加登録可能になるまではGMのみ参加可能です")
 		}
 	} else if game.Status == model.GameStatusRecruiting || game.Status == model.GameStatusProgress {
 		// 参加登録可能
-		return nil
 	} else {
 		// 終了後やキャンセル後は参加不可
-		return fmt.Errorf("you cannot participate. status: %s", game.Status)
+		return model.NewErrBusiness("終了後やキャンセル後は参加不可です")
 	}
+
+	if game.Settings.Password.HasPassword {
+		if password == nil || *game.Settings.Password.Password != *password {
+			return model.NewErrBusiness("パスワードが違います")
+		}
+	}
+
+	return nil
 }
