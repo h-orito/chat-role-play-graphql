@@ -129,6 +129,9 @@ export default function CreateGame() {
                       <li>通知</li>
                       <li>表示設定</li>
                       <li>ミュート</li>
+                      <li>ページングのページサイズ</li>
+                      <li>画像の大きさ2倍</li>
+                      <li>文字の大きさ2倍</li>
                     </ul>
                   </li>
                   <li>開いているタブの保持</li>

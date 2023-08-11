@@ -17,6 +17,7 @@ import GamePeriodLinks from '../game-period-links'
 import Modal from '@/components/modal/modal'
 import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import Talk, { TalkRefHandle } from '../../../talk/talk'
+import { GoogleAdsense } from '@/components/adsense/google-adsense'
 
 type Props = {
   game: Game
@@ -192,9 +193,11 @@ export default function MessageArea({
             openFavoritesModal={openFavoritesModal}
           />
         ))}
-        {/* {isViewing && (
-          <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
-        )} */}
+        {!onlyFollowing && !searchable && (
+          <div className='p-4'>
+            <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
+          </div>
+        )}
       </div>
       <Paging
         messages={messages}
