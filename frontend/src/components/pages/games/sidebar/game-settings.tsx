@@ -15,6 +15,10 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
   const settings = game.settings
   const items: Array<SettingItem> = []
   items.push({
+    name: 'ゲームマスター',
+    value: game.gameMasters.map(gm => gm.player.name).join('、')
+  })
+  items.push({
     name: '利用可能なキャラチップ',
     value:
       settings.chara.charachips.length > 0
