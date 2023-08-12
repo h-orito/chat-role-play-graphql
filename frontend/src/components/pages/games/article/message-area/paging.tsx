@@ -8,9 +8,30 @@ type PagingProps = {
 
 export default function Paging({ messages, query, setQuery }: PagingProps) {
   if (messages.allPageCount <= 1) return <></>
+  const currentPageNumber = messages.currentPageNumber ?? 1
   let pageCounts: Array<number> = []
   if (messages.allPageCount <= 5) {
     pageCounts = [...Array(messages.allPageCount)].map((_, i) => i + 1)
+  } else {
+    if (currentPageNumber <= 3) {
+      pageCounts = [1, 2, 3, 4, 5]
+    } else if (messages.allPageCount - 3 < currentPageNumber) {
+      pageCounts = [
+        messages.allPageCount - 4,
+        messages.allPageCount - 3,
+        messages.allPageCount - 2,
+        messages.allPageCount - 1,
+        messages.allPageCount
+      ]
+    } else {
+      pageCounts = [
+        currentPageNumber - 2,
+        currentPageNumber - 1,
+        currentPageNumber,
+        currentPageNumber + 1,
+        currentPageNumber + 2
+      ]
+    }
   }
 
   return (
@@ -28,9 +49,7 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
         <li>
           <button
             className='w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
-            onClick={() =>
-              setQuery(messages.currentPageNumber ?? messages.allPageCount - 1)
-            }
+            onClick={() => setQuery(currentPageNumber - 1)}
             disabled={!messages.hasPrePage}
           >
             &lt;
@@ -51,9 +70,7 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
         <li>
           <button
             className='w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
-            onClick={() =>
-              setQuery(messages.currentPageNumber ?? messages.allPageCount + 1)
-            }
+            onClick={() => setQuery(currentPageNumber + 1)}
             disabled={!messages.hasNextPage}
           >
             &gt;
