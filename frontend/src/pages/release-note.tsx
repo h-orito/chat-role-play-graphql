@@ -11,6 +11,20 @@ export default function CreateGame() {
       <article className='min-h-screen w-full text-center lg:w-[960px] lg:justify-center lg:border-x lg:border-gray-300'>
         <PageHeader href='/' header='更新履歴' />
         <div className='p-4'>
+          <div className='my-4 bg-red-200 px-4 py-2'>
+            <div className='flex border-b border-gray-500'>
+              <p className='font-bold'>既知の不具合</p>
+              <p className='ml-auto mt-auto text-xs text-gray-500'>
+                2023/08/12
+              </p>
+            </div>
+            <ul className='list-inside list-disc py-2 text-left text-xs'>
+              <li>なし</li>
+            </ul>
+          </div>
+
+          <hr />
+
           <div className='my-4 bg-gray-200 px-4 py-2'>
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>修正</p>
@@ -30,6 +44,11 @@ export default function CreateGame() {
                 </Link>
                 に「ゲーム作成ルール」を追加
               </li>
+              <li>
+                追加:
+                ホームまたはフォロー中に未読マークがついた状態で切り替えたらすぐに発言取得
+              </li>
+              <li>追加: GM発言後、ホームタブですぐに発言取得</li>
             </ul>
           </div>
 
@@ -59,22 +78,6 @@ export default function CreateGame() {
 
           <hr />
 
-          <div className='my-4 bg-red-200 px-4 py-2'>
-            <div className='flex border-b border-gray-500'>
-              <p className='font-bold'>既知の不具合</p>
-              <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/08/10
-              </p>
-            </div>
-            <ul className='list-inside list-disc py-2 text-left text-xs'>
-              <li>
-                未読のあるタブ（フォロー中など）に切り替えてもすぐに発言が取得されない
-              </li>
-              <li>
-                GM発言後、自動でメッセージを再取得していないため、発言できたかわからない
-              </li>
-            </ul>
-          </div>
           <div className='my-4 bg-gray-200 px-4 py-2'>
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>未実装なものたち</p>

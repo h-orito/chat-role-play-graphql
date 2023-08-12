@@ -31,6 +31,7 @@ type SidebarProps = {
   myself: GameParticipant | null
   myPlayer: Player | null
   openProfileModal: (participantId: string) => void
+  fetchHomeLatest: () => void
 }
 
 export default function Sidebar({
@@ -39,7 +40,8 @@ export default function Sidebar({
   game,
   myself,
   myPlayer,
-  openProfileModal
+  openProfileModal,
+  fetchHomeLatest
 }: SidebarProps) {
   const { isAuthenticated } = useAuth0()
 
@@ -75,7 +77,10 @@ export default function Sidebar({
           <div className='border-t border-gray-300 py-2'>
             <GameSettingsEditButton game={game} />
             {canModify && <GameMasterEditButton game={game} />}
-            <SystemMessageButton game={game} />
+            <SystemMessageButton
+              game={game}
+              fetchHomeLatest={fetchHomeLatest}
+            />
           </div>
         )}
         {myself && (
@@ -309,9 +314,13 @@ const GameMasterEditButton = ({ game }: GameMasterEditButtonProps) => {
 
 type SystemMessageButtonProps = {
   game: Game
+  fetchHomeLatest: () => void
 }
 
-const SystemMessageButton = ({ game }: SystemMessageButtonProps) => {
+const SystemMessageButton = ({
+  game,
+  fetchHomeLatest
+}: SystemMessageButtonProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const talkRef = useRef({} as TalkSystemRefHandle)
   const toggleModal = (e: any) => {
@@ -324,6 +333,10 @@ const SystemMessageButton = ({ game }: SystemMessageButtonProps) => {
         return
       setIsOpenModal(!isOpenModal)
     }
+  }
+  const messageRegisteredCallback = () => {
+    setIsOpenModal(false)
+    fetchHomeLatest()
   }
 
   return (
@@ -338,9 +351,9 @@ const SystemMessageButton = ({ game }: SystemMessageButtonProps) => {
       {isOpenModal && (
         <Modal close={toggleModal} hideFooter>
           <TalkSystem
-            game={game}
-            closeWithoutWarning={() => setIsOpenModal(false)}
             ref={talkRef}
+            game={game}
+            messageRegisteredCallback={messageRegisteredCallback}
           />
         </Modal>
       )}

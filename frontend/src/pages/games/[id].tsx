@@ -2,7 +2,9 @@ import Head from 'next/head'
 import { createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
 import ArticleModal from '@/components/modal/article-modal'
-import Article from '@/components/pages/games/article/article'
+import Article, {
+  ArticleRefHandle
+} from '@/components/pages/games/article/article'
 import Profile from '@/components/pages/games/profile/profile'
 import Sidebar from '@/components/pages/games/sidebar/sidebar'
 import {
@@ -132,6 +134,11 @@ export default function GamePage({ gameId, game }: Props) {
   }
   usePollingPeriod(() => changePeriodIfNeeded())
 
+  const articleRef = useRef({} as ArticleRefHandle)
+  const fetchHomeLatest = async () => {
+    await articleRef.current.fetchHomeLatest()
+  }
+
   if (loading) return <div>loading...</div>
   return (
     <main className='flex w-full'>
@@ -145,8 +152,10 @@ export default function GamePage({ gameId, game }: Props) {
         myself={myself}
         myPlayer={myPlayer}
         openProfileModal={openProfileModal}
+        fetchHomeLatest={fetchHomeLatest}
       />
       <Article
+        ref={articleRef}
         game={game}
         myself={myself}
         openProfileModal={openProfileModal}
