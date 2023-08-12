@@ -135,6 +135,9 @@ const TalkSystem = forwardRef<TalkSystemRefHandle, Props>(
               </SecondaryButton>
             )}
           </div>
+          <div className='flex'>
+            ※現在、GM発言後に自動でメッセージを再取得できていないため、GM発言が反映されたか最大30秒経たないと確認できません
+          </div>
           {preview && (
             <div className='my-4 border-t border-gray-300 pt-2'>
               <p className='font-bold'>プレビュー</p>

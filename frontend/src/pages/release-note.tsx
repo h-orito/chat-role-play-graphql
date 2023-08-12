@@ -1,5 +1,6 @@
 import PageHeader from '@/components/pages/page-header'
 import Head from 'next/head'
+import Link from 'next/link'
 
 export default function CreateGame() {
   return (
@@ -21,6 +22,13 @@ export default function CreateGame() {
               <li>
                 不具合修正:
                 5ページを超えるとページングの動作がおかしくなっていたのを修正
+              </li>
+              <li>
+                追加:{' '}
+                <Link className='text-blue-500' href='/rules'>
+                  ルール
+                </Link>
+                に「ゲーム作成ルール」を追加
               </li>
             </ul>
           </div>
@@ -59,7 +67,12 @@ export default function CreateGame() {
               </p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
-              <li>なし</li>
+              <li>
+                未読のあるタブ（フォロー中など）に切り替えてもすぐに発言が取得されない
+              </li>
+              <li>
+                GM発言後、自動でメッセージを再取得していないため、発言できたかわからない
+              </li>
             </ul>
           </div>
           <div className='my-4 bg-gray-200 px-4 py-2'>

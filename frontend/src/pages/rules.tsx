@@ -119,6 +119,28 @@ export default function Rules() {
               </li>
             </ul>
           </div>
+          <div className='my-4 bg-gray-200 px-4 py-2'>
+            <div className='flex border-b border-gray-500'>
+              <p className='font-bold'>ゲーム作成ルール</p>
+            </div>
+            <ul className='list-inside list-disc py-2 text-left text-xs'>
+              <li>
+                他定期ゲームのアフター等で利用するのもOKですが、そのゲームのGMの方に許可を取ってください。
+              </li>
+              <li>版権ものの「なりチャ」等はNGです。</li>
+              <li>
+                ゲームを作成して放置していると管理人が判断した場合、作成者に利用制限をかけることがあります。
+                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs'>
+                  <li>
+                    テストプレイで作成するのも問題ありませんが、その旨を明示し、中止や終了まで責任を持って進めてください。
+                  </li>
+                  <li>
+                    基本的に、作成した方がGMとなります。トラブルは当事者間で解決するのが基本ですが、ゲームを適切に運営する責任があるため、管理をお願いします。
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
         </div>
       </article>
     </main>
