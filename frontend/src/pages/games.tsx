@@ -15,7 +15,7 @@ export const getServerSideProps = async () => {
   const { data, error } = await client.query<IndexGamesQuery>({
     query: IndexGamesDocument,
     variables: {
-      pageSize: 10,
+      pageSize: 100000,
       pageNumber: 1,
       statuses: [
         GameStatus.Cancelled,
