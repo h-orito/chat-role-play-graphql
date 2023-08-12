@@ -72,6 +72,13 @@ export default function CreateGame() {
               <li>FAQ</li>
               <li>プレイヤープロフィール（参加履歴的な）</li>
               <li>
+                エピローグの概念
+                <ul className='list-inside list-disc pl-4 text-left text-xs'>
+                  <li>エピローグ開始日時を設定</li>
+                  <li>独り言やDMなどの秘匿発言を公開</li>
+                </ul>
+              </li>
+              <li>
                 ゲーム内機能
                 <ul className='list-inside list-disc pl-4 text-left text-xs'>
                   <li>
@@ -145,6 +152,7 @@ export default function CreateGame() {
                       <li>表示設定</li>
                       <li>ミュート</li>
                       <li>ページングのページサイズ</li>
+                      <li>上が新しい、下が新しい</li>
                       <li>画像の大きさ2倍</li>
                       <li>文字の大きさ2倍</li>
                     </ul>
@@ -155,6 +163,7 @@ export default function CreateGame() {
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>ひとことメモ</li>
                       <li>フォローフリーとか連れ出し歓迎とかのタグ機能</li>
+                      <li>PL秘匿オンオフ</li>
                     </ul>
                   </li>
                 </ul>

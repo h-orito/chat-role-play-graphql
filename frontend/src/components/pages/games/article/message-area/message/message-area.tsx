@@ -55,7 +55,7 @@ export default function MessageArea({
     senderIds: onlyFollowing
       ? [...myself!.followParticipantIds, myself!.id]
       : null,
-    periodId: searchable ? null : game.periods[0].id,
+    periodId: searchable ? null : game.periods[game.periods.length - 1].id,
     paging: {
       pageSize: 10,
       pageNumber: 1,
@@ -135,7 +135,12 @@ export default function MessageArea({
   const setPeriodQuery = (periodId: string) => {
     const newQuery = {
       ...messageQuery,
-      periodId
+      periodId,
+      paging: {
+        // 期間移動したら1ページ目に戻す
+        ...messageQuery.paging,
+        pageNumber: 1
+      } as PageableQuery
     } as MessagesQuery
     search(newQuery)
   }
