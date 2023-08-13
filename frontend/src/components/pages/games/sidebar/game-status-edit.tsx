@@ -97,7 +97,6 @@ const UpdateGamePeriodForm = ({ game }: Props) => {
   dayjs.extend(timezone)
   dayjs.tz.setDefault('Asia/Tokyo')
 
-  console.log(game.periods)
   const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
     defaultValues: {
       name: game.periods[game.periods.length - 1].name,
