@@ -505,10 +505,11 @@ type ParticipantsQuery struct {
 }
 
 type Player struct {
-	ID       string         `json:"id"`
-	Name     string         `json:"name"`
-	Profile  *PlayerProfile `json:"profile,omitempty"`
-	Designer *Designer      `json:"designer,omitempty"`
+	ID             string         `json:"id"`
+	Name           string         `json:"name"`
+	Profile        *PlayerProfile `json:"profile,omitempty"`
+	Designer       *Designer      `json:"designer,omitempty"`
+	AuthorityCodes []string       `json:"authorityCodes"`
 }
 
 type PlayerProfile struct {

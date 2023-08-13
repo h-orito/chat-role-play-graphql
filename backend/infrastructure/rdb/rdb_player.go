@@ -27,7 +27,9 @@ type PlayerProfile struct {
 	UpdatedAt       time.Time
 }
 
-func (p PlayerProfile) ToModel(snsAccounts []model.PlayerSnsAccount) *model.PlayerProfile {
+func (p PlayerProfile) ToModel(
+	snsAccounts []model.PlayerSnsAccount,
+) *model.PlayerProfile {
 	return &model.PlayerProfile{
 		PlayerID:        p.PlayerID,
 		ProfileImageURL: p.ProfileImageUrl,

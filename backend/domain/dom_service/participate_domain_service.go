@@ -5,7 +5,7 @@ import (
 )
 
 type ParticipateDomainService interface {
-	AssertParticipate(game model.Game, player model.Player, password *string) error
+	AssertParticipate(game model.Game, player model.Player, authorities []model.PlayerAuthority, password *string) error
 }
 
 type participateDomainService struct {
@@ -20,10 +20,15 @@ func NewParticipateDomainService(
 	}
 }
 
-func (s *participateDomainService) AssertParticipate(game model.Game, player model.Player, password *string) error {
+func (s *participateDomainService) AssertParticipate(
+	game model.Game,
+	player model.Player,
+	authorities []model.PlayerAuthority,
+	password *string,
+) error {
 	if game.Status == model.GameStatusClosed || game.Status == model.GameStatusOpening {
 		// 参加登録可能になるまではGMのみ参加可能
-		if s.gameMasterDomainService.IsGameMaster(game, player) {
+		if s.gameMasterDomainService.IsGameMaster(game, player, authorities) {
 			return nil
 		} else {
 			return model.NewErrBusiness("参加登録可能になるまではGMのみ参加可能です")

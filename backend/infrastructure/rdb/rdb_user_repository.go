@@ -40,6 +40,14 @@ func (repo *UserRepository) FindByUserName(username string) (_ *model.User, err 
 	}, nil
 }
 
+// FindPlayerAuthorities implements model.UserRepository.
+func (repo *UserRepository) FindPlayerAuthorities(playerID uint32) (authorities []model.PlayerAuthority, err error) {
+	aths := repo.findAuthories(playerID)
+	return array.Map(aths, func(a PlayerAuthority) model.PlayerAuthority {
+		return *model.PlayerAuthorityValueOf(a.AuthorityCode)
+	}), nil
+}
+
 func (repo *UserRepository) findAuthories(playerID uint32) []PlayerAuthority {
 	var rdbAuthorities []PlayerAuthority
 	repo.db.Connection.Model(&PlayerAuthority{}).Where("player_id = ?", playerID).Find(&rdbAuthorities)

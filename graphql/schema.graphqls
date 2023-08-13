@@ -200,6 +200,7 @@ type Player {
   name: String!
   profile: PlayerProfile
   designer: Designer
+  authorityCodes: [String!]!
 }
 
 type PlayerProfile {

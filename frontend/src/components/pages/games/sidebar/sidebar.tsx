@@ -46,9 +46,9 @@ export default function Sidebar({
 }: SidebarProps) {
   const { isAuthenticated } = useAuth0()
 
-  const isGameMaster = game.gameMasters.some(
-    (gm) => gm.player.id === myPlayer?.id
-  )
+  const isGameMaster =
+    myPlayer?.authorityCodes.includes('AuthorityAdmin') ||
+    game.gameMasters.some((gm) => gm.player.id === myPlayer?.id)
 
   const canParticipate =
     isAuthenticated &&

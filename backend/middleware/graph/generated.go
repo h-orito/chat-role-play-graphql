@@ -359,10 +359,11 @@ type ComplexityRoot struct {
 	}
 
 	Player struct {
-		Designer func(childComplexity int) int
-		ID       func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Profile  func(childComplexity int) int
+		AuthorityCodes func(childComplexity int) int
+		Designer       func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Name           func(childComplexity int) int
+		Profile        func(childComplexity int) int
 	}
 
 	PlayerProfile struct {
@@ -2142,6 +2143,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NotificationCondition.Message(childComplexity), true
 
+	case "Player.authorityCodes":
+		if e.complexity.Player.AuthorityCodes == nil {
+			break
+		}
+
+		return e.complexity.Player.AuthorityCodes(childComplexity), true
+
 	case "Player.designer":
 		if e.complexity.Player.Designer == nil {
 			break
@@ -3165,6 +3173,7 @@ type Player {
   name: String!
   profile: PlayerProfile
   designer: Designer
+  authorityCodes: [String!]!
 }
 
 type PlayerProfile {
@@ -7610,6 +7619,8 @@ func (ec *executionContext) fieldContext_GameMaster_player(ctx context.Context, 
 				return ec.fieldContext_Player_profile(ctx, field)
 			case "designer":
 				return ec.fieldContext_Player_designer(ctx, field)
+			case "authorityCodes":
+				return ec.fieldContext_Player_authorityCodes(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Player", field.Name)
 		},
@@ -7928,6 +7939,8 @@ func (ec *executionContext) fieldContext_GameParticipant_player(ctx context.Cont
 				return ec.fieldContext_Player_profile(ctx, field)
 			case "designer":
 				return ec.fieldContext_Player_designer(ctx, field)
+			case "authorityCodes":
+				return ec.fieldContext_Player_authorityCodes(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Player", field.Name)
 		},
@@ -15112,6 +15125,50 @@ func (ec *executionContext) fieldContext_Player_designer(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Player_authorityCodes(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.Player) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Player_authorityCodes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AuthorityCodes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Player_authorityCodes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Player",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PlayerProfile_profileImageUrl(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.PlayerProfile) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PlayerProfile_profileImageUrl(ctx, field)
 	if err != nil {
@@ -16465,6 +16522,8 @@ func (ec *executionContext) fieldContext_Query_players(ctx context.Context, fiel
 				return ec.fieldContext_Player_profile(ctx, field)
 			case "designer":
 				return ec.fieldContext_Player_designer(ctx, field)
+			case "authorityCodes":
+				return ec.fieldContext_Player_authorityCodes(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Player", field.Name)
 		},
@@ -16527,6 +16586,8 @@ func (ec *executionContext) fieldContext_Query_player(ctx context.Context, field
 				return ec.fieldContext_Player_profile(ctx, field)
 			case "designer":
 				return ec.fieldContext_Player_designer(ctx, field)
+			case "authorityCodes":
+				return ec.fieldContext_Player_authorityCodes(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Player", field.Name)
 		},
@@ -16589,6 +16650,8 @@ func (ec *executionContext) fieldContext_Query_myPlayer(ctx context.Context, fie
 				return ec.fieldContext_Player_profile(ctx, field)
 			case "designer":
 				return ec.fieldContext_Player_designer(ctx, field)
+			case "authorityCodes":
+				return ec.fieldContext_Player_authorityCodes(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Player", field.Name)
 		},
@@ -26691,6 +26754,13 @@ func (ec *executionContext) _Player(ctx context.Context, sel ast.SelectionSet, o
 
 			out.Values[i] = ec._Player_designer(ctx, field, obj)
 
+		case "authorityCodes":
+
+			out.Values[i] = ec._Player_authorityCodes(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

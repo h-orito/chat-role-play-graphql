@@ -14,11 +14,6 @@ export const idToBase64 = (id: number, prefix: string): string => {
   return btoa(`${prefix}:${id}`)
 }
 
-type Enum = {
-  code: string
-  value: string
-}
-
 export const gameStatuses = new Map<string, string>([
   ['Closed', '公開前'],
   ['Opening', '公開中'],
@@ -30,3 +25,8 @@ export const gameStatuses = new Map<string, string>([
 
 export const convertToGameStatusName = (code: string): string | null =>
   gameStatuses.get(code) || null
+
+export const playerAuthorities = new Map<string, string>([
+  ['AuthorityPlayer', 'プレイヤー'],
+  ['AuthorityAdmin', '管理者']
+])

@@ -53,7 +53,7 @@ const documents = {
     "query FavoriteParticipants($gameId: ID!, $messageId: ID!) {\n  messageFavoriteGameParticipants(gameId: $gameId, messageId: $messageId) {\n    id\n    name\n    entryNumber\n    profileIcon {\n      id\n      url\n    }\n  }\n}": types.FavoriteParticipantsDocument,
     "query MessageReplies($gameId: ID!, $messageId: ID!) {\n  messageReplies(gameId: $gameId, messageId: $messageId) {\n    id\n    content {\n      type\n      text\n      number\n      isConvertDisabled\n    }\n    time {\n      sendAt\n      sendUnixTimeMilli\n    }\n    sender {\n      participantId\n      name\n      icon {\n        url\n        width\n        height\n      }\n    }\n    replyTo {\n      messageId\n      participantId\n    }\n    reactions {\n      replyCount\n      favoriteCount\n      favoriteParticipantIds\n    }\n  }\n}": types.MessageRepliesDocument,
     "query MyGameParticipant($gameId: ID!) {\n  myGameParticipant(gameId: $gameId) {\n    id\n    name\n    entryNumber\n    player {\n      id\n    }\n    profileIcon {\n      id\n      url\n    }\n    followParticipantIds\n    followerParticipantIds\n  }\n}": types.MyGameParticipantDocument,
-    "query MyPlayer {\n  myPlayer {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}": types.MyPlayerDocument,
+    "query MyPlayer {\n  myPlayer {\n    id\n    name\n    profile {\n      introduction\n    }\n    authorityCodes\n  }\n}": types.MyPlayerDocument,
     "query Player($id: ID!) {\n  player(id: $id) {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}": types.PlayerDocument,
     "query QPlayers($query: PlayersQuery!) {\n  players(query: $query) {\n    id\n    name\n  }\n}": types.QPlayersDocument,
 };
@@ -235,7 +235,7 @@ export function graphql(source: "query MyGameParticipant($gameId: ID!) {\n  myGa
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query MyPlayer {\n  myPlayer {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}"): (typeof documents)["query MyPlayer {\n  myPlayer {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}"];
+export function graphql(source: "query MyPlayer {\n  myPlayer {\n    id\n    name\n    profile {\n      introduction\n    }\n    authorityCodes\n  }\n}"): (typeof documents)["query MyPlayer {\n  myPlayer {\n    id\n    name\n    profile {\n      introduction\n    }\n    authorityCodes\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

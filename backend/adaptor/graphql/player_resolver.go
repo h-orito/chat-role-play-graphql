@@ -18,7 +18,7 @@ func (r *gameMasterResolver) player(ctx context.Context, obj *gqlmodel.GameMaste
 		return nil, err
 	}
 	player := p.(*model.Player)
-	return MapToPlayer(player, nil), nil
+	return MapToPlayer(player, nil, []model.PlayerAuthority{}), nil
 }
 
 func (r *gameParticipantResolver) player(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.Player, error) {
@@ -28,7 +28,7 @@ func (r *gameParticipantResolver) player(ctx context.Context, obj *gqlmodel.Game
 		return nil, err
 	}
 	player := p.(*model.Player)
-	return MapToPlayer(player, nil), nil
+	return MapToPlayer(player, nil, []model.PlayerAuthority{}), nil
 }
 
 func (r *queryResolver) players(ctx context.Context, query gqlmodel.PlayersQuery) ([]*gqlmodel.Player, error) {
@@ -64,7 +64,7 @@ func (r *queryResolver) players(ctx context.Context, query gqlmodel.PlayersQuery
 		return nil, err
 	}
 	return array.Map(players, func(p model.Player) *gqlmodel.Player {
-		return MapToPlayer(&p, nil)
+		return MapToPlayer(&p, nil, []model.PlayerAuthority{})
 	}), nil
 }
 
@@ -81,7 +81,11 @@ func (r *queryResolver) player(ctx context.Context, id string) (*gqlmodel.Player
 	if err != nil {
 		return nil, err
 	}
-	return MapToPlayer(p, profile), nil
+	authorities, err := r.playerUsecase.FindAuthorities(playerID)
+	if err != nil {
+		return nil, err
+	}
+	return MapToPlayer(p, profile, authorities), nil
 }
 
 func (r *queryResolver) myPlayer(ctx context.Context) (*gqlmodel.Player, error) {
@@ -97,7 +101,11 @@ func (r *queryResolver) myPlayer(ctx context.Context) (*gqlmodel.Player, error) 
 	if err != nil {
 		return nil, err
 	}
-	return MapToPlayer(p, profile), nil
+	authorities, err := r.playerUsecase.FindAuthorities(p.ID)
+	if err != nil {
+		return nil, err
+	}
+	return MapToPlayer(p, profile, authorities), nil
 }
 
 func (r *mutationResolver) updatePlayerProfile(ctx context.Context, input gqlmodel.UpdatePlayerProfile) (*gqlmodel.UpdatePlayerProfilePayload, error) {

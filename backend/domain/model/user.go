@@ -40,9 +40,14 @@ func PlayerAuthorityValueOf(s string) *PlayerAuthority {
 	})
 }
 
+func (pa PlayerAuthority) IsAdmin() bool {
+	return pa == AuthorityAdmin
+}
+
 var DefaultAuthorites = []PlayerAuthority{AuthorityPlayer}
 
 type UserRepository interface {
 	FindByUserName(userName string) (user *User, err error)
+	FindPlayerAuthorities(playerID uint32) (authorities []PlayerAuthority, err error)
 	Signup(userName string) (saved *User, err error)
 }

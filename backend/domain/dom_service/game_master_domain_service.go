@@ -7,8 +7,8 @@ import (
 )
 
 type GameMasterDomainService interface {
-	IsGameMaster(game model.Game, player model.Player) bool
-	AssertModifyGameMaster(game model.Game, player model.Player) error
+	IsGameMaster(game model.Game, player model.Player, authorities []model.PlayerAuthority) bool
+	AssertModifyGameMaster(game model.Game, player model.Player, authorities []model.PlayerAuthority) error
 }
 
 type gameMasterDomainService struct {
@@ -21,7 +21,14 @@ func NewGameMasterDomainService() GameMasterDomainService {
 func (ds *gameMasterDomainService) IsGameMaster(
 	game model.Game,
 	player model.Player,
+	authorities []model.PlayerAuthority,
 ) bool {
+	// AdminはGM扱い
+	if array.Any(authorities, func(a model.PlayerAuthority) bool {
+		return a.IsAdmin()
+	}) {
+		return true
+	}
 	return array.Any(game.GameMasters, func(gm model.GameMaster) bool {
 		return gm.PlayerID == player.ID
 	})
@@ -30,8 +37,9 @@ func (ds *gameMasterDomainService) IsGameMaster(
 func (ds *gameMasterDomainService) AssertModifyGameMaster(
 	game model.Game,
 	player model.Player,
+	authorities []model.PlayerAuthority,
 ) error {
-	if !ds.IsGameMaster(game, player) {
+	if !ds.IsGameMaster(game, player, authorities) {
 		return fmt.Errorf("player is not game master")
 	}
 	if !game.Status.IsNotFinished() {

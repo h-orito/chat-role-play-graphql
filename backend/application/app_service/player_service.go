@@ -13,6 +13,7 @@ type PlayerService interface {
 	Save(ctx context.Context, player model.Player) (saved *model.Player, err error)
 	FindProfile(ID uint32) (profile *model.PlayerProfile, err error)
 	SaveProfile(ctx context.Context, name string, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error)
+	FindAuthorities(ID uint32) (authorities []model.PlayerAuthority, err error)
 	RegisterSnsAccount(ctx context.Context, playerID uint32, account *model.PlayerSnsAccount) (saved *model.PlayerSnsAccount, err error)
 	UpdateSnsAccount(ctx context.Context, ID uint32, account *model.PlayerSnsAccount) error
 	DeleteSnsAccount(ctx context.Context, ID uint32) error
@@ -20,11 +21,16 @@ type PlayerService interface {
 
 type playerService struct {
 	playerRepository model.PlayerRepository
+	userRepository   model.UserRepository
 }
 
-func NewPlayerService(playerRepository model.PlayerRepository) PlayerService {
+func NewPlayerService(
+	playerRepository model.PlayerRepository,
+	userRepository model.UserRepository,
+) PlayerService {
 	return &playerService{
 		playerRepository: playerRepository,
+		userRepository:   userRepository,
 	}
 }
 
@@ -56,6 +62,11 @@ func (s *playerService) FindProfile(ID uint32) (profile *model.PlayerProfile, er
 // SaveProfile implements PlayerService.
 func (s *playerService) SaveProfile(ctx context.Context, name string, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error) {
 	return s.playerRepository.SaveProfile(ctx, name, profile)
+}
+
+// FindAuthorities implements PlayerService.
+func (s *playerService) FindAuthorities(ID uint32) (authorities []model.PlayerAuthority, err error) {
+	return s.userRepository.FindPlayerAuthorities(ID)
 }
 
 // RegisterSnsAccount implements PlayerService.

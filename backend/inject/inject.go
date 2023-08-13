@@ -17,7 +17,8 @@ import (
 
 func InjectServer() http.Handler {
 	database := injectDb()
-	resolver := injectResolver(database)
+	userRepository := injectUserRepository(database)
+	resolver := injectResolver(database, userRepository)
 	srv := handler.NewDefaultServer(
 		graph.NewExecutableSchema(
 			graph.Config{
@@ -26,13 +27,15 @@ func InjectServer() http.Handler {
 			},
 		),
 	)
-	userRepository := injectUserRepository(database)
 	handler := auth.AuthMiddleware(srv, userRepository)
 	return auth0.JwtMiddleware()(handler)
 }
 
 // resolver
-func injectResolver(database db.DB) graphql.Resolver {
+func injectResolver(
+	database db.DB,
+	userRepository model.UserRepository,
+) graphql.Resolver {
 	tx := db.NewTransaction(database.Connection)
 	// repository
 	charaRepository := injectCharaRepository(database)
@@ -47,7 +50,7 @@ func injectResolver(database db.DB) graphql.Resolver {
 	// application service
 	charaService := injectCharaService(charaRepository)
 	gameService := injectGameService(gameRepository, gameParticipantRepository)
-	playerService := injectPlayerService(playerRepository)
+	playerService := injectPlayerService(playerRepository, userRepository)
 	messageService := injectMessageService(messageRepository)
 	// usecase
 	charaUsecase := injectCharaUsecase(charaService, tx)
@@ -136,8 +139,11 @@ func injectGameService(
 	return app_service.NewGameService(gameRepository, gameParticipantRepository)
 }
 
-func injectPlayerService(playerRepository model.PlayerRepository) app_service.PlayerService {
-	return app_service.NewPlayerService(playerRepository)
+func injectPlayerService(
+	playerRepository model.PlayerRepository,
+	userRepository model.UserRepository,
+) app_service.PlayerService {
+	return app_service.NewPlayerService(playerRepository, userRepository)
 }
 
 func injectMessageService(messageRepository model.MessageRepository) app_service.MessageService {

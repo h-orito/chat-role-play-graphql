@@ -181,6 +181,10 @@ func (repo *PlayerRepository) findPlayer(db *gorm.DB, ID uint32) (_ *model.Playe
 	if err != nil {
 		return nil, err
 	}
+	if rdbPlayer == nil {
+		return nil, nil
+	}
+
 	return rdbPlayer.ToModel(), nil
 }
 

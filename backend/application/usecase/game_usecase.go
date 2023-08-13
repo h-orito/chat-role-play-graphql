@@ -134,7 +134,11 @@ func (g *gameUsecase) RegisterGameMaster(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
+		authorities, err := g.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, err
+		}
+		if !g.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
 			return nil, fmt.Errorf("you are not game master")
 		}
 		return g.gameService.RegisterGameMaster(ctx, gameID, playerID, isProducer)
@@ -167,7 +171,11 @@ func (g *gameUsecase) UpdateGameMaster(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		err = g.gameMasterDomainService.AssertModifyGameMaster(*game, *player)
+		authorities, err := g.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, err
+		}
+		err = g.gameMasterDomainService.AssertModifyGameMaster(*game, *player, authorities)
 		if err != nil {
 			return nil, err
 		}
@@ -200,7 +208,11 @@ func (g *gameUsecase) DeleteGameMaster(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		err = g.gameMasterDomainService.AssertModifyGameMaster(*game, *player)
+		authorities, err := g.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, err
+		}
+		err = g.gameMasterDomainService.AssertModifyGameMaster(*game, *player, authorities)
 		if err != nil {
 			return nil, err
 		}
@@ -232,7 +244,11 @@ func (g *gameUsecase) UpdateGameStatus(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
+		authorities, err := g.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, err
+		}
+		if !g.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
 			return nil, fmt.Errorf("you are not game master")
 		}
 
@@ -263,7 +279,11 @@ func (g *gameUsecase) UpdateGameSetting(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		if !g.gameMasterDomainService.IsGameMaster(*game, *player) {
+		authorities, err := g.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, err
+		}
+		if !g.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
 			return nil, fmt.Errorf("you are not game master")
 		}
 
@@ -293,7 +313,11 @@ func (g *gameUsecase) UpdateGamePeriod(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		err = g.gameMasterDomainService.AssertModifyGameMaster(*game, *player)
+		authorities, err := g.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, err
+		}
+		err = g.gameMasterDomainService.AssertModifyGameMaster(*game, *player, authorities)
 		if err != nil {
 			return nil, err
 		}
@@ -345,7 +369,11 @@ func (g *gameUsecase) Participate(
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		err = g.participateDomainService.AssertParticipate(*game, *player, password)
+		authorities, err := g.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, err
+		}
+		err = g.participateDomainService.AssertParticipate(*game, *player, authorities, password)
 		if err != nil {
 			return nil, err
 		}

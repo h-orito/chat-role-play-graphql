@@ -6,7 +6,11 @@ import (
 	"chat-role-play/util/array"
 )
 
-func MapToPlayer(p *model.Player, profile *model.PlayerProfile) *gqlmodel.Player {
+func MapToPlayer(
+	p *model.Player,
+	profile *model.PlayerProfile,
+	authorities []model.PlayerAuthority,
+) *gqlmodel.Player {
 	if p == nil {
 		return nil
 	}
@@ -14,6 +18,9 @@ func MapToPlayer(p *model.Player, profile *model.PlayerProfile) *gqlmodel.Player
 		ID:      intIdToBase64(p.ID, "Player"),
 		Name:    p.Name,
 		Profile: MapToPlayerProfile(profile),
+		AuthorityCodes: array.Map(authorities, func(a model.PlayerAuthority) string {
+			return a.String()
+		}),
 	}
 }
 
