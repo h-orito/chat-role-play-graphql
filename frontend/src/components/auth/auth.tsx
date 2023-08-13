@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!}
       authorizationParams={{
         redirect_uri: location.href,
-        // redirect_uri: window.location.origin + '/chat-role-play',
         audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE
       }}
       cacheLocation='localstorage'

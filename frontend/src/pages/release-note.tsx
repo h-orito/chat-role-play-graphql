@@ -29,6 +29,21 @@ export default function CreateGame() {
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>修正</p>
               <p className='ml-auto mt-auto text-xs text-gray-500'>
+                2023/08/18
+              </p>
+            </div>
+            <ul className='list-inside list-disc py-2 text-left text-xs'>
+              <li>
+                不具合修正:
+                Safariでサイト越えトラッキングを許可していない場合、リロードするとログアウト状態になる問題に対応
+              </li>
+            </ul>
+          </div>
+
+          <div className='my-4 bg-gray-200 px-4 py-2'>
+            <div className='flex border-b border-gray-500'>
+              <p className='font-bold'>修正・不具合対応</p>
+              <p className='ml-auto mt-auto text-xs text-gray-500'>
                 2023/08/12
               </p>
             </div>
