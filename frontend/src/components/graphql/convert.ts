@@ -20,7 +20,7 @@ export const gameStatuses = new Map<string, string>([
   ['Recruiting', '参加者募集中'],
   ['Progress', '開催中'],
   ['Finished', '終了'],
-  ['Canceled', '中止']
+  ['Cancelled', '中止']
 ])
 
 export const convertToGameStatusName = (code: string): string | null =>
