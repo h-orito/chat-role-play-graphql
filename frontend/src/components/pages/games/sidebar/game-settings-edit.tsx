@@ -46,8 +46,9 @@ export default function GameSettingsEdit({ game }: Props) {
     periodIntervalDays: Math.floor(
       game.settings.time.periodIntervalSeconds / 60 / 60 / 24
     ),
-    periodIntervalHours:
-      (game.settings.time.periodIntervalSeconds / 60 / 60) % 24,
+    periodIntervalHours: Math.floor(
+      (game.settings.time.periodIntervalSeconds / 60 / 60) % 24
+    ),
     periodIntervalMinutes: (game.settings.time.periodIntervalSeconds / 60) % 60,
     password: ''
   } as GameFormInput
