@@ -115,7 +115,7 @@ func (g *gameService) ChangePeriodIfNeeded(ctx context.Context, gameID uint32) (
 	now := time.Now()
 	shouldChange, status := game.ShouldChangeStatus(now)
 	if shouldChange {
-		if status == model.GameStatusProgress {
+		if status == model.GameStatusProgress && len(game.Periods) == 1 {
 			// ゲーム開始
 			g.startGame(ctx, *game)
 		} else {

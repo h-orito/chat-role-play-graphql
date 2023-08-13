@@ -766,6 +766,7 @@ type UpdateGameStatusPayload {
 
 input UpdateGamePeriod {
   gameId: ID!
+  periodId: ID!
   name: String!
   startAt: DateTime!
   endAt: DateTime!

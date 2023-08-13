@@ -738,10 +738,11 @@ type UpdateGamePasswordSetting struct {
 }
 
 type UpdateGamePeriod struct {
-	GameID  string    `json:"gameId"`
-	Name    string    `json:"name"`
-	StartAt time.Time `json:"startAt"`
-	EndAt   time.Time `json:"endAt"`
+	GameID   string    `json:"gameId"`
+	PeriodID string    `json:"periodId"`
+	Name     string    `json:"name"`
+	StartAt  time.Time `json:"startAt"`
+	EndAt    time.Time `json:"endAt"`
 }
 
 type UpdateGamePeriodPayload struct {

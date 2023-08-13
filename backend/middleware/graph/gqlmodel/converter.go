@@ -11,14 +11,6 @@ import (
 )
 
 func (g NewGame) MapToGame() model.Game {
-	periodPrefix := ""
-	if g.Settings.Time.PeriodPrefix != nil {
-		periodPrefix = *g.Settings.Time.PeriodPrefix
-	}
-	periodSuffix := ""
-	if g.Settings.Time.PeriodSuffix != nil {
-		periodSuffix = *g.Settings.Time.PeriodSuffix
-	}
 	return model.Game{
 		Name:         g.Name,
 		Status:       model.GameStatusClosed,
@@ -27,7 +19,7 @@ func (g NewGame) MapToGame() model.Game {
 		Periods: []model.GamePeriod{
 			{
 				Count:   0,
-				Name:    strings.Join([]string{periodPrefix, "0", periodSuffix}, ""),
+				Name:    "プロローグ",
 				StartAt: time.Now(),
 				EndAt:   g.Settings.Time.OpenAt,
 			},

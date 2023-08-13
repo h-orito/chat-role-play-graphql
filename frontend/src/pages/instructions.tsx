@@ -36,9 +36,7 @@ export default function Instructions() {
                 ロールをプレイ！トップページに戻ってきたら、「ようこそ
                 未登録さん」になっているはずなので、「ユーザー編集」よりユーザー名を変更してください
                 <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
-                  <li>
-                    このユーザー名は公開情報です（現状は他人のユーザー名が参照できる導線がありませんが、いずれ増えます）
-                  </li>
+                  <li>このユーザー名は公開情報です</li>
                   <li>
                     このユーザー名はいわゆるPL名であり、PC名ではありません（PC名は各ゲーム参加時に設定します）
                   </li>

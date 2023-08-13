@@ -23,6 +23,7 @@ import { iso2display } from '@/components/util/datetime/datetime'
 import TalkSystem, { TalkSystemRefHandle } from '../talk/talk-system'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import GameMasterEdit from './game-master-edit'
+import GameStatusEdit from './game-status-edit'
 
 type SidebarProps = {
   isSidebarOpen: boolean
@@ -76,7 +77,12 @@ export default function Sidebar({
         {isGameMaster && (
           <div className='border-t border-gray-300 py-2'>
             <GameSettingsEditButton game={game} />
-            {canModify && <GameMasterEditButton game={game} />}
+            {canModify && (
+              <>
+                <GameStatusEditButton game={game} />
+                <GameMasterEditButton game={game} />
+              </>
+            )}
             <SystemMessageButton
               game={game}
               fetchHomeLatest={fetchHomeLatest}
@@ -277,6 +283,35 @@ const GameSettingsEditButton = ({ game }: GameSettingsEditButtonProps) => {
       {isOpenGameSettingsEditModal && (
         <Modal close={toggleGameSettingsEditModal}>
           <GameSettingsEdit game={game} />
+        </Modal>
+      )}
+    </>
+  )
+}
+
+type GameStatusEditButtonProps = {
+  game: Game
+}
+
+const GameStatusEditButton = ({ game }: GameStatusEditButtonProps) => {
+  const [isOpenModal, setIsOpenModal] = useState(false)
+  const toggleModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenModal(!isOpenModal)
+    }
+  }
+  return (
+    <>
+      <button
+        className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+        onClick={() => setIsOpenModal(true)}
+      >
+        <LockClosedIcon className='mr-1 h-6 w-6' />
+        <p className='flex-1 self-center text-left'>ステータス・期間変更</p>
+      </button>
+      {isOpenModal && (
+        <Modal close={toggleModal}>
+          <GameStatusEdit game={game} />
         </Modal>
       )}
     </>

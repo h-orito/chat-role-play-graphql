@@ -3731,6 +3731,7 @@ type UpdateGameStatusPayload {
 
 input UpdateGamePeriod {
   gameId: ID!
+  periodId: ID!
   name: String!
   startAt: DateTime!
   endAt: DateTime!
@@ -23759,7 +23760,7 @@ func (ec *executionContext) unmarshalInputUpdateGamePeriod(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"gameId", "name", "startAt", "endAt"}
+	fieldsInOrder := [...]string{"gameId", "periodId", "name", "startAt", "endAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23775,6 +23776,15 @@ func (ec *executionContext) unmarshalInputUpdateGamePeriod(ctx context.Context, 
 				return it, err
 			}
 			it.GameID = data
+		case "periodId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PeriodID = data
 		case "name":
 			var err error
 

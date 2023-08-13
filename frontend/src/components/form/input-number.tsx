@@ -15,7 +15,7 @@ type Props<
     className?: string
   }
 
-const InputText = <
+const InputNumber = <
   TFieldValues extends FieldValues,
   TName extends FieldByType<TFieldValues, number>
 >(
@@ -75,4 +75,4 @@ const InputText = <
   )
 }
 
-export default InputText
+export default InputNumber

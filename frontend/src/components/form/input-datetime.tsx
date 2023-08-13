@@ -57,7 +57,7 @@ const InputDateTime = <
 
   return (
     <div>
-      {label && <label className='block text-sm'>{label}</label>}
+      {label && <label className='block text-xs font-bold'>{label}</label>}
       <input
         className={`${className ?? ''} rounded border ${borderClass} px-2 py-1`}
         type='datetime-local'

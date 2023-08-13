@@ -15,7 +15,7 @@ export default function CreateGame() {
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>既知の不具合</p>
               <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/08/12
+                2023/08/13
               </p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
@@ -27,9 +27,9 @@ export default function CreateGame() {
 
           <div className='my-4 bg-gray-200 px-4 py-2'>
             <div className='flex border-b border-gray-500'>
-              <p className='font-bold'>修正</p>
+              <p className='font-bold'>修正・機能追加</p>
               <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/08/18
+                2023/08/13
               </p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
@@ -41,12 +41,13 @@ export default function CreateGame() {
                 不具合修正:
                 期間の「分」を設定して保存し再度ゲーム設定画面を開くと「時間」に小数で表示される不具合を修正
               </li>
+              <li>追加: GM機能「ステータス・期間変更」追加</li>
             </ul>
           </div>
 
           <div className='my-4 bg-gray-200 px-4 py-2'>
             <div className='flex border-b border-gray-500'>
-              <p className='font-bold'>修正・不具合対応</p>
+              <p className='font-bold'>修正・機能追加</p>
               <p className='ml-auto mt-auto text-xs text-gray-500'>
                 2023/08/12
               </p>

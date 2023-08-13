@@ -19,7 +19,7 @@ type Enum = {
   value: string
 }
 
-const gameStatuses = new Map<string, string>([
+export const gameStatuses = new Map<string, string>([
   ['Closed', '公開前'],
   ['Opening', '公開中'],
   ['Recruiting', '参加者募集中'],

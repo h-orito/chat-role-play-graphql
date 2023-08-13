@@ -117,11 +117,31 @@ func (repo *GameRepository) UpdateGamePeriod(ctx context.Context, gameID uint32,
 	if !ok {
 		return fmt.Errorf("failed to get tx from context")
 	}
-	// 最新日の終了のみ更新
-	latestPeriod, err := findLatestGamePeriod(tx, gameID)
-	latestPeriod.EndAt = period.EndAt
-	if err := tx.Save(latestPeriod).Error; err != nil {
+	game, err := findGame(tx, gameID)
+	if err != nil {
 		return err
+	}
+	if game == nil {
+		return errors.New("game not found")
+	}
+	// 既存の期間を取得
+	existing := array.Find(game.Periods, func(p model.GamePeriod) bool {
+		return p.ID == period.ID
+	})
+	if existing == nil {
+		return errors.New("game period not found")
+	}
+	// 既存の期間を更新
+	result := tx.Model(&GamePeriod{}).Where("id = ?", period.ID).Update("game_period_name", period.Name)
+	if result.Error != nil {
+		return result.Error
+	}
+	// 最新の期間の場合は終了も更新
+	if existing.ID == game.Periods[len(game.Periods)-1].ID {
+		result = tx.Model(&GamePeriod{}).Where("id = ?", period.ID).Update("end_at", period.EndAt)
+		if result.Error != nil {
+			return result.Error
+		}
 	}
 	return nil
 }
@@ -360,14 +380,6 @@ func findRdbGameMasterPlayers(db *gorm.DB, GameID uint32) (_ []GameMasterPlayer,
 		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
 	}
 	return rdbGameMasterPlayers, nil
-}
-
-func findLatestGamePeriod(db *gorm.DB, gameID uint32) (period *GamePeriod, err error) {
-	var p GamePeriod
-	if err := db.Where("game_id = ?", gameID).Order("id desc").First(&p).Error; err != nil {
-		return nil, err
-	}
-	return &p, nil
 }
 
 func findRdbGamePeriods(db *gorm.DB, query gamePeriodsQuery) (_ []GamePeriod, err error) {

@@ -123,11 +123,16 @@ func (r *mutationResolver) updateGamePeriod(ctx context.Context, input gqlmodel.
 	if err != nil {
 		return nil, err
 	}
+	periodID, err := idToUint32(input.PeriodID)
+	if err != nil {
+		return nil, err
+	}
 	user := auth.GetUser(ctx)
 	if user == nil {
 		return nil, err
 	}
 	if err := r.gameUsecase.UpdateGamePeriod(ctx, *user, gameId, model.GamePeriod{
+		ID:      periodID,
 		Name:    input.Name,
 		StartAt: input.StartAt,
 		EndAt:   input.EndAt,
