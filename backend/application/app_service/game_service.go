@@ -132,7 +132,7 @@ func (g *gameService) ChangePeriodIfNeeded(ctx context.Context, gameID uint32) (
 				Count:   count,
 				Name:    strings.Join([]string{*game.Settings.Time.PeriodPrefix, strconv.Itoa(int(count)), *game.Settings.Time.PeriodSuffix}, ""),
 				StartAt: now,
-				EndAt:   game.Periods[len(game.Periods)-1].EndAt.Add(time.Duration(game.Settings.Time.PeriodIntervalSeconds*count) * time.Second),
+				EndAt:   game.Periods[len(game.Periods)-1].EndAt.Add(time.Duration(game.Settings.Time.PeriodIntervalSeconds) * time.Second),
 			}); err != nil {
 				return err
 			}
