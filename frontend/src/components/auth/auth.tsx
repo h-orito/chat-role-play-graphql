@@ -10,9 +10,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       domain={process.env.NEXT_PUBLIC_AUTH0_DOMAIN!}
       clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID!}
       authorizationParams={{
-        redirect_uri: window.location.origin + '/chat-role-play',
+        redirect_uri: location.href,
+        // redirect_uri: window.location.origin + '/chat-role-play',
         audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE
       }}
+      cacheLocation='localstorage'
+      useRefreshTokens={true}
     >
       {children}
     </Auth0Provider>

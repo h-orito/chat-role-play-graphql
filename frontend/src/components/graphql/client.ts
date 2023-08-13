@@ -7,10 +7,16 @@ import { setContext } from '@apollo/client/link/context'
 
 export const createClient = async (
   isAuthenticated: boolean,
-  getAccessTokenSilently: any
+  getAccessTokenSilently: any,
+  loginWithRedirect: any,
+  getAccessToken: any
 ) => {
   const authLink = setContext(async (_, { headers }) => {
-    const accessToken = isAuthenticated ? await getAccessTokenSilently() : null
+    const accessToken = await getAccessToken(
+      isAuthenticated,
+      getAccessTokenSilently,
+      loginWithRedirect
+    )
     return {
       headers: {
         ...headers,
