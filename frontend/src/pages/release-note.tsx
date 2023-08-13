@@ -118,13 +118,6 @@ export default function CreateGame() {
                 ゲーム内機能
                 <ul className='list-inside list-disc pl-4 text-left text-xs'>
                   <li>
-                    GM機能
-                    <ul className='list-inside list-disc pl-4 text-left text-xs'>
-                      <li>ゲーム削除（いわゆる廃村）</li>
-                      <li>手動期間更新、ステータス更新</li>
-                    </ul>
-                  </li>
-                  <li>
                     ゲーム設定
                     <ul className='list-inside list-disc pl-4 text-left text-xs'>
                       <li>レーティング</li>
