@@ -31,52 +31,53 @@ const replaceTargets: Array<ReplaceTarget> = [
   { regex: /"/g, replace: '&quot;' },
   { regex: /'/g, replace: '&#039;' },
   // 文字列装飾
+  // .*?だと改行にマッチしないので、[\s\S]*?にする
   {
-    regex: /\[b\](.*?)\[\/b\]/g,
+    regex: /\[b\]([\s\S]*?)\[\/b\]/g,
     replace: `<strong>$1</strong>`
   },
   {
-    regex: /\[#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\](.*?)\[\/#\]/g,
+    regex: /\[#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\]([\s\S]*?)\[\/#\]/g,
     replace: `<span style="color: #$1;">$2</span>`
   },
   {
-    regex: /\[i\](.*?)\[\/i\]/g,
+    regex: /\[i\]([\s\S]*?)\[\/i\]/g,
     replace: `<em>$1</em>`
   },
   {
-    regex: /\[u\](.*?)\[\/u\]/g,
+    regex: /\[u\]([\s\S]*?)\[\/u\]/g,
     replace: `<u>$1</u>`
   },
   {
-    regex: /\[s\](.*?)\[\/s\]/g,
+    regex: /\[s\]([\s\S]*?)\[\/s\]/g,
     replace: `<s>$1</s>`
   },
   {
-    regex: /\[sup\](.*?)\[\/sup\]/g,
+    regex: /\[sup\]([\s\S]*?)\[\/sup\]/g,
     replace: `<sup>$1</sup>`
   },
   {
-    regex: /\[sub\](.*?)\[\/sub\]/g,
+    regex: /\[sub\]([\s\S]*?)\[\/sub\]/g,
     replace: `<sub>$1</sub>`
   },
   {
-    regex: /\[small\](.*?)\[\/small\]/g,
+    regex: /\[small\]([\s\S]*?)\[\/small\]/g,
     replace: `<small>$1</small>`
   },
   {
-    regex: /\[large\](.*?)\[\/large\]/g,
+    regex: /\[large\]([\s\S]*?)\[\/large\]/g,
     replace: `<span style="font-size: 150%;">$1</span>`
   },
   {
-    regex: /\[huge\](.*?)\[\/huge\]/g,
+    regex: /\[huge\]([\s\S]*?)\[\/huge\]/g,
     replace: `<span style="font-size: 200%;">$1</span>`
   },
   {
-    regex: /\[kusodeka\](.*?)\[\/kusodeka\]/g,
+    regex: /\[kusodeka\]([\s\S]*?)\[\/kusodeka\]/g,
     replace: `<span style="font-size: 250%;">$1</span>`
   },
   {
-    regex: /\[ruby\](.*?)\[rt\](.*?)\[\/rt\]\[\/ruby\]/g,
+    regex: /\[ruby\]([\s\S]*?)\[rt\]([\s\S]*?)\[\/rt\]\[\/ruby\]/g,
     replace: `<ruby>$1<rt>$2</rt></ruby>`
   }
 ]
