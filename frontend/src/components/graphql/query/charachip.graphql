@@ -3,6 +3,7 @@ query CharachipDetail($id: ID!) {
     id
     name
     descriptionUrl
+    canChangeName
     designer {
       name
     }
