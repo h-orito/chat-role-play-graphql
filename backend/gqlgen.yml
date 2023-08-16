@@ -95,6 +95,8 @@ models:
     fields:
       player:
         resolver: true
+      chara:
+        resolver: true
       profileIcon:
         resolver: true
       followParticipantIds:
@@ -118,4 +120,8 @@ models:
   GameParticipantGroup:
     fields:
       participants:
+        resolver: true
+  GameCharaSetting:
+    fields:
+      charachips:
         resolver: true

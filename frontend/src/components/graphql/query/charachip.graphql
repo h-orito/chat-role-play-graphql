@@ -1,0 +1,22 @@
+query CharachipDetail($id: ID!) {
+  charachip(id: $id) {
+    id
+    name
+    descriptionUrl
+    designer {
+      name
+    }
+    charas {
+      id
+      name
+      size {
+        width
+        height
+      }
+      images {
+        type
+        url
+      }
+    }
+  }
+}

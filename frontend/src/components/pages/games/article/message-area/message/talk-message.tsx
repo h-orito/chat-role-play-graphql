@@ -70,7 +70,10 @@ export default function TalkMessage({
           )}
           {!preview && (
             <div className='ml-2 flex-1 text-sm'>
-              <div className='min-h-[60px] w-full whitespace-pre-wrap break-words rounded border border-gray-300 p-2 text-gray-700'>
+              <div
+                className='w-full whitespace-pre-wrap break-words rounded border border-gray-300 p-2 text-gray-700'
+                style={{ minHeight: `${message.sender!.icon.height}px` }}
+              >
                 <MessageText
                   rawText={message.content.text}
                   isConvertDisabled={message.content.isConvertDisabled}

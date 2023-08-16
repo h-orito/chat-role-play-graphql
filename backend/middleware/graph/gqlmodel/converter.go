@@ -26,8 +26,9 @@ func (g NewGame) MapToGame() model.Game {
 		},
 		Settings: model.GameSettings{
 			Chara: model.GameCharaSettings{
-				CharachipIDs: array.Map(g.Settings.Chara.CharachipIds, func(charachipId int) uint32 {
-					return uint32(charachipId)
+				CharachipIDs: array.Map(g.Settings.Chara.CharachipIds, func(id string) uint32 {
+					i, _ := idToUint32(id)
+					return i
 				}),
 				CanOriginalCharacter: g.Settings.Chara.CanOriginalCharacter,
 			},
@@ -59,8 +60,9 @@ func (g NewGame) MapToGame() model.Game {
 func (g UpdateGameSetting) MapToGameSetting() model.GameSettings {
 	return model.GameSettings{
 		Chara: model.GameCharaSettings{
-			CharachipIDs: array.Map(g.Settings.Chara.CharachipIds, func(charachipId int) uint32 {
-				return uint32(charachipId)
+			CharachipIDs: array.Map(g.Settings.Chara.CharachipIds, func(id string) uint32 {
+				i, _ := idToUint32(id)
+				return i
 			}),
 			CanOriginalCharacter: g.Settings.Chara.CanOriginalCharacter,
 		},

@@ -8,6 +8,7 @@ interface Props {
   setImages: Dispatch<SetStateAction<File[]>>
   defaultImageUrl?: string | null
   maxFileKByte?: number
+  disabled?: boolean
 }
 
 const allowImageTypes = ['image/jpeg', 'image/png', 'image/jpg']
@@ -17,7 +18,8 @@ export default function InputImage({
   name,
   setImages,
   defaultImageUrl,
-  maxFileKByte = 1024
+  maxFileKByte = 1024,
+  disabled = false
 }: Props) {
   const [errorMessage, setErrorMessage] = useState('')
   const [previewImageUrl, setPreviewImageUrl] = useState(defaultImageUrl)
@@ -78,7 +80,9 @@ export default function InputImage({
         onChange={handleFile}
         hidden
       />
-      <PrimaryButton click={onProfileButtonClick}>画像を選択</PrimaryButton>
+      <PrimaryButton click={onProfileButtonClick} disabled={disabled}>
+        画像を選択
+      </PrimaryButton>
       {previewImageUrl != null && (
         <DangerButton className='ml-2' click={(e: any) => handleCancel(e)}>
           削除

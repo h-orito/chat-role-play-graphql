@@ -5,146 +5,9 @@ import (
 	"chat-role-play/middleware/graph/gqlmodel"
 	"chat-role-play/util/array"
 	"context"
+
+	"github.com/graph-gophers/dataloader"
 )
-
-func (r *mutationResolver) registerDesigner(ctx context.Context, input gqlmodel.NewDesigner) (*gqlmodel.RegisterDesignerPayload, error) {
-	saved, err := r.charaUsecase.RegisterDesigner(ctx, model.Designer{
-		Name: input.Name,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &gqlmodel.RegisterDesignerPayload{
-		Designer: MapToDesigner(saved),
-	}, nil
-}
-
-func (r *mutationResolver) updateDesigner(ctx context.Context, input gqlmodel.UpdateDesigner) (*gqlmodel.UpdateDesignerPayload, error) {
-	id, err := idToUint32(input.ID)
-	if err != nil {
-		return nil, err
-	}
-	if _, err := r.charaUsecase.UpdateDesigner(ctx, model.Designer{ID: id, Name: input.Name}); err != nil {
-		return nil, err
-	}
-	return &gqlmodel.UpdateDesignerPayload{Ok: true}, nil
-}
-
-func (r *mutationResolver) registerCharachip(ctx context.Context, input gqlmodel.NewCharachip) (*gqlmodel.RegisterCharachipPayload, error) {
-	designerID, err := idToUint32(input.DesignerID)
-	if err != nil {
-		return nil, err
-	}
-	saved, err := r.charaUsecase.RegisterCharachip(ctx, model.Charachip{
-		Name:     input.Name,
-		Designer: model.Designer{ID: designerID},
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &gqlmodel.RegisterCharachipPayload{
-		Charachip: MapToCharachip(saved),
-	}, nil
-}
-
-func (r *mutationResolver) updateCharachip(ctx context.Context, input gqlmodel.UpdateCharachip) (*gqlmodel.UpdateCharachipPayload, error) {
-	id, err := idToUint32(input.ID)
-	if err != nil {
-		return nil, err
-	}
-	if err != nil {
-		return nil, err
-	}
-	if _, err := r.charaUsecase.UpdateCharachip(ctx, model.Charachip{
-		ID:   id,
-		Name: input.Name,
-	}); err != nil {
-		return nil, err
-	}
-	return &gqlmodel.UpdateCharachipPayload{Ok: true}, nil
-}
-
-func (r *mutationResolver) registerCharachipChara(ctx context.Context, input gqlmodel.NewChara) (*gqlmodel.RegisterCharaPayload, error) {
-	charachipID, err := idToUint32(input.CharachipID)
-	if err != nil {
-		return nil, err
-	}
-	c := model.Chara{
-		Name: input.Name,
-	}
-	saved, err := r.charaUsecase.RegisterChara(ctx, c, &charachipID)
-	if err != nil {
-		return nil, err
-	}
-	return &gqlmodel.RegisterCharaPayload{
-		Chara: MapToChara(saved),
-	}, nil
-}
-
-func (r *mutationResolver) updateChara(ctx context.Context, input gqlmodel.UpdateChara) (*gqlmodel.UpdateCharaPayload, error) {
-	id, err := idToUint32(input.ID)
-	if err != nil {
-		return nil, err
-	}
-	if _, err := r.charaUsecase.UpdateChara(ctx, model.Chara{
-		ID:   id,
-		Name: input.Name,
-	}); err != nil {
-		return nil, err
-	}
-	return &gqlmodel.UpdateCharaPayload{Ok: true}, nil
-}
-
-func (r *mutationResolver) registerCharaImage(ctx context.Context, input gqlmodel.NewCharaImage) (*gqlmodel.RegisterCharaImagePayload, error) {
-	charaId, err := idToUint32(input.CharaID)
-	if err != nil {
-		return nil, err
-	}
-	imageUrl, err := r.imageUsecase.Upload(input.File.File)
-	if err != nil {
-		return nil, err
-	}
-	ci := model.CharaImage{
-		Type: input.Type,
-		Size: model.CharaSize{
-			Width:  uint32(input.Width),
-			Height: uint32(input.Height),
-		},
-		URL: *imageUrl,
-	}
-	saved, err := r.charaUsecase.RegisterCharaImage(ctx, ci, charaId)
-	if err != nil {
-		return nil, err
-	}
-	return &gqlmodel.RegisterCharaImagePayload{
-		CharaImage: MapToCharaImage(saved),
-	}, nil
-}
-
-func (r *mutationResolver) updateCharaImage(ctx context.Context, input gqlmodel.UpdateCharaImage) (*gqlmodel.UpdateCharaImagePayload, error) {
-	charaImageId, err := idToUint32(input.ID)
-	if err != nil {
-		return nil, err
-	}
-	imageUrl, err := r.imageUsecase.Upload(input.File.File)
-	if err != nil {
-		return nil, err
-	}
-	if _, err := r.charaUsecase.UpdateCharaImage(ctx, model.CharaImage{
-		ID:   charaImageId,
-		Type: input.Type,
-		Size: model.CharaSize{
-			Width:  uint32(input.Width),
-			Height: uint32(input.Height),
-		},
-		URL: *imageUrl,
-	}); err != nil {
-		return nil, err
-	}
-	return &gqlmodel.UpdateCharaImagePayload{Ok: true}, nil
-}
-
-// --------------------
 
 func (r *queryResolver) designers(ctx context.Context, query gqlmodel.DesignersQuery) ([]*gqlmodel.Designer, error) {
 	var err error
@@ -254,4 +117,33 @@ func (r *queryResolver) chara(ctx context.Context, id string) (*gqlmodel.Chara, 
 		return nil, err
 	}
 	return MapToChara(chara), nil
+}
+
+func (r *gameParticipantResolver) chara(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.Chara, error) {
+	if obj.CharaID == nil {
+		return nil, nil
+	}
+	thunk := r.loaders.CharaLoader.Load(ctx, dataloader.StringKey(*obj.CharaID))
+	i, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+	c := i.(*model.Chara)
+	return MapToChara(c), nil
+}
+
+// Charachips is the resolver for the charachips field.
+func (r *gameCharaSettingResolver) charachips(ctx context.Context, obj *gqlmodel.GameCharaSetting) ([]*gqlmodel.Charachip, error) {
+	if obj.CharachipIDs == nil || len(obj.CharachipIDs) == 0 {
+		return nil, nil
+	}
+	thunk := r.loaders.CharachipLoader.LoadMany(ctx, dataloader.NewKeysFromStrings(obj.CharachipIDs))
+	c, errs := thunk()
+	if errs != nil || len(errs) > 0 {
+		return nil, errs[0]
+	}
+	return array.Map(c, func(c interface{}) *gqlmodel.Charachip {
+		charachip := c.(*model.Charachip)
+		return MapToCharachip(charachip)
+	}), nil
 }

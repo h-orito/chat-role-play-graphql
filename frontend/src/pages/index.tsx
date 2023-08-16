@@ -116,6 +116,14 @@ export default function Index({ games }: Props) {
               )}
             </div>
           </div>
+          <div className='my-6'>
+            <h2 className='mb-2 text-lg font-bold'>キャラチップ</h2>
+            <div className='flex justify-center'>
+              <Link href='/charachips'>
+                <PrimaryButton>キャラチップ一覧</PrimaryButton>
+              </Link>
+            </div>
+          </div>
         </div>
         <footer className='border-t border-gray-300 px-4 py-2 text-xs'>
           <div className='flex justify-center'>
