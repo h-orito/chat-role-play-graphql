@@ -1,0 +1,21 @@
+query CharachipDetails($query: CharachipsQuery!) {
+  charachips(query: $query) {
+    id
+    name
+    designer {
+      name
+    }
+    charas {
+      id
+      name
+      size {
+        width
+        height
+      }
+      images {
+        type
+        url
+      }
+    }
+  }
+}

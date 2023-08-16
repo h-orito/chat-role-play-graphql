@@ -85,9 +85,11 @@ create table designers (
 );
 
 create table charachips (
-    id             int unsigned not null auto_increment comment 'ID',
-    charachip_name varchar(255) not null comment 'キャラチップ名',
-    designer_id    int unsigned not null comment 'デザイナーID',
+    id              int unsigned not null auto_increment comment 'ID',
+    charachip_name  varchar(255) not null comment 'キャラチップ名',
+    designer_id     int unsigned not null comment 'デザイナーID',
+    description_url text         not null comment 'url',
+    can_change_name boolean      not null comment '名前変更可能か',
     created_at datetime     not null comment '作成日時',
     updated_at datetime     not null comment '更新日時',
     primary key (id)
@@ -104,6 +106,8 @@ create table charas (
     id            int unsigned not null auto_increment comment 'ID',
     chara_name    varchar(255) not null comment 'キャラクター名',
     charachip_id  int unsigned          comment 'キャラチップID',
+    width         int unsigned not null comment '幅',
+    height        int unsigned not null comment '高さ',
     created_at datetime     not null comment '作成日時',
     updated_at datetime     not null comment '更新日時',
     primary key (id)
@@ -121,8 +125,6 @@ create table chara_images (
     chara_id         int unsigned not null comment 'キャラクターID',
     chara_image_type varchar(255) not null comment 'キャラクター画像種別',
     chara_image_url  varchar(1000) not null comment '画像url',
-    width            int unsigned not null comment '幅',
-    height           int unsigned not null comment '高さ',
     created_at datetime     not null comment '作成日時',
     updated_at datetime     not null comment '更新日時',
     primary key (id)
@@ -173,12 +175,14 @@ create table game_participants (
     id                    int unsigned not null auto_increment comment 'ID',
     game_id               int unsigned not null comment 'ゲームID',
     player_id             int unsigned not null comment 'プレイヤーID',
+    chara_id              int unsigned          comment 'キャラクターID',
     game_participant_name varchar(255) not null comment 'ゲーム参加者名',
     entry_number          int unsigned not null comment '参加番号',
     memo                  varchar(1000)         comment 'メモ',
     profile_icon_id       int unsigned          comment 'プロフィールアイコンID',
     last_accessed_at      datetime     not null comment '最終アクセス日時',
     is_gone               boolean      not null comment 'ゲームから退出したか',
+    can_change_name       boolean      not null comment '名前変更可能か',
     created_at datetime     not null comment '作成日時',
     updated_at datetime     not null comment '更新日時',
     primary key (id),
@@ -195,6 +199,13 @@ alter table game_participants
 alter table game_participants
     add constraint fk_game_participants_players foreign key (player_id)
     references players (id)
+    on update restrict
+    on delete restrict
+;
+
+alter table game_participants
+    add constraint fk_game_participants_charas foreign key (chara_id)
+    references charas (id)
     on update restrict
     on delete restrict
 ;

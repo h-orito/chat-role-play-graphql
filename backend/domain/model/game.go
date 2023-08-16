@@ -97,10 +97,12 @@ type GameParticipant struct {
 	Name           string
 	EntryNumber    uint32
 	PlayerID       uint32
+	CharaID        *uint32
 	Memo           *string
 	ProfileIconID  *uint32
 	LastAccessedAt time.Time
 	IsGone         bool
+	CanChangeName  bool
 }
 
 type GameParticipantQuery struct {

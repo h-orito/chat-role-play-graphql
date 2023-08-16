@@ -292,10 +292,12 @@ func registerGameParticipant(db *gorm.DB, gameID uint32, participant model.GameP
 	rdb := GameParticipant{
 		GameID:              gameID,
 		PlayerID:            participant.PlayerID,
+		CharaID:             participant.CharaID,
 		GameParticipantName: participant.Name,
 		Memo:                participant.Memo,
 		LastAccessedAt:      time.Now(),
 		IsGone:              false,
+		CanChangeName:       participant.CanChangeName,
 	}
 
 	var entryNumber uint32

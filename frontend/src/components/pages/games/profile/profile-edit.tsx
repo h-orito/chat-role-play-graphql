@@ -95,15 +95,22 @@ export default function ProfileEdit({
   )
 
   const selectedIcon = icons.find((icon) => icon.id === iconId)
-
   const updateIntroduction = (str: string) => setValue('introduction', str)
+
+  const canChangeName = myself != null && myself.canChangeName
+  const canChangeProfileImage = myself != null && myself.chara == null
 
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='my-4'>
+          <label className='text-xs font-bold'>キャラクター名</label>
+          {!canChangeName && (
+            <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+              名称変更不可キャラチップのため、変更できません。
+            </p>
+          )}
           <InputText
-            label='キャラクター名'
             name='name'
             control={control}
             rules={{
@@ -113,6 +120,7 @@ export default function ProfileEdit({
                 message: `50文字以内で入力してください`
               }
             }}
+            disabled={!canChangeName}
           />
         </div>
         <div className='my-4'>
@@ -132,15 +140,23 @@ export default function ProfileEdit({
         </div>
         <div className='my-4'>
           <label className='text-xs font-bold'>プロフィール画像</label>
-          <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
-            jpeg, jpg, png形式かつ1MByte以下の画像を選択してください。
-            <br />
-            横400pxで表示されます。
-          </p>
+          {canChangeProfileImage ? (
+            <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+              jpeg, jpg, png形式かつ1MByte以下の画像を選択してください。
+              <br />
+              横400pxで表示されます。
+            </p>
+          ) : (
+            <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+              キャラチップ利用のため、登録できません。
+            </p>
+          )}
+
           <InputImage
             name='profileImage'
             setImages={setImages}
             defaultImageUrl={profile.profileImageUrl}
+            disabled={!canChangeProfileImage}
           />
         </div>
         <div>

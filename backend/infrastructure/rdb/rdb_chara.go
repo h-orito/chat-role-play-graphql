@@ -20,11 +20,13 @@ func (d Designer) ToModel() *model.Designer {
 }
 
 type Charachip struct {
-	ID            uint32
-	CharachipName string
-	DesignerID    uint32
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	ID             uint32
+	CharachipName  string
+	DesignerID     uint32
+	DescriptionUrl string
+	CanChangeName  bool
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 func (c Charachip) ToModel(
@@ -32,10 +34,12 @@ func (c Charachip) ToModel(
 	charas []model.Chara,
 ) *model.Charachip {
 	return &model.Charachip{
-		ID:       c.ID,
-		Name:     c.CharachipName,
-		Designer: *designer,
-		Charas:   charas,
+		ID:             c.ID,
+		Name:           c.CharachipName,
+		Designer:       *designer,
+		DescriptionURL: c.DescriptionUrl,
+		CanChangeName:  c.CanChangeName,
+		Charas:         charas,
 	}
 }
 
@@ -43,6 +47,8 @@ type Chara struct {
 	ID          uint32
 	CharaName   string
 	CharachipId *uint32
+	Width       uint32
+	Height      uint32
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -51,9 +57,11 @@ func (c Chara) ToModel(
 	images []model.CharaImage,
 ) *model.Chara {
 	return &model.Chara{
-		ID:     c.ID,
-		Name:   c.CharaName,
-		Images: images,
+		ID:          c.ID,
+		CharachipID: *c.CharachipId,
+		Name:        c.CharaName,
+		Size:        model.CharaSize{Width: c.Width, Height: c.Height},
+		Images:      images,
 	}
 }
 
@@ -62,8 +70,6 @@ type CharaImage struct {
 	CharaID        uint32
 	CharaImageType string
 	CharaImageUrl  string
-	Width          uint32
-	Height         uint32
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 }
@@ -72,10 +78,6 @@ func (c CharaImage) ToModel() *model.CharaImage {
 	return &model.CharaImage{
 		ID:   c.ID,
 		Type: c.CharaImageType,
-		Size: model.CharaSize{
-			Width:  c.Width,
-			Height: c.Height,
-		},
-		URL: c.CharaImageUrl,
+		URL:  c.CharaImageUrl,
 	}
 }

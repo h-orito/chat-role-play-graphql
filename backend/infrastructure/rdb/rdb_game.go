@@ -73,11 +73,13 @@ type GameParticipant struct {
 	ID                  uint32
 	GameID              uint32
 	PlayerID            uint32
+	CharaID             *uint32
 	GameParticipantName string
 	EntryNumber         uint32
 	Memo                *string
 	ProfileIconID       *uint32
 	IsGone              bool
+	CanChangeName       bool
 	LastAccessedAt      time.Time
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
@@ -87,11 +89,13 @@ func (p GameParticipant) ToModel() *model.GameParticipant {
 	return &model.GameParticipant{
 		ID:             p.ID,
 		PlayerID:       p.PlayerID,
+		CharaID:        p.CharaID,
 		Name:           p.GameParticipantName,
 		EntryNumber:    p.EntryNumber,
 		Memo:           p.Memo,
 		ProfileIconID:  p.ProfileIconID,
 		IsGone:         p.IsGone,
+		CanChangeName:  p.CanChangeName,
 		LastAccessedAt: p.LastAccessedAt,
 	}
 }

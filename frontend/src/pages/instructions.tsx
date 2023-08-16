@@ -20,7 +20,7 @@ export default function Instructions() {
               <li>
                 トップページ「Register /
                 Login」より「ログイン」してください（新規登録もこのボタンです）
-                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
                   <li>
                     未登録の場合は表示された画面下側の「サインアップ」より新規登録してください
                   </li>
@@ -35,7 +35,7 @@ export default function Instructions() {
               <li>
                 ロールをプレイ！トップページに戻ってきたら、「ようこそ
                 未登録さん」になっているはずなので、「ユーザー編集」よりユーザー名を変更してください
-                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
                   <li>このユーザー名は公開情報です</li>
                   <li>
                     このユーザー名はいわゆるPL名であり、PC名ではありません（PC名は各ゲーム参加時に設定します）
@@ -44,28 +44,66 @@ export default function Instructions() {
               </li>
               <li>
                 いよいよゲームへの参加です
-                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
-                  <li>開催中のゲームを選択し、ゲーム画面に遷移してください</li>
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
                   <li>
-                    状態が「公開中」の場合、ゲーム自体は閲覧できますが、まだ参加することはできません
+                    開催中のゲームを選択し、ゲーム画面に遷移してください
+                    <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
+                      <li>
+                        状態が「公開中」の場合、ゲーム自体は閲覧できますが、まだ参加することはできません
+                      </li>
+                      <li>
+                        同様に、状態が「終了」「中止」の場合は参加することができません
+                      </li>
+                      <li>
+                        状態が「参加者募集中」「開催中」の場合、参加できます
+                      </li>
+                    </ul>
                   </li>
-                  <li>
-                    同様に、状態が「終了」「中止」の場合は参加することができません
-                  </li>
-                  <li>状態が「参加者募集中」「開催中」の場合、参加できます</li>
                   <li>
                     画面左の「参加登録」から参加することができます（スマホの場合、フッターメニューの一番左の項目をタップすると左メニューを表示できます）
-                  </li>
-                  <li>
-                    参加登録後、同じく左メニューから自分のプロフィール画面を開くと、アイコン登録やプロフィール編集などが行なえます
+                    <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
+                      <li>
+                        キャラチップを利用できるゲーム設定の場合、オリジナルキャラクターで参加するか、キャラチップを利用して参加するかを選べます
+                      </li>
+                      <li>
+                        オリジナルキャラクターで参加する場合は、
+                        <Link
+                          href={'/rules'}
+                          target='_blank'
+                          className='text-blue-500'
+                        >
+                          ルール
+                        </Link>
+                        のオリジナルキャラクターまわりをご確認のうえ参加してください
+                      </li>
+                      <li>
+                        キャラチップを利用して参加する場合も、
+                        <Link
+                          href={'/rules'}
+                          target='_blank'
+                          className='text-blue-500'
+                        >
+                          ルール
+                        </Link>
+                        のキャラチップ利用まわりをご確認のうえ参加してください
+                      </li>
+                    </ul>
                   </li>
                 </ul>
               </li>
               <li>
                 プロフィールの編集
-                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
                   <li>
                     参加登録後、同じく左メニューから自分のプロフィール画面を開くと、アイコン登録やプロフィール編集などが行なえます
+                    <ul className='ml-8 list-inside list-disc py-1 text-left text-xs leading-5'>
+                      <li>
+                        キャラチップ利用の場合、アイコン登録やプロフィール画像登録などは行えません
+                      </li>
+                      <li>
+                        名称変更不可キャラチップ利用の場合、名前も変更できません
+                      </li>
+                    </ul>
                   </li>
                   <li>
                     アイコンを1つ以上登録しないとプロフィールアイコン（参加者一覧に表示する用のアイコン）を設定することはできません
@@ -74,8 +112,15 @@ export default function Instructions() {
               </li>
               <li>
                 発言
-                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
-                  <li>アイコンを1つ以上登録しないと発言することができません</li>
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
+                  <li>
+                    アイコンを1つ以上登録しないと発言することができません
+                    <ul className='ml-8 list-inside list-disc py-1 text-left text-xs leading-5'>
+                      <li>
+                        キャラチップ利用の場合、最初からキャラに応じたアイコンが登録されています
+                      </li>
+                    </ul>
+                  </li>
                   <li>
                     ホーム画面またはフォロー画面の右下に表示される{' '}
                     <PencilSquareIcon className='h-4 w-4' />{' '}
@@ -101,8 +146,9 @@ export default function Instructions() {
                 ゲーム作成画面の項目ごとに説明があるため、それに従って入力してください
               </li>
               <li>
-                全項目後から変更できるうえ、「公開開始日時」を迎えるまでは作成したゲームはトップページやゲーム一覧に表示されないので、作成時点でミスがあっても大丈夫です
+                一部項目を除き後から変更できるうえ、「公開開始日時」を迎えるまでは作成したゲームはトップページやゲーム一覧に表示されないので、作成時点でミスがあっても大丈夫です
               </li>
+              <li>変更できない項目は作成画面上に明記しています</li>
             </ul>
           </div>
           <div className='my-4 bg-gray-200 px-4 py-2'>

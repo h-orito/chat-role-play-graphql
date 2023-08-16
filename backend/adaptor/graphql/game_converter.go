@@ -25,7 +25,9 @@ func MapToGame(g *model.Game) *gqlmodel.Game {
 		}),
 		Settings: &gqlmodel.GameSettings{
 			Chara: &gqlmodel.GameCharaSetting{
-				Charachips:           []*gqlmodel.Charachip{},
+				CharachipIDs: array.Map(g.Settings.Chara.CharachipIDs, func(id uint32) string {
+					return intIdToBase64(id, "Charachip")
+				}),
 				CanOriginalCharacter: g.Settings.Chara.CanOriginalCharacter,
 			},
 			Capacity: &gqlmodel.GameCapacity{
@@ -133,15 +135,22 @@ func MapToGameParticipant(p model.GameParticipant) *gqlmodel.GameParticipant {
 		id := intIdToBase64(*p.ProfileIconID, "GameParticipantIcon")
 		iconID = &id
 	}
+	var charaID *string
+	if p.CharaID != nil {
+		id := intIdToBase64(*p.CharaID, "Chara")
+		charaID = &id
+	}
 	return &gqlmodel.GameParticipant{
 		ID:             intIdToBase64(p.ID, "GameParticipant"),
 		Name:           p.Name,
 		EntryNumber:    int(p.EntryNumber),
 		PlayerID:       intIdToBase64(p.PlayerID, "Player"),
+		CharaID:        charaID,
 		Memo:           p.Memo,
 		ProfileIconID:  iconID,
 		IsGone:         p.IsGone,
 		LastAccessedAt: p.LastAccessedAt,
+		CanChangeName:  p.CanChangeName,
 	}
 }
 

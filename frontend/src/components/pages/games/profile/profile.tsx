@@ -76,7 +76,7 @@ export default function Profile({
 
   const canEdit =
     myself?.id === profile.participantId &&
-    ['Opening', 'Recruiting', 'Progress'].includes(game.status)
+    ['Closed', 'Opening', 'Recruiting', 'Progress'].includes(game.status)
 
   const toggleEditModal = (e: any) => {
     if (e.target === e.currentTarget) {

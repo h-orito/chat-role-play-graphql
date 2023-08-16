@@ -10,11 +10,14 @@ type GameParticipant struct {
 	EntryNumber    int                  `json:"entryNumber"`
 	PlayerID       string               `json:"playerId"`
 	Player         *Player              `json:"player"`
+	CharaID        *string              `json:"charaId"`
+	Chara          *Chara               `json:"chara"`
 	Memo           *string              `json:"memo"`
 	ProfileIconID  *string              `json:"profileIconId"`
 	ProfileIcon    *GameParticipantIcon `json:"profileIcon"`
 	LastAccessedAt time.Time            `json:"lastAccessedAt"`
 	IsGone         bool                 `json:"isGone"`
+	CanChangeName  bool                 `json:"canChangeName"`
 }
 
 type MessageSender struct {
@@ -48,4 +51,10 @@ type GameParticipantGroup struct {
 	ParticipantIDs      []string           `json:"participantIds"`
 	Participants        []*GameParticipant `json:"participants"`
 	LatestUnixTimeMilli uint64             `json:"latestUnixTimeMilli"`
+}
+
+type GameCharaSetting struct {
+	CharachipIDs         []string     `json:"charachipIds"`
+	Charachips           []*Charachip `json:"charachips"`
+	CanOriginalCharacter bool         `json:"canOriginalCharacter"`
 }

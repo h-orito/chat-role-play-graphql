@@ -10,6 +10,11 @@ import (
 	"context"
 )
 
+// Charachips is the resolver for the charachips field.
+func (r *gameCharaSettingResolver) Charachips(ctx context.Context, obj *gqlmodel.GameCharaSetting) ([]*gqlmodel.Charachip, error) {
+	return r.charachips(ctx, obj)
+}
+
 // Player is the resolver for the player field.
 func (r *gameMasterResolver) Player(ctx context.Context, obj *gqlmodel.GameMaster) (*gqlmodel.Player, error) {
 	return r.player(ctx, obj)
@@ -18,6 +23,11 @@ func (r *gameMasterResolver) Player(ctx context.Context, obj *gqlmodel.GameMaste
 // Player is the resolver for the player field.
 func (r *gameParticipantResolver) Player(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.Player, error) {
 	return r.player(ctx, obj)
+}
+
+// Chara is the resolver for the chara field.
+func (r *gameParticipantResolver) Chara(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.Chara, error) {
+	return r.chara(ctx, obj)
 }
 
 // ProfileIcon is the resolver for the profileIcon field.
@@ -53,46 +63,6 @@ func (r *gameParticipantGroupResolver) Participants(ctx context.Context, obj *gq
 // Icon is the resolver for the icon field.
 func (r *messageSenderResolver) Icon(ctx context.Context, obj *gqlmodel.MessageSender) (*gqlmodel.GameParticipantIcon, error) {
 	return r.icon(ctx, obj)
-}
-
-// RegisterDesigner is the resolver for the registerDesigner field.
-func (r *mutationResolver) RegisterDesigner(ctx context.Context, input gqlmodel.NewDesigner) (*gqlmodel.RegisterDesignerPayload, error) {
-	return r.registerDesigner(ctx, input)
-}
-
-// UpdateDesigner is the resolver for the updateDesigner field.
-func (r *mutationResolver) UpdateDesigner(ctx context.Context, input gqlmodel.UpdateDesigner) (*gqlmodel.UpdateDesignerPayload, error) {
-	return r.updateDesigner(ctx, input)
-}
-
-// RegisterCharachip is the resolver for the registerCharachip field.
-func (r *mutationResolver) RegisterCharachip(ctx context.Context, input gqlmodel.NewCharachip) (*gqlmodel.RegisterCharachipPayload, error) {
-	return r.registerCharachip(ctx, input)
-}
-
-// UpdateCharachip is the resolver for the updateCharachip field.
-func (r *mutationResolver) UpdateCharachip(ctx context.Context, input gqlmodel.UpdateCharachip) (*gqlmodel.UpdateCharachipPayload, error) {
-	return r.updateCharachip(ctx, input)
-}
-
-// RegisterCharachipChara is the resolver for the registerCharachipChara field.
-func (r *mutationResolver) RegisterCharachipChara(ctx context.Context, input gqlmodel.NewChara) (*gqlmodel.RegisterCharaPayload, error) {
-	return r.registerCharachipChara(ctx, input)
-}
-
-// UpdateChara is the resolver for the updateChara field.
-func (r *mutationResolver) UpdateChara(ctx context.Context, input gqlmodel.UpdateChara) (*gqlmodel.UpdateCharaPayload, error) {
-	return r.updateChara(ctx, input)
-}
-
-// RegisterCharaImage is the resolver for the registerCharaImage field.
-func (r *mutationResolver) RegisterCharaImage(ctx context.Context, input gqlmodel.NewCharaImage) (*gqlmodel.RegisterCharaImagePayload, error) {
-	return r.registerCharaImage(ctx, input)
-}
-
-// UpdateCharaImage is the resolver for the updateCharaImage field.
-func (r *mutationResolver) UpdateCharaImage(ctx context.Context, input gqlmodel.UpdateCharaImage) (*gqlmodel.UpdateCharaImagePayload, error) {
-	return r.updateCharaImage(ctx, input)
 }
 
 // RegisterGame is the resolver for the registerGame field.
@@ -400,6 +370,11 @@ func (r *queryResolver) DirectMessageFavoriteGameParticipants(ctx context.Contex
 	return r.directMessageFavoriteGameParticipants(ctx, gameID, directMessageID)
 }
 
+// GameCharaSetting returns graph1.GameCharaSettingResolver implementation.
+func (r *Resolver) GameCharaSetting() graph1.GameCharaSettingResolver {
+	return &gameCharaSettingResolver{r}
+}
+
 // GameMaster returns graph1.GameMasterResolver implementation.
 func (r *Resolver) GameMaster() graph1.GameMasterResolver { return &gameMasterResolver{r} }
 
@@ -427,6 +402,7 @@ func (r *Resolver) Mutation() graph1.MutationResolver { return &mutationResolver
 // Query returns graph1.QueryResolver implementation.
 func (r *Resolver) Query() graph1.QueryResolver { return &queryResolver{r} }
 
+type gameCharaSettingResolver struct{ *Resolver }
 type gameMasterResolver struct{ *Resolver }
 type gameParticipantResolver struct{ *Resolver }
 type gameParticipantDiaryResolver struct{ *Resolver }

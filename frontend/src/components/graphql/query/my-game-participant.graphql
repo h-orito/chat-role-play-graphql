@@ -10,6 +10,10 @@ query MyGameParticipant($gameId: ID!) {
       id
       url
     }
+    chara {
+      id
+    }
+    canChangeName
     followParticipantIds
     followerParticipantIds
   }

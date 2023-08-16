@@ -2,13 +2,20 @@ import {
   RegisterGameMutation,
   RegisterGameMutationVariables,
   NewGame,
-  RegisterGameDocument
+  RegisterGameDocument,
+  Charachip,
+  NewGameCapacity,
+  NewGameCharaSetting,
+  NewGamePasswordSetting,
+  NewGameRuleSetting,
+  NewGameSettings,
+  NewGameTimeSetting
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import { SubmitHandler } from 'react-hook-form'
 import { base64ToId } from '@/components/graphql/convert'
@@ -43,6 +50,8 @@ export default function CreateGame() {
     password: ''
   } as GameFormInput
 
+  const [charachipIds, setCharachipIds] = useState<string[]>([])
+
   const [registerGame] = useMutation<RegisterGameMutation>(
     RegisterGameDocument,
     {
@@ -63,13 +72,13 @@ export default function CreateGame() {
             name: data.name,
             settings: {
               chara: {
-                charachipIds: [],
+                charachipIds: charachipIds,
                 canOriginalCharacter: true
-              },
+              } as NewGameCharaSetting,
               capacity: {
                 min: data.capacityMin,
                 max: data.capacityMax
-              },
+              } as NewGameCapacity,
               time: {
                 periodPrefix:
                   data.periodPrefix.length > 0 ? data.periodPrefix : null,
@@ -83,16 +92,16 @@ export default function CreateGame() {
                 startParticipateAt: dayjs(data.startParticipateAt).toDate(),
                 startGameAt: dayjs(data.startGameAt).toDate(),
                 finishGameAt: dayjs(data.finishGameAt).toDate()
-              },
+              } as NewGameTimeSetting,
               rule: {
                 isGameMasterProducer: false,
                 canShorten: true,
                 canSendDirectMessage: true
-              },
+              } as NewGameRuleSetting,
               password: {
                 password: data.password.length > 0 ? data.password : null
-              }
-            }
+              } as NewGamePasswordSetting
+            } as NewGameSettings
           } as NewGame
         } as RegisterGameMutationVariables
       })
@@ -102,7 +111,7 @@ export default function CreateGame() {
       }
       router.push(`/games/${base64ToId(id)}`)
     },
-    [registerGame]
+    [registerGame, charachipIds]
   )
 
   return (
@@ -116,6 +125,8 @@ export default function CreateGame() {
           defaultValues={defaultValues}
           onSubmit={onSubmit}
           labelName='作成'
+          charachipIds={charachipIds}
+          setCharachipIds={setCharachipIds}
         />
       </article>
     </main>

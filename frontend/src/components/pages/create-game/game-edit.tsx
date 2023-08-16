@@ -5,15 +5,27 @@ import InputText from '@/components/form/input-text'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
+import {
+  Charachip,
+  CharachipsQuery,
+  QCharachipsDocument,
+  QCharachipsQuery,
+  QCharachipsQueryVariables
+} from '@/lib/generated/graphql'
+import { useLazyQuery } from '@apollo/client'
+import InputMultiSelect from '@/components/form/input-multi-select'
 
 type Props = {
   defaultValues: GameFormInput
+  charachipIds: string[]
+  setCharachipIds: Dispatch<SetStateAction<string[]>>
   onSubmit: SubmitHandler<GameFormInput>
   labelName: string
+  canModifyCharachips?: boolean
 }
 
 export interface GameFormInput {
@@ -24,6 +36,7 @@ export interface GameFormInput {
   startParticipateAt: string
   startGameAt: string
   finishGameAt: string
+  charachipIds: string[]
   periodPrefix: string
   periodSuffix: string
   periodIntervalDays: number
@@ -36,7 +49,22 @@ export default function GameEdit(props: Props) {
   dayjs.extend(utc)
   dayjs.extend(timezone)
   dayjs.tz.setDefault('Asia/Tokyo')
-  const now = dayjs()
+
+  const [charachips, setCharachips] = useState<Charachip[]>([])
+  const [fetchCharachips] = useLazyQuery<QCharachipsQuery>(QCharachipsDocument)
+  useEffect(() => {
+    const fetch = async () => {
+      const { data } = await fetchCharachips({
+        variables: {
+          query: {} as CharachipsQuery
+        } as QCharachipsQueryVariables
+      })
+      if (data?.charachips) {
+        setCharachips(data.charachips as Charachip[])
+      }
+    }
+    fetch()
+  }, [])
 
   const { control, formState, handleSubmit } = useForm<GameFormInput>({
     defaultValues: props.defaultValues
@@ -52,7 +80,7 @@ export default function GameEdit(props: Props) {
             <span className='text-red-500'>*&nbsp;</span>
             がついている項目は必須です。
             <br />
-            また、全ての項目は後から変更することができます。
+            また、キャラチップ設定以外は作成後に変更することができます。
           </p>
         </div>
         <form onSubmit={handleSubmit(props.onSubmit)}>
@@ -191,6 +219,45 @@ export default function GameEdit(props: Props) {
                 }
               }}
             />
+          </div>
+          <hr />
+          <div className='my-4'>
+            <FormLabel label='キャラチップ'>
+              オリジナルキャラクターに加え、選択したキャラチップのキャラクターを使用することができます。
+            </FormLabel>
+            {props.canModifyCharachips != false ? (
+              <>
+                <div className='flex justify-center'>
+                  <p className='my-2 bg-gray-100 p-4 text-xs'>
+                    選択すると、オリジナルキャラクターに加え、選択したキャラチップのキャラクターを利用して参加することができます。
+                    <br />
+                    複数選択することも可能です。
+                    <br />
+                    <p className='text-red-500'>
+                      この項目は後から変更することができません。
+                    </p>
+                  </p>
+                </div>
+                <InputMultiSelect
+                  candidates={charachips.map((c) => ({
+                    label: `${c.name}（${c.designer.name}様）`,
+                    value: c.id
+                  }))}
+                  selected={props.charachipIds}
+                  setSelected={props.setCharachipIds}
+                />
+              </>
+            ) : (
+              <div className='flex justify-center'>
+                <p className='my-2 text-xs'>
+                  {props.charachipIds.length > 0
+                    ? props.charachipIds
+                        .map((id) => charachips.find((c) => c.id === id)?.name)
+                        .join('、')
+                    : 'なし'}
+                </p>
+              </div>
+            )}
           </div>
           <hr />
           <div className='my-4'>

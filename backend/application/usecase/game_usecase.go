@@ -28,7 +28,7 @@ type GameUsecase interface {
 	FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
 	FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error)
 	FindMyGameParticipant(gameID uint32, user model.User) (participant *model.GameParticipant, err error)
-	Participate(ctx context.Context, gameID uint32, user model.User, charaID *uint32, participant model.GameParticipant, password *string) (saved *model.GameParticipant, err error)
+	Participate(ctx context.Context, gameID uint32, user model.User, participant model.GameParticipant, password *string) (saved *model.GameParticipant, err error)
 	Leave(ctx context.Context, gameID uint32, user model.User) (err error)
 	// game participant profile
 	FindParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, participant *model.GameParticipant, err error)
@@ -350,7 +350,6 @@ func (g *gameUsecase) Participate(
 	ctx context.Context,
 	gameID uint32,
 	user model.User,
-	charaID *uint32,
 	participant model.GameParticipant,
 	password *string,
 ) (saved *model.GameParticipant, err error) {
@@ -373,14 +372,62 @@ func (g *gameUsecase) Participate(
 		if err != nil {
 			return nil, err
 		}
-		err = g.participateDomainService.AssertParticipate(*game, *player, authorities, password)
+		canChangeName := true
+		if participant.CharaID != nil {
+			charachips, err := g.charaService.FindCharachips(model.CharachipQuery{
+				IDs: &game.Settings.Chara.CharachipIDs,
+			})
+			if err != nil {
+				return nil, err
+			}
+			charachip := array.Find(charachips, func(charachip model.Charachip) bool {
+				return array.Any(charachip.Charas, func(chara model.Chara) bool {
+					return chara.ID == *participant.CharaID
+				})
+			})
+			if charachip != nil {
+				canChangeName = charachip.CanChangeName
+			}
+		}
+		err = g.participateDomainService.AssertParticipate(*game, *player, authorities, password, participant.CharaID)
 		if err != nil {
 			return nil, err
 		}
-		return g.gameService.Participate(ctx, gameID, model.GameParticipant{
-			Name:     participant.Name,
-			PlayerID: player.ID,
+		myself, err := g.gameService.Participate(ctx, gameID, model.GameParticipant{
+			Name:          participant.Name,
+			PlayerID:      player.ID,
+			CharaID:       participant.CharaID,
+			CanChangeName: canChangeName,
 		})
+		if err != nil {
+			return nil, err
+		}
+		// キャラクターを選んで参加した場合はアイコンも設定する
+		if participant.CharaID == nil {
+			return myself, nil
+		}
+		chara, err := g.charaService.FindChara(*participant.CharaID)
+		if err != nil {
+			return nil, err
+		}
+		if chara == nil {
+			return nil, fmt.Errorf("chara not found")
+		}
+		var order uint32 = 1
+		array.ForEach(chara.Images, func(image model.CharaImage) {
+			icon := model.GameParticipantIcon{
+				IconImageURL: image.URL,
+				Width:        chara.Size.Width,
+				Height:       chara.Size.Height,
+				DisplayOrder: order,
+			}
+			_, err = g.gameService.RegisterGameParticipantIcon(ctx, myself.ID, icon)
+			if err != nil {
+				return
+			}
+			order++
+		})
+		return myself, nil
 	})
 	if err != nil {
 		return nil, err

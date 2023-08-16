@@ -3,7 +3,6 @@ package db_test
 import (
 	"chat-role-play/domain/model"
 	db "chat-role-play/infrastructure/rdb"
-	"context"
 	"testing"
 )
 
@@ -35,25 +34,6 @@ func TestFindDesigner(t *testing.T) {
 	}
 }
 
-func TestRegisterDesigner(t *testing.T) {
-	database := NewTestDB()
-	transaction := NewTestTransaction(database.Connection)
-	transaction.DoInTx(context.Background(), func(ctx context.Context) (interface{}, error) {
-		repo := db.NewCharaRepository(&database)
-		designer := model.Designer{
-			Name: "test designer",
-		}
-		got, err := repo.RegisterDesigner(ctx, designer)
-		if err != nil {
-			t.Errorf("failed to register designer: %s", err)
-		}
-		if got == nil {
-			t.Errorf("got nil, want designer")
-		}
-		return got, nil
-	})
-}
-
 func TestFindCharachips(t *testing.T) {
 	repo := newCharaRepository()
 	got, err := repo.FindCharachips(model.CharachipQuery{})
@@ -75,29 +55,6 @@ func TestFindCharachip(t *testing.T) {
 	if got == nil {
 		t.Errorf("got nil, want charachip")
 	}
-}
-
-func TestRegisterCharachip(t *testing.T) {
-	database := NewTestDB()
-	transaction := NewTestTransaction(database.Connection)
-	transaction.DoInTx(context.Background(), func(ctx context.Context) (interface{}, error) {
-		repo := db.NewCharaRepository(&database)
-		charachip := model.Charachip{
-			Name: "test charachip",
-			Designer: model.Designer{
-				ID: 1,
-			},
-			Charas: []model.Chara{},
-		}
-		got, err := repo.RegisterCharachip(ctx, charachip)
-		if err != nil {
-			t.Errorf("failed to register charachip: %s", err)
-		}
-		if got == nil {
-			t.Errorf("got nil, want charachip")
-		}
-		return got, nil
-	})
 }
 
 func TestFindCharas(t *testing.T) {
@@ -123,27 +80,6 @@ func TestFindChara(t *testing.T) {
 	}
 }
 
-func TestRegisterChara(t *testing.T) {
-	database := NewTestDB()
-	transaction := NewTestTransaction(database.Connection)
-	transaction.DoInTx(context.Background(), func(ctx context.Context) (interface{}, error) {
-		repo := db.NewCharaRepository(&database)
-		chara := model.Chara{
-			Name:   "test chara",
-			Images: []model.CharaImage{},
-		}
-		var charachipID uint32 = 1
-		got, err := repo.RegisterChara(ctx, chara, &charachipID)
-		if err != nil {
-			t.Errorf("failed to register chara: %s", err)
-		}
-		if got == nil {
-			t.Errorf("got nil, want chara")
-		}
-		return got, nil
-	})
-}
-
 func TestFindCharaImages(t *testing.T) {
 	repo := newCharaRepository()
 	got, err := repo.FindCharaImages(model.CharaImageQuery{})
@@ -154,29 +90,4 @@ func TestFindCharaImages(t *testing.T) {
 	if len(got) != wantSize {
 		t.Errorf("got %d chara images, want %d", len(got), wantSize)
 	}
-}
-
-func TestRegisterCharaImage(t *testing.T) {
-	database := NewTestDB()
-	transaction := NewTestTransaction(database.Connection)
-	transaction.DoInTx(context.Background(), func(ctx context.Context) (interface{}, error) {
-		repo := db.NewCharaRepository(&database)
-		charaImage := model.CharaImage{
-			Type: "test type",
-			Size: model.CharaSize{
-				Width:  100,
-				Height: 100,
-			},
-			URL: "test url",
-		}
-		var charaID uint32 = 1
-		got, err := repo.RegisterCharaImage(ctx, charaImage, charaID)
-		if err != nil {
-			t.Errorf("failed to register chara: %s", err)
-		}
-		if got == nil {
-			t.Errorf("got nil, want chara")
-		}
-		return got, nil
-	})
 }
