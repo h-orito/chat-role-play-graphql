@@ -159,8 +159,9 @@ func (r *mutationResolver) registerGameParticipant(ctx context.Context, input gq
 	if user == nil {
 		return nil, err
 	}
-	saved, err := r.gameUsecase.Participate(ctx, gameId, *user, charaID, model.GameParticipant{
-		Name: input.Name,
+	saved, err := r.gameUsecase.Participate(ctx, gameId, *user, model.GameParticipant{
+		Name:    input.Name,
+		CharaID: charaID,
 	}, input.Password)
 	if err != nil {
 		var bize *model.ErrBusiness

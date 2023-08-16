@@ -2,10 +2,11 @@ package dom_service
 
 import (
 	"chat-role-play/domain/model"
+	"chat-role-play/util/array"
 )
 
 type ParticipateDomainService interface {
-	AssertParticipate(game model.Game, player model.Player, authorities []model.PlayerAuthority, password *string) error
+	AssertParticipate(game model.Game, player model.Player, authorities []model.PlayerAuthority, password *string, charaID *uint32) error
 }
 
 type participateDomainService struct {
@@ -25,6 +26,7 @@ func (s *participateDomainService) AssertParticipate(
 	player model.Player,
 	authorities []model.PlayerAuthority,
 	password *string,
+	charaID *uint32,
 ) error {
 	if game.Status == model.GameStatusClosed || game.Status == model.GameStatusOpening {
 		// 参加登録可能になるまではGMのみ参加可能
@@ -43,6 +45,15 @@ func (s *participateDomainService) AssertParticipate(
 	if game.Settings.Password.HasPassword {
 		if password == nil || *game.Settings.Password.Password != *password {
 			return model.NewErrBusiness("パスワードが違います")
+		}
+	}
+
+	if charaID != nil {
+		// 既に参加しているキャラクターはNG
+		if array.Any(game.Participants.List, func(p model.GameParticipant) bool {
+			return p.CharaID != nil && *p.CharaID == *charaID
+		}) {
+			return model.NewErrBusiness("既に他の人が利用しているキャラクターでは参加できません")
 		}
 	}
 

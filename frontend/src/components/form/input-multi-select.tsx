@@ -1,11 +1,11 @@
-import Select, { SingleValue } from 'react-select'
+import { Dispatch, SetStateAction } from 'react'
+import Select, { MultiValue } from 'react-select'
 
 type Props = {
-  className?: string
   label?: string
   candidates: Array<Option>
-  selected: any
-  setSelected: (value: any) => void
+  selected: any[]
+  setSelected: Dispatch<SetStateAction<any[]>>
   disabled?: boolean
 }
 
@@ -14,27 +14,27 @@ type Option = {
   value: any
 }
 
-export default function InputSelect({
-  className,
+export default function InputMultiSelect({
   label,
   candidates,
   selected,
   setSelected,
   disabled
 }: Props) {
-  const handleChange = (value: SingleValue<Option>) => {
-    setSelected(value?.value)
+  const handleChange = (newValue: MultiValue<Option>) => {
+    setSelected(newValue.map((v) => v.value))
   }
 
-  const defaultOptions = candidates.filter((c) => selected === c.value)
+  const defaultOptions = candidates.filter((c) => selected.includes(c.value))
 
   return (
-    <div>
+    <div className='flex justify-center'>
       {label && <label className='block text-xs font-bold'>{label}</label>}
       <Select
-        className={`w-64 md:w-96 ${className}`}
+        className='w-64 md:w-96'
         defaultValue={defaultOptions}
         options={candidates}
+        isMulti
         isSearchable
         onChange={handleChange}
         isDisabled={disabled}

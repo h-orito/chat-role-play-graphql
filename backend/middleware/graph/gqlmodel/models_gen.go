@@ -31,14 +31,14 @@ type ChangePeriodIfNeededPayload struct {
 type Chara struct {
 	ID     string        `json:"id"`
 	Name   string        `json:"name"`
+	Size   *CharaSize    `json:"size"`
 	Images []*CharaImage `json:"images"`
 }
 
 type CharaImage struct {
-	ID   string     `json:"id"`
-	Type string     `json:"type"`
-	Size *CharaSize `json:"size"`
-	URL  string     `json:"url"`
+	ID   string `json:"id"`
+	Type string `json:"type"`
+	URL  string `json:"url"`
 }
 
 type CharaSize struct {
@@ -47,10 +47,12 @@ type CharaSize struct {
 }
 
 type Charachip struct {
-	ID       string    `json:"id"`
-	Name     string    `json:"name"`
-	Designer *Designer `json:"designer"`
-	Charas   []*Chara  `json:"charas"`
+	ID             string    `json:"id"`
+	Name           string    `json:"name"`
+	Designer       *Designer `json:"designer"`
+	DescriptionURL string    `json:"descriptionUrl"`
+	CanChangeName  bool      `json:"canChangeName"`
+	Charas         []*Chara  `json:"charas"`
 }
 
 type CharachipsQuery struct {
@@ -188,11 +190,6 @@ type Game struct {
 type GameCapacity struct {
 	Min int `json:"min"`
 	Max int `json:"max"`
-}
-
-type GameCharaSetting struct {
-	Charachips           []*Charachip `json:"charachips"`
-	CanOriginalCharacter bool         `json:"canOriginalCharacter"`
 }
 
 type GameDiariesQuery struct {
@@ -341,28 +338,6 @@ type MessagesQuery struct {
 	Paging              *PageableQuery `json:"paging,omitempty"`
 }
 
-type NewChara struct {
-	CharachipID string `json:"charachipId"`
-	Name        string `json:"name"`
-}
-
-type NewCharaImage struct {
-	CharaID string         `json:"charaId"`
-	Type    string         `json:"type"`
-	File    graphql.Upload `json:"file"`
-	Width   int            `json:"width"`
-	Height  int            `json:"height"`
-}
-
-type NewCharachip struct {
-	Name       string `json:"name"`
-	DesignerID string `json:"designerId"`
-}
-
-type NewDesigner struct {
-	Name string `json:"name"`
-}
-
 type NewDirectMessage struct {
 	GameID                 string      `json:"gameId"`
 	GameParticipantGroupID string      `json:"gameParticipantGroupId"`
@@ -389,8 +364,8 @@ type NewGameCapacity struct {
 }
 
 type NewGameCharaSetting struct {
-	CharachipIds         []int `json:"charachipIds"`
-	CanOriginalCharacter bool  `json:"canOriginalCharacter"`
+	CharachipIds         []string `json:"charachipIds"`
+	CanOriginalCharacter bool     `json:"canOriginalCharacter"`
 }
 
 type NewGameMaster struct {
@@ -531,22 +506,6 @@ type PlayersQuery struct {
 	Paging *PageableQuery `json:"paging,omitempty"`
 }
 
-type RegisterCharaImagePayload struct {
-	CharaImage *CharaImage `json:"charaImage"`
-}
-
-type RegisterCharaPayload struct {
-	Chara *Chara `json:"chara"`
-}
-
-type RegisterCharachipPayload struct {
-	Charachip *Charachip `json:"charachip"`
-}
-
-type RegisterDesignerPayload struct {
-	Designer *Designer `json:"designer"`
-}
-
 type RegisterDirectMessageDryRunPayload struct {
 	DirectMessage *DirectMessage `json:"directMessage"`
 }
@@ -616,48 +575,9 @@ type SimpleGame struct {
 	Settings          *GameSettings `json:"settings"`
 }
 
-type UpdateChara struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
-type UpdateCharaImage struct {
-	ID     string         `json:"id"`
-	Type   string         `json:"type"`
-	File   graphql.Upload `json:"file"`
-	Width  int            `json:"width"`
-	Height int            `json:"height"`
-}
-
-type UpdateCharaImagePayload struct {
-	Ok bool `json:"ok"`
-}
-
-type UpdateCharaPayload struct {
-	Ok bool `json:"ok"`
-}
-
 type UpdateCharaSetting struct {
-	CharachipIds         []int `json:"charachipIds"`
-	CanOriginalCharacter bool  `json:"canOriginalCharacter"`
-}
-
-type UpdateCharachip struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
-type UpdateCharachipPayload struct {
-	Ok bool `json:"ok"`
-}
-
-type UpdateDesigner struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
-type UpdateDesignerPayload struct {
-	Ok bool `json:"ok"`
+	CharachipIds         []string `json:"charachipIds"`
+	CanOriginalCharacter bool     `json:"canOriginalCharacter"`
 }
 
 type UpdateGameCapacity struct {

@@ -21,9 +21,11 @@ func MapToCharachip(c *model.Charachip) *gqlmodel.Charachip {
 		return nil
 	}
 	return &gqlmodel.Charachip{
-		ID:       intIdToBase64(c.ID, "Charachip"),
-		Name:     c.Name,
-		Designer: MapToDesigner(&c.Designer),
+		ID:             intIdToBase64(c.ID, "Charachip"),
+		Name:           c.Name,
+		Designer:       MapToDesigner(&c.Designer),
+		DescriptionURL: c.DescriptionURL,
+		CanChangeName:  c.CanChangeName,
 		Charas: array.Map(c.Charas, func(c model.Chara) *gqlmodel.Chara {
 			return MapToChara(&c)
 		}),
@@ -37,6 +39,10 @@ func MapToChara(c *model.Chara) *gqlmodel.Chara {
 	return &gqlmodel.Chara{
 		ID:   intIdToBase64(c.ID, "Chara"),
 		Name: c.Name,
+		Size: &gqlmodel.CharaSize{
+			Width:  int(c.Size.Width),
+			Height: int(c.Size.Height),
+		},
 		Images: array.Map(c.Images, func(i model.CharaImage) *gqlmodel.CharaImage {
 			return MapToCharaImage(&i)
 		}),
@@ -50,10 +56,6 @@ func MapToCharaImage(ci *model.CharaImage) *gqlmodel.CharaImage {
 	return &gqlmodel.CharaImage{
 		ID:   intIdToBase64(ci.ID, "CharaImage"),
 		Type: ci.Type,
-		Size: &gqlmodel.CharaSize{
-			Width:  int(ci.Size.Width),
-			Height: int(ci.Size.Height),
-		},
-		URL: ci.URL,
+		URL:  ci.URL,
 	}
 }

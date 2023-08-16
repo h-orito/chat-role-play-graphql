@@ -18,6 +18,10 @@ query Game($id: ID!) {
         id
         url
       }
+      canChangeName
+      chara {
+        id
+      }
     }
     periods {
       id
@@ -29,7 +33,24 @@ query Game($id: ID!) {
     settings {
       chara {
         charachips {
+          id
           name
+          designer {
+            name
+          }
+          canChangeName
+          charas {
+            id
+            name
+            size {
+              width
+              height
+            }
+            images {
+              type
+              url
+            }
+          }
         }
         canOriginalCharacter
       }

@@ -19,6 +19,8 @@ type Charachip {
   id: ID!
   name: String!
   designer: Designer!
+  descriptionUrl: String!
+  canChangeName: Boolean!
   charas: [Chara!]!
 }
 
@@ -30,19 +32,19 @@ type Designer {
 type Chara {
   id: ID!
   name: String!
-  images: [CharaImage!]!
-}
-
-type CharaImage {
-  id: ID!
-  type: String!
   size: CharaSize!
-  url: String!
+  images: [CharaImage!]!
 }
 
 type CharaSize {
   width: Int!
   height: Int!
+}
+
+type CharaImage {
+  id: ID!
+  type: String!
+  url: String!
 }
 
 ####################################################
@@ -86,10 +88,12 @@ type GameParticipant {
   name: String!
   entryNumber: Int!
   player: Player!
+  chara: Chara!
   memo: String
   profileIcon: GameParticipantIcon
   lastAccessedAt: DateTime!
   isGone: Boolean!
+  canChangeName: Boolean!
   followParticipantIds: [ID!]!
   followerParticipantIds: [ID!]!
 }
@@ -439,22 +443,6 @@ input DirectMessagesQuery {
 ####################################################
 
 type Mutation {
-  # chara
-  registerDesigner(input: NewDesigner!): RegisterDesignerPayload!
-    @isAuthenticated
-  updateDesigner(input: UpdateDesigner!): UpdateDesignerPayload!
-    @isAuthenticated
-  registerCharachip(input: NewCharachip!): RegisterCharachipPayload!
-    @isAuthenticated
-  updateCharachip(input: UpdateCharachip!): UpdateCharachipPayload!
-    @isAuthenticated
-  registerCharachipChara(input: NewChara!): RegisterCharaPayload!
-    @isAuthenticated
-  updateChara(input: UpdateChara!): UpdateCharaPayload! @isAuthenticated
-  registerCharaImage(input: NewCharaImage!): RegisterCharaImagePayload!
-    @isAuthenticated
-  updateCharaImage(input: UpdateCharaImage!): UpdateCharaImagePayload!
-
   # game
   registerGame(input: NewGame!): RegisterGamePayload! @isAuthenticated
   registerGameMaster(input: NewGameMaster!): RegisterGameMasterPayload!
@@ -551,85 +539,6 @@ type Mutation {
   ): UpdateGameParticipantGroupPayload! @isAuthenticated
 }
 
-## chara
-
-input NewDesigner {
-  name: String!
-}
-
-type RegisterDesignerPayload {
-  designer: Designer!
-}
-
-input UpdateDesigner {
-  id: ID!
-  name: String!
-}
-
-type UpdateDesignerPayload {
-  ok: Boolean!
-}
-
-input NewCharachip {
-  name: String!
-  designerId: ID!
-}
-
-type RegisterCharachipPayload {
-  charachip: Charachip!
-}
-
-input UpdateCharachip {
-  id: ID!
-  name: String!
-}
-
-type UpdateCharachipPayload {
-  ok: Boolean!
-}
-
-input NewChara {
-  charachipId: ID!
-  name: String!
-}
-
-type RegisterCharaPayload {
-  chara: Chara!
-}
-
-input UpdateChara {
-  id: ID!
-  name: String!
-}
-
-type UpdateCharaPayload {
-  ok: Boolean!
-}
-
-input NewCharaImage {
-  charaId: ID!
-  type: String!
-  file: Upload!
-  width: Int!
-  height: Int!
-}
-
-type RegisterCharaImagePayload {
-  charaImage: CharaImage!
-}
-
-input UpdateCharaImage {
-  id: ID!
-  type: String!
-  file: Upload!
-  width: Int!
-  height: Int!
-}
-
-type UpdateCharaImagePayload {
-  ok: Boolean!
-}
-
 ## game
 
 input NewGame {
@@ -646,7 +555,7 @@ input NewGameSettings {
 }
 
 input NewGameCharaSetting {
-  charachipIds: [Int!]!
+  charachipIds: [String!]!
   canOriginalCharacter: Boolean!
 }
 
@@ -723,7 +632,7 @@ input UpdateGameSettings {
 }
 
 input UpdateCharaSetting {
-  charachipIds: [Int!]!
+  charachipIds: [String!]!
   canOriginalCharacter: Boolean!
 }
 

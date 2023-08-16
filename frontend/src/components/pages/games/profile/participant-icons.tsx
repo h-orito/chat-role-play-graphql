@@ -32,6 +32,8 @@ export default function ParticipantIcons({
     }
   }
 
+  const canIconEdit = canEdit && myself!.chara == null
+
   return (
     <div className='my-4'>
       <div className='flex'>
@@ -59,7 +61,7 @@ export default function ParticipantIcons({
             </div>
           ))}
       </div>
-      {canEdit && (
+      {canIconEdit && (
         <PrimaryButton
           className='mt-2'
           click={() => setIsOpenIconEditModal(true)}

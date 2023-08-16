@@ -1,6 +1,4 @@
 import {
-  RegisterGameMutationVariables,
-  NewGame,
   Game,
   UpdateGameSettingsMutation,
   UpdateGameSettingsDocument,
@@ -11,7 +9,7 @@ import { useMutation } from '@apollo/client'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import { SubmitHandler } from 'react-hook-form'
 import GameEdit, {
@@ -53,6 +51,10 @@ export default function GameSettingsEdit({ game }: Props) {
     password: ''
   } as GameFormInput
 
+  const [charachipIds, setCharachipIds] = useState<string[]>(
+    game.settings.chara.charachips.map((c) => c.id)
+  )
+
   const [updateGameSettings] = useMutation<UpdateGameSettingsMutation>(
     UpdateGameSettingsDocument,
     {
@@ -74,7 +76,7 @@ export default function GameSettingsEdit({ game }: Props) {
             name: data.name,
             settings: {
               chara: {
-                charachipIds: [],
+                charachipIds: charachipIds,
                 canOriginalCharacter: true
               },
               capacity: {
@@ -118,6 +120,9 @@ export default function GameSettingsEdit({ game }: Props) {
         defaultValues={defaultValues}
         onSubmit={onSubmit}
         labelName='更新'
+        charachipIds={charachipIds}
+        setCharachipIds={setCharachipIds}
+        canModifyCharachips={false}
       />
     </div>
   )

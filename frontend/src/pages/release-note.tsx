@@ -25,76 +25,49 @@ export default function CreateGame() {
 
           <hr />
 
-          <div className='my-4 bg-gray-200 px-4 py-2'>
-            <div className='flex border-b border-gray-500'>
-              <p className='font-bold'>修正・機能追加</p>
-              <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/08/13
-              </p>
-            </div>
-            <ul className='list-inside list-disc py-2 text-left text-xs'>
-              <li>
-                不具合修正:
-                Safariでサイト越えトラッキングを許可していない場合、リロードするとログアウト状態になる問題に対応
-              </li>
-              <li>
-                不具合修正:
-                期間の「分」を設定して保存し再度ゲーム設定画面を開くと「時間」に小数で表示される不具合を修正
-              </li>
-              <li>追加: GM機能「ステータス・期間変更」追加</li>
-            </ul>
-          </div>
+          <ReleaseContent label='機能追加' date='2023/08/16'>
+            <li>追加: キャラチップ利用</li>
+          </ReleaseContent>
 
-          <div className='my-4 bg-gray-200 px-4 py-2'>
-            <div className='flex border-b border-gray-500'>
-              <p className='font-bold'>修正・機能追加</p>
-              <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/08/12
-              </p>
-            </div>
-            <ul className='list-inside list-disc py-2 text-left text-xs'>
-              <li>
-                不具合修正:
-                5ページを超えるとページングの動作がおかしくなっていたのを修正
-              </li>
-              <li>
-                追加:{' '}
-                <Link className='text-blue-500' href='/rules'>
-                  ルール
-                </Link>
-                に「ゲーム作成ルール」を追加
-              </li>
-              <li>
-                追加:
-                ホームまたはフォロー中に未読マークがついた状態で切り替えたらすぐに発言取得
-              </li>
-              <li>追加: GM発言後、ホームタブですぐに発言取得</li>
-            </ul>
-          </div>
+          <ReleaseContent label='修正・機能追加' date='2023/08/13'>
+            <li>
+              不具合修正:
+              Safariでサイト越えトラッキングを許可していない場合、リロードするとログアウト状態になる問題に対応
+            </li>
+            <li>
+              不具合修正:
+              期間の「分」を設定して保存し再度ゲーム設定画面を開くと「時間」に小数で表示される不具合を修正
+            </li>
+            <li>追加: GM機能「ステータス・期間変更」追加</li>
+          </ReleaseContent>
 
-          <div className='my-4 bg-gray-200 px-4 py-2'>
-            <div className='flex border-b border-gray-500'>
-              <p className='font-bold'>追加実装</p>
-              <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/08/11
-              </p>
-            </div>
-            <ul className='list-inside list-disc py-2 text-left text-xs'>
-              <li>追加: GMプレイヤー名をゲーム設定一覧に表示</li>
-              <li>追加: 参加パスワードを実装</li>
-            </ul>
-          </div>
-          <div className='my-4 bg-gray-200 px-4 py-2'>
-            <div className='flex border-b border-gray-500'>
-              <p className='font-bold'>公開</p>
-              <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/08/10
-              </p>
-            </div>
-            <ul className='list-inside list-disc py-2 text-left text-xs'>
-              <li>公開してみました。</li>
-            </ul>
-          </div>
+          <ReleaseContent label='修正・機能追加' date='2023/08/12'>
+            <li>
+              不具合修正:
+              5ページを超えるとページングの動作がおかしくなっていたのを修正
+            </li>
+            <li>
+              追加:{' '}
+              <Link className='text-blue-500' href='/rules'>
+                ルール
+              </Link>
+              に「ゲーム作成ルール」を追加
+            </li>
+            <li>
+              追加:
+              ホームまたはフォロー中に未読マークがついた状態で切り替えたらすぐに発言取得
+            </li>
+            <li>追加: GM発言後、ホームタブですぐに発言取得</li>
+          </ReleaseContent>
+
+          <ReleaseContent label='機能追加' date='2023/08/11'>
+            <li>追加: GMプレイヤー名をゲーム設定一覧に表示</li>
+            <li>追加: 参加パスワードを実装</li>
+          </ReleaseContent>
+
+          <ReleaseContent label='公開' date='2023/08/10'>
+            <li>公開してみました。</li>
+          </ReleaseContent>
 
           <hr />
 
@@ -150,6 +123,7 @@ export default function CreateGame() {
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>独り言</li>
+                      <li>ト書き（マンションでいうアクション）</li>
                       <li>返信</li>
                       <li>宛先</li>
                       <li>PL発言（PL発言タイムライン）</li>
@@ -202,5 +176,24 @@ export default function CreateGame() {
         </div>
       </article>
     </main>
+  )
+}
+
+type ReleaseContentProps = {
+  date: string
+  label: string
+  children: React.ReactNode
+}
+const ReleaseContent = (props: ReleaseContentProps) => {
+  return (
+    <div className='my-4 bg-gray-200 px-4 py-2'>
+      <div className='flex border-b border-gray-500'>
+        <p className='font-bold'>{props.label}</p>
+        <p className='ml-auto mt-auto text-xs text-gray-500'>{props.date}</p>
+      </div>
+      <ul className='list-inside list-disc py-2 text-left text-xs'>
+        {props.children}
+      </ul>
+    </div>
   )
 }

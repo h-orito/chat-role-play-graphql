@@ -1,4 +1,5 @@
 type Props = {
+  className?: string
   name: string
   candidates: Array<Option>
   selected: any
@@ -12,6 +13,7 @@ type Option = {
 }
 
 export default function RadioGroup({
+  className,
   name,
   candidates,
   selected,
@@ -41,7 +43,7 @@ export default function RadioGroup({
               disabled={disabled}
             />
             <label
-              className={`cursor-pointer border-y border-blue-500 px-2 py-1 ${checkedClass} ${roundClass}`}
+              className={`cursor-pointer border-y border-blue-500 px-2 py-1 ${checkedClass} ${roundClass} ${className}`}
               htmlFor={`${name}_${index}`}
             >
               {candidate.label}

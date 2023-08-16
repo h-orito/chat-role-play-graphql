@@ -1,5 +1,8 @@
+import { base64ToId } from '@/components/graphql/convert'
 import { iso2display } from '@/components/util/datetime/datetime'
 import { Game } from '@/lib/generated/graphql'
+import Link from 'next/link'
+import React from 'react'
 
 type GameSettingsProps = {
   close: (e: any) => void
@@ -8,7 +11,7 @@ type GameSettingsProps = {
 
 type SettingItem = {
   name: string
-  value: string
+  value: React.ReactNode
 }
 
 export default function GameSettings({ close, game }: GameSettingsProps) {
@@ -16,13 +19,26 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
   const items: Array<SettingItem> = []
   items.push({
     name: 'ゲームマスター',
-    value: game.gameMasters.map(gm => gm.player.name).join('、')
+    value: game.gameMasters.map((gm) => gm.player.name).join('、')
   })
   items.push({
     name: '利用可能なキャラチップ',
     value:
       settings.chara.charachips.length > 0
-        ? settings.chara.charachips.map((c) => c.name).join('、')
+        ? settings.chara.charachips.map((c, idx) => {
+            return (
+              <>
+                {idx !== 0 && <span>、</span>}
+                <Link
+                  className='text-blue-500'
+                  href={`/charachips/${base64ToId(c.id)}`}
+                  target='_blank'
+                >
+                  {c.name}
+                </Link>
+              </>
+            )
+          })
         : 'なし'
   })
   items.push({
@@ -33,13 +49,25 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
     name: '人数',
     value: `${settings.capacity.min} - ${settings.capacity.max}人`
   })
+
+  const prefix = settings.time.periodPrefix ?? ''
+  const suffix = settings.time.periodSuffix ?? ''
+  const interval = settings.time.periodIntervalSeconds
+  const intervalDays = Math.floor(interval / 60 / 60 / 24)
+  const intervalHours = Math.floor((interval / 60 / 60) % 24)
+  const intervalMinutes = (interval / 60) % 60
+  const intervalDaysText = `${intervalDays == 0 ? '' : intervalDays + '日'}`
+  const intervalHoursText = `${
+    intervalHours == 0 ? '' : intervalHours + '時間'
+  }`
+  const intervalMinutesText = `${
+    intervalMinutes == 0 ? '' : intervalMinutes + '分'
+  }`
+  const intervalText = `${intervalDaysText}${intervalHoursText}${intervalMinutesText}`
+
   items.push({
     name: 'ゲーム内期間',
-    value: `${settings.time.periodPrefix ?? ''}1${
-      settings.time.periodSuffix ?? ''
-    }, ${settings.time.periodPrefix ?? ''}2${
-      settings.time.periodSuffix ?? ''
-    },..`
+    value: `${prefix}1${suffix}, ${prefix}2${suffix},..（${intervalText}毎更新）`
   })
   items.push({
     name: '公開',

@@ -74,7 +74,6 @@ const UpdateGameStatusForm = ({ game }: Props) => {
       </FormLabel>
       <div className='mb-4'>
         <InputSelect
-          name='status'
           candidates={gameStatusOptions}
           selected={gameStatus}
           setSelected={setGameStatus}
@@ -158,7 +157,6 @@ const UpdateGamePeriodForm = ({ game }: Props) => {
       </FormLabel>
       <div className='my-4'>
         <InputSelect
-          name='period'
           label='対象の期間'
           candidates={candidates}
           selected={targetPeriodId}

@@ -14,6 +14,7 @@ type Loaders struct {
 	ParticipantLoader     *dataloader.Loader
 	ParticipantIconLoader *dataloader.Loader
 	PlayerLoader          *dataloader.Loader
+	CharachipLoader       *dataloader.Loader
 	CharaLoader           *dataloader.Loader
 	CharaImageLoader      *dataloader.Loader
 }
@@ -31,6 +32,7 @@ func NewLoaders(
 		ParticipantLoader:     dataloader.NewBatchedLoader(gameBatcher.batchLoadParticipant),
 		ParticipantIconLoader: dataloader.NewBatchedLoader(gameBatcher.batchLoadParticipantIcon),
 		PlayerLoader:          dataloader.NewBatchedLoader(playerBatcher.batchLoadPlayer),
+		CharachipLoader:       dataloader.NewBatchedLoader(charaBatcher.batchLoadCharachip),
 		CharaLoader:           dataloader.NewBatchedLoader(charaBatcher.batchLoadChara),
 		CharaImageLoader:      dataloader.NewBatchedLoader(charaBatcher.batchLoadCharaImage),
 	}
@@ -175,6 +177,35 @@ func (p *playerBatcher) batchLoadPlayer(ctx context.Context, keys dataloader.Key
 		})
 		return &dataloader.Result{
 			Data:  ps,
+			Error: nil,
+		}
+	})
+}
+
+func (p *charaBatcher) batchLoadCharachip(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	var err error
+	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
+		intid, e := idToUint32(ID.String())
+		if e != nil {
+			err = e
+		}
+		return intid
+	})
+	if err != nil {
+		return nil
+	}
+	charachips, err := p.charaUsecase.FindCharachips(model.CharachipQuery{
+		IDs: &intids,
+	})
+	if err != nil {
+		return nil
+	}
+	return array.Map(intids, func(id uint32) *dataloader.Result {
+		charachip := array.Find(charachips, func(c model.Charachip) bool {
+			return c.ID == id
+		})
+		return &dataloader.Result{
+			Data:  charachip,
 			Error: nil,
 		}
 	})
