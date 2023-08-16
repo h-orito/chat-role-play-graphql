@@ -106,8 +106,6 @@ func Paginate(query *model.PagingQuery) func(db *gorm.DB) *gorm.DB {
 
 		var size int
 		switch {
-		case query.PageSize > 1000:
-			size = 1000
 		case query.PageSize <= 0:
 			size = 10
 		default:
