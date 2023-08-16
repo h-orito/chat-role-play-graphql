@@ -88,7 +88,7 @@ type GameParticipant {
   name: String!
   entryNumber: Int!
   player: Player!
-  chara: Chara!
+  chara: Chara
   memo: String
   profileIcon: GameParticipantIcon
   lastAccessedAt: DateTime!

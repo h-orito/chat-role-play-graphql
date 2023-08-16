@@ -38,7 +38,7 @@ export const getServerSideProps = async (context: any) => {
   return {
     props: {
       gameId: id,
-      game: gamedata.game
+      game: gamedata.game as Game
     }
   }
 }

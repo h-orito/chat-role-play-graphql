@@ -2890,7 +2890,7 @@ type GameParticipant {
   name: String!
   entryNumber: Int!
   player: Player!
-  chara: Chara!
+  chara: Chara
   memo: String
   profileIcon: GameParticipantIcon
   lastAccessedAt: DateTime!
@@ -7683,14 +7683,11 @@ func (ec *executionContext) _GameParticipant_chara(ctx context.Context, field gr
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*gqlmodel.Chara)
 	fc.Result = res
-	return ec.marshalNChara2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChara(ctx, field.Selections, res)
+	return ec.marshalOChara2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChara(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_GameParticipant_chara(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -23822,9 +23819,6 @@ func (ec *executionContext) _GameParticipant(ctx context.Context, sel ast.Select
 					}
 				}()
 				res = ec._GameParticipant_chara(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
 				return res
 			}
 
@@ -27140,10 +27134,6 @@ func (ec *executionContext) marshalNChangePeriodIfNeededPayload2ᚖchatᚑrole�
 		return graphql.Null
 	}
 	return ec._ChangePeriodIfNeededPayload(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNChara2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChara(ctx context.Context, sel ast.SelectionSet, v gqlmodel.Chara) graphql.Marshaler {
-	return ec._Chara(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNChara2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐCharaᚄ(ctx context.Context, sel ast.SelectionSet, v []*gqlmodel.Chara) graphql.Marshaler {

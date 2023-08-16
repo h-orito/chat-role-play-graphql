@@ -234,7 +234,7 @@ export type GameNotificationCondition = {
 export type GameParticipant = {
   __typename?: 'GameParticipant';
   canChangeName: Scalars['Boolean']['output'];
-  chara: Chara;
+  chara?: Maybe<Chara>;
   entryNumber: Scalars['Int']['output'];
   followParticipantIds: Array<Scalars['ID']['output']>;
   followerParticipantIds: Array<Scalars['ID']['output']>;
@@ -1541,7 +1541,7 @@ export type GameQueryVariables = Exact<{
 }>;
 
 
-export type GameQuery = { __typename?: 'Query', game?: { __typename?: 'Game', id: string, name: string, status: GameStatus, gameMasters: Array<{ __typename?: 'GameMaster', id: string, player: { __typename?: 'Player', id: string, name: string } }>, participants: Array<{ __typename?: 'GameParticipant', id: string, name: string, entryNumber: number, canChangeName: boolean, profileIcon?: { __typename?: 'GameParticipantIcon', id: string, url: string } | null, chara: { __typename?: 'Chara', id: string } }>, periods: Array<{ __typename?: 'GamePeriod', id: string, name: string, count: number, startAt: any, endAt: any }>, settings: { __typename?: 'GameSettings', chara: { __typename?: 'GameCharaSetting', canOriginalCharacter: boolean, charachips: Array<{ __typename?: 'Charachip', id: string, name: string, canChangeName: boolean, designer: { __typename?: 'Designer', name: string }, charas: Array<{ __typename?: 'Chara', id: string, name: string, size: { __typename?: 'CharaSize', width: number, height: number }, images: Array<{ __typename?: 'CharaImage', type: string, url: string }> }> }> }, capacity: { __typename?: 'GameCapacity', min: number, max: number }, rule: { __typename?: 'GameRuleSetting', canShorten: boolean, canSendDirectMessage: boolean }, time: { __typename?: 'GameTimeSetting', periodPrefix?: string | null, periodSuffix?: string | null, periodIntervalSeconds: number, openAt: any, startParticipateAt: any, startGameAt: any, finishGameAt: any }, password: { __typename?: 'GamePasswordSetting', hasPassword: boolean } } } | null };
+export type GameQuery = { __typename?: 'Query', game?: { __typename?: 'Game', id: string, name: string, status: GameStatus, gameMasters: Array<{ __typename?: 'GameMaster', id: string, player: { __typename?: 'Player', id: string, name: string } }>, participants: Array<{ __typename?: 'GameParticipant', id: string, name: string, entryNumber: number, canChangeName: boolean, profileIcon?: { __typename?: 'GameParticipantIcon', id: string, url: string } | null, chara?: { __typename?: 'Chara', id: string } | null }>, periods: Array<{ __typename?: 'GamePeriod', id: string, name: string, count: number, startAt: any, endAt: any }>, settings: { __typename?: 'GameSettings', chara: { __typename?: 'GameCharaSetting', canOriginalCharacter: boolean, charachips: Array<{ __typename?: 'Charachip', id: string, name: string, canChangeName: boolean, designer: { __typename?: 'Designer', name: string }, charas: Array<{ __typename?: 'Chara', id: string, name: string, size: { __typename?: 'CharaSize', width: number, height: number }, images: Array<{ __typename?: 'CharaImage', type: string, url: string }> }> }> }, capacity: { __typename?: 'GameCapacity', min: number, max: number }, rule: { __typename?: 'GameRuleSetting', canShorten: boolean, canSendDirectMessage: boolean }, time: { __typename?: 'GameTimeSetting', periodPrefix?: string | null, periodSuffix?: string | null, periodIntervalSeconds: number, openAt: any, startParticipateAt: any, startGameAt: any, finishGameAt: any }, password: { __typename?: 'GamePasswordSetting', hasPassword: boolean } } } | null };
 
 export type IndexGamesQueryVariables = Exact<{
   pageSize: Scalars['Int']['input'];
@@ -1573,7 +1573,7 @@ export type MyGameParticipantQueryVariables = Exact<{
 }>;
 
 
-export type MyGameParticipantQuery = { __typename?: 'Query', myGameParticipant?: { __typename?: 'GameParticipant', id: string, name: string, entryNumber: number, canChangeName: boolean, followParticipantIds: Array<string>, followerParticipantIds: Array<string>, player: { __typename?: 'Player', id: string }, profileIcon?: { __typename?: 'GameParticipantIcon', id: string, url: string } | null, chara: { __typename?: 'Chara', id: string } } | null };
+export type MyGameParticipantQuery = { __typename?: 'Query', myGameParticipant?: { __typename?: 'GameParticipant', id: string, name: string, entryNumber: number, canChangeName: boolean, followParticipantIds: Array<string>, followerParticipantIds: Array<string>, player: { __typename?: 'Player', id: string }, profileIcon?: { __typename?: 'GameParticipantIcon', id: string, url: string } | null, chara?: { __typename?: 'Chara', id: string } | null } | null };
 
 export type MyPlayerQueryVariables = Exact<{ [key: string]: never; }>;
 
