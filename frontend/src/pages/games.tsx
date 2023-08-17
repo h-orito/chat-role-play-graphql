@@ -22,6 +22,7 @@ export const getServerSideProps = async () => {
         GameStatus.Opening,
         GameStatus.Recruiting,
         GameStatus.Progress,
+        GameStatus.Epilogue,
         GameStatus.Finished
       ]
     } as IndexGamesQueryVariables

@@ -26,7 +26,12 @@ export const getServerSideProps = async () => {
     variables: {
       pageSize: 100000,
       pageNumber: 1,
-      statuses: [GameStatus.Opening, GameStatus.Recruiting, GameStatus.Progress]
+      statuses: [
+        GameStatus.Opening,
+        GameStatus.Recruiting,
+        GameStatus.Progress,
+        GameStatus.Epilogue
+      ]
     } as IndexGamesQueryVariables
   })
   if (error) {
