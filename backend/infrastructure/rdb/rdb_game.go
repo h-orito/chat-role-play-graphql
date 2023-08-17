@@ -254,6 +254,7 @@ const (
 	GameSettingKeyOpenAt
 	GameSettingKeyStartParticipateAt
 	GameSettingKeyStartGameAt
+	GameSettingKeyEpilogueGameAt
 	GameSettingKeyFinishGameAt
 	GameSettingKeyCanShorten
 	GameSettingKeyCanSendDirectMessage
@@ -280,6 +281,8 @@ func (pa GameSettingKey) String() string {
 		return "StartParticipateAt"
 	case GameSettingKeyStartGameAt:
 		return "StartGameAt"
+	case GameSettingKeyEpilogueGameAt:
+		return "EpilogueGameAt"
 	case GameSettingKeyFinishGameAt:
 		return "FinishGameAt"
 	case GameSettingKeyCanShorten:
@@ -304,6 +307,7 @@ func GameSettingKeyValues() []GameSettingKey {
 		GameSettingKeyOpenAt,
 		GameSettingKeyStartParticipateAt,
 		GameSettingKeyStartGameAt,
+		GameSettingKeyEpilogueGameAt,
 		GameSettingKeyFinishGameAt,
 		GameSettingKeyCanShorten,
 		GameSettingKeyCanSendDirectMessage,
@@ -339,6 +343,7 @@ func ToGameSettingsModel(
 			StartParticipateAt:    gameSettingsToTime(settings, GameSettingKeyStartParticipateAt, time.Now()),
 			StartGameAt:           gameSettingsToTime(settings, GameSettingKeyStartGameAt, time.Now()),
 			FinishGameAt:          gameSettingsToTime(settings, GameSettingKeyFinishGameAt, time.Now()),
+			EpilogueGameAt:        gameSettingsToTime(settings, GameSettingKeyEpilogueGameAt, time.Now()),
 		},
 		Rule: model.GameRuleSettings{
 			CanShorten:           gameSettingsToBool(settings, GameSettingKeyCanShorten, false),

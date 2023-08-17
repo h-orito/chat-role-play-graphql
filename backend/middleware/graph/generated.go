@@ -249,6 +249,7 @@ type ComplexityRoot struct {
 	}
 
 	GameTimeSetting struct {
+		EpilogueGameAt        func(childComplexity int) int
 		FinishGameAt          func(childComplexity int) int
 		OpenAt                func(childComplexity int) int
 		PeriodIntervalSeconds func(childComplexity int) int
@@ -1352,6 +1353,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GameSettings.Time(childComplexity), true
+
+	case "GameTimeSetting.epilogueGameAt":
+		if e.complexity.GameTimeSetting.EpilogueGameAt == nil {
+			break
+		}
+
+		return e.complexity.GameTimeSetting.EpilogueGameAt(childComplexity), true
 
 	case "GameTimeSetting.finishGameAt":
 		if e.complexity.GameTimeSetting.FinishGameAt == nil {
@@ -2875,6 +2883,7 @@ enum GameStatus {
   Opening
   Recruiting
   Progress
+  Epilogue
   Finished
   Cancelled
 }
@@ -2979,6 +2988,7 @@ type GameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  epilogueGameAt: DateTime!
   finishGameAt: DateTime!
 }
 
@@ -3373,6 +3383,7 @@ input NewGameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  epilogueGameAt: DateTime!
   finishGameAt: DateTime!
 }
 
@@ -3450,6 +3461,7 @@ input UpdateGameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  epilogueGameAt: DateTime!
   finishGameAt: DateTime!
 }
 
@@ -9564,6 +9576,8 @@ func (ec *executionContext) fieldContext_GameSettings_time(ctx context.Context, 
 				return ec.fieldContext_GameTimeSetting_startParticipateAt(ctx, field)
 			case "startGameAt":
 				return ec.fieldContext_GameTimeSetting_startGameAt(ctx, field)
+			case "epilogueGameAt":
+				return ec.fieldContext_GameTimeSetting_epilogueGameAt(ctx, field)
 			case "finishGameAt":
 				return ec.fieldContext_GameTimeSetting_finishGameAt(ctx, field)
 			}
@@ -9919,6 +9933,50 @@ func (ec *executionContext) _GameTimeSetting_startGameAt(ctx context.Context, fi
 }
 
 func (ec *executionContext) fieldContext_GameTimeSetting_startGameAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameTimeSetting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type DateTime does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameTimeSetting_epilogueGameAt(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameTimeSetting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameTimeSetting_epilogueGameAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EpilogueGameAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameTimeSetting_epilogueGameAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameTimeSetting",
 		Field:      field,
@@ -21427,7 +21485,7 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"periodPrefix", "periodSuffix", "periodIntervalSeconds", "openAt", "startParticipateAt", "startGameAt", "finishGameAt"}
+	fieldsInOrder := [...]string{"periodPrefix", "periodSuffix", "periodIntervalSeconds", "openAt", "startParticipateAt", "startGameAt", "epilogueGameAt", "finishGameAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -21488,6 +21546,15 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 				return it, err
 			}
 			it.StartGameAt = data
+		case "epilogueGameAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("epilogueGameAt"))
+			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.EpilogueGameAt = data
 		case "finishGameAt":
 			var err error
 
@@ -22589,7 +22656,7 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"periodPrefix", "periodSuffix", "periodIntervalSeconds", "openAt", "startParticipateAt", "startGameAt", "finishGameAt"}
+	fieldsInOrder := [...]string{"periodPrefix", "periodSuffix", "periodIntervalSeconds", "openAt", "startParticipateAt", "startGameAt", "epilogueGameAt", "finishGameAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22650,6 +22717,15 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 				return it, err
 			}
 			it.StartGameAt = data
+		case "epilogueGameAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("epilogueGameAt"))
+			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.EpilogueGameAt = data
 		case "finishGameAt":
 			var err error
 
@@ -24428,6 +24504,13 @@ func (ec *executionContext) _GameTimeSetting(ctx context.Context, sel ast.Select
 		case "startGameAt":
 
 			out.Values[i] = ec._GameTimeSetting_startGameAt(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "epilogueGameAt":
+
+			out.Values[i] = ec._GameTimeSetting_epilogueGameAt(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

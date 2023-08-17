@@ -43,6 +43,7 @@ func (g NewGame) MapToGame() model.Game {
 				OpenAt:                g.Settings.Time.OpenAt,
 				StartParticipateAt:    g.Settings.Time.StartParticipateAt,
 				StartGameAt:           g.Settings.Time.StartGameAt,
+				EpilogueGameAt:        g.Settings.Time.EpilogueGameAt,
 				FinishGameAt:          g.Settings.Time.FinishGameAt,
 			},
 			Rule: model.GameRuleSettings{
@@ -77,6 +78,7 @@ func (g UpdateGameSetting) MapToGameSetting() model.GameSettings {
 			OpenAt:                g.Settings.Time.OpenAt,
 			StartParticipateAt:    g.Settings.Time.StartParticipateAt,
 			StartGameAt:           g.Settings.Time.StartGameAt,
+			EpilogueGameAt:        g.Settings.Time.EpilogueGameAt,
 			FinishGameAt:          g.Settings.Time.FinishGameAt,
 		},
 		Rule: model.GameRuleSettings{

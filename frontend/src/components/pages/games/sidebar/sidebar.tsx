@@ -137,6 +137,8 @@ const GameStatus = ({ game }: StatusProps) => {
       : game.status === 'Recruiting'
       ? `${iso2display(game.settings.time.startGameAt)}からゲーム開始`
       : game.status === 'Progress'
+      ? `${iso2display(game.settings.time.epilogueGameAt)}にエピローグ開始`
+      : game.status === 'Epilogue'
       ? `${iso2display(game.settings.time.finishGameAt)}にゲーム終了`
       : null
 

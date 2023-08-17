@@ -325,6 +325,7 @@ export type GameSettings = {
 export enum GameStatus {
   Cancelled = 'Cancelled',
   Closed = 'Closed',
+  Epilogue = 'Epilogue',
   Finished = 'Finished',
   Opening = 'Opening',
   Progress = 'Progress',
@@ -333,6 +334,7 @@ export enum GameStatus {
 
 export type GameTimeSetting = {
   __typename?: 'GameTimeSetting';
+  epilogueGameAt: Scalars['DateTime']['output'];
   finishGameAt: Scalars['DateTime']['output'];
   openAt: Scalars['DateTime']['output'];
   periodIntervalSeconds: Scalars['Int']['output'];
@@ -722,6 +724,7 @@ export type NewGameSettings = {
 };
 
 export type NewGameTimeSetting = {
+  epilogueGameAt: Scalars['DateTime']['input'];
   finishGameAt: Scalars['DateTime']['input'];
   openAt: Scalars['DateTime']['input'];
   periodIntervalSeconds: Scalars['Int']['input'];
@@ -1225,6 +1228,7 @@ export type UpdateGameStatusPayload = {
 };
 
 export type UpdateGameTimeSetting = {
+  epilogueGameAt: Scalars['DateTime']['input'];
   finishGameAt: Scalars['DateTime']['input'];
   openAt: Scalars['DateTime']['input'];
   periodIntervalSeconds: Scalars['Int']['input'];

@@ -260,6 +260,7 @@ type GameTimeSetting struct {
 	OpenAt                time.Time `json:"openAt"`
 	StartParticipateAt    time.Time `json:"startParticipateAt"`
 	StartGameAt           time.Time `json:"startGameAt"`
+	EpilogueGameAt        time.Time `json:"epilogueGameAt"`
 	FinishGameAt          time.Time `json:"finishGameAt"`
 }
 
@@ -431,6 +432,7 @@ type NewGameTimeSetting struct {
 	OpenAt                time.Time `json:"openAt"`
 	StartParticipateAt    time.Time `json:"startParticipateAt"`
 	StartGameAt           time.Time `json:"startGameAt"`
+	EpilogueGameAt        time.Time `json:"epilogueGameAt"`
 	FinishGameAt          time.Time `json:"finishGameAt"`
 }
 
@@ -710,6 +712,7 @@ type UpdateGameTimeSetting struct {
 	OpenAt                time.Time `json:"openAt"`
 	StartParticipateAt    time.Time `json:"startParticipateAt"`
 	StartGameAt           time.Time `json:"startGameAt"`
+	EpilogueGameAt        time.Time `json:"epilogueGameAt"`
 	FinishGameAt          time.Time `json:"finishGameAt"`
 }
 
@@ -754,6 +757,7 @@ const (
 	GameStatusOpening    GameStatus = "Opening"
 	GameStatusRecruiting GameStatus = "Recruiting"
 	GameStatusProgress   GameStatus = "Progress"
+	GameStatusEpilogue   GameStatus = "Epilogue"
 	GameStatusFinished   GameStatus = "Finished"
 	GameStatusCancelled  GameStatus = "Cancelled"
 )
@@ -763,13 +767,14 @@ var AllGameStatus = []GameStatus{
 	GameStatusOpening,
 	GameStatusRecruiting,
 	GameStatusProgress,
+	GameStatusEpilogue,
 	GameStatusFinished,
 	GameStatusCancelled,
 }
 
 func (e GameStatus) IsValid() bool {
 	switch e {
-	case GameStatusClosed, GameStatusOpening, GameStatusRecruiting, GameStatusProgress, GameStatusFinished, GameStatusCancelled:
+	case GameStatusClosed, GameStatusOpening, GameStatusRecruiting, GameStatusProgress, GameStatusEpilogue, GameStatusFinished, GameStatusCancelled:
 		return true
 	}
 	return false

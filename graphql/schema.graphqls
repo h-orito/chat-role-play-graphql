@@ -73,6 +73,7 @@ enum GameStatus {
   Opening
   Recruiting
   Progress
+  Epilogue
   Finished
   Cancelled
 }
@@ -177,6 +178,7 @@ type GameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  epilogueGameAt: DateTime!
   finishGameAt: DateTime!
 }
 
@@ -571,6 +573,7 @@ input NewGameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  epilogueGameAt: DateTime!
   finishGameAt: DateTime!
 }
 
@@ -648,6 +651,7 @@ input UpdateGameTimeSetting {
   openAt: DateTime!
   startParticipateAt: DateTime!
   startGameAt: DateTime!
+  epilogueGameAt: DateTime!
   finishGameAt: DateTime!
 }
 

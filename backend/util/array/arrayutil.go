@@ -71,6 +71,28 @@ func Map[T, V any](array []T, f func(T) V) (result []V) {
 	return
 }
 
+func MaxOrNil[T any](array []T, f func(T) int) (result *int) {
+	var max *int = nil
+	for _, value := range array {
+		v := f(value)
+		if max == nil || *max < v {
+			max = &v
+		}
+	}
+	return max
+}
+
+func MinOrNil[T any](array []T, f func(T) int) (result *int) {
+	var min *int = nil
+	for _, value := range array {
+		v := f(value)
+		if min == nil || v < *min {
+			min = &v
+		}
+	}
+	return min
+}
+
 func MapWithIndex[T, V any](elms []T, fn func(int, T) V) []V {
 	result := make([]V, len(elms), cap(elms))
 	for i, elm := range elms {

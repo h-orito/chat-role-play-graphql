@@ -34,6 +34,9 @@ export default function GameSettingsEdit({ game }: Props) {
     startGameAt: dayjs(game.settings.time.startGameAt).format(
       'YYYY-MM-DDTHH:mm'
     ),
+    epilogueGameAt: dayjs(game.settings.time.epilogueGameAt).format(
+      'YYYY-MM-DDTHH:mm'
+    ),
     finishGameAt: dayjs(game.settings.time.finishGameAt).format(
       'YYYY-MM-DDTHH:mm'
     ),
@@ -95,6 +98,7 @@ export default function GameSettingsEdit({ game }: Props) {
                 openAt: dayjs(data.openAt).toDate(),
                 startParticipateAt: dayjs(data.startParticipateAt).toDate(),
                 startGameAt: dayjs(data.startGameAt).toDate(),
+                epilogueGameAt: dayjs(data.epilogueGameAt).toDate(),
                 finishGameAt: dayjs(data.finishGameAt).toDate()
               },
               rule: {

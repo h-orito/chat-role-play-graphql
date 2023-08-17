@@ -23,6 +23,7 @@ const (
 	GameStatusOpening
 	GameStatusRecruiting
 	GameStatusProgress
+	GameStatusEpilogue
 	GameStatusFinished
 	GameStatusCancelled
 )
@@ -37,6 +38,8 @@ func (gs GameStatus) String() string {
 		return "Recruiting"
 	case GameStatusProgress:
 		return "Progress"
+	case GameStatusEpilogue:
+		return "Epilogue"
 	case GameStatusFinished:
 		return "Finished"
 	case GameStatusCancelled:
@@ -56,6 +59,7 @@ func GameStatusValues() []GameStatus {
 		GameStatusOpening,
 		GameStatusRecruiting,
 		GameStatusProgress,
+		GameStatusEpilogue,
 		GameStatusFinished,
 		GameStatusCancelled,
 	}
@@ -204,6 +208,7 @@ type GameTimeSettings struct {
 	OpenAt                time.Time
 	StartParticipateAt    time.Time
 	StartGameAt           time.Time
+	EpilogueGameAt        time.Time
 	FinishGameAt          time.Time
 }
 
@@ -228,6 +233,8 @@ func (g *Game) ShouldChangeStatus(now time.Time) (bool, GameStatus) {
 	case GameStatusRecruiting:
 		return now.After(g.Settings.Time.StartGameAt), GameStatusProgress
 	case GameStatusProgress:
+		return now.After(g.Settings.Time.EpilogueGameAt), GameStatusEpilogue
+	case GameStatusEpilogue:
 		return now.After(g.Settings.Time.FinishGameAt), GameStatusFinished
 	default:
 		return false, g.Status

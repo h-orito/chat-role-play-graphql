@@ -486,6 +486,9 @@ func registerGameSettings(db *gorm.DB, ID uint32, settings model.GameSettings) (
 	if err := registerGameSetting(db, ID, GameSettingKeyStartGameAt, timeToString(settings.Time.StartGameAt)); err != nil {
 		return err
 	}
+	if err := registerGameSetting(db, ID, GameSettingKeyEpilogueGameAt, timeToString(settings.Time.EpilogueGameAt)); err != nil {
+		return err
+	}
 	if err := registerGameSetting(db, ID, GameSettingKeyFinishGameAt, timeToString(settings.Time.FinishGameAt)); err != nil {
 		return err
 	}
@@ -527,6 +530,9 @@ func updateGameSettings(db *gorm.DB, gameID uint32, settings model.GameSettings)
 		return err
 	}
 	if err := updateGameSetting(db, gameID, GameSettingKeyStartGameAt, timeToString(settings.Time.StartGameAt)); err != nil {
+		return err
+	}
+	if err := updateGameSetting(db, gameID, GameSettingKeyEpilogueGameAt, timeToString(settings.Time.EpilogueGameAt)); err != nil {
 		return err
 	}
 	if err := updateGameSetting(db, gameID, GameSettingKeyFinishGameAt, timeToString(settings.Time.FinishGameAt)); err != nil {

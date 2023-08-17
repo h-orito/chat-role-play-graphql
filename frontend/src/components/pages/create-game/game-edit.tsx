@@ -35,6 +35,7 @@ export interface GameFormInput {
   openAt: string
   startParticipateAt: string
   startGameAt: string
+  epilogueGameAt: string
   finishGameAt: string
   charachipIds: string[]
   periodPrefix: string
@@ -199,6 +200,28 @@ export default function GameEdit(props: Props) {
             />
           </div>
           <div className='my-4'>
+            <FormLabel label='エピローグ開始日時' required>
+              この日時にエピローグを迎え、秘匿情報が公開されます。
+              <br />
+              ゲームマスターが手動でエピローグ状態にすることもできます。
+            </FormLabel>
+            <InputDateTime
+              name='epilogueGameAt'
+              control={control}
+              rules={{
+                required: '必須です',
+                validate: {
+                  greaterThanStartGameAt: (value: string, values: any) => {
+                    const startGameAt = dayjs(values.startGameAt)
+                    return dayjs(value).isAfter(startGameAt)
+                      ? undefined
+                      : 'ゲーム開始日時より後にしてください'
+                  }
+                }
+              }}
+            />
+          </div>
+          <div className='my-4'>
             <FormLabel label='ゲーム終了日時' required>
               この日時にゲームが終了になります。
               <br />
@@ -210,11 +233,11 @@ export default function GameEdit(props: Props) {
               rules={{
                 required: '必須です',
                 validate: {
-                  greaterThanStartGameAt: (value: string, values: any) => {
-                    const startGameAt = dayjs(values.startGameAt)
-                    return dayjs(value).isAfter(startGameAt)
+                  greaterThanEpilogueGameAt: (value: string, values: any) => {
+                    const epilogueGameAt = dayjs(values.epilogueGameAt)
+                    return dayjs(value).isAfter(epilogueGameAt)
                       ? undefined
-                      : 'ゲーム開始日時より後にしてください'
+                      : 'エピローグ開始日時より後にしてください'
                   }
                 }
               }}
@@ -233,9 +256,9 @@ export default function GameEdit(props: Props) {
                     <br />
                     複数選択することも可能です。
                     <br />
-                    <p className='text-red-500'>
+                    <span className='text-red-500'>
                       この項目は後から変更することができません。
-                    </p>
+                    </span>
                   </p>
                 </div>
                 <InputMultiSelect
@@ -401,9 +424,7 @@ const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
           </button>
           {isModalOpen && (
             <Modal close={toggleModal} hideFooter>
-              <div>
-                <p className='text-xs'>{children}</p>
-              </div>
+              <div className='text-xs'>{children}</div>
             </Modal>
           )}
         </>

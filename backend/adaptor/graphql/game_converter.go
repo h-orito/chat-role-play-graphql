@@ -41,6 +41,7 @@ func MapToGame(g *model.Game) *gqlmodel.Game {
 				OpenAt:                g.Settings.Time.OpenAt,
 				StartParticipateAt:    g.Settings.Time.StartParticipateAt,
 				StartGameAt:           g.Settings.Time.StartGameAt,
+				EpilogueGameAt:        g.Settings.Time.EpilogueGameAt,
 				FinishGameAt:          g.Settings.Time.FinishGameAt,
 			},
 			Rule: &gqlmodel.GameRuleSetting{
@@ -96,6 +97,8 @@ func MapToSimpleGame(g *model.Game) *gqlmodel.SimpleGame {
 				OpenAt:                g.Settings.Time.OpenAt,
 				StartParticipateAt:    g.Settings.Time.StartParticipateAt,
 				StartGameAt:           g.Settings.Time.StartGameAt,
+				EpilogueGameAt:        g.Settings.Time.EpilogueGameAt,
+				FinishGameAt:          g.Settings.Time.FinishGameAt,
 			},
 			Rule: &gqlmodel.GameRuleSetting{
 				IsGameMasterProducer: false,

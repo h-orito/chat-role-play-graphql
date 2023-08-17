@@ -39,6 +39,10 @@ export default function CreateGame() {
       .startOf('hour')
       .format('YYYY-MM-DDTHH:mm'),
     startGameAt: now.add(28, 'day').startOf('hour').format('YYYY-MM-DDTHH:mm'),
+    epilogueGameAt: now
+      .add(42, 'day')
+      .startOf('hour')
+      .format('YYYY-MM-DDTHH:mm'),
     finishGameAt: now.add(56, 'day').startOf('hour').format('YYYY-MM-DDTHH:mm'),
     capacityMin: 1,
     capacityMax: 99,
@@ -91,6 +95,7 @@ export default function CreateGame() {
                 openAt: dayjs(data.openAt).toDate(),
                 startParticipateAt: dayjs(data.startParticipateAt).toDate(),
                 startGameAt: dayjs(data.startGameAt).toDate(),
+                epilogueGameAt: dayjs(data.epilogueGameAt).toDate(),
                 finishGameAt: dayjs(data.finishGameAt).toDate()
               } as NewGameTimeSetting,
               rule: {

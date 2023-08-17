@@ -132,6 +132,68 @@ export default function Instructions() {
           </div>
           <div className='my-4 bg-gray-200 px-4 py-2'>
             <div className='flex border-b border-gray-500'>
+              <p className='font-bold'>ゲームの状態と期間</p>
+            </div>
+            <ul className='list-inside list-disc py-2 text-left text-xs leading-5'>
+              <li>
+                ゲームの状態は以下の7つです
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
+                  <li>
+                    公開前:
+                    ゲームを作成するとこの状態になります。トップページのゲーム一覧には表示されません。
+                  </li>
+                  <li>
+                    公開中:
+                    トップページのゲーム一覧に表示されますが、ゲームマスター以外は参加登録ができません。
+                  </li>
+                  <li>参加者募集中: 参加登録が可能です。</li>
+                  <li>
+                    開催中: ゲームが開始された状態です。参加登録が可能です。
+                  </li>
+                  <li>エピローグ: 秘匿情報が公開されます（未実装）。</li>
+                  <li>
+                    終了:
+                    ゲームが終了した状態です。発言など各種操作が行えなくなります。
+                  </li>
+                  <li>
+                    中止: ゲームを中止した状態です。人狼ゲームでいうと廃村です。
+                  </li>
+                </ul>
+              </li>
+              <li>
+                状態のほかに、期間の概念があります。人狼ゲームでいうと、1日目,
+                2日目, ..などです。
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
+                  <li>
+                    公開前～参加者募集中の間は、「プロローグ」という期間になります。
+                  </li>
+                  <li>
+                    ゲームが開始され、「開催中」になると、1つ目の期間が始まります。例.
+                    1日目
+                  </li>
+                  <li>
+                    開催中は、1期間ごとの時間が経過するごとに、2日目, 3日目,
+                    ..と進んでいきます。
+                  </li>
+                  <li>
+                    期間名の法則や長さはGMが自由に決めることができます。例えば接頭辞を「第」、接尾辞を「学期」にすれば、第1学期,
+                    第2学期, ..と進んでいきます。
+                  </li>
+                  <li>
+                    エピローグを迎えると、「エピローグ」という期間になります。
+                  </li>
+                  <li>
+                    プロローグやエピローグを含め、後からGMが期間名を編集することもできます。
+                  </li>
+                  <li>
+                    1期間ごとに日記を作成することができます（未実装）。日記は、次の期間になると他の人が閲覧することができるようになります。
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div className='my-4 bg-gray-200 px-4 py-2'>
+            <div className='flex border-b border-gray-500'>
               <p className='font-bold'>ゲーム作成</p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs leading-5'>

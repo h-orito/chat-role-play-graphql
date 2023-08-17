@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/08/17'>
+            <li>追加: エピローグの概念を追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/08/16'>
             <li>追加: キャラチップ利用</li>
           </ReleaseContent>
@@ -96,26 +100,6 @@ export default function CreateGame() {
                       <li>レーティング</li>
                       <li>キャッチ画像</li>
                       <li>テーマ（最低限ライトとダークモード）</li>
-                      <li>
-                        キャラチップ利用
-                        <ul className='ml-8 list-inside list-disc text-left text-xs'>
-                          <li>現在許可いただいているキャラチップ</li>
-                          <li>灰色の研究</li>
-                          <li>メトロポリス</li>
-                          <li>バビロン</li>
-                          <li>ギルガメシュ</li>
-                          <li>ヴァルハラ</li>
-                          <li>わんダフル</li>
-                          <li>Mad Party</li>
-                          <li>Fragment of Jewels</li>
-                          <li>feel 僧 good</li>
-                          <li>御常紀学園</li>
-                          <li>他種族孤児院</li>
-                          <li>花園女学院</li>
-                          <li>おりふし学園</li>
-                          <li>salute</li>
-                        </ul>
-                      </li>
                       <li>終了後DM公開</li>
                     </ul>
                   </li>

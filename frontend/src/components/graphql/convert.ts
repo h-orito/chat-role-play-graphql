@@ -19,6 +19,7 @@ export const gameStatuses = new Map<string, string>([
   ['Opening', '公開中'],
   ['Recruiting', '参加者募集中'],
   ['Progress', '開催中'],
+  ['Epilogue', 'エピローグ'],
   ['Finished', '終了'],
   ['Cancelled', '中止']
 ])
