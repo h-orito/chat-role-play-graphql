@@ -200,7 +200,11 @@ func (repo *PlayerRepository) findRdbPlayers(db *gorm.DB, query model.PlayersQue
 	if query.Paging != nil {
 		result = result.Scopes(Paginate(query.Paging))
 	} else {
-		result = result.Scopes(Paginate(nil))
+		result = result.Scopes(Paginate(&model.PagingQuery{
+			PageSize:   10000,
+			PageNumber: 1,
+			Desc:       false,
+		}))
 	}
 	result = result.Find(&rdbPlayers)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {

@@ -270,7 +270,11 @@ func findRdbGames(db *gorm.DB, query model.GamesQuery) (games []Game, err error)
 	if query.Paging != nil {
 		result = result.Scopes(Paginate(query.Paging))
 	} else {
-		result = result.Scopes(Paginate(nil))
+		result = result.Scopes(Paginate(&model.PagingQuery{
+			PageSize:   10000,
+			PageNumber: 1,
+			Desc:       false,
+		}))
 	}
 	if query.IDs != nil {
 		result = result.Where("id in (?)", *query.IDs)
