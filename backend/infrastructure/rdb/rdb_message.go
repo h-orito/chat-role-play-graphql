@@ -32,7 +32,7 @@ func (m Message) ToModel(favParticipantIDs []uint32) *model.Message {
 	if m.SenderGameParticipantID != nil {
 		sender = &model.MessageSender{
 			GameParticipantID: *m.SenderGameParticipantID,
-			SenderIconID:      *m.SenderIconID,
+			SenderIconID:      m.SenderIconID,
 			SenderName:        *m.SenderName,
 			SenderEntryNumber: *m.SenderEntryNumber,
 		}
@@ -114,7 +114,7 @@ func (m DirectMessage) ToModel(favParticipantIDs []uint32) *model.DirectMessage 
 	if m.SenderGameParticipantID != nil {
 		sender = &model.MessageSender{
 			GameParticipantID: *m.SenderGameParticipantID,
-			SenderIconID:      *m.SenderIconID,
+			SenderIconID:      m.SenderIconID,
 			SenderName:        *m.SenderName,
 			SenderEntryNumber: *m.SenderEntryNumber,
 		}

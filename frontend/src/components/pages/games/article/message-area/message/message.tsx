@@ -1,6 +1,12 @@
-import { Game, GameParticipant, Message } from '@/lib/generated/graphql'
+import {
+  Game,
+  GameParticipant,
+  Message,
+  MessageType
+} from '@/lib/generated/graphql'
 import TalkMessage from './talk-message'
 import SystemMessage from './system-message'
+import DescriptionMessage from './description-message'
 
 type MessageProps = {
   game: Game
@@ -11,11 +17,15 @@ type MessageProps = {
 }
 
 export default function MessageComponent(props: MessageProps) {
-  const isSystem = props.message.content.type.indexOf('System') !== -1
+  const type = props.message.content.type
+  const isSystem = type.indexOf('System') !== -1
+  const isDescription = type === MessageType.Description
   return (
     <div>
       {isSystem ? (
         <SystemMessage message={props.message} />
+      ) : isDescription ? (
+        <DescriptionMessage {...props} />
       ) : (
         <TalkMessage {...props} />
       )}

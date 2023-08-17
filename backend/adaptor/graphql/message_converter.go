@@ -33,11 +33,16 @@ func MapToMessage(m *model.Message) *gqlmodel.Message {
 	}
 	var sender *gqlmodel.MessageSender
 	if m.Sender != nil {
+		var iconID *string
+		if m.Sender.SenderIconID != nil {
+			icID := intIdToBase64(*m.Sender.SenderIconID, "GameParticipantIcon")
+			iconID = &icID
+		}
 		sender = &gqlmodel.MessageSender{
 			ParticipantID: intIdToBase64(m.Sender.GameParticipantID, "GameParticipant"),
 			Name:          m.Sender.SenderName,
 			EntryNumber:   int(m.Sender.SenderEntryNumber),
-			IconID:        intIdToBase64(m.Sender.SenderIconID, "GameParticipantIcon"),
+			IconID:        iconID,
 		}
 	}
 	var replyTo *gqlmodel.MessageRecipient
@@ -112,11 +117,16 @@ func MapToDirectMessage(m *model.DirectMessage) *gqlmodel.DirectMessage {
 	}
 	var sender *gqlmodel.MessageSender
 	if m.Sender != nil {
+		var iconID *string
+		if m.Sender.SenderIconID != nil {
+			icID := intIdToBase64(*m.Sender.SenderIconID, "GameParticipantIcon")
+			iconID = &icID
+		}
 		sender = &gqlmodel.MessageSender{
 			ParticipantID: intIdToBase64(m.Sender.GameParticipantID, "GameParticipant"),
 			Name:          m.Sender.SenderName,
 			EntryNumber:   int(m.Sender.SenderEntryNumber),
-			IconID:        intIdToBase64(m.Sender.SenderIconID, "GameParticipantIcon"),
+			IconID:        iconID,
 		}
 	}
 	return &gqlmodel.DirectMessage{

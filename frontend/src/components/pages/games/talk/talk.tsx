@@ -161,6 +161,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
       : talkType === MessageType.Monologue
       ? 'talk-monologue'
       : ''
+
   const talkTypeDescription =
     talkType === MessageType.TalkNormal
       ? '全員が参照できる発言種別です。'

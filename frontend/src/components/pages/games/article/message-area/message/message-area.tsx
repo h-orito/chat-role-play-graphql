@@ -21,9 +21,10 @@ import SearchCondition from './search-condition'
 import { LazyQueryExecFunction, OperationVariables } from '@apollo/client'
 import GamePeriodLinks from '../game-period-links'
 import Modal from '@/components/modal/modal'
-import { PencilSquareIcon } from '@heroicons/react/24/outline'
+import { DocumentTextIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import Talk, { TalkRefHandle } from '../../../talk/talk'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
+import TalkDescription from '../../../talk/talk-description'
 
 type Props = {
   game: Game
@@ -195,7 +196,12 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
             />
           </div>
         )}
-        {canTalk && <TalkButton game={game} myself={myself!} search={search} />}
+        {canTalk && (
+          <>
+            <DescriptionButton game={game} myself={myself!} search={search} />
+            <TalkButton game={game} myself={myself!} search={search} />
+          </>
+        )}
         {!searchable && (
           <GamePeriodLinks
             game={game}
@@ -275,6 +281,53 @@ const TalkButton = ({ game, myself, search }: TalkButtonProps) => {
             game={game}
             myself={myself!}
             closeWithoutWarning={() => setIsOpenTalkModal(false)}
+            search={search}
+            ref={talkRef}
+          />
+        </Modal>
+      )}
+    </>
+  )
+}
+
+type DescriptionButtonProps = {
+  game: Game
+  myself: GameParticipant | null
+  search: (query?: MessagesQuery) => void
+}
+
+const DescriptionButton = ({
+  game,
+  myself,
+  search
+}: DescriptionButtonProps) => {
+  const [isOpenModal, setIsOpenModal] = useState(false)
+  const talkRef = useRef({} as TalkRefHandle)
+  const toggleModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      const shouldWarning = talkRef.current && talkRef.current.shouldWarnClose()
+      if (
+        shouldWarning &&
+        !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
+      )
+        return
+      setIsOpenModal(!isOpenModal)
+    }
+  }
+  return (
+    <>
+      <button
+        className='absolute bottom-4 right-24 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+        onClick={() => setIsOpenModal(true)}
+      >
+        <DocumentTextIcon className='h-8 w-8' />
+      </button>
+      {isOpenModal && (
+        <Modal close={toggleModal} hideFooter>
+          <TalkDescription
+            game={game}
+            myself={myself!}
+            closeWithoutWarning={() => setIsOpenModal(false)}
             search={search}
             ref={talkRef}
           />

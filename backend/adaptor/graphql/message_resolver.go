@@ -56,14 +56,18 @@ func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.N
 func MapNewMessageToMessage(input gqlmodel.NewMessage) (*model.Message, error) {
 	messageType := model.MessageTypeValueOf(input.Type.String())
 	var sender *model.MessageSender
-	if !messageType.IsSystem() {
+	if messageType.IsTalk() {
 		iconID, err := idToUint32(*input.IconID)
 		if err != nil {
 			return nil, err
 		}
 		sender = &model.MessageSender{
-			SenderIconID: iconID,
+			SenderIconID: &iconID,
 			SenderName:   *input.Name,
+		}
+	} else if !messageType.IsSystem() {
+		sender = &model.MessageSender{
+			SenderName: *input.Name,
 		}
 	}
 	var replyTo *model.MessageReplyTo
@@ -185,7 +189,7 @@ func MapNewDirectMessageToDirectMessage(input gqlmodel.NewDirectMessage) (*model
 			return nil, err
 		}
 		sender = &model.MessageSender{
-			SenderIconID: iconID,
+			SenderIconID: &iconID,
 			SenderName:   input.Name,
 		}
 	}

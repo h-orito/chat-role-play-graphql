@@ -277,7 +277,7 @@ type MessageSender {
   participantId: ID!
   name: String!
   entryNumber: Int!
-  icon: GameParticipantIcon!
+  icon: GameParticipantIcon
 }
 
 type MessageRecipient {

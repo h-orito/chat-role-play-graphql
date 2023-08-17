@@ -3087,7 +3087,7 @@ type MessageSender {
   participantId: ID!
   name: String!
   entryNumber: Int!
-  icon: GameParticipantIcon!
+  icon: GameParticipantIcon
 }
 
 type MessageRecipient {
@@ -11012,14 +11012,11 @@ func (ec *executionContext) _MessageSender_icon(ctx context.Context, field graph
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*gqlmodel.GameParticipantIcon)
 	fc.Result = res
-	return ec.marshalNGameParticipantIcon2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIcon(ctx, field.Selections, res)
+	return ec.marshalOGameParticipantIcon2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIcon(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_MessageSender_icon(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -24799,9 +24796,6 @@ func (ec *executionContext) _MessageSender(ctx context.Context, sel ast.Selectio
 					}
 				}()
 				res = ec._MessageSender_icon(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
 				return res
 			}
 
@@ -27954,10 +27948,6 @@ func (ec *executionContext) marshalNGameParticipantGroup2ᚖchatᚑroleᚑplay�
 func (ec *executionContext) unmarshalNGameParticipantGroupsQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantGroupsQuery(ctx context.Context, v interface{}) (gqlmodel.GameParticipantGroupsQuery, error) {
 	res, err := ec.unmarshalInputGameParticipantGroupsQuery(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNGameParticipantIcon2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIcon(ctx context.Context, sel ast.SelectionSet, v gqlmodel.GameParticipantIcon) graphql.Marshaler {
-	return ec._GameParticipantIcon(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNGameParticipantIcon2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIconᚄ(ctx context.Context, sel ast.SelectionSet, v []*gqlmodel.GameParticipantIcon) graphql.Marshaler {

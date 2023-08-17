@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/08/18'>
+            <li>追加: 発言種別にト書きを追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/08/17'>
             <li>追加: エピローグの概念を追加</li>
             <li>追加: 発言種別に独り言を追加</li>
@@ -99,7 +103,6 @@ export default function CreateGame() {
                   <li>
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
-                      <li>ト書き（マンションでいうアクション）</li>
                       <li>返信</li>
                       <li>宛先</li>
                       <li>PL発言（PL発言タイムライン）</li>

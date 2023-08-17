@@ -54,14 +54,18 @@ func (mt MessageType) String() string {
 	}
 }
 
-func (mt MessageType) IsSystem() bool {
+func (mt MessageType) IsTalk() bool {
 	switch mt {
 	case MessageTypeTalkNormal:
-		return false
+		return true
 	case MessageTypeMonologue:
+		return true
+	default:
 		return false
-	case MessageTypeDescription:
-		return false
+	}
+}
+func (mt MessageType) IsSystem() bool {
+	switch mt {
 	case MessageTypeSystemPublic:
 		return true
 	case MessageTypeSystemPrivate:
@@ -97,7 +101,7 @@ func MessageTypeValueOf(s string) *MessageType {
 
 type MessageSender struct {
 	GameParticipantID uint32
-	SenderIconID      uint32
+	SenderIconID      *uint32
 	SenderName        string
 	SenderEntryNumber uint32
 }

@@ -636,7 +636,10 @@ func (r *gameParticipantDiaryResolver) period(ctx context.Context, obj *gqlmodel
 }
 
 func (r *messageSenderResolver) icon(ctx context.Context, obj *gqlmodel.MessageSender) (*gqlmodel.GameParticipantIcon, error) {
-	thunk := r.loaders.ParticipantIconLoader.Load(ctx, dataloader.StringKey(obj.IconID))
+	if obj.IconID == nil {
+		return nil, nil
+	}
+	thunk := r.loaders.ParticipantIconLoader.Load(ctx, dataloader.StringKey(*obj.IconID))
 	i, err := thunk()
 	if err != nil {
 		return nil, err

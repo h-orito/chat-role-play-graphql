@@ -131,6 +131,11 @@ export default function Rules() {
               </li>
               <li>
                 他参加者の画面の向こうには人間がいます。他者を思いやり、迷惑をかけないロールプレイを心がけるようお願いします。
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
+                  <li>
+                    基本的にGM裁量ですが、例えば確定ロールなど、ロールプレイをするにあたり迷惑となりえる事項については参加前に把握しておいてください。
+                  </li>
+                </ul>
               </li>
               <li>トラブルは当事者間で解決してください。</li>
               <li>
@@ -152,7 +157,7 @@ export default function Rules() {
               <li>
                 他定期ゲームのアフター等で利用するのもOKですが、そのゲームのGMの方に許可を取ってください。
               </li>
-              <li>版権ものの「なりチャ」等はNGです。</li>
+              <li>版権ものはNGです。</li>
               <li>
                 ゲームを作成して放置していると管理人が判断した場合、作成者に利用制限をかけることがあります。
                 <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>

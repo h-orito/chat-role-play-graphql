@@ -45,6 +45,8 @@ export default function TalkMessage({
       ? 'talk-normal'
       : message.content.type === 'Monologue'
       ? 'talk-monologue'
+      : message.content.type === 'Description'
+      ? 'description'
       : ''
   return (
     <div>
@@ -62,51 +64,47 @@ export default function TalkMessage({
           </div>
         )}
         <div className='flex'>
-          {message.sender && (
-            <div>
-              <Image
-                className='cursor-pointer'
-                src={message.sender.icon.url}
-                width={message.sender.icon.width}
-                height={message.sender.icon.height}
-                alt='キャラアイコン'
-                onClick={handleProfileClick}
+          <div>
+            <Image
+              className='cursor-pointer'
+              src={message.sender!.icon!.url}
+              width={message.sender!.icon!.width}
+              height={message.sender!.icon!.height}
+              alt='キャラアイコン'
+              onClick={handleProfileClick}
+            />
+          </div>
+          <div className='ml-2 flex-1 text-sm'>
+            <div
+              className={`message ${messageClass}`}
+              style={{ minHeight: `${message.sender!.icon!.height}px` }}
+            >
+              <MessageText
+                rawText={message.content.text}
+                isConvertDisabled={message.content.isConvertDisabled}
               />
             </div>
-          )}
-          {!preview && (
-            <div className='ml-2 flex-1 text-sm'>
-              <div
-                className={`message ${messageClass}`}
-                style={{ minHeight: `${message.sender!.icon.height}px` }}
-              >
-                <MessageText
-                  rawText={message.content.text}
-                  isConvertDisabled={message.content.isConvertDisabled}
+            <div className='flex justify-end pt-1'>
+              <div className='flex'>
+                <ReplyButton
+                  game={game}
+                  message={message}
+                  showReplies={showReplies}
+                  setShowReplies={setShowReplies}
+                  replies={replies}
+                  setReplies={setReplies}
                 />
               </div>
-              <div className='flex pt-1'>
-                <div className='flex-1'>
-                  <ReplyButton
-                    game={game}
-                    message={message}
-                    showReplies={showReplies}
-                    setShowReplies={setShowReplies}
-                    replies={replies}
-                    setReplies={setReplies}
-                  />
-                </div>
-                <div className='flex flex-1'>
-                  <FavoriteButton
-                    game={game}
-                    message={message}
-                    myself={myself}
-                    openFavoritesModal={openFavoritesModal}
-                  />
-                </div>
+              <div className='ml-8 flex'>
+                <FavoriteButton
+                  game={game}
+                  message={message}
+                  myself={myself}
+                  openFavoritesModal={openFavoritesModal}
+                />
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
       {showReplies && (

@@ -362,7 +362,7 @@ func registerMessage(tx *gorm.DB, gameID uint32, message model.Message) error {
 	}
 	if message.Sender != nil {
 		rdb.SenderGameParticipantID = &message.Sender.GameParticipantID
-		rdb.SenderIconID = &message.Sender.SenderIconID
+		rdb.SenderIconID = message.Sender.SenderIconID
 		rdb.SenderName = &message.Sender.SenderName
 		rdb.SenderEntryNumber = &message.Sender.SenderEntryNumber
 	}
@@ -836,7 +836,7 @@ func registerDirectMessage(tx *gorm.DB, gameID uint32, message model.DirectMessa
 	}
 	if message.Sender != nil {
 		rdb.SenderGameParticipantID = &message.Sender.GameParticipantID
-		rdb.SenderIconID = &message.Sender.SenderIconID
+		rdb.SenderIconID = message.Sender.SenderIconID
 		rdb.SenderName = &message.Sender.SenderName
 		rdb.SenderEntryNumber = &message.Sender.SenderEntryNumber
 	}

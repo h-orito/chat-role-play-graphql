@@ -392,7 +392,7 @@ export type MessageRecipient = {
 export type MessageSender = {
   __typename?: 'MessageSender';
   entryNumber: Scalars['Int']['output'];
-  icon: GameParticipantIcon;
+  icon?: Maybe<GameParticipantIcon>;
   name: Scalars['String']['output'];
   participantId: Scalars['ID']['output'];
 };
@@ -1363,7 +1363,7 @@ export type TalkDirectDryRunMutationVariables = Exact<{
 }>;
 
 
-export type TalkDirectDryRunMutation = { __typename?: 'Mutation', registerDirectMessageDryRun: { __typename?: 'RegisterDirectMessageDryRunPayload', directMessage: { __typename?: 'DirectMessage', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender: { __typename?: 'MessageSender', participantId: string, name: string, icon: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } }, reactions: { __typename?: 'DirectMessageReactions', favoriteCounts: number, favoriteParticipantIds: Array<string> } } } };
+export type TalkDirectDryRunMutation = { __typename?: 'Mutation', registerDirectMessageDryRun: { __typename?: 'RegisterDirectMessageDryRunPayload', directMessage: { __typename?: 'DirectMessage', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender: { __typename?: 'MessageSender', participantId: string, name: string, icon?: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } | null }, reactions: { __typename?: 'DirectMessageReactions', favoriteCounts: number, favoriteParticipantIds: Array<string> } } } };
 
 export type TalkDirectMutationVariables = Exact<{
   input: NewDirectMessage;
@@ -1377,7 +1377,7 @@ export type TalkDryRunMutationVariables = Exact<{
 }>;
 
 
-export type TalkDryRunMutation = { __typename?: 'Mutation', registerMessageDryRun: { __typename?: 'RegisterMessageDryRunPayload', message: { __typename?: 'Message', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender?: { __typename?: 'MessageSender', participantId: string, name: string, icon: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } } | null, replyTo?: { __typename?: 'MessageRecipient', messageId: string, participantId: string } | null, reactions: { __typename?: 'MessageReactions', replyCount: number, favoriteCount: number, favoriteParticipantIds: Array<string> } } } };
+export type TalkDryRunMutation = { __typename?: 'Mutation', registerMessageDryRun: { __typename?: 'RegisterMessageDryRunPayload', message: { __typename?: 'Message', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender?: { __typename?: 'MessageSender', participantId: string, name: string, icon?: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } | null } | null, replyTo?: { __typename?: 'MessageRecipient', messageId: string, participantId: string } | null, reactions: { __typename?: 'MessageReactions', replyCount: number, favoriteCount: number, favoriteParticipantIds: Array<string> } } } };
 
 export type TalkMutationVariables = Exact<{
   input: NewMessage;
@@ -1486,7 +1486,7 @@ export type GameDirectMessagesQueryVariables = Exact<{
 }>;
 
 
-export type GameDirectMessagesQuery = { __typename?: 'Query', directMessages: { __typename?: 'DirectMessages', allPageCount: number, hasPrePage: boolean, hasNextPage: boolean, currentPageNumber?: number | null, isDesc: boolean, latestUnixTimeMilli: any, list: Array<{ __typename?: 'DirectMessage', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender: { __typename?: 'MessageSender', participantId: string, name: string, entryNumber: number, icon: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } }, reactions: { __typename?: 'DirectMessageReactions', favoriteCounts: number, favoriteParticipantIds: Array<string> } }> } };
+export type GameDirectMessagesQuery = { __typename?: 'Query', directMessages: { __typename?: 'DirectMessages', allPageCount: number, hasPrePage: boolean, hasNextPage: boolean, currentPageNumber?: number | null, isDesc: boolean, latestUnixTimeMilli: any, list: Array<{ __typename?: 'DirectMessage', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender: { __typename?: 'MessageSender', participantId: string, name: string, entryNumber: number, icon?: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } | null }, reactions: { __typename?: 'DirectMessageReactions', favoriteCounts: number, favoriteParticipantIds: Array<string> } }> } };
 
 export type FollowersQueryVariables = Exact<{
   participantId: Scalars['ID']['input'];
@@ -1516,7 +1516,7 @@ export type GameMessagesQueryVariables = Exact<{
 }>;
 
 
-export type GameMessagesQuery = { __typename?: 'Query', messages: { __typename?: 'Messages', allPageCount: number, hasPrePage: boolean, hasNextPage: boolean, currentPageNumber?: number | null, isDesc: boolean, latestUnixTimeMilli: any, list: Array<{ __typename?: 'Message', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender?: { __typename?: 'MessageSender', participantId: string, name: string, entryNumber: number, icon: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } } | null, replyTo?: { __typename?: 'MessageRecipient', messageId: string, participantId: string } | null, reactions: { __typename?: 'MessageReactions', replyCount: number, favoriteCount: number, favoriteParticipantIds: Array<string> } }> } };
+export type GameMessagesQuery = { __typename?: 'Query', messages: { __typename?: 'Messages', allPageCount: number, hasPrePage: boolean, hasNextPage: boolean, currentPageNumber?: number | null, isDesc: boolean, latestUnixTimeMilli: any, list: Array<{ __typename?: 'Message', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender?: { __typename?: 'MessageSender', participantId: string, name: string, entryNumber: number, icon?: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } | null } | null, replyTo?: { __typename?: 'MessageRecipient', messageId: string, participantId: string } | null, reactions: { __typename?: 'MessageReactions', replyCount: number, favoriteCount: number, favoriteParticipantIds: Array<string> } }> } };
 
 export type ParticipantGroupsQueryVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -1570,7 +1570,7 @@ export type MessageRepliesQueryVariables = Exact<{
 }>;
 
 
-export type MessageRepliesQuery = { __typename?: 'Query', messageReplies: Array<{ __typename?: 'Message', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender?: { __typename?: 'MessageSender', participantId: string, name: string, icon: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } } | null, replyTo?: { __typename?: 'MessageRecipient', messageId: string, participantId: string } | null, reactions: { __typename?: 'MessageReactions', replyCount: number, favoriteCount: number, favoriteParticipantIds: Array<string> } }> };
+export type MessageRepliesQuery = { __typename?: 'Query', messageReplies: Array<{ __typename?: 'Message', id: string, content: { __typename?: 'MessageContent', type: MessageType, text: string, number: number, isConvertDisabled: boolean }, time: { __typename?: 'MessageTime', sendAt: any, sendUnixTimeMilli: any }, sender?: { __typename?: 'MessageSender', participantId: string, name: string, icon?: { __typename?: 'GameParticipantIcon', url: string, width: number, height: number } | null } | null, replyTo?: { __typename?: 'MessageRecipient', messageId: string, participantId: string } | null, reactions: { __typename?: 'MessageReactions', replyCount: number, favoriteCount: number, favoriteParticipantIds: Array<string> } }> };
 
 export type MyGameParticipantQueryVariables = Exact<{
   gameId: Scalars['ID']['input'];
