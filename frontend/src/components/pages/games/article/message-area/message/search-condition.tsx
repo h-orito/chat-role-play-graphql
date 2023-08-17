@@ -30,6 +30,10 @@ const candidates = [
     value: MessageType.Monologue
   },
   {
+    label: 'ト書き',
+    value: MessageType.Description
+  },
+  {
     label: 'システム',
     value: MessageType.SystemPublic
   }
@@ -48,6 +52,7 @@ export default function SearchCondition({
     messageQuery.types || [
       MessageType.TalkNormal,
       MessageType.Monologue,
+      MessageType.Description,
       MessageType.SystemPublic
     ]
   )
