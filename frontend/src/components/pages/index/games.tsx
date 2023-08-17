@@ -39,8 +39,18 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
       )
       break
     case 'Progress':
+      const epilogueAt = game.settings.time.epilogueGameAt
+      const periodEndAt = game.periods[game.periods.length - 1].endAt
+      console.log(epilogueAt, periodEndAt)
+      if (epilogueAt < periodEndAt) {
+        descriptions.push(`エピローグ開始: ${iso2display(epilogueAt)}`)
+      } else {
+        descriptions.push(`次回更新: ${iso2display(periodEndAt)}`)
+      }
+      break
+    case 'Epilogue':
       descriptions.push(
-        `次回更新: ${iso2display(game.periods[game.periods.length - 1].endAt)}`
+        `ゲーム終了: ${iso2display(game.settings.time.epilogueGameAt)}`
       )
       break
     default:

@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .message {
+        @apply w-full whitespace-pre-wrap break-words rounded border p-2;
+    }
+    .system-public {
+        @apply bg-white border-gray-300 text-gray-700;
+    }
+    .talk-normal {
+        @apply bg-white border-gray-300 text-gray-700;
+    }
+    .talk-monologue {
+        @apply bg-gray-300 border-gray-300 text-gray-700;
+    }
+}

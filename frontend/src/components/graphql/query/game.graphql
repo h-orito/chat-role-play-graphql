@@ -69,6 +69,7 @@ query Game($id: ID!) {
         openAt
         startParticipateAt
         startGameAt
+        epilogueGameAt
         finishGameAt
       }
       password {

@@ -20,22 +20,22 @@ func NewMessageRepository(db *DB) *MessageRepository {
 	return &MessageRepository{db: db}
 }
 
-func (repo *MessageRepository) FindMessages(gameID uint32, query model.MessagesQuery) (model.Messages, error) {
-	return findMessages(repo.db.Connection, gameID, query)
+func (repo *MessageRepository) FindMessages(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (model.Messages, error) {
+	return findMessages(repo.db.Connection, gameID, query, myself)
 }
 
-func (repo *MessageRepository) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error) {
-	return selectMaxMessageSendUnixTimeMilli(repo.db.Connection, gameID, query)
+func (repo *MessageRepository) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error) {
+	return selectMaxMessageSendUnixTimeMilli(repo.db.Connection, gameID, query, myself)
 }
 
 func (repo *MessageRepository) FindMessage(gameID uint32, ID uint64) (*model.Message, error) {
 	return findMessage(repo.db.Connection, gameID, ID)
 }
 
-func (repo *MessageRepository) FindMessageReplies(gameID uint32, messageID uint64) ([]model.Message, error) {
+func (repo *MessageRepository) FindMessageReplies(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
 	messages, err := findMessages(repo.db.Connection, gameID, model.MessagesQuery{
 		ReplyToMessageID: &messageID,
-	})
+	}, myself)
 	if err != nil {
 		return nil, err
 	}
@@ -136,8 +136,8 @@ func (repo *MessageRepository) DeleteDirectMessageFavorite(ctx context.Context, 
 	return deleteDirectMessageFavorite(tx, gameID, directMessageID, gameParticipantID)
 }
 
-func findMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) (model.Messages, error) {
-	rdb, allCount, err := findRdbMessages(db, gameID, query)
+func findMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (model.Messages, error) {
+	rdb, allCount, err := findRdbMessages(db, gameID, query, myself)
 	if err != nil {
 		return model.Messages{}, err
 	}
@@ -156,7 +156,7 @@ func findMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery) (model.
 
 		return *m.ToModel(pIDs)
 	})
-	latestUnixTimeMilli, err := selectMaxMessageSendUnixTimeMilli(db, gameID, query)
+	latestUnixTimeMilli, err := selectMaxMessageSendUnixTimeMilli(db, gameID, query, myself)
 	if err != nil {
 		return model.Messages{}, err
 	}
@@ -186,15 +186,21 @@ func findRdbMessages(
 	db *gorm.DB,
 	gameID uint32,
 	query model.MessagesQuery,
+	myself *model.GameParticipant,
 ) (
 	list []Message,
 	allCount int64,
 	err error,
 ) {
+	// 何も結果が取れない場合は空配列を返す
+	if query.Types != nil && len(*query.Types) == 0 && query.IncludeMonologue != nil && !*query.IncludeMonologue {
+		return []Message{}, 0, nil
+	}
+
 	var rdb []Message
 	result := db.Model(&Message{}).Where("game_id = ?", gameID)
 	// paging以外のwhere句をセット
-	setMessageDbQuery(result, query)
+	setMessageDbQuery(result, query, myself)
 
 	var count int64
 	if query.Paging != nil {
@@ -221,21 +227,16 @@ func findRdbMessages(
 }
 
 // paging以外のwhere句を追加
-func setMessageDbQuery(db *gorm.DB, query model.MessagesQuery) {
+func setMessageDbQuery(db *gorm.DB, query model.MessagesQuery, myself *model.GameParticipant) {
 	if query.IDs != nil {
 		db = db.Where("id IN (?)", *query.IDs)
 	}
 	if query.GamePeriodID != nil {
 		db = db.Where("game_period_id = ?", *query.GamePeriodID)
 	}
-	if query.Types != nil {
-		typeCodes := array.Map(*query.Types, func(t model.MessageType) string {
-			return t.String()
-		})
-		db = db.Where("message_type_code IN (?)", typeCodes)
-	}
+	setMessageTypeDbQuery(db, query, myself)
 	if query.SenderIDs != nil {
-		db = db.Where("sender_game_participant_id IN (?)", *query.SenderIDs)
+		db = db.Where("sender_game_participant_id IN (?) or sender_game_participant_id is null", *query.SenderIDs)
 	}
 	if query.ReplyToMessageID != nil {
 		db = db.Where("reply_to_message_id = ?", *query.ReplyToMessageID)
@@ -254,10 +255,40 @@ func setMessageDbQuery(db *gorm.DB, query model.MessagesQuery) {
 	}
 }
 
-func selectMaxMessageSendUnixTimeMilli(db *gorm.DB, gameID uint32, query model.MessagesQuery) (uint64, error) {
+func setMessageTypeDbQuery(db *gorm.DB, query model.MessagesQuery, myself *model.GameParticipant) {
+	var typeCodes *[]string
+	if query.Types != nil {
+		codes := array.Map(*query.Types, func(t model.MessageType) string {
+			return t.String()
+		})
+		typeCodes = &codes
+	}
+
+	if myself == nil && typeCodes != nil && len(*typeCodes) > 0 {
+		db = db.Where("message_type_code IN (?)", *typeCodes)
+		return
+	}
+	if typeCodes != nil && len(*typeCodes) > 0 {
+		if query.IncludeMonologue != nil && *query.IncludeMonologue {
+			db = db.Where(
+				"message_type_code IN (?) OR (message_type_code = ? and sender_game_participant_id = ?)",
+				*typeCodes,
+				model.MessageTypeMonologue.String(),
+				myself.ID,
+			)
+		} else {
+			db = db.Where("message_type_code IN (?)", *typeCodes)
+		}
+	} else if query.IncludeMonologue != nil && *query.IncludeMonologue {
+		db = db.Where("message_type_code = ? and sender_game_participant_id = ?",
+			model.MessageTypeMonologue.String(), myself.ID)
+	}
+}
+
+func selectMaxMessageSendUnixTimeMilli(db *gorm.DB, gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error) {
 	var max *float64
 	result := db.Table("messages").Select("MAX(send_unixtime_milli)").Where("game_id = ?", gameID)
-	setMessageDbQuery(result, query)
+	setMessageDbQuery(result, query, myself)
 	result = result.Scan(&max)
 	if result.Error != nil {
 		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)

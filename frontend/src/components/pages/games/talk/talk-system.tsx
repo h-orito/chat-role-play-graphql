@@ -111,6 +111,7 @@ const TalkSystem = forwardRef<TalkSystemRefHandle, Props>(
             <p className='text-xs font-bold'>システムメッセージ</p>
             <InputTextarea
               name='talkMessage'
+              textareaclassname='system-message'
               control={control}
               rules={{
                 required: '必須です',

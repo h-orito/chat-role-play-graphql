@@ -40,6 +40,12 @@ export default function TalkMessage({
     openProfileModal(message.sender!.participantId)
   }
 
+  const messageClass =
+    message.content.type === 'TalkNormal'
+      ? 'talk-normal'
+      : message.content.type === 'Monologue'
+      ? 'talk-monologue'
+      : ''
   return (
     <div>
       <div className='w-full px-4 py-2'>
@@ -71,7 +77,7 @@ export default function TalkMessage({
           {!preview && (
             <div className='ml-2 flex-1 text-sm'>
               <div
-                className='w-full whitespace-pre-wrap break-words rounded border border-gray-300 p-2 text-gray-700'
+                className={`message ${messageClass}`}
                 style={{ minHeight: `${message.sender!.icon.height}px` }}
               >
                 <MessageText

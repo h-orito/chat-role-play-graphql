@@ -251,7 +251,8 @@ func (r *queryResolver) messages(ctx context.Context, gameID string, query gqlmo
 	if err != nil {
 		return nil, err
 	}
-	messages, err := r.messageUsecase.FindMessages(gID, *q)
+	user := auth.GetUser(ctx)
+	messages, err := r.messageUsecase.FindMessages(gID, *q, user)
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +269,8 @@ func (r *queryResolver) messagesLatestUnixTimeMilli(ctx context.Context, gameID 
 	if err != nil {
 		return 0, err
 	}
-	latest, err := r.messageUsecase.FindMessagesLatestUnixTimeMilli(gID, *q)
+	user := auth.GetUser(ctx)
+	latest, err := r.messageUsecase.FindMessagesLatestUnixTimeMilli(gID, *q, user)
 	if err != nil {
 		return 0, err
 	}
@@ -382,7 +384,8 @@ func (r *queryResolver) messageReplies(ctx context.Context, gameID string, messa
 	if err != nil {
 		return nil, err
 	}
-	messages, err := r.messageUsecase.FindMessageReplies(gID, mID)
+	user := auth.GetUser(ctx)
+	messages, err := r.messageUsecase.FindMessageReplies(gID, mID, user)
 	if err != nil {
 		return nil, err
 	}

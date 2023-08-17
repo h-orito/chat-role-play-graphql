@@ -6,10 +6,10 @@ import (
 )
 
 type MessageService interface {
-	FindMessages(gameID uint32, query model.MessagesQuery) (model.Messages, error)
-	FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error)
+	FindMessages(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (model.Messages, error)
+	FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error)
 	FindMessage(gameID uint32, ID uint64) (*model.Message, error)
-	FindMessageReplies(gameID uint32, messageID uint64) ([]model.Message, error)
+	FindMessageReplies(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error)
 	RegisterMessage(ctx context.Context, gameID uint32, message model.Message) error
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error
@@ -39,13 +39,13 @@ func NewMessageService(messageRepository model.MessageRepository) MessageService
 }
 
 // FindMessages implements MessageService.
-func (s *messageService) FindMessages(gameID uint32, query model.MessagesQuery) (model.Messages, error) {
-	return s.messageRepository.FindMessages(gameID, query)
+func (s *messageService) FindMessages(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (model.Messages, error) {
+	return s.messageRepository.FindMessages(gameID, query, myself)
 }
 
 // FindMessagesLatestUnixTimeMilli implements MessageService.
-func (s *messageService) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error) {
-	return s.messageRepository.FindMessagesLatestUnixTimeMilli(gameID, query)
+func (s *messageService) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error) {
+	return s.messageRepository.FindMessagesLatestUnixTimeMilli(gameID, query, myself)
 }
 
 // FindMessage implements MessageService.
@@ -54,8 +54,8 @@ func (s *messageService) FindMessage(gameID uint32, ID uint64) (*model.Message, 
 }
 
 // FindMessageReplies implements MessageService.
-func (s *messageService) FindMessageReplies(gameID uint32, messageID uint64) ([]model.Message, error) {
-	return s.messageRepository.FindMessageReplies(gameID, messageID)
+func (s *messageService) FindMessageReplies(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
+	return s.messageRepository.FindMessageReplies(gameID, messageID, myself)
 }
 
 // FindMessageFavoriteGameParticipants implements MessageService.

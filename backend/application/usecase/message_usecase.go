@@ -7,14 +7,15 @@ import (
 	"chat-role-play/util/array"
 	"context"
 	"errors"
+	"fmt"
 	"time"
 )
 
 type MessageUsecase interface {
-	FindMessages(gameID uint32, query model.MessagesQuery) (model.Messages, error)
-	FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error)
+	FindMessages(gameID uint32, query model.MessagesQuery, user *model.User) (model.Messages, error)
+	FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, user *model.User) (uint64, error)
 	FindMessage(gameID uint32, ID uint64) (*model.Message, error)
-	FindMessageReplies(gameID uint32, messageID uint64) ([]model.Message, error)
+	FindMessageReplies(gameID uint32, messageID uint64, user *model.User) ([]model.Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error)
 	RegisterMessage(ctx context.Context, gameID uint32, user model.User, message model.Message) error
 	RegisterMessageDryRun(ctx context.Context, gameID uint32, user model.User, message model.Message) (*model.Message, error)
@@ -60,13 +61,107 @@ func NewMessageUsecase(
 }
 
 // FindMessages implements MessageService.
-func (s *messageUsecase) FindMessages(gameID uint32, query model.MessagesQuery) (model.Messages, error) {
-	return s.messageService.FindMessages(gameID, query)
+func (s *messageUsecase) FindMessages(gameID uint32, query model.MessagesQuery, user *model.User) (model.Messages, error) {
+	mergedQuery, myself, err := s.MergeQuery(gameID, query, user)
+	if err != nil {
+		return model.Messages{}, err
+	}
+	if mergedQuery == nil {
+		return model.Messages{}, nil
+	}
+
+	return s.messageService.FindMessages(gameID, *mergedQuery, myself)
 }
 
 // FindMessagesLatestUnixTimeMilli implements MessageUsecase.
-func (s *messageUsecase) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery) (uint64, error) {
-	return s.messageService.FindMessagesLatestUnixTimeMilli(gameID, query)
+func (s *messageUsecase) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, user *model.User) (uint64, error) {
+	mergedQuery, myself, err := s.MergeQuery(gameID, query, user)
+	if err != nil {
+		return 0, err
+	}
+	if mergedQuery == nil {
+		return 0, nil
+	}
+	return s.messageService.FindMessagesLatestUnixTimeMilli(gameID, *mergedQuery, myself)
+}
+
+func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, user *model.User) (*model.MessagesQuery, *model.GameParticipant, error) {
+	game, err := s.gameService.FindGame(gameID)
+	if err != nil {
+		return nil, nil, err
+	}
+	var myself *model.GameParticipant = nil
+	authorities := []model.PlayerAuthority{}
+	if user != nil {
+		player, err := s.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, nil, err
+		}
+		if player == nil {
+			return nil, nil, fmt.Errorf("player not found")
+		}
+		myself, err = s.gameService.FindGameParticipant(model.GameParticipantQuery{
+			GameID:   &gameID,
+			PlayerID: &(player.ID),
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+		authorities, err = s.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+	// merge message types
+	requestMessageTypes := model.MessageTypeValues()
+	if query.Types != nil {
+		requestMessageTypes = *query.Types
+	}
+	viewableMessageTypes := s.messageDomainService.GetViewableMessageTypes(*game, authorities)
+	types := array.Filter(requestMessageTypes, func(t model.MessageType) bool {
+		return array.Any(viewableMessageTypes, func(v model.MessageType) bool {
+			return v == t
+		})
+	})
+	if len(types) == 0 {
+		query.Types = &types
+	} else if len(types) != len(model.MessageTypeValues()) {
+		query.Types = &types
+	}
+	// 独り言を取得するか
+	shouldIncludeMonologue := shouldIncludeMonologue(query, requestMessageTypes, myself)
+	query.IncludeMonologue = &shouldIncludeMonologue
+
+	return &query, myself, nil
+}
+
+func shouldIncludeMonologue(
+	query model.MessagesQuery,
+	requestMessageTypes []model.MessageType,
+	myself *model.GameParticipant,
+) bool {
+	// 既に独り言が取得対象になっていたら不要
+	if query.Types == nil || array.Any(*query.Types, func(mt model.MessageType) bool {
+		return mt == model.MessageTypeMonologue
+	}) {
+		return false
+	}
+	// 自分が取得対象になっていなければ不要
+	if myself == nil {
+		return false
+	}
+	if query.SenderIDs != nil && array.None(*query.SenderIDs, func(id uint32) bool {
+		return id == myself.ID
+	}) {
+		return false
+	}
+	// 求めていなければ不要
+	if array.None(requestMessageTypes, func(mt model.MessageType) bool {
+		return mt == model.MessageTypeMonologue
+	}) {
+		return false
+	}
+	return true
 }
 
 // FindMessage implements MessageService.
@@ -75,8 +170,25 @@ func (s *messageUsecase) FindMessage(gameID uint32, ID uint64) (*model.Message, 
 }
 
 // FindMessageReplies implements MessageService.
-func (s *messageUsecase) FindMessageReplies(gameID uint32, messageID uint64) ([]model.Message, error) {
-	return s.messageService.FindMessageReplies(gameID, messageID)
+func (s *messageUsecase) FindMessageReplies(gameID uint32, messageID uint64, user *model.User) ([]model.Message, error) {
+	var myself *model.GameParticipant = nil
+	if user != nil {
+		player, err := s.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		myself, err = s.gameService.FindGameParticipant(model.GameParticipantQuery{
+			GameID:   &gameID,
+			PlayerID: &(player.ID),
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+	return s.messageService.FindMessageReplies(gameID, messageID, myself)
 }
 
 // FindMessageFavoriteGameParticipants implements MessageService.

@@ -27,7 +27,7 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
       settings.chara.charachips.length > 0
         ? settings.chara.charachips.map((c, idx) => {
             return (
-              <>
+              <span key={idx}>
                 {idx !== 0 && <span>、</span>}
                 <Link
                   className='text-blue-500'
@@ -36,7 +36,7 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
                 >
                   {c.name}
                 </Link>
-              </>
+              </span>
             )
           })
         : 'なし'
@@ -80,6 +80,10 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
   items.push({
     name: 'ゲーム開始',
     value: iso2display(settings.time.startGameAt)
+  })
+  items.push({
+    name: 'エピローグ開始',
+    value: iso2display(settings.time.epilogueGameAt)
   })
   items.push({
     name: 'ゲーム終了',

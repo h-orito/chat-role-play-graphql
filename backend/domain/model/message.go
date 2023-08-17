@@ -81,6 +81,14 @@ func MessageTypeValues() []MessageType {
 	}
 }
 
+func MesssageTypeEveryoneViewableValues() []MessageType {
+	return []MessageType{
+		MessageTypeTalkNormal,
+		MessageTypeDescription,
+		MessageTypeSystemPublic,
+	}
+}
+
 func MessageTypeValueOf(s string) *MessageType {
 	return array.Find(MessageTypeValues(), func(mt MessageType) bool {
 		return mt.String() == s
@@ -127,6 +135,7 @@ type MessagesQuery struct {
 	UntilAt             *time.Time
 	OffsetUnixtimeMilli *uint64
 	Paging              *PagingQuery
+	IncludeMonologue    *bool // 後から埋める
 }
 
 type DirectMessages struct {
@@ -183,10 +192,10 @@ type DirectMessagesQuery struct {
 
 type MessageRepository interface {
 	// message
-	FindMessages(gameID uint32, query MessagesQuery) (Messages, error)
-	FindMessagesLatestUnixTimeMilli(gameID uint32, query MessagesQuery) (uint64, error)
+	FindMessages(gameID uint32, query MessagesQuery, myself *GameParticipant) (Messages, error)
+	FindMessagesLatestUnixTimeMilli(gameID uint32, query MessagesQuery, myself *GameParticipant) (uint64, error)
 	FindMessage(gameID uint32, ID uint64) (*Message, error)
-	FindMessageReplies(gameID uint32, messageID uint64) ([]Message, error)
+	FindMessageReplies(gameID uint32, messageID uint64, myself *GameParticipant) ([]Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (GameParticipants, error)
 	RegisterMessage(ctx context.Context, gameID uint32, message Message) error
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error

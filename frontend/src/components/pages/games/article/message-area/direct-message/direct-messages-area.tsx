@@ -90,7 +90,9 @@ export default function DirectMessagesArea({
     refetchGroups()
   }, [])
 
-  const canCreate = ['Opening', 'Recruiting', 'Progress'].includes(game.status)
+  const canCreate = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
+    game.status
+  )
 
   return (
     <div

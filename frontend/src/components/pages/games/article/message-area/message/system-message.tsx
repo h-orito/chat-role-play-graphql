@@ -6,12 +6,14 @@ type Props = {
 }
 
 export default function SystemMessage({ message }: Props) {
+  const messageClass =
+    message.content.type === 'SystemPublic' ? 'system-public' : ''
   return (
     <div>
       <div className='w-full px-4 py-2'>
         <div className='flex'>
           <div className='flex-1 text-sm'>
-            <div className='min-h-[60px] w-full whitespace-pre-wrap break-words rounded border border-gray-300  p-2 text-gray-700'>
+            <div className={`message min-h-[60px] ${messageClass}`}>
               <MessageText
                 rawText={message.content.text}
                 isConvertDisabled={message.content.isConvertDisabled}

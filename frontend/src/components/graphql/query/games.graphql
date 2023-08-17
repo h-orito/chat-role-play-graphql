@@ -37,6 +37,8 @@ query IndexGames($pageSize: Int!, $pageNumber: Int!, $statuses: [GameStatus!]) {
         openAt
         startParticipateAt
         startGameAt
+        epilogueGameAt
+        finishGameAt
       }
       password {
         hasPassword

@@ -10,7 +10,6 @@ import { FieldByType } from './types'
 import TextareaAutosize, {
   TextareaAutosizeProps
 } from 'react-textarea-autosize'
-import { valueFromAST } from 'graphql'
 
 // see https://zukucode.com/2022/11/react-hook-form-typescript-control.html
 type Props<
@@ -23,6 +22,7 @@ type Props<
   > & {
     label?: string
     maxLength?: number
+    textareaclassname?: string
   } & TextareaAutosizeProps
 
 const InputTextarea = <
@@ -32,6 +32,7 @@ const InputTextarea = <
   props: Props<TFieldValues, TName>
 ) => {
   const {
+    textareaclassname, // classNameにすると崩れてしまう 原因がわからないので一旦回避
     name,
     control,
     rules,
@@ -70,7 +71,7 @@ const InputTextarea = <
       {label && <label className='block text-xs font-bold'>{label}</label>}
       <TextareaAutosize
         id={field.name}
-        className={`rounded border ${borderClass} w-full px-2 py-1`}
+        className={`${textareaclassname} rounded border ${borderClass} w-full px-2 py-1`}
         ref={field.ref}
         value={field.value}
         onChange={handleChange}

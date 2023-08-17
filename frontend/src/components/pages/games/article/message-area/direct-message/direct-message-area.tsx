@@ -114,7 +114,9 @@ export default function DirectMessageArea({
     setIsOpenTalkModal(!isOpenTalkModal)
   }
 
-  const canModify = ['Opening', 'Recruiting', 'Progress'].includes(game.status)
+  const canModify = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
+    game.status
+  )
 
   return (
     <div className='flex flex-1 flex-col overflow-y-auto'>

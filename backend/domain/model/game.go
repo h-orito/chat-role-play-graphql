@@ -49,6 +49,14 @@ func (gs GameStatus) String() string {
 	}
 }
 
+func (gs GameStatus) ShouldSpoiler() bool {
+	return gs == GameStatusEpilogue || gs == GameStatusFinished || gs == GameStatusCancelled
+}
+
+func (gs GameStatus) IsFinished() bool {
+	return gs == GameStatusFinished || gs == GameStatusCancelled
+}
+
 func (gs GameStatus) IsNotFinished() bool {
 	return gs != GameStatusFinished && gs != GameStatusCancelled
 }

@@ -176,7 +176,9 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
 
     const canTalk =
       myself &&
-      ['Closed', 'Opening', 'Recruiting', 'Progress'].includes(game.status)
+      ['Closed', 'Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
+        game.status
+      )
 
     return (
       <div

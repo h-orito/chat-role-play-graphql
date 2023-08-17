@@ -39,16 +39,16 @@ type Props = {
   search: () => void
 }
 
-// const candidates = [
-//   {
-//     label: '通常',
-//     value: MessageType.TalkNormal
-//   },
-//   {
-//     label: '独り言',
-//     value: MessageType.Monologue
-//   }
-// ]
+const candidates = [
+  {
+    label: '通常',
+    value: MessageType.TalkNormal
+  },
+  {
+    label: '独り言',
+    value: MessageType.Monologue
+  }
+]
 
 interface FormInput {
   name: string
@@ -155,19 +155,36 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
   const selectedIcon = icons.find((icon) => icon.id === iconId)
 
+  const messageClass =
+    talkType === MessageType.TalkNormal
+      ? 'talk-normal'
+      : talkType === MessageType.Monologue
+      ? 'talk-monologue'
+      : ''
+  const talkTypeDescription =
+    talkType === MessageType.TalkNormal
+      ? '全員が参照できる発言種別です。'
+      : talkType === MessageType.Monologue
+      ? 'エピローグを迎えるまでは自分しか参照できません。'
+      : ''
+
   return (
     <div className='py-2'>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* <div className='mb-2'>
+        <div className='mb-2'>
           <p className='mb-1 text-xs font-bold'>種別</p>
           <RadioGroup
+            className='text-xs'
             name='talk-type'
             candidates={candidates}
             selected={talkType}
             setSelected={setTalkType}
             disabled={preview != null}
           />
-        </div> */}
+          <div className='mt-2 rounded-sm bg-gray-200 p-2 text-xs'>
+            <p>{talkTypeDescription}</p>
+          </div>
+        </div>
         <div className='my-2'>
           <p className='text-xs font-bold'>名前</p>
           <InputText
@@ -216,6 +233,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
           <div className='ml-2 flex-1'>
             <InputTextarea
               name='talkMessage'
+              textareaclassname={messageClass}
               control={control}
               rules={{
                 required: '必須です',
