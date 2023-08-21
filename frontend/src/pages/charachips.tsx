@@ -72,6 +72,38 @@ export default function CharachipsPage({ charachips }: Props) {
           ) : (
             <p>キャラチップがありません。</p>
           )}
+          <div className='my-4'>
+            <label className='text-lg font-bold'>キャラチップ制作者様へ</label>
+            <ul className='list-inside list-disc py-2 text-left text-xs leading-5'>
+              <li>キャラチップを提供いただきありがとうございます。</li>
+
+              <li>
+                ロールをプレイ！専用のキャラチップを提供いただける場合、以下の設定ファイル生成補助機能を利用いただき、キャラチップ画像と共にzipに含めていただけますと幸いです。
+              </li>
+              <li>
+                <a
+                  className='text-blue-500'
+                  href='https://docs.google.com/spreadsheets/d/1mY5Du8Mu6HXnBYqoKHNOiMLBjCgFU2R9C2EaCUXwVaM/edit?usp=sharing'
+                  target='blank_'
+                >
+                  キャラチップ設定ファイル作成補助
+                </a>
+              </li>
+              <li>
+                上記ツール内にも記載していますが、各画像のサイズや比率は以下の仕様となっております。
+                <ul className='ml-4 list-inside list-disc py-2 text-left text-xs leading-5'>
+                  <li>
+                    プロフィール画像（キャラごとに0-1枚）:
+                    幅400px高さ可変で表示。幅400pxの倍数で作成を推奨
+                  </li>
+                  <li>
+                    アイコン画像（キャラごとに1枚以上）:
+                    指定されたサイズで表示可能。オリジナルキャラクターが60pxで表示なので、合わせるのであれば60pxの倍数で作成を推奨
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
         </div>
       </article>
     </main>
