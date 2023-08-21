@@ -133,18 +133,31 @@ type StatusProps = {
 
 const GameStatus = ({ game }: StatusProps) => {
   const statusName = convertToGameStatusName(game.status)
-  const statusDescription =
-    game.status === 'Closed'
-      ? `${iso2display(game.settings.time.openAt)}から公開開始`
-      : game.status === 'Opening'
-      ? `${iso2display(game.settings.time.startParticipateAt)}から参加登録開始`
-      : game.status === 'Recruiting'
-      ? `${iso2display(game.settings.time.startGameAt)}からゲーム開始`
-      : game.status === 'Progress'
-      ? `${iso2display(game.settings.time.epilogueGameAt)}にエピローグ開始`
-      : game.status === 'Epilogue'
-      ? `${iso2display(game.settings.time.finishGameAt)}にゲーム終了`
-      : null
+  const time = game.settings.time
+  let statusDescription: string | undefined
+  switch (game.status) {
+    case 'Closed':
+      statusDescription = `公開開始: ${iso2display(time.openAt)}`
+      break
+    case 'Opening':
+      statusDescription = `登録開始: ${iso2display(time.startParticipateAt)}`
+      break
+    case 'Recruiting':
+      statusDescription = `ゲーム開始: ${iso2display(time.startGameAt)}`
+      break
+    case 'Progress':
+      const epilogueAt = time.epilogueGameAt
+      const periodEndAt = game.periods[game.periods.length - 1].endAt
+      if (epilogueAt < periodEndAt) {
+        statusDescription = `エピローグ開始: ${iso2display(epilogueAt)}`
+      } else {
+        statusDescription = `次回更新: ${iso2display(periodEndAt)}`
+      }
+      break
+    case 'Epilogue':
+      statusDescription = `ゲーム終了: ${iso2display(time.finishGameAt)}`
+      break
+  }
 
   return (
     <div className='mb-4 px-4 text-xs'>

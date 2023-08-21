@@ -30,7 +30,7 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
       break
     case 'Opening':
       descriptions.push(
-        `参加者募集開始: ${iso2display(game.settings.time.startParticipateAt)}`
+        `登録開始: ${iso2display(game.settings.time.startParticipateAt)}`
       )
       break
     case 'Recruiting':
@@ -41,7 +41,6 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
     case 'Progress':
       const epilogueAt = game.settings.time.epilogueGameAt
       const periodEndAt = game.periods[game.periods.length - 1].endAt
-      console.log(epilogueAt, periodEndAt)
       if (epilogueAt < periodEndAt) {
         descriptions.push(`エピローグ開始: ${iso2display(epilogueAt)}`)
       } else {
