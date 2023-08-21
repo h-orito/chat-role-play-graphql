@@ -136,10 +136,10 @@ export default function DirectMessageArea({
       </div>
       {canModify && (
         <button
-          className='absolute bottom-4 right-4 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+          className='absolute bottom-4 right-4 z-10 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
           onClick={() => setIsOpenTalkModal(true)}
         >
-          <EnvelopeIcon className='h-6 w-6' />
+          <EnvelopeIcon className='h-8 w-8' />
         </button>
       )}
       <div className='flex border-b border-gray-300'>

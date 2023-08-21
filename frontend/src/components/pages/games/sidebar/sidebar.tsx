@@ -65,7 +65,7 @@ export default function Sidebar({
   ].includes(game.status)
 
   const displayClass = isSidebarOpen
-    ? 'fixed z-20 bg-white md:static flex'
+    ? 'fixed z-30 bg-white md:static flex'
     : 'hidden'
 
   return (
@@ -119,7 +119,7 @@ export default function Sidebar({
       </nav>
       {isSidebarOpen && (
         <div
-          className='fixed inset-x-0 inset-y-0 z-10 h-screen w-screen bg-black/60 md:hidden'
+          className='fixed inset-x-0 inset-y-0 z-20 h-screen w-screen bg-black/60 md:hidden'
           onClick={toggleSidebar}
         ></div>
       )}

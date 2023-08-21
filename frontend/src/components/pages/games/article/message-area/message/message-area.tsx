@@ -214,7 +214,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
           query={messageQuery.paging as PageableQuery | undefined}
           setQuery={setPageableQuery}
         />
-        <div className='flex-1 overflow-y-auto'>
+        <div className='relative flex-1 overflow-y-auto pb-12'>
           {messages.list.map((message: Message) => (
             <MessageComponent
               game={game}
@@ -270,7 +270,7 @@ const TalkButton = ({ game, myself, search }: TalkButtonProps) => {
   return (
     <>
       <button
-        className='absolute bottom-4 right-4 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+        className='absolute bottom-10 right-4 z-10 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
         onClick={() => setIsOpenTalkModal(true)}
       >
         <PencilSquareIcon className='h-8 w-8' />
@@ -317,7 +317,7 @@ const DescriptionButton = ({
   return (
     <>
       <button
-        className='absolute bottom-4 right-24 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+        className='absolute bottom-10 right-24 z-10 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
         onClick={() => setIsOpenModal(true)}
       >
         <DocumentTextIcon className='h-8 w-8' />
