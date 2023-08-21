@@ -10,6 +10,7 @@ export const getAccessToken = async (
   } catch (error: any) {
     switch (error.error) {
       case 'login_required':
+      case 'missing_refresh_token':
         await loginWithRedirect()
         return
       default:
