@@ -32,7 +32,7 @@ export default function InputSelect({
     <div>
       {label && <label className='block text-xs font-bold'>{label}</label>}
       <Select
-        className={`w-64 md:w-96 ${className}`}
+        className={className}
         defaultValue={defaultOptions}
         options={candidates}
         isSearchable

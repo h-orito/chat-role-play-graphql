@@ -208,7 +208,11 @@ func (s *messageUsecase) RegisterMessage(
 		if err != nil {
 			return nil, err
 		}
-		return nil, s.messageService.RegisterMessage(ctx, gameID, *msg)
+		game, err := s.gameService.FindGame(gameID)
+		if err != nil {
+			return nil, err
+		}
+		return nil, s.messageService.RegisterMessage(ctx, *game, *msg)
 	})
 	return err
 }
@@ -448,7 +452,8 @@ func (s *messageUsecase) RegisterDirectMessage(
 		if err != nil {
 			return nil, err
 		}
-		return nil, s.messageService.RegisterDirectMessage(ctx, gameID, *msg)
+		game, err := s.gameService.FindGame(gameID)
+		return nil, s.messageService.RegisterDirectMessage(ctx, *game, *msg)
 	})
 	return err
 }

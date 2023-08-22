@@ -174,7 +174,7 @@ export default function Participate({ close, game }: Props) {
                 <div className='my-4'>
                   <label className='text-xs font-bold'>キャラチップ</label>
                   <InputSelect
-                    className='text-xs'
+                    className='w-64 text-xs md:w-96'
                     candidates={game.settings.chara.charachips.map((c) => ({
                       label: `${c.name}（${c.designer.name}様）`,
                       value: c.id

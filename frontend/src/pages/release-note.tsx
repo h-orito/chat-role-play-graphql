@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/08/24'>
+            <li>追加: ランダムキーワードを追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/08/18'>
             <li>追加: 発言種別にト書きを追加</li>
           </ReleaseContent>
@@ -108,7 +112,7 @@ export default function CreateGame() {
                       <li>PL発言（PL発言タイムライン）</li>
                       <li>カットイン</li>
                       <li>
-                        ランダム発言（ゲームごとに追加削除、diceなど全体で使えるものも）
+                        ユーザー定義ランダム（ゲームごとに追加削除、diceなど全体で使えるものも）
                       </li>
                       <li>
                         チャットルーム
