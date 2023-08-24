@@ -79,5 +79,17 @@ const replaceTargets: Array<ReplaceTarget> = [
   {
     regex: /\[ruby\]([\s\S]*?)\[rt\]([\s\S]*?)\[\/rt\]\[\/ruby\]/g,
     replace: `<ruby>$1<rt>$2</rt></ruby>`
+  },
+  {
+    regex: /(\[\dd\d{1,5}\])/g,
+    replace: `<strong><small>$1</small></strong>`
+  },
+  {
+    regex: /(\[.*or.*\])/g,
+    replace: `<strong><small>$1</small></strong>`
+  },
+  {
+    regex: /(\[who])/g,
+    replace: `<strong><small>$1</small></strong>`
   }
 ]

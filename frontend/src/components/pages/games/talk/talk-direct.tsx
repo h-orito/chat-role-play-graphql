@@ -101,6 +101,7 @@ const TalkDirect = forwardRef<TalkDirectRefHandle, Props>(
         setIsOpenIconSelectModal(!isOpenIconSelectModal)
       }
     }
+    const [isConvertDisabled, setIsConvertDisabled] = useState(false)
 
     const [talkDirectDryRun] = useMutation<TalkDirectDryRunMutation>(
       TalkDirectDryRunDocument,
@@ -130,7 +131,7 @@ const TalkDirect = forwardRef<TalkDirectRefHandle, Props>(
           iconId: iconId,
           name: data.name,
           text: data.talkMessage,
-          isConvertDisabled: false // TODO
+          isConvertDisabled: isConvertDisabled
         } as NewDirectMessage
 
         if (preview != null) {
@@ -240,6 +241,17 @@ const TalkDirect = forwardRef<TalkDirectRefHandle, Props>(
                 maxLength={1000}
                 disabled={preview != null}
               />
+              <div className='-mt-5'>
+                <input
+                  type='checkbox'
+                  id='convert-disabled'
+                  checked={isConvertDisabled}
+                  onChange={(e: any) => setIsConvertDisabled((prev) => !prev)}
+                />
+                <label htmlFor='convert-disabled' className='ml-1 text-xs'>
+                  装飾やランダム変換しない
+                </label>
+              </div>
             </div>
           </div>
           <div className='mt-4 flex justify-end'>

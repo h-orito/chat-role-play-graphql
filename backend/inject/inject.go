@@ -51,7 +51,7 @@ func injectResolver(
 	charaService := injectCharaService(charaRepository)
 	gameService := injectGameService(gameRepository, gameParticipantRepository)
 	playerService := injectPlayerService(playerRepository, userRepository)
-	messageService := injectMessageService(messageRepository)
+	messageService := injectMessageService(messageRepository, messageDomainService)
 	// usecase
 	charaUsecase := injectCharaUsecase(charaService, tx)
 	gameUsecase := injectGameUsecase(gameService, playerService, charaService, gameMasterDomainService, participateDomainService, tx)
@@ -146,8 +146,11 @@ func injectPlayerService(
 	return app_service.NewPlayerService(playerRepository, userRepository)
 }
 
-func injectMessageService(messageRepository model.MessageRepository) app_service.MessageService {
-	return app_service.NewMessageService(messageRepository)
+func injectMessageService(
+	messageRepository model.MessageRepository,
+	messageDomainService dom_service.MessageDomainService,
+) app_service.MessageService {
+	return app_service.NewMessageService(messageRepository, messageDomainService)
 }
 
 // domain service

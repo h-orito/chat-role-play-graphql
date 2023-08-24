@@ -1,9 +1,25 @@
+import MessageText from '@/components/pages/games/article/message-area/message-text/message-text'
 import PageHeader from '@/components/pages/page-header'
 import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import Head from 'next/head'
 import Link from 'next/link'
 
 export default function Instructions() {
+  const decorates = [
+    '[b]文字列[/b]',
+    '[i]文字列[/i]',
+    '[u]文字列[/u]',
+    '[s]文字列[/s]',
+    'e[sup]2[/sup]',
+    '[sub]4[/sub]C[sub]2[/sub]',
+    '[small]文字列[/small]',
+    '[large]文字列[/large]',
+    '[huge]文字列[/huge]',
+    '[kusodeka]文字列[/kusodeka]',
+    '[#fff]文字列[/#]',
+    '[#ffffff]文字列[/#]',
+    '[ruby]漢字[rt]かんじ[/rt][/ruby]'
+  ]
   return (
     <main className='w-full lg:flex lg:justify-center'>
       <Head>
@@ -192,6 +208,54 @@ export default function Instructions() {
                     1期間ごとに日記を作成することができます（未実装）。日記は、次の期間になると他の人が閲覧することができるようになります。
                   </li>
                 </ul>
+              </li>
+            </ul>
+          </div>
+          <div className='my-4 bg-gray-200 px-4 py-2'>
+            <div className='flex border-b border-gray-500'>
+              <p className='font-bold'>文字装飾とランダムキーワード</p>
+            </div>
+            <ul className='list-inside list-disc py-2 text-left text-xs leading-5'>
+              <li>
+                発言やプロフィールの自己紹介に以下の文言を含めると、文字を装飾できます。
+                <br />
+                入力中の文字列を選択しながら装飾ボタンを押すと、その文字列に対して装飾が適用されます。
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
+                  {decorates.map((d) => (
+                    <li key={d}>
+                      {d} →&nbsp;
+                      <MessageText rawText={d} />
+                    </li>
+                  ))}
+                </ul>
+              </li>
+              <li>
+                発言に以下のランダムキーワードを含めると、キーワードに応じてランダムな内容に変換されます。
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
+                  <li>
+                    [2d6] →&nbsp;
+                    <MessageText rawText='7(3,4)[2d6]' />:
+                    mDnとすると、n面ダイスをm回振った結果が出力されます。
+                  </li>
+                  <li>
+                    [fortune] →&nbsp;
+                    <MessageText rawText='99[fortune]' />:
+                    1~100のランダムな数字が出力されます。
+                  </li>
+                  <li>
+                    [AAAorBBBorCCC] →&nbsp;
+                    <MessageText rawText='AAA[AAAorBBBorCCC]' />:
+                    orで区切ったもののいずれかが出力されます。
+                  </li>
+                  <li>
+                    [who] →&nbsp;
+                    <MessageText rawText='太郎[who]' />:
+                    参加者のいずれかの名前が出力されます。
+                  </li>
+                </ul>
+              </li>
+              <li>
+                発言の際「装飾やランダム変換しない」にチェックを入れた場合は、装飾や変換されず、そのまま表示されます。
               </li>
             </ul>
           </div>

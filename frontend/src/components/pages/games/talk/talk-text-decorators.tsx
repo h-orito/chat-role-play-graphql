@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 type Props = {
   selector: string
   setMessage: (message: string) => void
@@ -24,6 +26,7 @@ export default function TalkTextDecorators(props: Props) {
       <ColorButton {...props} color='00f' />
       <ColorButton {...props} color='ff00ff' />
       <RubyButton {...props} />
+      <RandomKeywordSelect {...props} />
     </div>
   )
 }
@@ -162,6 +165,24 @@ const addTag = (
   return replaced
 }
 
+const addSingleTag = (selector: string, tag: string): string => {
+  const textarea = document.querySelector(selector) as
+    | HTMLTextAreaElement
+    | undefined
+  if (!textarea) return ''
+  const currentText = textarea.innerHTML
+  const selectionStart = textarea.selectionStart
+  const selectionEnd = textarea.selectionEnd
+
+  const replaced =
+    currentText.slice(0, selectionStart) +
+    `[${tag}]` +
+    currentText.slice(selectionStart, selectionEnd) +
+    currentText.slice(selectionEnd)
+
+  return replaced
+}
+
 const addRubyTag = (selector: string): string => {
   const textarea = document.querySelector(selector) as
     | HTMLTextAreaElement
@@ -177,4 +198,44 @@ const addRubyTag = (selector: string): string => {
     currentText.slice(selectionEnd)
 
   return replaced
+}
+
+const RandomKeywordSelect = (props: Props) => {
+  const candidates = [
+    {
+      label: '[ランダム]',
+      value: ''
+    },
+    {
+      label: '[dice]',
+      value: '1d6'
+    },
+    {
+      label: '[who]',
+      value: 'who'
+    },
+    {
+      label: '[or]',
+      value: 'or'
+    }
+  ]
+  const [selected, setSelected] = useState('')
+  const handleRandomSelected = (value: string) => {
+    if (value === '') return
+    props.setMessage(addSingleTag(props.selector, value))
+    setSelected('')
+  }
+  return (
+    <select
+      className='botder-gray-300 ml-1 border p-1 text-xs'
+      value={selected}
+      onChange={(e: any) => handleRandomSelected(e.target.value)}
+    >
+      {candidates.map((c) => (
+        <option key={c.value} value={c.value}>
+          {c.label}
+        </option>
+      ))}
+    </select>
+  )
 }

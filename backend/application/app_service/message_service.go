@@ -1,6 +1,7 @@
 package app_service
 
 import (
+	"chat-role-play/domain/dom_service"
 	"chat-role-play/domain/model"
 	"context"
 )
@@ -11,7 +12,7 @@ type MessageService interface {
 	FindMessage(gameID uint32, ID uint64) (*model.Message, error)
 	FindMessageReplies(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error)
-	RegisterMessage(ctx context.Context, gameID uint32, message model.Message) error
+	RegisterMessage(ctx context.Context, game model.Game, message model.Message) error
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error
 	DeleteMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error
 	// participant group
@@ -23,18 +24,23 @@ type MessageService interface {
 	FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error)
 	FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error)
 	FindDirectMessageFavoriteGameParticipants(gameID uint32, directMessageID uint64) (model.GameParticipants, error)
-	RegisterDirectMessage(ctx context.Context, gameID uint32, message model.DirectMessage) error
+	RegisterDirectMessage(ctx context.Context, game model.Game, message model.DirectMessage) error
 	RegisterDirectMessageFavorite(ctx context.Context, gameID uint32, directMessageID uint64, gameParticipantID uint32) error
 	DeleteDirectMessageFavorite(ctx context.Context, gameID uint32, directMessageID uint64, gameParticipantID uint32) error
 }
 
 type messageService struct {
-	messageRepository model.MessageRepository
+	messageRepository    model.MessageRepository
+	messageDomainService dom_service.MessageDomainService
 }
 
-func NewMessageService(messageRepository model.MessageRepository) MessageService {
+func NewMessageService(
+	messageRepository model.MessageRepository,
+	messageDomainService dom_service.MessageDomainService,
+) MessageService {
 	return &messageService{
-		messageRepository: messageRepository,
+		messageRepository:    messageRepository,
+		messageDomainService: messageDomainService,
 	}
 }
 
@@ -64,8 +70,13 @@ func (s *messageService) FindMessageFavoriteGameParticipants(gameID uint32, mess
 }
 
 // RegisterMessage implements MessageService.
-func (s *messageService) RegisterMessage(ctx context.Context, gameID uint32, message model.Message) error {
-	return s.messageRepository.RegisterMessage(ctx, gameID, message)
+func (s *messageService) RegisterMessage(ctx context.Context, game model.Game, message model.Message) error {
+	replacedMessageContent, err := s.messageDomainService.ReplaceRandomMessageText(game, message.Content)
+	if err != nil {
+		return err
+	}
+	message.Content = replacedMessageContent
+	return s.messageRepository.RegisterMessage(ctx, game.ID, message)
 }
 
 // RegisterMessageFavorite implements MessageService.
@@ -113,8 +124,13 @@ func (s *messageService) FindDirectMessageFavoriteGameParticipants(gameID uint32
 }
 
 // RegisterDirectMessage implements MessageService.
-func (s *messageService) RegisterDirectMessage(ctx context.Context, gameID uint32, message model.DirectMessage) error {
-	return s.messageRepository.RegisterDirectMessage(ctx, gameID, message)
+func (s *messageService) RegisterDirectMessage(ctx context.Context, game model.Game, message model.DirectMessage) error {
+	replacedMessageContent, err := s.messageDomainService.ReplaceRandomMessageText(game, message.Content)
+	if err != nil {
+		return err
+	}
+	message.Content = replacedMessageContent
+	return s.messageRepository.RegisterDirectMessage(ctx, game.ID, message)
 }
 
 // RegisterDirectMessageFavorite implements MessageService.
