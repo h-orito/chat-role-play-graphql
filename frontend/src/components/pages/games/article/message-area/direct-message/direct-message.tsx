@@ -146,8 +146,8 @@ export default function DirectMessageComponent({
                   isConvertDisabled={directMessage.content.isConvertDisabled}
                 />
               </div>
-              <div className='flex pt-1'>
-                <div className='flex flex-1'>
+              <div className='flex justify-end pt-1'>
+                <div className='flex'>
                   <button onClick={() => handleFav()} disabled={!canFav}>
                     <StarIcon
                       className={`y-6 h-6 text-gray-500 ${starClass}`}

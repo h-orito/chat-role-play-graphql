@@ -1,7 +1,10 @@
 import {
   Game,
+  GameMessageDocument,
+  GameMessageQuery,
   GameParticipant,
   Message,
+  MessageRecipient,
   MessageRepliesDocument,
   MessageRepliesQuery
 } from '@/lib/generated/graphql'
@@ -9,7 +12,7 @@ import Image from 'next/image'
 import { ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline'
 import { iso2display } from '@/components/util/datetime/datetime'
 import { useLazyQuery } from '@apollo/client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FavoriteButton from './favorite-button'
 import MessageComponent from './message'
 import MessageText from '../message-text/message-text'
@@ -20,7 +23,9 @@ type MessageProps = {
   message: Message
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
+  handleReply: (message: Message) => void
   preview?: boolean
+  shouldDisplayReplyTo?: boolean
 }
 
 export default function TalkMessage({
@@ -29,7 +34,9 @@ export default function TalkMessage({
   myself,
   openProfileModal,
   openFavoritesModal,
-  preview = false
+  handleReply,
+  preview = false,
+  shouldDisplayReplyTo = false
 }: MessageProps) {
   const [showReplies, setShowReplies] = useState<boolean>(false)
   const [replies, setReplies] = useState<Message[]>([])
@@ -51,14 +58,20 @@ export default function TalkMessage({
   return (
     <div>
       <div className='w-full px-4 py-2'>
+        {shouldDisplayReplyTo && message.replyTo && (
+          <ReplyToMessage game={game} replyTo={message.replyTo} />
+        )}
         {message.sender && (
-          <div className='flex pb-1'>
+          <div className='flex text-xs'>
+            <p className='text-gray-500'>#{message.content.number}</p>
+            &nbsp;
             <button onClick={handleProfileClick}>
-              <p className='text-xs hover:text-blue-500'>
-                ENo.{message.sender.entryNumber}&nbsp;{message.sender.name}
+              <p className='hover:text-blue-500'>
+                ENo.{message.sender.entryNumber}&nbsp;
+                {message.sender.name}
               </p>
             </button>
-            <p className='ml-auto self-end text-xs text-gray-500'>
+            <p className='ml-auto text-gray-500'>
               {iso2display(message.time.sendAt)}
             </p>
           </div>
@@ -93,6 +106,7 @@ export default function TalkMessage({
                   setShowReplies={setShowReplies}
                   replies={replies}
                   setReplies={setReplies}
+                  handleReply={handleReply}
                 />
               </div>
               <div className='ml-8 flex'>
@@ -114,6 +128,7 @@ export default function TalkMessage({
           myself={myself}
           openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
+          handleReply={handleReply}
         />
       )}
     </div>
@@ -127,6 +142,7 @@ type ReplyButtonProps = {
   setShowReplies: React.Dispatch<React.SetStateAction<boolean>>
   replies: Message[]
   setReplies: React.Dispatch<React.SetStateAction<Message[]>>
+  handleReply: (message: Message) => void
 }
 const ReplyButton = ({
   game,
@@ -134,7 +150,8 @@ const ReplyButton = ({
   showReplies,
   setShowReplies,
   replies,
-  setReplies
+  setReplies,
+  handleReply
 }: ReplyButtonProps) => {
   const [fetchReplies] = useLazyQuery<MessageRepliesQuery>(
     MessageRepliesDocument
@@ -154,18 +171,21 @@ const ReplyButton = ({
   }
 
   return (
-    <button
-      className='flex hover:font-bold'
-      onClick={() => toggleReplies()}
-      disabled={message.reactions.replyCount === 0}
-    >
-      <ChatBubbleOvalLeftEllipsisIcon className='y-6 h-6 text-gray-500' />
+    <>
+      <button className='hover:font-bold' onClick={() => handleReply(message)}>
+        <ChatBubbleOvalLeftEllipsisIcon className='y-4 h-4 text-gray-500' />
+      </button>
       {message.reactions.replyCount > 0 && (
-        <p className='ml-1 self-center text-gray-500'>
-          {message.reactions.replyCount}
-        </p>
+        <button
+          className='pr-2 hover:font-bold'
+          onClick={() => toggleReplies()}
+        >
+          <p className='ml-1 self-center text-gray-500'>
+            {message.reactions.replyCount}
+          </p>
+        </button>
       )}
-    </button>
+    </>
   )
 }
 
@@ -175,6 +195,7 @@ type RepliesProps = {
   myself: GameParticipant | null
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
+  handleReply: (message: Message) => void
 }
 
 const Replies = ({
@@ -182,7 +203,8 @@ const Replies = ({
   game,
   myself,
   openProfileModal,
-  openFavoritesModal
+  openFavoritesModal,
+  handleReply
 }: RepliesProps) => {
   return (
     <div className='ml-8'>
@@ -194,8 +216,80 @@ const Replies = ({
           key={message.id}
           openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
+          handleReply={handleReply}
+          shouldDisplayReplyTo={false}
         />
       ))}
     </div>
+  )
+}
+
+const ReplyToMessage = ({
+  game,
+  replyTo
+}: {
+  game: Game
+  replyTo: MessageRecipient
+}) => {
+  const [message, setMessage] = useState<Message | null>(null)
+  const senderName = game.participants.find(
+    (p) => p.id === replyTo.participantId
+  )?.name
+
+  const [fetchMessage] = useLazyQuery<GameMessageQuery>(GameMessageDocument)
+  useEffect(() => {
+    const fetch = async () => {
+      const { data } = await fetchMessage({
+        variables: {
+          gameId: game.id,
+          messageId: replyTo.messageId
+        }
+      })
+      if (data?.message == null) return
+      setMessage(data.message as Message)
+    }
+    fetch()
+  }, [])
+
+  const [showReplyToMessage, setShowReplyToMessage] = useState(false)
+  const toggleShow = () => setShowReplyToMessage(!showReplyToMessage)
+
+  if (!message) {
+    return (
+      <div className='flex text-xs text-gray-500'>
+        <p>返信先を読み込み中...</p>
+      </div>
+    )
+  }
+
+  const text =
+    message.content.text.length > 20
+      ? `${message.content.text.slice(0, 20)}...`
+      : message.content.text
+
+  return (
+    <>
+      <div className='flex text-xs text-gray-500'>
+        <button onClick={() => toggleShow()}>
+          <p>
+            →&nbsp;#{message.content.number}&nbsp;
+            {message.sender ? message.sender.name : senderName}&nbsp;
+            {text}
+          </p>
+        </button>
+      </div>
+      {showReplyToMessage && (
+        <div className='-mx-4'>
+          <TalkMessage
+            message={message!}
+            game={game}
+            myself={null}
+            openProfileModal={() => {}}
+            openFavoritesModal={() => {}}
+            handleReply={() => {}}
+          />
+        </div>
+      )}
+    </>
   )
 }

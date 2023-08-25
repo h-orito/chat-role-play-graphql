@@ -212,6 +212,16 @@ func (s *messageUsecase) RegisterMessage(
 		if err != nil {
 			return nil, err
 		}
+		if message.ReplyTo != nil {
+			replyToMessage, err := s.messageService.FindMessage(gameID, *&message.ReplyTo.MessageID)
+			if err != nil {
+				return nil, err
+			}
+			if replyToMessage == nil {
+				return nil, fmt.Errorf("reply to message not found")
+			}
+			msg.ReplyTo.GameParticipantID = replyToMessage.Sender.GameParticipantID
+		}
 		return nil, s.messageService.RegisterMessage(ctx, *game, *msg)
 	})
 	return err

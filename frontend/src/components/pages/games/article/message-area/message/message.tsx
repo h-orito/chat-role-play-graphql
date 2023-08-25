@@ -14,6 +14,8 @@ type MessageProps = {
   message: Message
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
+  handleReply: (message: Message) => void
+  shouldDisplayReplyTo: boolean
 }
 
 export default function MessageComponent(props: MessageProps) {

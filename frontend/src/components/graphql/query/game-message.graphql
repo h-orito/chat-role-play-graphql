@@ -1,0 +1,34 @@
+query GameMessage($gameId: ID!, $messageId: ID!) {
+  message(gameId: $gameId, messageId: $messageId) {
+    id
+    content {
+      type
+      text
+      number
+      isConvertDisabled
+    }
+    time {
+      sendAt
+      sendUnixTimeMilli
+    }
+    sender {
+      participantId
+      name
+      entryNumber
+      icon {
+        url
+        width
+        height
+      }
+    }
+    replyTo {
+      messageId
+      participantId
+    }
+    reactions {
+      replyCount
+      favoriteCount
+      favoriteParticipantIds
+    }
+  }
+}

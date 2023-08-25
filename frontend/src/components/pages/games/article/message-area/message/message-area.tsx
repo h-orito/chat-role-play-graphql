@@ -181,6 +181,12 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         game.status
       )
 
+    const talkButtonRef = useRef({} as TalkButtonRefHandle)
+    const handleReply = (message: Message) => {
+      if (!canTalk || !talkButtonRef.current) return
+      talkButtonRef.current.reply(message)
+    }
+
     return (
       <div
         className={`${className} mut-height-guard relative flex flex-1 flex-col overflow-y-auto`}
@@ -199,7 +205,12 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         {canTalk && (
           <>
             <DescriptionButton game={game} myself={myself!} search={search} />
-            <TalkButton game={game} myself={myself!} search={search} />
+            <TalkButton
+              game={game}
+              myself={myself!}
+              search={search}
+              ref={talkButtonRef}
+            />
           </>
         )}
         {!searchable && (
@@ -223,6 +234,8 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
               key={message.id}
               openProfileModal={openProfileModal}
               openFavoritesModal={openFavoritesModal}
+              handleReply={handleReply}
+              shouldDisplayReplyTo={true}
             />
           ))}
           {!onlyFollowing && !searchable && (
@@ -253,42 +266,62 @@ type TalkButtonProps = {
   search: (query?: MessagesQuery) => void
 }
 
-const TalkButton = ({ game, myself, search }: TalkButtonProps) => {
-  const [isOpenTalkModal, setIsOpenTalkModal] = useState(false)
-  const talkRef = useRef({} as TalkRefHandle)
-  const toggleTalkModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      const shouldWarning = talkRef.current && talkRef.current.shouldWarnClose()
-      if (
-        shouldWarning &&
-        !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
-      )
-        return
-      setIsOpenTalkModal(!isOpenTalkModal)
-    }
-  }
-  return (
-    <>
-      <button
-        className='absolute bottom-10 right-4 z-10 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
-        onClick={() => setIsOpenTalkModal(true)}
-      >
-        <PencilSquareIcon className='h-8 w-8' />
-      </button>
-      {isOpenTalkModal && (
-        <Modal close={toggleTalkModal} hideFooter>
-          <Talk
-            game={game}
-            myself={myself!}
-            closeWithoutWarning={() => setIsOpenTalkModal(false)}
-            search={search}
-            ref={talkRef}
-          />
-        </Modal>
-      )}
-    </>
-  )
+export interface TalkButtonRefHandle {
+  reply: (message: Message) => void
 }
+
+const TalkButton = forwardRef<TalkButtonRefHandle, TalkButtonProps>(
+  (props: TalkButtonProps, ref: any) => {
+    const { game, myself, search } = props
+    const [isOpenTalkModal, setIsOpenTalkModal] = useState(false)
+    const talkRef = useRef({} as TalkRefHandle)
+    const toggleTalkModal = (e: any) => {
+      if (e.target === e.currentTarget) {
+        const shouldWarning =
+          talkRef.current && talkRef.current.shouldWarnClose()
+        if (
+          shouldWarning &&
+          !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
+        )
+          return
+        closeModal()
+      }
+    }
+    const closeModal = () => {
+      setIsOpenTalkModal(false)
+      setReplyTarget(null)
+    }
+    const [replyTarget, setReplyTarget] = useState<Message | null>(null)
+    useImperativeHandle(ref, () => ({
+      reply(message: Message) {
+        setReplyTarget(message)
+        setIsOpenTalkModal(true)
+      }
+    }))
+    return (
+      <>
+        <button
+          className='absolute bottom-10 right-4 z-10 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+          onClick={() => setIsOpenTalkModal(true)}
+        >
+          <PencilSquareIcon className='h-8 w-8' />
+        </button>
+        {isOpenTalkModal && (
+          <Modal close={toggleTalkModal} hideFooter>
+            <Talk
+              game={game}
+              myself={myself!}
+              closeWithoutWarning={() => closeModal()}
+              search={search}
+              replyTarget={replyTarget}
+              ref={talkRef}
+            />
+          </Modal>
+        )}
+      </>
+    )
+  }
+)
 
 type DescriptionButtonProps = {
   game: Game

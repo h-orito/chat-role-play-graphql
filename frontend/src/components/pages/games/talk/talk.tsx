@@ -37,6 +37,7 @@ type Props = {
   myself: GameParticipant
   closeWithoutWarning: () => void
   search: () => void
+  replyTarget?: Message | null
 }
 
 const candidates = [
@@ -60,7 +61,7 @@ export interface TalkRefHandle {
 }
 
 const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
-  const { game, myself, closeWithoutWarning, search } = props
+  const { game, myself, closeWithoutWarning, search, replyTarget } = props
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
   const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
 
@@ -122,7 +123,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
         type: talkType,
         iconId: iconId,
         name: data.name,
-        replyToMessageId: null, // TODO
+        replyToMessageId: replyTarget?.id,
         text: data.talkMessage.trim(),
         isConvertDisabled: isConvertDisabled
       } as NewMessage
@@ -274,16 +275,36 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
         </div>
       </form>
       {preview && (
-        <div className='my-4 border-t border-gray-300 pt-2'>
-          <p className='font-bold'>プレビュー</p>
-          <div className=''>
-            <TalkMessage
-              message={preview!}
-              game={game}
-              myself={myself}
-              openProfileModal={() => {}}
-              openFavoritesModal={() => {}}
-            />
+        <div className='my-4'>
+          <p className='text-xs font-bold'>プレビュー</p>
+          <div className='border border-gray-300 pt-2'>
+            <div>
+              <TalkMessage
+                message={preview!}
+                game={game}
+                myself={myself}
+                openProfileModal={() => {}}
+                openFavoritesModal={() => {}}
+                handleReply={() => {}}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+      {replyTarget && (
+        <div className='mb-4'>
+          <p className='text-xs font-bold'>返信先</p>
+          <div className='border border-gray-300 pt-2'>
+            <div>
+              <TalkMessage
+                message={replyTarget!}
+                game={game}
+                myself={myself}
+                openProfileModal={() => {}}
+                openFavoritesModal={() => {}}
+                handleReply={() => {}}
+              />
+            </div>
           </div>
         </div>
       )}

@@ -181,7 +181,6 @@ func findMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery, myself 
 	return ms, nil
 }
 
-// TODO: 独り言のことは後で考える
 func findRdbMessages(
 	db *gorm.DB,
 	gameID uint32,

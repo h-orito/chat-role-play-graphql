@@ -83,14 +83,14 @@ export default function FavoriteButton({
 
   const starClass = isFav
     ? 'text-yellow-500'
-    : myself != null && myself.id !== message.sender?.participantId
+    : canFav
     ? 'hover:text-yellow-500'
     : 'text-gray-300'
 
   return (
     <>
       <button onClick={() => handleFav()} disabled={!canFav}>
-        <StarIcon className={`y-6 h-6 text-gray-500 ${starClass}`} />
+        <StarIcon className={`y-4 h-4 text-gray-500 ${starClass}`} />
       </button>
       {favCount > 0 && (
         <button

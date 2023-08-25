@@ -52,10 +52,10 @@ export default function ParticipantIcons({
           icons.map((icon) => (
             <div className='relative flex' key={icon.id}>
               <Image
-                className='block w-full'
+                className='block'
                 src={icon.url}
-                width={60}
-                height={60}
+                width={icon.width}
+                height={icon.height}
                 alt='アイコン'
               />
             </div>

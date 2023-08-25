@@ -118,8 +118,10 @@ export default function DirectMessageArea({
     game.status
   )
 
+  // TODO: 発言モーダル表示ボタンの表示位置がうまくいってない
+
   return (
-    <div className='flex flex-1 flex-col overflow-y-auto'>
+    <div className='flex flex-1 flex-col'>
       <div className='flex border-b border-gray-300 px-4 py-2'>
         <p className='self-center'>
           メンバー:{' '}
@@ -136,7 +138,7 @@ export default function DirectMessageArea({
       </div>
       {canModify && (
         <button
-          className='absolute bottom-4 right-4 z-10 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+          className='fixed bottom-20 right-4 z-10 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
           onClick={() => setIsOpenTalkModal(true)}
         >
           <EnvelopeIcon className='h-8 w-8' />

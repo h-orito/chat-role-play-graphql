@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/08/25'>
+            <li>追加: 返信機能を追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/08/24'>
             <li>追加: ランダムキーワードを追加</li>
           </ReleaseContent>
@@ -107,7 +111,6 @@ export default function CreateGame() {
                   <li>
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
-                      <li>返信</li>
                       <li>宛先</li>
                       <li>PL発言（PL発言タイムライン）</li>
                       <li>カットイン</li>
