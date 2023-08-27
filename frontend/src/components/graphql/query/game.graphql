@@ -22,6 +22,7 @@ query Game($id: ID!) {
       chara {
         id
       }
+      isGone
     }
     periods {
       id

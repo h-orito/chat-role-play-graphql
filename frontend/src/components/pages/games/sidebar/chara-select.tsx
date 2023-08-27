@@ -13,6 +13,7 @@ export default function CharaSelect({ game, charas, setValue }: Props) {
     setValue(id)
   }
   const alreadyParticipateCharaIds = game.participants
+    .filter((p) => !p.isGone)
     .map((p) => p.chara?.id)
     .filter((id) => id !== null)
   const candidates = charas.filter(

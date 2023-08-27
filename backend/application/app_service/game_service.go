@@ -26,6 +26,7 @@ type GameService interface {
 	FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
 	FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error)
 	Participate(ctx context.Context, gameID uint32, participant model.GameParticipant) (saved *model.GameParticipant, err error)
+	Leave(ctx context.Context, participantID uint32) (err error)
 	UpdateParticipant(ctx context.Context, participantID uint32, name string, memo *string, iconId *uint32) (err error)
 	// game participant profile
 	FindGameParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, err error)
@@ -186,6 +187,10 @@ func (g *gameService) FindGameParticipant(query model.GameParticipantQuery) (par
 
 func (g *gameService) Participate(ctx context.Context, gameID uint32, participant model.GameParticipant) (saved *model.GameParticipant, err error) {
 	return g.gameParticipantRepository.RegisterGameParticipant(ctx, gameID, participant)
+}
+
+func (g *gameService) Leave(ctx context.Context, participantID uint32) (err error) {
+	return g.gameParticipantRepository.DeleteGameParticipant(ctx, participantID)
 }
 
 func (g *gameService) UpdateParticipant(ctx context.Context, participantID uint32, name string, memo *string, iconId *uint32) (err error) {

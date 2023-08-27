@@ -436,8 +436,31 @@ func (g *gameUsecase) Participate(
 }
 
 func (g *gameUsecase) Leave(ctx context.Context, gameID uint32, user model.User) (err error) {
-	// TODO: implement
-	return fmt.Errorf("not yet implemented")
+	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		game, err := g.gameService.FindGame(gameID)
+		if err != nil {
+			return nil, err
+		}
+		if game == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+		myself, err := g.findMyGameParticipant(gameID, user)
+		if err != nil {
+			return nil, err
+		}
+		if myself == nil {
+			return nil, fmt.Errorf("you are not participating in this game")
+		}
+		if err = g.gameService.Leave(ctx, myself.ID); err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (g *gameUsecase) FindParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, participant *model.GameParticipant, err error) {
@@ -691,8 +714,10 @@ func (g *gameUsecase) findMyGameParticipant(gameID uint32, user model.User) (*mo
 	if err != nil {
 		return nil, err
 	}
+	isEx := true
 	return g.gameService.FindGameParticipant(model.GameParticipantQuery{
-		GameID:   &gameID,
-		PlayerID: &(player.ID),
+		GameID:        &gameID,
+		PlayerID:      &(player.ID),
+		IsExcludeGone: &isEx,
 	})
 }

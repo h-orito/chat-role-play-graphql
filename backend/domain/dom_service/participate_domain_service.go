@@ -51,7 +51,7 @@ func (s *participateDomainService) AssertParticipate(
 	if charaID != nil {
 		// 既に参加しているキャラクターはNG
 		if array.Any(game.Participants.List, func(p model.GameParticipant) bool {
-			return p.CharaID != nil && *p.CharaID == *charaID
+			return p.CharaID != nil && *p.CharaID == *charaID && !p.IsGone
 		}) {
 			return model.NewErrBusiness("既に他の人が利用しているキャラクターでは参加できません")
 		}

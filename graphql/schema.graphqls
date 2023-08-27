@@ -123,6 +123,8 @@ type MessageNotificationCondition {
 type GameParticipantProfile {
   participantId: ID!
   name: String!
+  entryNumber: Int!
+  isGone: Boolean!
   profileImageUrl: String
   introduction: String
   followsCount: Int!

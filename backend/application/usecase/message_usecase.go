@@ -93,21 +93,11 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 	var myself *model.GameParticipant = nil
 	authorities := []model.PlayerAuthority{}
 	if user != nil {
-		player, err := s.playerService.FindByUserName(user.UserName)
+		myself, err = s.findMyGameParticipant(gameID, *user)
 		if err != nil {
 			return nil, nil, err
 		}
-		if player == nil {
-			return nil, nil, fmt.Errorf("player not found")
-		}
-		myself, err = s.gameService.FindGameParticipant(model.GameParticipantQuery{
-			GameID:   &gameID,
-			PlayerID: &(player.ID),
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-		authorities, err = s.playerService.FindAuthorities(player.ID)
+		authorities, err = s.playerService.FindAuthorities(myself.PlayerID)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -173,20 +163,11 @@ func (s *messageUsecase) FindMessage(gameID uint32, ID uint64) (*model.Message, 
 func (s *messageUsecase) FindMessageReplies(gameID uint32, messageID uint64, user *model.User) ([]model.Message, error) {
 	var myself *model.GameParticipant = nil
 	if user != nil {
-		player, err := s.playerService.FindByUserName(user.UserName)
+		m, err := s.findMyGameParticipant(gameID, *user)
 		if err != nil {
 			return nil, err
 		}
-		if player == nil {
-			return nil, fmt.Errorf("player not found")
-		}
-		myself, err = s.gameService.FindGameParticipant(model.GameParticipantQuery{
-			GameID:   &gameID,
-			PlayerID: &(player.ID),
-		})
-		if err != nil {
-			return nil, err
-		}
+		myself = m
 	}
 	return s.messageService.FindMessageReplies(gameID, messageID, myself)
 }
@@ -259,10 +240,7 @@ func (s *messageUsecase) assertRegisterMessage(
 	if err != nil {
 		return nil, err
 	}
-	myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
-		GameID:   &gameID,
-		PlayerID: &player.ID,
-	})
+	myself, err := s.findMyGameParticipant(gameID, user)
 	if err != nil {
 		return nil, err
 	}
@@ -298,16 +276,12 @@ func (s *messageUsecase) RegisterMessageFavorite(
 	messageID uint64,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		player, err := s.playerService.FindByUserName(user.UserName)
+		myself, err := s.findMyGameParticipant(gameID, user)
 		if err != nil {
 			return nil, err
 		}
-		myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
-			GameID:   &gameID,
-			PlayerID: &player.ID,
-		})
-		if err != nil {
-			return nil, err
+		if myself == nil {
+			return nil, errors.New("ゲームに参加していません")
 		}
 		return nil, s.messageService.RegisterMessageFavorite(ctx, gameID, messageID, myself.ID)
 	})
@@ -322,16 +296,12 @@ func (s *messageUsecase) DeleteMessageFavorite(
 	messageID uint64,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		player, err := s.playerService.FindByUserName(user.UserName)
+		myself, err := s.findMyGameParticipant(gameID, user)
 		if err != nil {
 			return nil, err
 		}
-		myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
-			GameID:   &gameID,
-			PlayerID: &player.ID,
-		})
-		if err != nil {
-			return nil, err
+		if myself == nil {
+			return nil, errors.New("ゲームに参加していません")
 		}
 		return nil, s.messageService.DeleteMessageFavorite(ctx, gameID, messageID, myself.ID)
 	})
@@ -349,16 +319,12 @@ func (s *messageUsecase) RegisterGameParticipantGroup(
 	group model.GameParticipantGroup,
 ) (*model.GameParticipantGroup, error) {
 	saved, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		player, err := s.playerService.FindByUserName(user.UserName)
+		myself, err := s.findMyGameParticipant(gameID, user)
 		if err != nil {
 			return nil, err
 		}
-		myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
-			GameID:   &gameID,
-			PlayerID: &player.ID,
-		})
-		if err != nil {
-			return nil, err
+		if myself == nil {
+			return nil, errors.New("ゲームに参加していません")
 		}
 		// 自分自身がメンバーに含まれていない
 		if array.None(group.MemberIDs, func(id uint32) bool {
@@ -398,16 +364,12 @@ func (s *messageUsecase) UpdateGameParticipantGroup(
 	group model.GameParticipantGroup,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		player, err := s.playerService.FindByUserName(user.UserName)
+		myself, err := s.findMyGameParticipant(gameID, user)
 		if err != nil {
 			return nil, err
 		}
-		myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
-			GameID:   &gameID,
-			PlayerID: &player.ID,
-		})
-		if err != nil {
-			return nil, err
+		if myself == nil {
+			return nil, errors.New("ゲームに参加していません")
 		}
 		groups, err := s.messageService.FindGameParticipantGroups(model.GameParticipantGroupsQuery{
 			GameID: gameID,
@@ -496,10 +458,7 @@ func (s *messageUsecase) assertRegisterDirectMessage(
 	if err != nil {
 		return nil, err
 	}
-	myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
-		GameID:   &gameID,
-		PlayerID: &player.ID,
-	})
+	myself, err := s.findMyGameParticipant(gameID, user)
 	if err != nil {
 		return nil, err
 	}
@@ -536,16 +495,12 @@ func (s *messageUsecase) RegisterDirectMessageFavorite(
 	directMessageID uint64,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		player, err := s.playerService.FindByUserName(user.UserName)
+		myself, err := s.findMyGameParticipant(gameID, user)
 		if err != nil {
 			return nil, err
 		}
-		myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
-			GameID:   &gameID,
-			PlayerID: &player.ID,
-		})
-		if err != nil {
-			return nil, err
+		if myself == nil {
+			return nil, errors.New("ゲームに参加していません")
 		}
 		return nil, s.messageService.RegisterDirectMessageFavorite(ctx, gameID, directMessageID, myself.ID)
 	})
@@ -560,18 +515,27 @@ func (s *messageUsecase) DeleteDirectMessageFavorite(
 	directMessageID uint64,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		player, err := s.playerService.FindByUserName(user.UserName)
+		myself, err := s.findMyGameParticipant(gameID, user)
 		if err != nil {
 			return nil, err
 		}
-		myself, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
-			GameID:   &gameID,
-			PlayerID: &player.ID,
-		})
-		if err != nil {
-			return nil, err
+		if myself == nil {
+			return nil, errors.New("ゲームに参加していません")
 		}
 		return nil, s.messageService.DeleteDirectMessageFavorite(ctx, gameID, directMessageID, myself.ID)
 	})
 	return err
+}
+
+func (m *messageUsecase) findMyGameParticipant(gameID uint32, user model.User) (*model.GameParticipant, error) {
+	player, err := m.playerService.FindByUserName(user.UserName)
+	if err != nil {
+		return nil, err
+	}
+	isEx := true
+	return m.gameService.FindGameParticipant(model.GameParticipantQuery{
+		GameID:        &gameID,
+		PlayerID:      &(player.ID),
+		IsExcludeGone: &isEx,
+	})
 }

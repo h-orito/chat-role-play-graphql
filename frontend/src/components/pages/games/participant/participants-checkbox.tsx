@@ -12,9 +12,10 @@ export default function ParticipantsCheckbox({
   selects,
   setSelects
 }: Props) {
+  const displayParticipants = participants.filter((p) => !p.isGone)
   return (
     <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-      {participants.map((participant) => {
+      {displayParticipants.map((participant) => {
         const checked = selects.includes(participant)
         const checkedClass = checked
           ? 'border-blue-500 bg-blue-100'

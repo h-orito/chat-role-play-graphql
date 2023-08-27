@@ -210,9 +210,11 @@ type ComplexityRoot struct {
 	}
 
 	GameParticipantProfile struct {
+		EntryNumber     func(childComplexity int) int
 		FollowersCount  func(childComplexity int) int
 		FollowsCount    func(childComplexity int) int
 		Introduction    func(childComplexity int) int
+		IsGone          func(childComplexity int) int
 		Name            func(childComplexity int) int
 		ParticipantID   func(childComplexity int) int
 		ProfileImageURL func(childComplexity int) int
@@ -1207,6 +1209,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GameParticipantIcon.Width(childComplexity), true
 
+	case "GameParticipantProfile.entryNumber":
+		if e.complexity.GameParticipantProfile.EntryNumber == nil {
+			break
+		}
+
+		return e.complexity.GameParticipantProfile.EntryNumber(childComplexity), true
+
 	case "GameParticipantProfile.followersCount":
 		if e.complexity.GameParticipantProfile.FollowersCount == nil {
 			break
@@ -1227,6 +1236,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GameParticipantProfile.Introduction(childComplexity), true
+
+	case "GameParticipantProfile.isGone":
+		if e.complexity.GameParticipantProfile.IsGone == nil {
+			break
+		}
+
+		return e.complexity.GameParticipantProfile.IsGone(childComplexity), true
 
 	case "GameParticipantProfile.name":
 		if e.complexity.GameParticipantProfile.Name == nil {
@@ -2933,6 +2949,8 @@ type MessageNotificationCondition {
 type GameParticipantProfile {
   participantId: ID!
   name: String!
+  entryNumber: Int!
+  isGone: Boolean!
   profileImageUrl: String
   introduction: String
   followsCount: Int!
@@ -8802,6 +8820,94 @@ func (ec *executionContext) fieldContext_GameParticipantProfile_name(ctx context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameParticipantProfile_entryNumber(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameParticipantProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameParticipantProfile_entryNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EntryNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameParticipantProfile_entryNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameParticipantProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameParticipantProfile_isGone(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameParticipantProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameParticipantProfile_isGone(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsGone, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameParticipantProfile_isGone(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameParticipantProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -15312,6 +15418,10 @@ func (ec *executionContext) fieldContext_Query_gameParticipantProfile(ctx contex
 				return ec.fieldContext_GameParticipantProfile_participantId(ctx, field)
 			case "name":
 				return ec.fieldContext_GameParticipantProfile_name(ctx, field)
+			case "entryNumber":
+				return ec.fieldContext_GameParticipantProfile_entryNumber(ctx, field)
+			case "isGone":
+				return ec.fieldContext_GameParticipantProfile_isGone(ctx, field)
 			case "profileImageUrl":
 				return ec.fieldContext_GameParticipantProfile_profileImageUrl(ctx, field)
 			case "introduction":
@@ -24212,6 +24322,20 @@ func (ec *executionContext) _GameParticipantProfile(ctx context.Context, sel ast
 		case "name":
 
 			out.Values[i] = ec._GameParticipantProfile_name(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "entryNumber":
+
+			out.Values[i] = ec._GameParticipantProfile_entryNumber(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "isGone":
+
+			out.Values[i] = ec._GameParticipantProfile_isGone(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

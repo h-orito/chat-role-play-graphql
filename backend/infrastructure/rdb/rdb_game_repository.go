@@ -198,7 +198,7 @@ func findGames(db *gorm.DB, query model.GamesQuery) (games []model.Game, err err
 
 	return array.Map(rdbGames, func(g Game) model.Game {
 		ptsCount := array.Count(pts, func(p GameParticipant) bool {
-			return p.GameID == g.ID
+			return p.GameID == g.ID && !p.IsGone
 		})
 		gamePeriods := array.Filter(periods, func(p GamePeriod) bool {
 			return p.GameID == g.ID

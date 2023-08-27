@@ -217,6 +217,8 @@ type GameParticipantIcon struct {
 type GameParticipantProfile struct {
 	ParticipantID   string  `json:"participantId"`
 	Name            string  `json:"name"`
+	EntryNumber     int     `json:"entryNumber"`
+	IsGone          bool    `json:"isGone"`
 	ProfileImageURL *string `json:"profileImageUrl,omitempty"`
 	Introduction    *string `json:"introduction,omitempty"`
 	FollowsCount    int     `json:"followsCount"`

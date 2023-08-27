@@ -2,6 +2,8 @@ query GameParticipantProfile($participantId: ID!) {
   gameParticipantProfile(participantId: $participantId) {
     participantId
     name
+    entryNumber
+    isGone
     profileImageUrl
     introduction
     followsCount

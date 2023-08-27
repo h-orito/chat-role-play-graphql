@@ -13,6 +13,9 @@ import {
   GameParticipantProfileQuery,
   IconsDocument,
   IconsQuery,
+  LeaveDocument,
+  LeaveMutation,
+  LeaveMutationVariables,
   UnfollowDocument,
   UnfollowMutation,
   UnfollowMutationVariables
@@ -72,6 +75,27 @@ export default function Profile({
     refetchIcons()
   }, [participantId])
 
+  const [leave] = useMutation<LeaveMutation>(LeaveDocument, {
+    onCompleted(e) {
+      location.reload()
+    },
+    onError(error) {
+      console.error(error)
+    }
+  })
+
+  const confirmToLeave = () => {
+    if (confirm('この操作は取り消せません。本当に退出しますか？')) {
+      leave({
+        variables: {
+          input: {
+            gameId: game.id
+          }
+        } as LeaveMutationVariables
+      })
+    }
+  }
+
   if (profile == null) return <div>Loading...</div>
 
   const canEdit =
@@ -107,7 +131,19 @@ export default function Profile({
         </div>
         <div>
           <div className='flex'>
-            <p className='text-lg font-bold'>{profile.name}</p>
+            <p className='text-lg font-bold'>
+              <span className='text-sm font-normal text-gray-500'>
+                ENo{profile.entryNumber}.&nbsp;
+              </span>
+              {profile.name}
+              {profile.isGone ? (
+                <span className='text-sm font-normal text-gray-500'>
+                  （退出済み）
+                </span>
+              ) : (
+                ''
+              )}
+            </p>
             <div className='ml-auto'>
               <FollowButton
                 game={game}
@@ -161,6 +197,11 @@ export default function Profile({
           />
         </div>
       </div>
+      {canEdit && (
+        <div className='mt-4 flex justify-end'>
+          <DangerButton click={() => confirmToLeave()}>退出する</DangerButton>
+        </div>
+      )}
       {isOpenEditModal && (
         <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
           <ProfileEdit

@@ -69,6 +69,16 @@ func (*GameParticipantRepository) UpdateGameParticipant(ctx context.Context, ID 
 	return nil
 }
 
+// DeleteGameParticipant implements model.GameParticipantRepository.
+func (*GameParticipantRepository) DeleteGameParticipant(ctx context.Context, ID uint32) (err error) {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return fmt.Errorf("failed to get tx from context")
+	}
+	tx.Model(&GameParticipant{}).Where("id = ?", ID).Update("is_gone", true)
+	return nil
+}
+
 func (repo *GameParticipantRepository) FindGameParticipantProfile(gameParticipantID uint32) (profile *model.GameParticipantProfile, err error) {
 	return findGameParticipantProfile(repo.db.Connection, gameParticipantID)
 }
@@ -252,6 +262,9 @@ func findRdbGameParticipants(db *gorm.DB, query model.GameParticipantsQuery) (_ 
 	if query.IDs != nil {
 		result = result.Where("id in (?)", *query.IDs)
 	}
+	if query.IsExcludeGone != nil && *query.IsExcludeGone {
+		result = result.Where("is_gone = ?", false)
+	}
 	result = result.Find(&rdbGameParticipants)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
@@ -265,7 +278,7 @@ func findRdbGameParticipants(db *gorm.DB, query model.GameParticipantsQuery) (_ 
 
 func findRdbGameParticipant(db *gorm.DB, query model.GameParticipantQuery) (_ *GameParticipant, err error) {
 	var rdbGameParticipant GameParticipant
-	result := db.Model(&GameParticipant{}).Where("is_gone = ?", false)
+	result := db.Model(&GameParticipant{})
 	if query.GameID != nil {
 		result = result.Where("game_id = ?", *query.GameID)
 	}
@@ -277,6 +290,9 @@ func findRdbGameParticipant(db *gorm.DB, query model.GameParticipantQuery) (_ *G
 	}
 	if query.CharaID != nil {
 		result = result.Where("chara_id = ?", *query.CharaID)
+	}
+	if query.IsExcludeGone != nil && *query.IsExcludeGone {
+		result = result.Where("is_gone = ?", false)
 	}
 	result = result.Find(&rdbGameParticipant)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {

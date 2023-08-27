@@ -40,7 +40,6 @@ export default function DirectSearchCondition({
   search
 }: Props) {
   const [isOpen, setIsOpen] = useState(false)
-
   const [types, setTypes] = useState<MessageType[]>(
     query.types || [MessageType.TalkNormal]
   )

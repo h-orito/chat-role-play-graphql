@@ -98,10 +98,11 @@ type GameParticipants struct {
 }
 
 type GameParticipantsQuery struct {
-	GameIDs *[]uint32
-	GameID  *uint32
-	IDs     *[]uint32
-	Paging  *PagingQuery
+	GameIDs       *[]uint32
+	GameID        *uint32
+	IDs           *[]uint32
+	IsExcludeGone *bool
+	Paging        *PagingQuery
 }
 
 type GameParticipant struct {
@@ -118,10 +119,11 @@ type GameParticipant struct {
 }
 
 type GameParticipantQuery struct {
-	GameID   *uint32
-	ID       *uint32
-	PlayerID *uint32
-	CharaID  *uint32
+	GameID        *uint32
+	ID            *uint32
+	PlayerID      *uint32
+	CharaID       *uint32
+	IsExcludeGone *bool
 }
 
 type GameParticipantProfile struct {
@@ -272,6 +274,7 @@ type GameParticipantRepository interface {
 	FindGameParticipant(query GameParticipantQuery) (participant *GameParticipant, err error)
 	RegisterGameParticipant(ctx context.Context, gameID uint32, participant GameParticipant) (saved *GameParticipant, err error)
 	UpdateGameParticipant(ctx context.Context, ID uint32, name string, memo *string, iconId *uint32) (err error)
+	DeleteGameParticipant(ctx context.Context, ID uint32) (err error)
 	// participant profile
 	FindGameParticipantProfile(gameParticipantID uint32) (profile *GameParticipantProfile, err error)
 	UpdateGameParticipantProfile(ctx context.Context, ID uint32, profile GameParticipantProfile) (err error)

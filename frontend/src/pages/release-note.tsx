@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/08/27'>
+            <li>追加: 退出機能を追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/08/25'>
             <li>追加: 返信機能を追加</li>
           </ReleaseContent>
@@ -108,6 +112,13 @@ export default function CreateGame() {
                       <li>終了後DM公開</li>
                     </ul>
                   </li>
+                  <li>
+                    GM機能
+                    <ul className='list-inside list-disc pl-4 text-left text-xs'>
+                      <li>kick</li>
+                    </ul>
+                  </li>
+
                   <li>
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>

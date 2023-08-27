@@ -12,10 +12,11 @@ export default function Participants({
   participants,
   openProfileModal
 }: Props) {
+  const displayParticipants = participants.filter((p) => !p.isGone)
   return (
     <div className={`${className} grid grid-cols-1 gap-4 md:grid-cols-2`}>
-      {participants.length === 0 && <p>まだ参加登録されていません。</p>}
-      {participants.map((participant) => (
+      {displayParticipants.length === 0 && <p>まだ参加登録されていません。</p>}
+      {displayParticipants.map((participant) => (
         <button
           key={participant.id}
           className='flex rounded-md border border-gray-300 p-4 hover:bg-gray-100'

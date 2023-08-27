@@ -527,7 +527,7 @@ func (r *queryResolver) gameParticipantProfile(ctx context.Context, participantI
 	if err != nil {
 		return nil, err
 	}
-	return MapToGameParticipantProfile(*profile, participant.Name), nil
+	return MapToGameParticipantProfile(*profile, *participant), nil
 }
 
 func (r *queryResolver) gameParticipantFollows(ctx context.Context, participantID string) ([]*gqlmodel.GameParticipant, error) {

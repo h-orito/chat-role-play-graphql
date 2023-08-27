@@ -46,6 +46,7 @@ export default function SearchCondition({
   search,
   onlyFollowing
 }: Props) {
+  const participants = game.participants.filter((p) => !p.isGone)
   const [isOpen, setIsOpen] = useState(false)
 
   const [types, setTypes] = useState<MessageType[]>(
@@ -58,9 +59,7 @@ export default function SearchCondition({
   )
   const [senders, setSenders] = useState<GameParticipant[]>(
     messageQuery.senderIds
-      ? game.participants.filter((gp) =>
-          messageQuery.senderIds?.includes(gp.id)
-        )
+      ? participants.filter((gp) => messageQuery.senderIds?.includes(gp.id))
       : []
   )
   const [keyword, setKeyword] = useState<string>(
@@ -88,7 +87,7 @@ export default function SearchCondition({
         types.length > 0 && types.length !== candidates.length ? types : null,
       senderIds: onlyFollowing
         ? myself!.followParticipantIds
-        : senders.length > 0 && senders.length !== game.participants.length
+        : senders.length > 0 && senders.length !== participants.length
         ? senders.map((s) => s.id)
         : null,
       keywords: keywords.length > 0 ? keywords : null,
@@ -127,8 +126,7 @@ export default function SearchCondition({
         {!onlyFollowing && (
           <div className='my-2'>
             <label className='text-xs font-bold'>発言者</label>
-            {senders.length === 0 ||
-            senders.length === game.participants.length ? (
+            {senders.length === 0 || senders.length === participants.length ? (
               <p className='text-xs'>全員</p>
             ) : (
               <p className='text-xs'>{senders.map((s) => s.name).join('、')}</p>
@@ -180,7 +178,7 @@ export default function SearchCondition({
         {isOpenSenderModal && (
           <Modal close={toggleSenderModal}>
             <ParticipantsCheckbox
-              participants={game.participants}
+              participants={participants}
               selects={senders}
               setSelects={setSenders}
             />
