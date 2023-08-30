@@ -29,7 +29,7 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 # permission denied対策
-RUN chown nextjs:nodejs /app/.next
+RUN chown nextjs:nodejs /app/.next/cache
 
 USER nextjs
 
