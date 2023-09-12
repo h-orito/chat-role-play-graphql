@@ -3,7 +3,8 @@ import {
   UpdateGameSettingsMutation,
   UpdateGameSettingsDocument,
   UpdateGameSetting,
-  UpdateGameSettingsMutationVariables
+  UpdateGameSettingsMutationVariables,
+  GameLabel
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
 import dayjs from 'dayjs'
@@ -54,6 +55,13 @@ export default function GameSettingsEdit({ game }: Props) {
     password: ''
   } as GameFormInput
 
+  const [target, setTarget] = useState(
+    game.labels.find((l) => ['誰歓', '身内'].includes(l.name))?.name ?? ''
+  )
+  const [rating, setRating] = useState(
+    game.labels.find((l) => ['R15', 'R18', 'R18G'].includes(l.name))?.name ??
+      '全年齢'
+  )
   const [charachipIds, setCharachipIds] = useState<string[]>(
     game.settings.chara.charachips.map((c) => c.id)
   )
@@ -72,11 +80,26 @@ export default function GameSettingsEdit({ game }: Props) {
   const router = useRouter()
   const onSubmit: SubmitHandler<GameFormInput> = useCallback(
     async (data) => {
+      const labels: Array<GameLabel> = []
+      if (target !== '') {
+        labels.push({
+          name: target,
+          type: 'success'
+        } as GameLabel)
+      }
+      if (rating !== '全年齢') {
+        labels.push({
+          name: rating,
+          type: 'danger'
+        } as GameLabel)
+      }
+
       await updateGameSettings({
         variables: {
           input: {
             gameId: game.id,
             name: data.name,
+            labels: labels,
             settings: {
               chara: {
                 charachipIds: charachipIds,
@@ -115,13 +138,17 @@ export default function GameSettingsEdit({ game }: Props) {
       })
       router.reload()
     },
-    [updateGameSettings]
+    [updateGameSettings, target, rating]
   )
 
   return (
     <div className='flex justify-center text-center'>
       <GameEdit
         defaultValues={defaultValues}
+        target={target}
+        setTarget={setTarget}
+        rating={rating}
+        setRating={setRating}
         onSubmit={onSubmit}
         labelName='更新'
         charachipIds={charachipIds}

@@ -26,6 +26,11 @@ import {
 } from '@/lib/generated/graphql'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useEffect, useRef, useState } from 'react'
+import { useCookies } from 'react-cookie'
+import Modal from '@/components/modal/modal'
+import SecondaryButton from '@/components/button/scondary-button'
+import { useRouter } from 'next/router'
+import PrimaryButton from '@/components/button/primary-button'
 
 export const getServerSideProps = async (context: any) => {
   const { id } = context.params
@@ -178,6 +183,61 @@ export default function GamePage({ gameId, game }: Props) {
           />
         </ArticleModal>
       )}
+      <RatingWarningModal game={game} />
     </main>
   )
+}
+
+const RatingWarningModal = ({ game }: { game: Game }) => {
+  const [getCookie, setCookie] = useCookies()
+  const rating = game.labels.find((l) =>
+    ['R15', 'R18', 'R18G'].includes(l.name)
+  )
+  const ratingCookie: RatingCookie = getCookie['rating'] || {}
+  const alreadyConfiemed = !!ratingCookie && ratingCookie[game.id] === true
+  const shouldShowRatingWarning = !!rating && !alreadyConfiemed
+  const [showModal, setShowModal] = useState(true)
+  const router = useRouter()
+  const handleShow = () => {
+    ratingCookie[game.id] = true
+    setCookie('rating', ratingCookie, { maxAge: 60 * 60 * 24 * 365 })
+    setShowModal(false)
+  }
+
+  if (!shouldShowRatingWarning) return <></>
+
+  return (
+    <>
+      {showModal && (
+        <Modal
+          header='年齢制限確認'
+          close={() => setShowModal(false)}
+          hideFooter={true}
+          hideOnClickOutside={false}
+        >
+          <div>
+            <p>
+              この村は年齢制限が{' '}
+              <span className='text-lg text-red-500'>
+                <strong>{rating.name}</strong>
+              </span>{' '}
+              に設定されており、
+              <br />
+              暴力表現や性描写などが含まれる可能性があります。
+            </p>
+            <div className='flex justify-end'>
+              <SecondaryButton className='mr-2' click={() => router.push('/')}>
+                表示せず戻る
+              </SecondaryButton>
+              <PrimaryButton click={() => handleShow()}>表示する</PrimaryButton>
+            </div>
+          </div>
+        </Modal>
+      )}
+    </>
+  )
+}
+
+type RatingCookie = {
+  [gameId: string]: boolean
 }

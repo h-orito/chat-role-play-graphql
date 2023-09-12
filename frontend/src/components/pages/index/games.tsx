@@ -3,7 +3,7 @@ import {
   base64ToId,
   convertToGameStatusName
 } from '@/components/graphql/convert'
-import { SimpleGame } from '@/lib/generated/graphql'
+import { GameLabel, SimpleGame } from '@/lib/generated/graphql'
 import { iso2display } from '@/components/util/datetime/datetime'
 
 type Props = {
@@ -59,6 +59,7 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
   // TODO: ゲーム画像を設定できるようにする
   const gameImage = '/chat-role-play/images/game.jpg'
 
+  console.log(game.labels)
   return (
     <Link href={`/games/${base64ToId(game.id)}`} className='relative'>
       <div className='flex flex-col rounded-lg border border-gray-300 hover:border-blue-500'>
@@ -73,12 +74,33 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
             <p className='text-left'>{game.name}</p>
           </div>
           <div className='px-4 py-2 text-left text-xs leading-6'>
-            {descriptions.map((d, idx) => (
-              <p key={idx}>{d}</p>
-            ))}
+            <div className='flex'>
+              {game.labels.map((l: GameLabel) => (
+                <Label label={l} />
+              ))}
+            </div>
+            <div className='mt-2'>
+              {descriptions.map((d, idx) => (
+                <p key={idx}>{d}</p>
+              ))}
+            </div>
           </div>
         </div>
       </div>
     </Link>
+  )
+}
+
+const Label = ({ label }: { label: GameLabel }) => {
+  const colorClass =
+    label.type === 'success'
+      ? 'bg-green-500'
+      : label.type === 'danger'
+      ? 'bg-red-500'
+      : 'bg-gray-500'
+  return (
+    <span className={`mr-1 rounded-sm px-2 text-white ${colorClass}`}>
+      {label.name}
+    </span>
   )
 }

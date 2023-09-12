@@ -53,6 +53,7 @@ type Game {
   id: ID!
   name: String!
   status: GameStatus!
+  labels: [GameLabel!]!
   gameMasters: [GameMaster!]!
   participants(paging: PageableQuery): [GameParticipant!]!
   periods: [GamePeriod!]!
@@ -63,6 +64,7 @@ type SimpleGame {
   id: ID!
   name: String!
   status: GameStatus!
+  labels: [GameLabel!]!
   participantsCount: Int!
   periods: [GamePeriod!]!
   settings: GameSettings!
@@ -82,6 +84,12 @@ type GameMaster {
   id: ID!
   player: Player!
   isProducer: Boolean!
+}
+
+type GameLabel {
+  id: ID!
+  name: String!
+  type: String!
 }
 
 type GameParticipant {
@@ -547,7 +555,13 @@ type Mutation {
 
 input NewGame {
   name: String!
+  labels: [NewGameLabel!]!
   settings: NewGameSettings!
+}
+
+input NewGameLabel {
+  name: String!
+  type: String!
 }
 
 input NewGameSettings {
@@ -625,7 +639,13 @@ type DeleteGameMasterPayload {
 input UpdateGameSetting {
   gameId: ID!
   name: String!
+  labels: [UpdateGameLabel!]!
   settings: UpdateGameSettings!
+}
+
+input UpdateGameLabel {
+  name: String!
+  type: String!
 }
 
 input UpdateGameSettings {

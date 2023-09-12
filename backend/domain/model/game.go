@@ -10,6 +10,7 @@ type Game struct {
 	ID           uint32
 	Name         string
 	Status       GameStatus
+	Labels       []GameLabel
 	GameMasters  []GameMaster
 	Participants GameParticipants
 	Periods      []GamePeriod
@@ -84,6 +85,12 @@ type GamesQuery struct {
 	Name     *string
 	Statuses *[]GameStatus
 	Paging   *PagingQuery
+}
+
+type GameLabel struct {
+	ID   uint32
+	Name string
+	Type string
 }
 
 type GameMaster struct {
@@ -265,7 +272,13 @@ type GameRepository interface {
 	UpdateGameStatus(ctx context.Context, gameID uint32, status GameStatus) (err error)
 	RegisterGamePeriod(ctx context.Context, gameID uint32, period GamePeriod) (err error)
 	UpdateGamePeriod(ctx context.Context, gameID uint32, period GamePeriod) (err error)
-	UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, settings GameSettings) (err error)
+	UpdateGameSettings(
+		ctx context.Context,
+		gameID uint32,
+		gameName string,
+		labels []GameLabel,
+		settings GameSettings,
+	) (err error)
 }
 
 type GameParticipantRepository interface {

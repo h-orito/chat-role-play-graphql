@@ -146,6 +146,23 @@ create table games (
     primary key (id)
 );
 
+create table game_labels (
+    id          int unsigned not null auto_increment comment 'ID',
+    game_id     int unsigned not null comment 'ゲームID',
+    label_name  varchar(255) not null comment 'ラベル名',
+    label_type  varchar(255) not null comment 'ラベル色',
+    created_at datetime     not null comment '作成日時',
+    updated_at datetime     not null comment '更新日時',
+    primary key (id)    
+);
+
+alter table game_labels
+    add constraint fk_game_labels_games foreign key (game_id)
+    references games (id)
+    on update restrict
+    on delete restrict
+;
+
 create table game_master_players (
     id          int unsigned not null auto_increment comment 'ID',
     game_id     int unsigned not null comment 'ゲームID',

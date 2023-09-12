@@ -15,15 +15,21 @@ export default function CreateGame() {
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>既知の不具合</p>
               <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/08/13
+                2023/09/11
               </p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
-              <li>なし</li>
+              <li>
+                エピローグ中のゲーム終了日時表記がエピローグ開始日時になっている
+              </li>
             </ul>
           </div>
 
           <hr />
+
+          <ReleaseContent label='機能追加' date='2023/09/12'>
+            <li>追加: 募集範囲、年齢制限ラベルを追加</li>
+          </ReleaseContent>
 
           <ReleaseContent label='機能追加' date='2023/08/27'>
             <li>追加: 退出機能を追加</li>

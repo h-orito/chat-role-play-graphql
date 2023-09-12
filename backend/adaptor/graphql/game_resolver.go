@@ -112,7 +112,7 @@ func (r *mutationResolver) updateGameSetting(ctx context.Context, input gqlmodel
 	if user == nil {
 		return nil, err
 	}
-	if err := r.gameUsecase.UpdateGameSetting(ctx, *user, gameId, input.Name, input.MapToGameSetting()); err != nil {
+	if err := r.gameUsecase.UpdateGameSetting(ctx, *user, gameId, input.Name, input.MapToGaneLabels(), input.MapToGameSetting()); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.UpdateGameSettingPayload{Ok: true}, nil

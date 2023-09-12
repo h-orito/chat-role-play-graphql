@@ -18,9 +18,15 @@ import {
 } from '@/lib/generated/graphql'
 import { useLazyQuery } from '@apollo/client'
 import InputMultiSelect from '@/components/form/input-multi-select'
+import InputSelect from '@/components/form/input-select'
+import RadioGroup from '@/components/form/radio-group'
 
 type Props = {
   defaultValues: GameFormInput
+  target: string
+  setTarget: Dispatch<SetStateAction<string>>
+  rating: string
+  setRating: Dispatch<SetStateAction<string>>
   charachipIds: string[]
   setCharachipIds: Dispatch<SetStateAction<string[]>>
   onSubmit: SubmitHandler<GameFormInput>
@@ -98,6 +104,41 @@ export default function GameEdit(props: Props) {
                 }
               }}
             />
+          </div>
+          <hr />
+          <div className='my-4'>
+            <FormLabel label='募集範囲' required />
+            <div className='mt-1 flex justify-center'>
+              <RadioGroup
+                name='target'
+                candidates={[
+                  { label: '誰歓', value: '誰歓' },
+                  { label: '身内', value: '身内' },
+                  { label: 'その他', value: '' }
+                ]}
+                selected={props.target}
+                setSelected={props.setTarget}
+              />
+            </div>
+          </div>
+          <hr />
+          <div className='my-4'>
+            <FormLabel label='レーティング' required>
+              R15,R18表現が禁止されている場合があるため、キャラチップの利用規約を確認お願いします。
+            </FormLabel>
+            <div className='mt-1 flex justify-center'>
+              <RadioGroup
+                name='rating'
+                candidates={[
+                  { label: '全年齢', value: '全年齢' },
+                  { label: 'R15', value: 'R15' },
+                  { label: 'R18', value: 'R18' },
+                  { label: 'R18G', value: 'R18G' }
+                ]}
+                selected={props.rating}
+                setSelected={props.setRating}
+              />
+            </div>
           </div>
           <hr />
           <div className='my-4'>

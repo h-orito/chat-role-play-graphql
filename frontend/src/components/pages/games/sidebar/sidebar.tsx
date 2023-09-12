@@ -1,4 +1,9 @@
-import { Game, GameParticipant, Player } from '@/lib/generated/graphql'
+import {
+  Game,
+  GameLabel,
+  GameParticipant,
+  Player
+} from '@/lib/generated/graphql'
 import {
   UsersIcon,
   InformationCircleIcon,
@@ -74,6 +79,7 @@ export default function Sidebar({
         className={`${displayClass} mut-height-guard h-screen w-64 flex-col border-r border-gray-300 py-4 md:flex`}
       >
         <h1 className='mb-2 px-4 text-xl font-bold'>{game.name}</h1>
+        <GameLabels game={game} />
         <GameStatus game={game} />
         <div className='border-t border-gray-300 py-2'>
           <ParticipantsButton game={game} openProfileModal={openProfileModal} />
@@ -462,5 +468,28 @@ const ParticipateButton = ({ game }: ParticipateButtonProps) => {
         </Modal>
       )}
     </>
+  )
+}
+
+const GameLabels = ({ game }: { game: Game }) => {
+  return (
+    <div className='mb-2 flex px-4'>
+      {game.labels.map((l: GameLabel) => (
+        <Label label={l} />
+      ))}
+    </div>
+  )
+}
+const Label = ({ label }: { label: GameLabel }) => {
+  const colorClass =
+    label.type === 'success'
+      ? 'bg-green-500'
+      : label.type === 'danger'
+      ? 'bg-red-500'
+      : 'bg-gray-500'
+  return (
+    <span className={`mr-1 rounded-md px-2 text-xs text-white ${colorClass}`}>
+      {label.name}
+    </span>
   )
 }

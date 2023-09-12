@@ -21,7 +21,7 @@ type GameUsecase interface {
 	UpdateGameMaster(ctx context.Context, user model.User, gameID uint32, gameMasterID uint32, isProducer bool) (err error)
 	DeleteGameMaster(ctx context.Context, user model.User, gameID uint32, gameMasterID uint32) (err error)
 	UpdateGameStatus(ctx context.Context, user model.User, gameID uint32, status model.GameStatus) (err error)
-	UpdateGameSetting(ctx context.Context, user model.User, gameID uint32, gameName string, settings model.GameSettings) (err error)
+	UpdateGameSetting(ctx context.Context, user model.User, gameID uint32, gameName string, labels []model.GameLabel, settings model.GameSettings) (err error)
 	UpdateGamePeriod(ctx context.Context, user model.User, gameID uint32, period model.GamePeriod) (err error)
 	ChangePeriodIfNeeded(ctx context.Context, gameID uint32) error
 	// game participant
@@ -262,6 +262,7 @@ func (g *gameUsecase) UpdateGameSetting(
 	user model.User,
 	gameID uint32,
 	gameName string,
+	labels []model.GameLabel,
 	settings model.GameSettings,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
@@ -287,7 +288,7 @@ func (g *gameUsecase) UpdateGameSetting(
 			return nil, fmt.Errorf("you are not game master")
 		}
 
-		return nil, g.gameService.UpdateGameSettings(ctx, gameID, gameName, settings)
+		return nil, g.gameService.UpdateGameSettings(ctx, gameID, gameName, labels, settings)
 	})
 	return err
 }

@@ -8,6 +8,10 @@ query IndexGames($pageSize: Int!, $pageNumber: Int!, $statuses: [GameStatus!]) {
     id
     name
     status
+    labels {
+      name
+      type
+    }
     participantsCount
     periods {
       id

@@ -181,6 +181,7 @@ type Game struct {
 	ID           string             `json:"id"`
 	Name         string             `json:"name"`
 	Status       GameStatus         `json:"status"`
+	Labels       []*GameLabel       `json:"labels"`
 	GameMasters  []*GameMaster      `json:"gameMasters"`
 	Participants []*GameParticipant `json:"participants"`
 	Periods      []*GamePeriod      `json:"periods"`
@@ -195,6 +196,12 @@ type GameCapacity struct {
 type GameDiariesQuery struct {
 	ParticipantID *string `json:"participantId,omitempty"`
 	PeriodID      *string `json:"periodId,omitempty"`
+}
+
+type GameLabel struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 type GameNotificationCondition struct {
@@ -358,6 +365,7 @@ type NewDirectMessageFavorite struct {
 
 type NewGame struct {
 	Name     string           `json:"name"`
+	Labels   []*NewGameLabel  `json:"labels"`
 	Settings *NewGameSettings `json:"settings"`
 }
 
@@ -369,6 +377,11 @@ type NewGameCapacity struct {
 type NewGameCharaSetting struct {
 	CharachipIds         []string `json:"charachipIds"`
 	CanOriginalCharacter bool     `json:"canOriginalCharacter"`
+}
+
+type NewGameLabel struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 type NewGameMaster struct {
@@ -574,6 +587,7 @@ type SimpleGame struct {
 	ID                string        `json:"id"`
 	Name              string        `json:"name"`
 	Status            GameStatus    `json:"status"`
+	Labels            []*GameLabel  `json:"labels"`
 	ParticipantsCount int           `json:"participantsCount"`
 	Periods           []*GamePeriod `json:"periods"`
 	Settings          *GameSettings `json:"settings"`
@@ -587,6 +601,11 @@ type UpdateCharaSetting struct {
 type UpdateGameCapacity struct {
 	Min int `json:"min"`
 	Max int `json:"max"`
+}
+
+type UpdateGameLabel struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 type UpdateGameMaster struct {
@@ -683,6 +702,7 @@ type UpdateGameRuleSetting struct {
 type UpdateGameSetting struct {
 	GameID   string              `json:"gameId"`
 	Name     string              `json:"name"`
+	Labels   []*UpdateGameLabel  `json:"labels"`
 	Settings *UpdateGameSettings `json:"settings"`
 }
 

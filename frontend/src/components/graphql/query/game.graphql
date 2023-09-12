@@ -3,6 +3,10 @@ query Game($id: ID!) {
     id
     name
     status
+    labels {
+      name
+      type
+    }
     gameMasters {
       id
       player {

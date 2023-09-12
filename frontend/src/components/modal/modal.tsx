@@ -7,17 +7,20 @@ type ModalProps = {
   close: (e: any) => void
   children: React.ReactNode
   hideFooter?: boolean
+  hideOnClickOutside?: boolean
 }
 
 export default function Modal({
   header,
   close,
   children,
-  hideFooter
+  hideFooter,
+  hideOnClickOutside = true
 }: ModalProps) {
   const [insideClick, setInsideClick] = useState(false)
   const onMouseDown = (e: any) => setInsideClick(e.target === e.currentTarget)
   const onMouseUp = (e: any) => {
+    if (!hideOnClickOutside) return
     if (e.target === e.currentTarget && insideClick) {
       close(e)
     }
