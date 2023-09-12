@@ -19,9 +19,7 @@ export default function CreateGame() {
               </p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
-              <li>
-                エピローグ中のゲーム終了日時表記がエピローグ開始日時になっている
-              </li>
+              <li>なし</li>
             </ul>
           </div>
 
@@ -112,7 +110,6 @@ export default function CreateGame() {
                   <li>
                     ゲーム設定
                     <ul className='list-inside list-disc pl-4 text-left text-xs'>
-                      <li>レーティング</li>
                       <li>キャッチ画像</li>
                       <li>テーマ（最低限ライトとダークモード）</li>
                       <li>終了後DM公開</li>

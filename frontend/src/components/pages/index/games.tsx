@@ -49,7 +49,7 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
       break
     case 'Epilogue':
       descriptions.push(
-        `ゲーム終了: ${iso2display(game.settings.time.epilogueGameAt)}`
+        `ゲーム終了: ${iso2display(game.settings.time.finishGameAt)}`
       )
       break
     default:
