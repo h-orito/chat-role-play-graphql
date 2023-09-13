@@ -19,6 +19,7 @@ import { EnvelopeIcon, PencilIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import ParticipantGroupEdit from './participant-group-edit'
 import TalkDirect, { TalkDirectRefHandle } from '../../../talk/talk-direct'
+import { useUserPagingSettings } from '../../../user-settings'
 
 type Props = {
   close: (e: any) => void
@@ -39,12 +40,14 @@ export default function DirectMessageArea({
   openFavoritesModal,
   refetchGroups
 }: Props) {
+  const [pagingSettings] = useUserPagingSettings()
   const defaultQuery: DirectMessagesQuery | null = {
     participantGroupId: group.id,
     paging: {
-      pageSize: 10,
+      pageSize: pagingSettings.pageSize,
       pageNumber: 1,
-      isDesc: true
+      isDesc: pagingSettings.isDesc,
+      isLatest: !pagingSettings.isDesc
     }
   }
   const [query, setQuery] = useState<DirectMessagesQuery>(defaultQuery)
@@ -53,7 +56,8 @@ export default function DirectMessageArea({
     allPageCount: 0,
     hasPrePage: false,
     hasNextPage: false,
-    isDesc: true,
+    isDesc: pagingSettings.isDesc,
+    isLatest: !pagingSettings.isDesc,
     latestUnixTimeMilli: 0
   })
 
@@ -80,15 +84,11 @@ export default function DirectMessageArea({
 
   if (group == null) return <></>
 
-  const setPageableQuery = (pageNumber: number) => {
+  const setPageableQuery = (q: PageableQuery) => {
     const newQuery = {
       ...query,
-      paging: {
-        ...query!.paging,
-        pageNumber
-      } as PageableQuery
+      paging: q
     } as DirectMessagesQuery
-    setQuery(newQuery)
     search(newQuery)
   }
 
@@ -117,8 +117,6 @@ export default function DirectMessageArea({
   const canModify = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
     game.status
   )
-
-  // TODO: 発言モーダル表示ボタンの表示位置がうまくいってない
 
   return (
     <div className='flex flex-1 flex-col'>
@@ -156,7 +154,7 @@ export default function DirectMessageArea({
       <Paging
         messages={directMessages}
         query={query!.paging as PageableQuery | undefined}
-        setQuery={setPageableQuery}
+        setPageableQuery={setPageableQuery}
       />
       <div className='flex-1 overflow-y-auto'>
         {directMessages.list.map((message: DirectMessage) => (
@@ -173,7 +171,7 @@ export default function DirectMessageArea({
       <Paging
         messages={directMessages}
         query={query!.paging as PageableQuery | undefined}
-        setQuery={setPageableQuery}
+        setPageableQuery={setPageableQuery}
       />
       {isOpenModifyGroupModal && (
         <Modal close={toggleModifyGroupModal} hideFooter>

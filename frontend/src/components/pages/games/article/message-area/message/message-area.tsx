@@ -25,6 +25,7 @@ import { DocumentTextIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import Talk, { TalkRefHandle } from '../../../talk/talk'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import TalkDescription from '../../../talk/talk-description'
+import { useUserPagingSettings } from '../../../user-settings'
 
 type Props = {
   game: Game
@@ -64,15 +65,18 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       onlyFollowing = false,
       searchable = false
     } = props
+
+    const [pagingSettings] = useUserPagingSettings()
     const defaultMessageQuery: MessagesQuery = {
       senderIds: onlyFollowing
         ? [...myself!.followParticipantIds, myself!.id]
         : null,
       periodId: searchable ? null : game.periods[game.periods.length - 1].id,
       paging: {
-        pageSize: 10,
+        pageSize: pagingSettings.pageSize,
         pageNumber: 1,
-        isDesc: true
+        isDesc: pagingSettings.isDesc,
+        isLatest: !pagingSettings.isDesc
       }
     }
 
@@ -81,7 +85,8 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       allPageCount: 0,
       hasPrePage: false,
       hasNextPage: false,
-      isDesc: true,
+      isDesc: pagingSettings.isDesc,
+      isLatest: !pagingSettings.isDesc,
       latestUnixTimeMilli: 0
     })
     const [latestTime, setLatestTime] = useState<number>(0)
@@ -94,14 +99,11 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     }))
 
     const search = async (query: MessagesQuery = messageQuery) => {
-      const newQuery = {
-        ...query
-      }
-      setMessageQuery(newQuery)
+      setMessageQuery(query)
       const { data } = await fetchMessages({
         variables: {
           gameId: game.id,
-          query: newQuery
+          query: query
         } as MessagesQuery
       })
       if (data?.messages == null) return
@@ -158,19 +160,17 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         paging: {
           // 期間移動したら1ページ目に戻す
           ...messageQuery.paging,
-          pageNumber: 1
+          pageNumber: 1,
+          isLatest: false
         } as PageableQuery
       } as MessagesQuery
       search(newQuery)
     }
 
-    const setPageableQuery = (pageNumber: number) => {
+    const setPageableQuery = (q: PageableQuery) => {
       const newQuery = {
         ...messageQuery,
-        paging: {
-          ...messageQuery.paging,
-          pageNumber
-        } as PageableQuery
+        paging: q
       } as MessagesQuery
       search(newQuery)
     }
@@ -223,7 +223,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         <Paging
           messages={messages}
           query={messageQuery.paging as PageableQuery | undefined}
-          setQuery={setPageableQuery}
+          setPageableQuery={setPageableQuery}
         />
         <div className='relative flex-1 overflow-y-auto pb-12'>
           {messages.list.map((message: Message) => (
@@ -251,7 +251,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         <Paging
           messages={messages}
           query={messageQuery.paging as PageableQuery | undefined}
-          setQuery={setPageableQuery}
+          setPageableQuery={setPageableQuery}
         />
       </div>
     )

@@ -167,16 +167,18 @@ func findMessages(db *gorm.DB, gameID uint32, query model.MessagesQuery, myself 
 		HasNextPage:         false,
 		CurrentPageNumber:   nil,
 		IsDesc:              false,
+		IsLatest:            false,
 		LatestUnixTimeMilli: latestUnixTimeMilli,
 	}
 	if query.Paging != nil {
 		allPageCount := uint32(math.Ceil(float64(allCount) / float64(query.Paging.PageSize)))
 		ms.AllPageCount = allPageCount
-		ms.HasPrePage = query.Paging.PageNumber != 1
-		ms.HasNextPage = uint32(query.Paging.PageNumber) < allPageCount
+		ms.HasPrePage = query.Paging.Latest || query.Paging.PageNumber != 1
+		ms.HasNextPage = query.Paging.Latest || uint32(query.Paging.PageNumber) < allPageCount
 		pn := uint32(query.Paging.PageNumber)
 		ms.CurrentPageNumber = &pn
 		ms.IsDesc = query.Paging.Desc
+		ms.IsLatest = query.Paging.Latest
 	}
 	return ms, nil
 }
@@ -209,7 +211,7 @@ func findRdbMessages(
 			return nil, 0, nil
 		}
 		if countResult.Error != nil {
-			return nil, 0, fmt.Errorf("failed to find: %s \n", result.Error)
+			return nil, 0, fmt.Errorf("failed to find: %s", result.Error)
 		}
 		result = result.Scopes(Paginate(query.Paging))
 	}
@@ -219,10 +221,14 @@ func findRdbMessages(
 		return nil, 0, nil
 	}
 	if result.Error != nil {
-		return nil, 0, fmt.Errorf("failed to find: %s \n", result.Error)
+		return nil, 0, fmt.Errorf("failed to find: %s", result.Error)
 	}
 
-	return rdb, count, nil
+	if query.Paging != nil && query.Paging.Latest {
+		return array.Reverse(rdb), count, nil
+	} else {
+		return rdb, count, nil
+	}
 }
 
 // paging以外のwhere句を追加
@@ -290,7 +296,7 @@ func selectMaxMessageSendUnixTimeMilli(db *gorm.DB, gameID uint32, query model.M
 	setMessageDbQuery(result, query, myself)
 	result = result.Scan(&max)
 	if result.Error != nil {
-		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
+		return 0, fmt.Errorf("failed to select max: %s", result.Error)
 	}
 	if max == nil {
 		if query.OffsetUnixtimeMilli != nil {
@@ -327,7 +333,7 @@ func findRdbMessage(db *gorm.DB, gameID uint32, ID uint64) (*Message, error) {
 		return nil, nil
 	}
 	if result.Error != nil {
-		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+		return nil, fmt.Errorf("failed to find: %s", result.Error)
 	}
 	return &rdb, nil
 }
@@ -386,14 +392,14 @@ func registerMessage(tx *gorm.DB, gameID uint32, message model.Message) error {
 			continue
 		}
 		if result.Error != nil {
-			return fmt.Errorf("failed to create: %s \n", result.Error)
+			return fmt.Errorf("failed to create: %s", result.Error)
 		}
 		if message.ReplyTo != nil {
 			updateReplyCount(tx, message.ReplyTo.MessageID)
 		}
 		return nil
 	}
-	return fmt.Errorf("failed to create: duplicated key \n")
+	return fmt.Errorf("failed to create: duplicated key")
 }
 
 func selectMaxMessageNumber(db *gorm.DB, gameID uint32, message model.Message) (uint32, error) {
@@ -403,7 +409,7 @@ func selectMaxMessageNumber(db *gorm.DB, gameID uint32, message model.Message) (
 		Where("message_type_code = ?", message.Type.String()).
 		Scan(&max)
 	if result.Error != nil {
-		return 0, fmt.Errorf("failed to select max: %s \n", result.Error)
+		return 0, fmt.Errorf("failed to select max: %s", result.Error)
 	}
 	if max == nil {
 		return 0, nil
@@ -415,11 +421,11 @@ func updateReplyCount(tx *gorm.DB, messageID uint64) error {
 	var count int64
 	result := tx.Model(&Message{}).Where("reply_to_message_id = ?", messageID).Count(&count)
 	if result.Error != nil {
-		return fmt.Errorf("failed to find: %s \n", result.Error)
+		return fmt.Errorf("failed to find: %s", result.Error)
 	}
 	result = tx.Model(&Message{}).Where("id = ?", messageID).Update("reply_count", count)
 	if result.Error != nil {
-		return fmt.Errorf("failed to update: %s \n", result.Error)
+		return fmt.Errorf("failed to update: %s", result.Error)
 	}
 	return nil
 }
@@ -431,7 +437,7 @@ func findRdbMessageFavoritesByMessageIDs(db *gorm.DB, gameID uint32, messageIDs 
 		return nil, nil
 	}
 	if result.Error != nil {
-		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+		return nil, fmt.Errorf("failed to find: %s", result.Error)
 	}
 	return rdb, nil
 }
@@ -466,12 +472,12 @@ func registerMessageFavorite(tx *gorm.DB, gameID uint32, messageID uint64, gameP
 	}
 	result := tx.Create(&rdb)
 	if result.Error != nil {
-		return fmt.Errorf("failed to create: %s \n", result.Error)
+		return fmt.Errorf("failed to create: %s", result.Error)
 	}
 	// update favorite count
 	result = tx.Model(&Message{}).Where("id = ?", messageID).Update("favorite_count", len(exists)+1)
 	if result.Error != nil {
-		return fmt.Errorf("failed to update: %s \n", result.Error)
+		return fmt.Errorf("failed to update: %s", result.Error)
 	}
 	return nil
 }
@@ -491,7 +497,7 @@ func deleteMessageFavorite(tx *gorm.DB, gameID uint32, messageID uint64, gamePar
 	// update favorite count
 	result := tx.Model(&Message{}).Where("id = ?", messageID).Update("favorite_count", len(exists)-1)
 	if result.Error != nil {
-		return fmt.Errorf("failed to update: %s \n", result.Error)
+		return fmt.Errorf("failed to update: %s", result.Error)
 	}
 	return nil
 }
@@ -509,6 +515,9 @@ func findGameParticipantGroups(db *gorm.DB, query model.GameParticipantGroupsQue
 		return nil, err
 	}
 	latests, err := selectGameParticipantGroupLatests(db, ids)
+	if err != nil {
+		return nil, err
+	}
 	return array.Map(rdbs, func(rdb GameParticipantGroup) model.GameParticipantGroup {
 		m := array.Map(array.Filter(members, func(m GameParticipantGroupMember) bool {
 			return m.GameParticipantGroupID == rdb.ID
@@ -658,16 +667,18 @@ func findDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessagesQu
 		HasNextPage:         false,
 		CurrentPageNumber:   nil,
 		IsDesc:              false,
+		IsLatest:            false,
 		LatestUnixTimeMilli: latest,
 	}
 	if query.Paging != nil {
 		allPageCount := uint32(math.Ceil(float64(allCount) / float64(query.Paging.PageSize)))
 		ms.AllPageCount = allPageCount
-		ms.HasPrePage = query.Paging.PageNumber != 1
-		ms.HasNextPage = uint32(query.Paging.PageNumber) < allPageCount
+		ms.HasPrePage = query.Paging.Latest || query.Paging.PageNumber != 1
+		ms.HasNextPage = query.Paging.Latest || uint32(query.Paging.PageNumber) < allPageCount
 		pn := uint32(query.Paging.PageNumber)
 		ms.CurrentPageNumber = &pn
 		ms.IsDesc = query.Paging.Desc
+		ms.IsLatest = query.Paging.Latest
 	}
 	return ms, nil
 }
@@ -686,7 +697,7 @@ func findRdbDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessage
 			return nil, 0, nil
 		}
 		if countResult.Error != nil {
-			return nil, 0, fmt.Errorf("failed to find: %s \n", result.Error)
+			return nil, 0, fmt.Errorf("failed to find: %s", result.Error)
 		}
 		result = result.Scopes(Paginate(query.Paging))
 	}
@@ -696,9 +707,13 @@ func findRdbDirectMessages(db *gorm.DB, gameID uint32, query model.DirectMessage
 		return nil, 0, nil
 	}
 	if result.Error != nil {
-		return nil, 0, fmt.Errorf("failed to find: %s \n", result.Error)
+		return nil, 0, fmt.Errorf("failed to find: %s", result.Error)
 	}
-	return rdb, count, nil
+	if query.Paging != nil && query.Paging.Latest {
+		return array.Reverse(rdb), count, nil
+	} else {
+		return rdb, count, nil
+	}
 }
 
 func setDirectMessageDbQuery(db *gorm.DB, query model.DirectMessagesQuery) {

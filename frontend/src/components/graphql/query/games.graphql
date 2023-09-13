@@ -2,7 +2,12 @@ query IndexGames($pageSize: Int!, $pageNumber: Int!, $statuses: [GameStatus!]) {
   games(
     query: {
       statuses: $statuses
-      paging: { pageSize: $pageSize, pageNumber: $pageNumber, isDesc: true }
+      paging: {
+        pageSize: $pageSize
+        pageNumber: $pageNumber
+        isDesc: true
+        isLatest: false
+      }
     }
   ) {
     id

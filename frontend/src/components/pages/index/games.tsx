@@ -59,7 +59,6 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
   // TODO: ゲーム画像を設定できるようにする
   const gameImage = '/chat-role-play/images/game.jpg'
 
-  console.log(game.labels)
   return (
     <Link href={`/games/${base64ToId(game.id)}`} className='relative'>
       <div className='flex flex-col rounded-lg border border-gray-300 hover:border-blue-500'>
@@ -76,7 +75,7 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
           <div className='px-4 py-2 text-left text-xs leading-6'>
             <div className='flex'>
               {game.labels.map((l: GameLabel) => (
-                <Label label={l} />
+                <Label key={l.name} label={l} />
               ))}
             </div>
             <div className='mt-2'>

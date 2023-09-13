@@ -13,6 +13,7 @@ type Messages struct {
 	HasNextPage         bool
 	CurrentPageNumber   *uint32
 	IsDesc              bool
+	IsLatest            bool
 	LatestUnixTimeMilli uint64
 }
 
@@ -149,6 +150,7 @@ type DirectMessages struct {
 	HasNextPage         bool
 	CurrentPageNumber   *uint32
 	IsDesc              bool
+	IsLatest            bool
 	LatestUnixTimeMilli uint64
 }
 

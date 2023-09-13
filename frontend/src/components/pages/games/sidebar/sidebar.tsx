@@ -1,4 +1,6 @@
 import {
+  DebugMessagesDocument,
+  DebugMessagesMutation,
   Game,
   GameLabel,
   GameParticipant,
@@ -29,6 +31,9 @@ import TalkSystem, { TalkSystemRefHandle } from '../talk/talk-system'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import GameMasterEdit from './game-master-edit'
 import GameStatusEdit from './game-status-edit'
+import { useMutation } from '@apollo/client'
+import { useRouter } from 'next/router'
+import UserSettingsComponent from './user-settings'
 
 type SidebarProps = {
   isSidebarOpen: boolean
@@ -109,6 +114,7 @@ export default function Sidebar({
             />
           </div>
         )}
+        <DebugMenu game={game} />
         {canParticipate && (
           <div className='border-t border-gray-300 py-2'>
             <ParticipateButton game={game} />
@@ -268,7 +274,7 @@ const UserSettingsButton = ({}: UserSettingsButtonProps) => {
       </div>
       {isOpenModal && (
         <Modal close={toggleModal} hideFooter>
-          <div>準備中</div>
+          <UserSettingsComponent close={toggleModal} />
         </Modal>
       )}
     </>
@@ -474,12 +480,13 @@ const ParticipateButton = ({ game }: ParticipateButtonProps) => {
 const GameLabels = ({ game }: { game: Game }) => {
   return (
     <div className='mb-2 flex px-4'>
-      {game.labels.map((l: GameLabel) => (
-        <Label label={l} />
+      {game.labels.map((l: GameLabel, idx: number) => (
+        <Label key={idx} label={l} />
       ))}
     </div>
   )
 }
+
 const Label = ({ label }: { label: GameLabel }) => {
   const colorClass =
     label.type === 'success'
@@ -491,5 +498,35 @@ const Label = ({ label }: { label: GameLabel }) => {
     <span className={`mr-1 rounded-md px-2 text-xs text-white ${colorClass}`}>
       {label.name}
     </span>
+  )
+}
+
+const DebugMenu = ({ game }: { game: Game }) => {
+  const [registerMessage] = useMutation<DebugMessagesMutation>(
+    DebugMessagesDocument
+  )
+  const router = useRouter()
+  const registerDebugMessages = async () => {
+    await registerMessage({
+      variables: {
+        input: {
+          gameId: game.id
+        }
+      }
+    })
+    router.reload()
+  }
+
+  if (process.env.NEXT_PUBLIC_ENV !== 'local') return <></>
+  return (
+    <div className='border-t border-gray-300 py-2'>
+      <button
+        className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+        onClick={() => registerDebugMessages()}
+      >
+        <UserPlusIcon className='mr-1 h-6 w-6' />
+        <p className='flex-1 self-center text-left'>100回発言</p>
+      </button>
+    </div>
   )
 }

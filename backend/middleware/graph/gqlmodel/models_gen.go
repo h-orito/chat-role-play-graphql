@@ -154,6 +154,7 @@ type DirectMessages struct {
 	HasNextPage         bool             `json:"hasNextPage"`
 	CurrentPageNumber   *int             `json:"currentPageNumber,omitempty"`
 	IsDesc              bool             `json:"isDesc"`
+	IsLatest            bool             `json:"isLatest"`
 	LatestUnixTimeMilli uint64           `json:"latestUnixTimeMilli"`
 }
 
@@ -325,6 +326,7 @@ type Messages struct {
 	HasNextPage         bool       `json:"hasNextPage"`
 	CurrentPageNumber   *int       `json:"currentPageNumber,omitempty"`
 	IsDesc              bool       `json:"isDesc"`
+	IsLatest            bool       `json:"isLatest"`
 	LatestUnixTimeMilli uint64     `json:"latestUnixTimeMilli"`
 }
 
@@ -488,6 +490,7 @@ type PageableQuery struct {
 	PageSize   int  `json:"pageSize"`
 	PageNumber int  `json:"pageNumber"`
 	IsDesc     bool `json:"isDesc"`
+	IsLatest   bool `json:"isLatest"`
 }
 
 type ParticipantsQuery struct {
@@ -521,6 +524,14 @@ type PlayersQuery struct {
 	Ids    []string       `json:"ids,omitempty"`
 	Name   *string        `json:"name,omitempty"`
 	Paging *PageableQuery `json:"paging,omitempty"`
+}
+
+type RegisterDebugMessages struct {
+	GameID string `json:"gameId"`
+}
+
+type RegisterDebugMessagesPayload struct {
+	Ok bool `json:"ok"`
 }
 
 type RegisterDirectMessageDryRunPayload struct {

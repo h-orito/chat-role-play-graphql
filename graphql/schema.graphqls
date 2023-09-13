@@ -251,6 +251,7 @@ type Messages implements Pageable {
   hasNextPage: Boolean!
   currentPageNumber: Int
   isDesc: Boolean!
+  isLatest: Boolean!
   latestUnixTimeMilli: Long!
 }
 
@@ -308,6 +309,7 @@ type DirectMessages implements Pageable {
   hasNextPage: Boolean!
   currentPageNumber: Int
   isDesc: Boolean!
+  isLatest: Boolean!
   latestUnixTimeMilli: Long!
 }
 
@@ -384,6 +386,7 @@ input PageableQuery {
   pageSize: Int!
   pageNumber: Int!
   isDesc: Boolean!
+  isLatest: Boolean!
 }
 
 input CharachipsQuery {
@@ -549,6 +552,11 @@ type Mutation {
   updateGameParticipantGroup(
     input: UpdateGameParticipantGroup!
   ): UpdateGameParticipantGroupPayload! @isAuthenticated
+
+  # debug
+  registerDebugMessages(
+    input: RegisterDebugMessages!
+  ): RegisterDebugMessagesPayload! @isAuthenticated
 }
 
 ## game
@@ -994,6 +1002,14 @@ input UpdateGameParticipantGroup {
 }
 
 type UpdateGameParticipantGroupPayload {
+  ok: Boolean!
+}
+
+input RegisterDebugMessages {
+  gameId: ID!
+}
+
+type RegisterDebugMessagesPayload {
   ok: Boolean!
 }
 

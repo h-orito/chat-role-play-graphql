@@ -346,6 +346,7 @@ func (r *queryResolver) MapToMessagesQuery(query gqlmodel.MessagesQuery) (*model
 			PageSize:   query.Paging.PageSize,
 			PageNumber: query.Paging.PageNumber,
 			Desc:       query.Paging.IsDesc,
+			Latest:     query.Paging.IsLatest,
 		}
 	}
 
@@ -505,6 +506,7 @@ func (r *queryResolver) MapToDirectMessagesQuery(query gqlmodel.DirectMessagesQu
 			PageSize:   query.Paging.PageSize,
 			PageNumber: query.Paging.PageNumber,
 			Desc:       query.Paging.IsDesc,
+			Latest:     query.Paging.IsLatest,
 		}
 	}
 

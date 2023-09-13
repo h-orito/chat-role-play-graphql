@@ -3,12 +3,19 @@ import { Pageable, PageableQuery } from '@/lib/generated/graphql'
 type PagingProps = {
   messages: Pageable
   query: PageableQuery | undefined
-  setQuery: (pageNumber: number) => void
+  setPageableQuery: (q: PageableQuery) => void
 }
 
-export default function Paging({ messages, query, setQuery }: PagingProps) {
+export default function Paging({
+  messages,
+  query,
+  setPageableQuery
+}: PagingProps) {
   if (messages.allPageCount <= 1) return <></>
-  const currentPageNumber = messages.currentPageNumber ?? 1
+  const currentPageNumber =
+    query?.isLatest === true
+      ? messages.allPageCount
+      : messages.currentPageNumber ?? 1
   let pageCounts: Array<number> = []
   if (messages.allPageCount <= 5) {
     pageCounts = [...Array(messages.allPageCount)].map((_, i) => i + 1)
@@ -34,13 +41,29 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
     }
   }
 
+  const setPageNumber = (pageNumber: number) => {
+    setPageableQuery({
+      ...query!,
+      pageNumber: pageNumber,
+      isLatest: false
+    })
+  }
+
+  const setLatest = () => {
+    setPageableQuery({
+      ...query!,
+      pageNumber: 1,
+      isLatest: true
+    })
+  }
+
   return (
     <div className='flex justify-center border-b border-gray-300'>
       <ul className='flex py-2 text-xs'>
         <li>
           <button
-            className='w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
-            onClick={() => setQuery(1)}
+            className='w-8 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
+            onClick={() => setPageNumber(1)}
             disabled={!messages.hasPrePage}
           >
             &lt;&lt;
@@ -48,8 +71,14 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
         </li>
         <li>
           <button
-            className='w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
-            onClick={() => setQuery(currentPageNumber - 1)}
+            className='w-8 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
+            onClick={() =>
+              setPageNumber(
+                query?.isLatest === true
+                  ? messages.allPageCount
+                  : currentPageNumber - 1
+              )
+            }
             disabled={!messages.hasPrePage}
           >
             &lt;
@@ -59,9 +88,12 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
           <li key={pageCount}>
             <button
               className={`w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 ${
-                pageCount === messages.currentPageNumber ? 'bg-blue-300' : ''
+                query?.isLatest !== true &&
+                pageCount === messages.currentPageNumber
+                  ? 'bg-blue-300'
+                  : ''
               }`}
-              onClick={() => setQuery(pageCount)}
+              onClick={() => setPageNumber(pageCount)}
             >
               {pageCount}
             </button>
@@ -69,8 +101,14 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
         ))}
         <li>
           <button
-            className='w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
-            onClick={() => setQuery(currentPageNumber + 1)}
+            className='w-8 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
+            onClick={() =>
+              setPageNumber(
+                query?.isLatest === true
+                  ? messages.allPageCount
+                  : currentPageNumber + 1
+              )
+            }
             disabled={!messages.hasNextPage}
           >
             &gt;
@@ -78,13 +116,25 @@ export default function Paging({ messages, query, setQuery }: PagingProps) {
         </li>
         <li>
           <button
-            className='w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white'
-            onClick={() => setQuery(messages.allPageCount)}
+            className='w-8 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
+            onClick={() => setPageNumber(messages.allPageCount)}
             disabled={!messages.hasNextPage}
           >
             &gt;&gt;
           </button>
         </li>
+        {query?.isDesc === false && (
+          <li>
+            <button
+              className={`w-12 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white ${
+                query?.isLatest === true ? 'bg-blue-300' : ''
+              }`}
+              onClick={() => setLatest()}
+            >
+              最新
+            </button>
+          </li>
+        )}
       </ul>
     </div>
   )

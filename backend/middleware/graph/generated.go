@@ -136,6 +136,7 @@ type ComplexityRoot struct {
 		HasNextPage         func(childComplexity int) int
 		HasPrePage          func(childComplexity int) int
 		IsDesc              func(childComplexity int) int
+		IsLatest            func(childComplexity int) int
 		LatestUnixTimeMilli func(childComplexity int) int
 		List                func(childComplexity int) int
 	}
@@ -319,6 +320,7 @@ type ComplexityRoot struct {
 		HasNextPage         func(childComplexity int) int
 		HasPrePage          func(childComplexity int) int
 		IsDesc              func(childComplexity int) int
+		IsLatest            func(childComplexity int) int
 		LatestUnixTimeMilli func(childComplexity int) int
 		List                func(childComplexity int) int
 	}
@@ -332,6 +334,7 @@ type ComplexityRoot struct {
 		DeleteGameParticipantIcon     func(childComplexity int, input gqlmodel.DeleteGameParticipantIcon) int
 		DeleteMessageFavorite         func(childComplexity int, input gqlmodel.DeleteMessageFavorite) int
 		DeletePlayerSnsAccount        func(childComplexity int, input gqlmodel.DeletePlayerSnsAccount) int
+		RegisterDebugMessages         func(childComplexity int, input gqlmodel.RegisterDebugMessages) int
 		RegisterDirectMessage         func(childComplexity int, input gqlmodel.NewDirectMessage) int
 		RegisterDirectMessageDryRun   func(childComplexity int, input gqlmodel.NewDirectMessage) int
 		RegisterDirectMessageFavorite func(childComplexity int, input gqlmodel.NewDirectMessageFavorite) int
@@ -415,6 +418,10 @@ type ComplexityRoot struct {
 		MyPlayer                              func(childComplexity int) int
 		Player                                func(childComplexity int, id string) int
 		Players                               func(childComplexity int, query gqlmodel.PlayersQuery) int
+	}
+
+	RegisterDebugMessagesPayload struct {
+		Ok func(childComplexity int) int
 	}
 
 	RegisterDirectMessageDryRunPayload struct {
@@ -591,6 +598,7 @@ type MutationResolver interface {
 	DeleteDirectMessageFavorite(ctx context.Context, input gqlmodel.DeleteDirectMessageFavorite) (*gqlmodel.DeleteDirectMessageFavoritePayload, error)
 	RegisterGameParticipantGroup(ctx context.Context, input gqlmodel.NewGameParticipantGroup) (*gqlmodel.RegisterGameParticipantGroupPayload, error)
 	UpdateGameParticipantGroup(ctx context.Context, input gqlmodel.UpdateGameParticipantGroup) (*gqlmodel.UpdateGameParticipantGroupPayload, error)
+	RegisterDebugMessages(ctx context.Context, input gqlmodel.RegisterDebugMessages) (*gqlmodel.RegisterDebugMessagesPayload, error)
 }
 type QueryResolver interface {
 	Designers(ctx context.Context, query gqlmodel.DesignersQuery) ([]*gqlmodel.Designer, error)
@@ -903,6 +911,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.DirectMessages.IsDesc(childComplexity), true
+
+	case "DirectMessages.isLatest":
+		if e.complexity.DirectMessages.IsLatest == nil {
+			break
+		}
+
+		return e.complexity.DirectMessages.IsLatest(childComplexity), true
 
 	case "DirectMessages.latestUnixTimeMilli":
 		if e.complexity.DirectMessages.LatestUnixTimeMilli == nil {
@@ -1665,6 +1680,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Messages.IsDesc(childComplexity), true
 
+	case "Messages.isLatest":
+		if e.complexity.Messages.IsLatest == nil {
+			break
+		}
+
+		return e.complexity.Messages.IsLatest(childComplexity), true
+
 	case "Messages.latestUnixTimeMilli":
 		if e.complexity.Messages.LatestUnixTimeMilli == nil {
 			break
@@ -1774,6 +1796,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeletePlayerSnsAccount(childComplexity, args["input"].(gqlmodel.DeletePlayerSnsAccount)), true
+
+	case "Mutation.registerDebugMessages":
+		if e.complexity.Mutation.RegisterDebugMessages == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_registerDebugMessages_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RegisterDebugMessages(childComplexity, args["input"].(gqlmodel.RegisterDebugMessages)), true
 
 	case "Mutation.registerDirectMessage":
 		if e.complexity.Mutation.RegisterDirectMessage == nil {
@@ -2511,6 +2545,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Players(childComplexity, args["query"].(gqlmodel.PlayersQuery)), true
 
+	case "RegisterDebugMessagesPayload.ok":
+		if e.complexity.RegisterDebugMessagesPayload.Ok == nil {
+			break
+		}
+
+		return e.complexity.RegisterDebugMessagesPayload.Ok(childComplexity), true
+
 	case "RegisterDirectMessageDryRunPayload.directMessage":
 		if e.complexity.RegisterDirectMessageDryRunPayload.DirectMessage == nil {
 			break
@@ -2788,6 +2829,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputPageableQuery,
 		ec.unmarshalInputParticipantsQuery,
 		ec.unmarshalInputPlayersQuery,
+		ec.unmarshalInputRegisterDebugMessages,
 		ec.unmarshalInputUpdateCharaSetting,
 		ec.unmarshalInputUpdateGameCapacity,
 		ec.unmarshalInputUpdateGameLabel,
@@ -3159,6 +3201,7 @@ type Messages implements Pageable {
   hasNextPage: Boolean!
   currentPageNumber: Int
   isDesc: Boolean!
+  isLatest: Boolean!
   latestUnixTimeMilli: Long!
 }
 
@@ -3216,6 +3259,7 @@ type DirectMessages implements Pageable {
   hasNextPage: Boolean!
   currentPageNumber: Int
   isDesc: Boolean!
+  isLatest: Boolean!
   latestUnixTimeMilli: Long!
 }
 
@@ -3292,6 +3336,7 @@ input PageableQuery {
   pageSize: Int!
   pageNumber: Int!
   isDesc: Boolean!
+  isLatest: Boolean!
 }
 
 input CharachipsQuery {
@@ -3457,6 +3502,11 @@ type Mutation {
   updateGameParticipantGroup(
     input: UpdateGameParticipantGroup!
   ): UpdateGameParticipantGroupPayload! @isAuthenticated
+
+  # debug
+  registerDebugMessages(
+    input: RegisterDebugMessages!
+  ): RegisterDebugMessagesPayload! @isAuthenticated
 }
 
 ## game
@@ -3905,6 +3955,14 @@ type UpdateGameParticipantGroupPayload {
   ok: Boolean!
 }
 
+input RegisterDebugMessages {
+  gameId: ID!
+}
+
+type RegisterDebugMessagesPayload {
+  ok: Boolean!
+}
+
 ####################################################
 
 # TODO: subscription
@@ -4043,6 +4101,21 @@ func (ec *executionContext) field_Mutation_deletePlayerSnsAccount_args(ctx conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNDeletePlayerSnsAccount2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeletePlayerSnsAccount(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_registerDebugMessages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 gqlmodel.RegisterDebugMessages
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNRegisterDebugMessages2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDebugMessages(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -6751,6 +6824,50 @@ func (ec *executionContext) _DirectMessages_isDesc(ctx context.Context, field gr
 }
 
 func (ec *executionContext) fieldContext_DirectMessages_isDesc(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DirectMessages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DirectMessages_isLatest(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.DirectMessages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DirectMessages_isLatest(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsLatest, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DirectMessages_isLatest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessages",
 		Field:      field,
@@ -11799,6 +11916,50 @@ func (ec *executionContext) fieldContext_Messages_isDesc(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Messages_isLatest(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.Messages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Messages_isLatest(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsLatest, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Messages_isLatest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Messages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Messages_latestUnixTimeMilli(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.Messages) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Messages_latestUnixTimeMilli(ctx, field)
 	if err != nil {
@@ -14450,6 +14611,85 @@ func (ec *executionContext) fieldContext_Mutation_updateGameParticipantGroup(ctx
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_registerDebugMessages(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_registerDebugMessages(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().RegisterDebugMessages(rctx, fc.Args["input"].(gqlmodel.RegisterDebugMessages))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*gqlmodel.RegisterDebugMessagesPayload); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *chat-role-play/middleware/graph/gqlmodel.RegisterDebugMessagesPayload`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.RegisterDebugMessagesPayload)
+	fc.Result = res
+	return ec.marshalNRegisterDebugMessagesPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDebugMessagesPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_registerDebugMessages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_RegisterDebugMessagesPayload_ok(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RegisterDebugMessagesPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_registerDebugMessages_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _NotificationCondition_discordWebhookUrl(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.NotificationCondition) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_NotificationCondition_discordWebhookUrl(ctx, field)
 	if err != nil {
@@ -16392,6 +16632,8 @@ func (ec *executionContext) fieldContext_Query_messages(ctx context.Context, fie
 				return ec.fieldContext_Messages_currentPageNumber(ctx, field)
 			case "isDesc":
 				return ec.fieldContext_Messages_isDesc(ctx, field)
+			case "isLatest":
+				return ec.fieldContext_Messages_isLatest(ctx, field)
 			case "latestUnixTimeMilli":
 				return ec.fieldContext_Messages_latestUnixTimeMilli(ctx, field)
 			}
@@ -16799,6 +17041,8 @@ func (ec *executionContext) fieldContext_Query_directMessages(ctx context.Contex
 				return ec.fieldContext_DirectMessages_currentPageNumber(ctx, field)
 			case "isDesc":
 				return ec.fieldContext_DirectMessages_isDesc(ctx, field)
+			case "isLatest":
+				return ec.fieldContext_DirectMessages_isLatest(ctx, field)
 			case "latestUnixTimeMilli":
 				return ec.fieldContext_DirectMessages_latestUnixTimeMilli(ctx, field)
 			}
@@ -17145,6 +17389,50 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RegisterDebugMessagesPayload_ok(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.RegisterDebugMessagesPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RegisterDebugMessagesPayload_ok(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Ok, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RegisterDebugMessagesPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RegisterDebugMessagesPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -22290,7 +22578,7 @@ func (ec *executionContext) unmarshalInputPageableQuery(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"pageSize", "pageNumber", "isDesc"}
+	fieldsInOrder := [...]string{"pageSize", "pageNumber", "isDesc", "isLatest"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22324,6 +22612,15 @@ func (ec *executionContext) unmarshalInputPageableQuery(ctx context.Context, obj
 				return it, err
 			}
 			it.IsDesc = data
+		case "isLatest":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isLatest"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsLatest = data
 		}
 	}
 
@@ -22418,6 +22715,35 @@ func (ec *executionContext) unmarshalInputPlayersQuery(ctx context.Context, obj 
 				return it, err
 			}
 			it.Paging = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputRegisterDebugMessages(ctx context.Context, obj interface{}) (gqlmodel.RegisterDebugMessages, error) {
+	var it gqlmodel.RegisterDebugMessages
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"gameId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "gameId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.GameID = data
 		}
 	}
 
@@ -24236,6 +24562,11 @@ func (ec *executionContext) _DirectMessages(ctx context.Context, sel ast.Selecti
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "isLatest":
+			out.Values[i] = ec._DirectMessages_isLatest(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "latestUnixTimeMilli":
 			out.Values[i] = ec._DirectMessages_latestUnixTimeMilli(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -25934,6 +26265,11 @@ func (ec *executionContext) _Messages(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "isLatest":
+			out.Values[i] = ec._Messages_isLatest(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "latestUnixTimeMilli":
 			out.Values[i] = ec._Messages_latestUnixTimeMilli(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -26208,6 +26544,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "updateGameParticipantGroup":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateGameParticipantGroup(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "registerDebugMessages":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_registerDebugMessages(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -27041,6 +27384,45 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var registerDebugMessagesPayloadImplementors = []string{"RegisterDebugMessagesPayload"}
+
+func (ec *executionContext) _RegisterDebugMessagesPayload(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.RegisterDebugMessagesPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, registerDebugMessagesPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RegisterDebugMessagesPayload")
+		case "ok":
+			out.Values[i] = ec._RegisterDebugMessagesPayload_ok(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -29950,6 +30332,25 @@ func (ec *executionContext) marshalNPlayerSnsAccount2ᚖchatᚑroleᚑplayᚋmid
 func (ec *executionContext) unmarshalNPlayersQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayersQuery(ctx context.Context, v interface{}) (gqlmodel.PlayersQuery, error) {
 	res, err := ec.unmarshalInputPlayersQuery(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNRegisterDebugMessages2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDebugMessages(ctx context.Context, v interface{}) (gqlmodel.RegisterDebugMessages, error) {
+	res, err := ec.unmarshalInputRegisterDebugMessages(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNRegisterDebugMessagesPayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDebugMessagesPayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterDebugMessagesPayload) graphql.Marshaler {
+	return ec._RegisterDebugMessagesPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRegisterDebugMessagesPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDebugMessagesPayload(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.RegisterDebugMessagesPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._RegisterDebugMessagesPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNRegisterDirectMessageDryRunPayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDirectMessageDryRunPayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterDirectMessageDryRunPayload) graphql.Marshaler {

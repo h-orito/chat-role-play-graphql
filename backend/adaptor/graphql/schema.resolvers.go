@@ -230,6 +230,11 @@ func (r *mutationResolver) UpdateGameParticipantGroup(ctx context.Context, input
 	return r.updateGameParticipantGroup(ctx, input)
 }
 
+// RegisterDebugMessages is the resolver for the registerDebugMessages field.
+func (r *mutationResolver) RegisterDebugMessages(ctx context.Context, input gqlmodel.RegisterDebugMessages) (*gqlmodel.RegisterDebugMessagesPayload, error) {
+	return r.registerDebugMessages(ctx, input)
+}
+
 // Designers is the resolver for the designers field.
 func (r *queryResolver) Designers(ctx context.Context, query gqlmodel.DesignersQuery) ([]*gqlmodel.Designer, error) {
 	return r.designers(ctx, query)

@@ -53,6 +53,7 @@ func (r *queryResolver) players(ctx context.Context, query gqlmodel.PlayersQuery
 			PageSize:   query.Paging.PageSize,
 			PageNumber: query.Paging.PageNumber,
 			Desc:       query.Paging.IsDesc,
+			Latest:     query.Paging.IsLatest,
 		}
 	}
 	players, err := r.playerUsecase.FindPlayers(model.PlayersQuery{

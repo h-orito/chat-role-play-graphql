@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/09/13'>
+            <li>追加: ユーザー設定に1ページあたりの表示件数と昇順降順を追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/09/12'>
             <li>追加: 募集範囲、年齢制限ラベルを追加</li>
           </ReleaseContent>
@@ -154,8 +158,6 @@ export default function CreateGame() {
                       <li>通知</li>
                       <li>表示設定</li>
                       <li>ミュート</li>
-                      <li>ページングのページサイズ</li>
-                      <li>上が新しい、下が新しい</li>
                       <li>画像の大きさ2倍</li>
                       <li>文字の大きさ2倍</li>
                     </ul>

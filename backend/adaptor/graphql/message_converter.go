@@ -23,6 +23,7 @@ func MapToMessages(ms model.Messages) gqlmodel.Messages {
 		HasNextPage:         ms.HasNextPage,
 		CurrentPageNumber:   currentPageNumber,
 		IsDesc:              ms.IsDesc,
+		IsLatest:            ms.IsLatest,
 		LatestUnixTimeMilli: ms.LatestUnixTimeMilli,
 	}
 
@@ -107,6 +108,7 @@ func MapToDirectMessages(ms model.DirectMessages) gqlmodel.DirectMessages {
 		HasNextPage:         ms.HasNextPage,
 		CurrentPageNumber:   currentPageNumber,
 		IsDesc:              ms.IsDesc,
+		IsLatest:            ms.IsLatest,
 		LatestUnixTimeMilli: ms.LatestUnixTimeMilli,
 	}
 

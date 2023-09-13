@@ -1,0 +1,5 @@
+mutation DebugMessages($input: RegisterDebugMessages!) {
+  registerDebugMessages(input: $input) {
+    ok
+  }
+}
