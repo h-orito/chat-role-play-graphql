@@ -11,6 +11,7 @@ import {
 import MessageComponent from './message'
 import Paging from '../paging'
 import {
+  MutableRefObject,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -57,8 +58,6 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       myself,
       fetchMessages,
       fetchMessagesLatest,
-      openProfileModal,
-      openFavoritesModal,
       isViewing,
       existsUnread,
       setExistUnread,
@@ -79,8 +78,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         isLatest: !pagingSettings.isDesc
       }
     }
-
-    const [messages, setMessages] = useState<Messages>({
+    const defaultMessages: Messages = {
       list: [],
       allPageCount: 0,
       hasPrePage: false,
@@ -88,7 +86,9 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       isDesc: pagingSettings.isDesc,
       isLatest: !pagingSettings.isDesc,
       latestUnixTimeMilli: 0
-    })
+    }
+
+    const [messages, setMessages] = useState<Messages>(defaultMessages)
     const [latestTime, setLatestTime] = useState<number>(0)
     const [messageQuery, setMessageQuery] = useState(defaultMessageQuery)
 
@@ -153,57 +153,19 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     }
     usePollingMessages(() => fetchLatestTime())
 
-    const setPeriodQuery = (periodId: string) => {
-      const newQuery = {
-        ...messageQuery,
-        periodId,
-        paging: {
-          // 期間移動したら1ページ目に戻す
-          ...messageQuery.paging,
-          pageNumber: 1,
-          isLatest: false
-        } as PageableQuery
-      } as MessagesQuery
-      search(newQuery)
-    }
-
-    const setPageableQuery = (q: PageableQuery) => {
-      const newQuery = {
-        ...messageQuery,
-        paging: q
-      } as MessagesQuery
-      search(newQuery)
-    }
-
     const canTalk =
-      myself &&
+      !!myself &&
       ['Closed', 'Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
         game.status
       )
 
     const talkButtonRef = useRef({} as TalkButtonRefHandle)
-    const handleReply = (message: Message) => {
-      if (!canTalk || !talkButtonRef.current) return
-      talkButtonRef.current.reply(message)
-    }
-
-    const messageAreaRef = useRef(null)
 
     return (
       <div
         className={`${className} mut-height-guard relative flex flex-1 flex-col overflow-y-auto`}
       >
-        {searchable && (
-          <div className='flex'>
-            <SearchCondition
-              game={game}
-              myself={myself}
-              messageQuery={messageQuery}
-              search={search}
-              onlyFollowing={onlyFollowing}
-            />
-          </div>
-        )}
+        <SearchArea messageQuery={messageQuery} search={search} {...props} />
         {canTalk && (
           <>
             <DescriptionButton game={game} myself={myself!} search={search} />
@@ -215,56 +177,154 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
             />
           </>
         )}
-        <div className='overflow-y-auto' ref={messageAreaRef}>
-          {!searchable && (
-            <GamePeriodLinks
-              game={game}
-              periodId={messageQuery.periodId}
-              setQuery={setPeriodQuery}
-            />
-          )}
-          <Paging
-            messages={messages}
-            query={messageQuery.paging as PageableQuery | undefined}
-            setPageableQuery={setPageableQuery}
-            messageAreaRef={messageAreaRef}
-          />
-          <div className='relative flex-1 pb-12'>
-            {messages.list.map((message: Message) => (
-              <MessageComponent
-                game={game}
-                message={message}
-                myself={myself}
-                key={message.id}
-                openProfileModal={openProfileModal}
-                openFavoritesModal={openFavoritesModal}
-                handleReply={handleReply}
-                shouldDisplayReplyTo={true}
-              />
-            ))}
-            {!onlyFollowing && !searchable && (
-              <div className='p-4'>
-                <GoogleAdsense
-                  slot='1577139382'
-                  format='auto'
-                  responsive='true'
-                />
-              </div>
-            )}
-          </div>
-          <Paging
-            messages={messages}
-            query={messageQuery.paging as PageableQuery | undefined}
-            setPageableQuery={setPageableQuery}
-            messageAreaRef={messageAreaRef}
-          />
-        </div>
+        <MessagesArea
+          messages={messages}
+          messageQuery={messageQuery}
+          canTalk={canTalk}
+          search={search}
+          talkButtonRef={talkButtonRef}
+          {...props}
+        />
       </div>
     )
   }
 )
 
 export default MessageArea
+
+const SearchArea = (
+  props: Props & {
+    messageQuery: MessagesQuery
+    search: (query?: MessagesQuery) => void
+  }
+) => {
+  const { messageQuery, search, searchable } = props
+  if (!searchable) return <></>
+  return (
+    <div className='flex'>
+      <SearchCondition {...props} messageQuery={messageQuery} search={search} />
+    </div>
+  )
+}
+
+const MessagesArea = (
+  props: Props & {
+    messageQuery: MessagesQuery
+    messages: Messages
+    canTalk: boolean
+    search: (query?: MessagesQuery) => void
+    talkButtonRef: MutableRefObject<TalkButtonRefHandle>
+  }
+) => {
+  const {
+    game,
+    messages,
+    messageQuery,
+    searchable,
+    search,
+    onlyFollowing,
+    canTalk,
+    talkButtonRef
+  } = props
+  const messageAreaRef = useRef(null)
+
+  const setPeriodQuery = (periodId: string) => {
+    const newQuery = {
+      ...messageQuery,
+      periodId,
+      paging: {
+        // 期間移動したら1ページ目に戻す
+        ...messageQuery.paging,
+        pageNumber: 1,
+        isLatest: false
+      } as PageableQuery
+    } as MessagesQuery
+    search(newQuery)
+  }
+
+  const setPageableQuery = (q: PageableQuery) => {
+    const newQuery = {
+      ...messageQuery,
+      paging: q
+    } as MessagesQuery
+    search(newQuery)
+  }
+
+  const handleReply = (message: Message) => {
+    if (!canTalk || !talkButtonRef.current) return
+    talkButtonRef.current.reply(message)
+  }
+
+  return (
+    <div className='overflow-y-auto' ref={messageAreaRef}>
+      <GamePeriodLinksArea
+        {...props}
+        messageQuery={messageQuery}
+        search={search}
+      />
+      <Paging
+        messages={messages}
+        query={messageQuery.paging as PageableQuery | undefined}
+        setPageableQuery={setPageableQuery}
+        messageAreaRef={messageAreaRef}
+      />
+      <div className='relative flex-1 pb-12'>
+        {messages.list.map((message: Message) => (
+          <MessageComponent
+            {...props}
+            message={message}
+            key={message.id}
+            handleReply={handleReply}
+            shouldDisplayReplyTo={true}
+          />
+        ))}
+        {!onlyFollowing && !searchable && (
+          <div className='p-4'>
+            <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
+          </div>
+        )}
+      </div>
+      <Paging
+        messages={messages}
+        query={messageQuery.paging as PageableQuery | undefined}
+        setPageableQuery={setPageableQuery}
+        messageAreaRef={messageAreaRef}
+      />
+    </div>
+  )
+}
+
+const GamePeriodLinksArea = (
+  props: Props & {
+    messageQuery: MessagesQuery
+    search: (query?: MessagesQuery) => void
+  }
+) => {
+  const { game, messageQuery, search, searchable } = props
+
+  const setPeriodQuery = (periodId: string) => {
+    const newQuery = {
+      ...messageQuery,
+      periodId,
+      paging: {
+        // 期間移動したら1ページ目に戻す
+        ...messageQuery.paging,
+        pageNumber: 1,
+        isLatest: false
+      } as PageableQuery
+    } as MessagesQuery
+    search(newQuery)
+  }
+
+  if (searchable) return <></>
+  return (
+    <GamePeriodLinks
+      game={game}
+      periodId={messageQuery.periodId}
+      setQuery={setPeriodQuery}
+    />
+  )
+}
 
 type TalkButtonProps = {
   game: Game

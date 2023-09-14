@@ -45,7 +45,6 @@ export default function Profile({
 }: Props) {
   const [profile, setProfile] = useState<GameParticipantProfile | null>(null)
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
-  const [isOpenEditModal, setIsOpenEditModal] = useState(false)
 
   const [fetchProfile] = useLazyQuery<GameParticipantProfileQuery>(
     GameParticipantProfileDocument
@@ -74,27 +73,6 @@ export default function Profile({
     refetchIcons()
   }, [participantId])
 
-  const [leave] = useMutation<LeaveMutation>(LeaveDocument, {
-    onCompleted(e) {
-      location.reload()
-    },
-    onError(error) {
-      console.error(error)
-    }
-  })
-
-  const confirmToLeave = () => {
-    if (confirm('この操作は取り消せません。本当に退出しますか？')) {
-      leave({
-        variables: {
-          input: {
-            gameId: game.id
-          }
-        } as LeaveMutationVariables
-      })
-    }
-  }
-
   if (profile == null) return <div>Loading...</div>
 
   const isMyself = myself?.id === profile.participantId
@@ -103,17 +81,6 @@ export default function Profile({
     ['Closed', 'Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
       game.status
     )
-
-  const toggleEditModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenEditModal(!isOpenEditModal)
-    }
-  }
-
-  const layoutClassName =
-    profile.profileImageUrl != null
-      ? 'grid grid-cols-1 gap-4 md:grid-cols-2'
-      : ''
 
   return (
     <div className='p-4'>
@@ -130,29 +97,17 @@ export default function Profile({
         <div className='md:flex-1'>
           <div className='flex'>
             <ParticipantName profile={profile} />
-            <div className='ml-auto'>
-              <FollowButton
-                game={game}
-                participantId={participantId}
-                myself={myself}
-                profile={profile}
-                refetchMyself={refetchMyself}
-                refetchProfile={refetchProfile}
-              />
-              <UnfollowButton
-                game={game}
-                participantId={participantId}
-                myself={myself}
-                profile={profile}
-                refetchMyself={refetchMyself}
-                refetchProfile={refetchProfile}
-              />
-              {canEdit && (
-                <PrimaryButton click={() => setIsOpenEditModal(true)}>
-                  プロフィール編集
-                </PrimaryButton>
-              )}
-            </div>
+            <FFButtons
+              game={game}
+              participantId={participantId}
+              myself={myself}
+              profile={profile}
+              refetchMyself={refetchMyself}
+              refetchProfile={refetchProfile}
+              close={close}
+              canEdit={canEdit}
+              icons={icons}
+            />
           </div>
           {profile.introduction && (
             <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-xs text-gray-700'>
@@ -185,24 +140,36 @@ export default function Profile({
           />
         </div>
       </div>
-      {canEdit && (
-        <div className='mt-4 flex justify-end'>
-          <DangerButton click={() => confirmToLeave()}>退出する</DangerButton>
-        </div>
-      )}
-      {isOpenEditModal && (
-        <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
-          <ProfileEdit
-            game={game}
-            myself={myself}
-            refetchMyself={refetchMyself}
-            profile={profile}
-            icons={icons}
-            refetchProfile={refetchProfile}
-            close={toggleEditModal}
-          />
-        </Modal>
-      )}
+      {canEdit && <LeaveButton game={game} />}
+    </div>
+  )
+}
+
+const LeaveButton = ({ game }: { game: Game }) => {
+  const [leave] = useMutation<LeaveMutation>(LeaveDocument, {
+    onCompleted(e) {
+      location.reload()
+    },
+    onError(error) {
+      console.error(error)
+    }
+  })
+
+  const confirmToLeave = () => {
+    if (confirm('この操作は取り消せません。本当に退出しますか？')) {
+      leave({
+        variables: {
+          input: {
+            gameId: game.id
+          }
+        } as LeaveMutationVariables
+      })
+    }
+  }
+
+  return (
+    <div className='mt-4 flex justify-end'>
+      <DangerButton click={() => confirmToLeave()}>退出する</DangerButton>
     </div>
   )
 }
@@ -223,6 +190,72 @@ const ParticipantName = ({ profile }: { profile: GameParticipantProfile }) => {
   )
 }
 
+const FFButtons = (
+  props: Props & {
+    refetchProfile: () => void
+    profile: GameParticipantProfile
+    canEdit: boolean
+    icons: Array<GameParticipantIcon>
+  }
+) => {
+  const {
+    game,
+    participantId,
+    myself,
+    profile,
+    refetchMyself,
+    refetchProfile,
+    canEdit,
+    icons
+  } = props
+  const [isOpenEditModal, setIsOpenEditModal] = useState(false)
+  const toggleEditModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenEditModal(!isOpenEditModal)
+    }
+  }
+
+  return (
+    <div className='ml-auto'>
+      <FollowButton
+        game={game}
+        participantId={participantId}
+        myself={myself}
+        profile={profile}
+        refetchMyself={refetchMyself}
+        refetchProfile={refetchProfile}
+      />
+      <UnfollowButton
+        game={game}
+        participantId={participantId}
+        myself={myself}
+        profile={profile}
+        refetchMyself={refetchMyself}
+        refetchProfile={refetchProfile}
+      />
+      {canEdit && (
+        <>
+          <PrimaryButton click={() => setIsOpenEditModal(true)}>
+            プロフィール編集
+          </PrimaryButton>
+          {isOpenEditModal && (
+            <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
+              <ProfileEdit
+                game={game}
+                myself={myself}
+                refetchMyself={refetchMyself}
+                profile={profile}
+                icons={icons}
+                refetchProfile={refetchProfile}
+                close={toggleEditModal}
+              />
+            </Modal>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
 type FollowButtonProps = {
   game: Game
   participantId: string
