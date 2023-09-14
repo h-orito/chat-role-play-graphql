@@ -117,9 +117,9 @@ export default function Profile({
 
   return (
     <div className='p-4'>
-      <div className={layoutClassName}>
+      <div className='md:flex'>
         {profile.profileImageUrl && (
-          <div>
+          <div className='mb-4 flex justify-center md:mr-4 md:block'>
             <img
               src={profile.profileImageUrl}
               width={400}
@@ -127,7 +127,7 @@ export default function Profile({
             />
           </div>
         )}
-        <div>
+        <div className='md:flex-1'>
           <div className='flex'>
             <ParticipantName profile={profile} />
             <div className='ml-auto'>
