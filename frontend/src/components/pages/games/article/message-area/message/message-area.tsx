@@ -187,6 +187,8 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       talkButtonRef.current.reply(message)
     }
 
+    const messageAreaRef = useRef(null)
+
     return (
       <div
         className={`${className} mut-height-guard relative flex flex-1 flex-col overflow-y-auto`}
@@ -213,46 +215,50 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
             />
           </>
         )}
-        {!searchable && (
-          <GamePeriodLinks
-            game={game}
-            periodId={messageQuery.periodId}
-            setQuery={setPeriodQuery}
-          />
-        )}
-        <Paging
-          messages={messages}
-          query={messageQuery.paging as PageableQuery | undefined}
-          setPageableQuery={setPageableQuery}
-        />
-        <div className='relative flex-1 overflow-y-auto pb-12'>
-          {messages.list.map((message: Message) => (
-            <MessageComponent
+        <div className='overflow-y-auto' ref={messageAreaRef}>
+          {!searchable && (
+            <GamePeriodLinks
               game={game}
-              message={message}
-              myself={myself}
-              key={message.id}
-              openProfileModal={openProfileModal}
-              openFavoritesModal={openFavoritesModal}
-              handleReply={handleReply}
-              shouldDisplayReplyTo={true}
+              periodId={messageQuery.periodId}
+              setQuery={setPeriodQuery}
             />
-          ))}
-          {!onlyFollowing && !searchable && (
-            <div className='p-4'>
-              <GoogleAdsense
-                slot='1577139382'
-                format='auto'
-                responsive='true'
-              />
-            </div>
           )}
+          <Paging
+            messages={messages}
+            query={messageQuery.paging as PageableQuery | undefined}
+            setPageableQuery={setPageableQuery}
+            messageAreaRef={messageAreaRef}
+          />
+          <div className='relative flex-1 pb-12'>
+            {messages.list.map((message: Message) => (
+              <MessageComponent
+                game={game}
+                message={message}
+                myself={myself}
+                key={message.id}
+                openProfileModal={openProfileModal}
+                openFavoritesModal={openFavoritesModal}
+                handleReply={handleReply}
+                shouldDisplayReplyTo={true}
+              />
+            ))}
+            {!onlyFollowing && !searchable && (
+              <div className='p-4'>
+                <GoogleAdsense
+                  slot='1577139382'
+                  format='auto'
+                  responsive='true'
+                />
+              </div>
+            )}
+          </div>
+          <Paging
+            messages={messages}
+            query={messageQuery.paging as PageableQuery | undefined}
+            setPageableQuery={setPageableQuery}
+            messageAreaRef={messageAreaRef}
+          />
         </div>
-        <Paging
-          messages={messages}
-          query={messageQuery.paging as PageableQuery | undefined}
-          setPageableQuery={setPageableQuery}
-        />
       </div>
     )
   }

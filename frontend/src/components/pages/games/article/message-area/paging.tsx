@@ -4,12 +4,14 @@ type PagingProps = {
   messages: Pageable
   query: PageableQuery | undefined
   setPageableQuery: (q: PageableQuery) => void
+  messageAreaRef?: React.RefObject<HTMLDivElement>
 }
 
 export default function Paging({
   messages,
   query,
-  setPageableQuery
+  setPageableQuery,
+  messageAreaRef
 }: PagingProps) {
   if (messages.allPageCount <= 1) return <></>
   const currentPageNumber =
@@ -47,6 +49,7 @@ export default function Paging({
       pageNumber: pageNumber,
       isLatest: false
     })
+    scrollToTop()
   }
 
   const setLatest = () => {
@@ -55,6 +58,11 @@ export default function Paging({
       pageNumber: 1,
       isLatest: true
     })
+    scrollToTop()
+  }
+
+  const scrollToTop = () => {
+    messageAreaRef?.current?.scroll({ top: 0, behavior: 'smooth' })
   }
 
   return (

@@ -156,7 +156,7 @@ export default function DirectMessageArea({
         query={query!.paging as PageableQuery | undefined}
         setPageableQuery={setPageableQuery}
       />
-      <div className='flex-1 overflow-y-auto'>
+      <div className='flex-1'>
         {directMessages.list.map((message: DirectMessage) => (
           <DirectMessageComponent
             game={game}
