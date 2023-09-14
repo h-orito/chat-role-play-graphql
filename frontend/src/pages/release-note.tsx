@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='仕様変更' date='2023/09/14'>
+            <li>仕様変更: 自分以外のフォロー/フォロワーが見えないように変更</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/09/13'>
             <li>追加: ユーザー設定に1ページあたりの表示件数と昇順降順を追加</li>
           </ReleaseContent>

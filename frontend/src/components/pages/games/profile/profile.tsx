@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import {
@@ -98,8 +97,9 @@ export default function Profile({
 
   if (profile == null) return <div>Loading...</div>
 
+  const isMyself = myself?.id === profile.participantId
   const canEdit =
-    myself?.id === profile.participantId &&
+    isMyself &&
     ['Closed', 'Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
       game.status
     )
@@ -110,40 +110,26 @@ export default function Profile({
     }
   }
 
+  const layoutClassName =
+    profile.profileImageUrl != null
+      ? 'grid grid-cols-1 gap-4 md:grid-cols-2'
+      : ''
+
   return (
     <div className='p-4'>
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-        <div>
-          {profile.profileImageUrl ? (
+      <div className={layoutClassName}>
+        {profile.profileImageUrl && (
+          <div>
             <img
               src={profile.profileImageUrl}
               width={400}
               alt='プロフィール画像'
             />
-          ) : (
-            <Image
-              src={'/chat-role-play/images/profile.webp'}
-              width={400}
-              height={600}
-              alt='プロフィール画像'
-            />
-          )}
-        </div>
+          </div>
+        )}
         <div>
           <div className='flex'>
-            <p className='text-lg font-bold'>
-              <span className='text-sm font-normal text-gray-500'>
-                ENo{profile.entryNumber}.&nbsp;
-              </span>
-              {profile.name}
-              {profile.isGone ? (
-                <span className='text-sm font-normal text-gray-500'>
-                  （退出済み）
-                </span>
-              ) : (
-                ''
-              )}
-            </p>
+            <ParticipantName profile={profile} />
             <div className='ml-auto'>
               <FollowButton
                 game={game}
@@ -173,21 +159,23 @@ export default function Profile({
               <MessageText rawText={profile.introduction} />
             </p>
           )}
-          <div>
-            <FollowsCount
-              game={game}
-              myself={myself}
-              profile={profile}
-              refetchMyself={refetchMyself}
-            />
-            &nbsp;&nbsp;
-            <FollowersCount
-              game={game}
-              myself={myself}
-              profile={profile}
-              refetchMyself={refetchMyself}
-            />
-          </div>
+          {isMyself && (
+            <div>
+              <FollowsCount
+                game={game}
+                myself={myself}
+                profile={profile}
+                refetchMyself={refetchMyself}
+              />
+              &nbsp;&nbsp;
+              <FollowersCount
+                game={game}
+                myself={myself}
+                profile={profile}
+                refetchMyself={refetchMyself}
+              />
+            </div>
+          )}
           <ParticipantIcons
             game={game}
             myself={myself}
@@ -216,6 +204,22 @@ export default function Profile({
         </Modal>
       )}
     </div>
+  )
+}
+
+const ParticipantName = ({ profile }: { profile: GameParticipantProfile }) => {
+  return (
+    <p className='text-lg font-bold'>
+      <span className='text-sm font-normal text-gray-500'>
+        ENo{profile.entryNumber}.&nbsp;
+      </span>
+      {profile.name}
+      {profile.isGone ? (
+        <span className='text-sm font-normal text-gray-500'>（退出済み）</span>
+      ) : (
+        ''
+      )}
+    </p>
   )
 }
 

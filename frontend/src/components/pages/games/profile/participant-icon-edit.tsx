@@ -201,7 +201,7 @@ export default function ParticipantIconEdit({
             <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
               ドラッグアンドドロップで並び替えて「反映」ボタンを押してください。
             </p>
-            <div className='flex'>
+            <div className='flex flex-wrap'>
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -242,7 +242,7 @@ export default function ParticipantIconEdit({
           <InputImage
             name='iconImage'
             setImages={setImages}
-            maxFileKByte={300}
+            maxFileKByte={500}
           />
         </div>
         <div className='flex justify-end'>
