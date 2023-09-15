@@ -242,7 +242,7 @@ export default function ParticipantIconEdit({
           <InputImage
             name='iconImage'
             setImages={setImages}
-            maxFileKByte={500}
+            maxFileKByte={300}
           />
         </div>
         <div className='flex justify-end'>

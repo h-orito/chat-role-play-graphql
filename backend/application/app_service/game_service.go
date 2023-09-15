@@ -53,15 +53,18 @@ type GameService interface {
 type gameService struct {
 	gameRepository            model.GameRepository
 	gameParticipantRepository model.GameParticipantRepository
+	notifyService             NotifyService
 }
 
 func NewGameService(
 	gameRepository model.GameRepository,
 	gameParticipantRepository model.GameParticipantRepository,
+	notifyService NotifyService,
 ) GameService {
 	return &gameService{
 		gameRepository:            gameRepository,
 		gameParticipantRepository: gameParticipantRepository,
+		notifyService:             notifyService,
 	}
 }
 
@@ -163,6 +166,8 @@ func (g *gameService) startGame(ctx context.Context, game model.Game) error {
 	}); err != nil {
 		return err
 	}
+	// 開始通知
+	g.notifyService.NotifyGameStart(game)
 
 	return nil
 }

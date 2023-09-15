@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import InputSelect from '@/components/form/input-select'
@@ -6,18 +6,45 @@ import { UserPagingSettings, useUserPagingSettings } from '../user-settings'
 import PrimaryButton from '@/components/button/primary-button'
 import RadioGroup from '@/components/form/radio-group'
 import { useRouter } from 'next/router'
+import {
+  Game,
+  GameParticipant,
+  GameParticipantSetting,
+  GameParticipantSettingDocument,
+  GameParticipantSettingQuery,
+  GameParticipantSettingQueryVariables,
+  UpdateGameParticipantSetting,
+  UpdateGameParticipantSettingDocument,
+  UpdateGameParticipantSettingMutation,
+  UpdateGameParticipantSettingMutationVariables
+} from '@/lib/generated/graphql'
+import { useLazyQuery, useMutation } from '@apollo/client'
+import InputText from '@/components/form/input-text'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import SubmitButton from '@/components/button/submit-button'
 
 export default function UserSettingsComponent({
-  close
+  close,
+  game,
+  myself
 }: {
   close: (e: any) => void
+  game: Game
+  myself: GameParticipant | null
 }) {
   return (
     <div className='text-center'>
       <div className='my-4 flex justify-center'>
         <PagingSettings />
       </div>
-      <hr />
+      {myself && (
+        <>
+          <hr />
+          <div className='my-4 flex justify-center'>
+            <NotificationSettings game={game} myself={myself} />
+          </div>
+        </>
+      )}
     </div>
   )
 }
@@ -75,6 +102,151 @@ const PagingSettings = () => {
         <PrimaryButton click={() => save()}>保存</PrimaryButton>
       </div>
     </div>
+  )
+}
+
+interface NotificationFormInput {
+  webhookUrl: string
+  shouldNotifyGameStart: boolean
+  shouldNotifyReply: boolean
+  shouldNotifyDirectMessage: boolean
+  keyword: string
+}
+
+const NotificationSettings = ({
+  game,
+  myself
+}: {
+  game: Game
+  myself: GameParticipant | null
+}) => {
+  const { register, control, formState, handleSubmit, setValue, watch } =
+    useForm<NotificationFormInput>({
+      defaultValues: {
+        webhookUrl: '',
+        shouldNotifyGameStart: false,
+        shouldNotifyReply: false,
+        shouldNotifyDirectMessage: false,
+        keyword: ''
+      }
+    })
+  const [fetchSetting] = useLazyQuery<GameParticipantSettingQuery>(
+    GameParticipantSettingDocument
+  )
+  useEffect(() => {
+    const fetch = async () => {
+      const { data } = await fetchSetting({
+        variables: {
+          gameId: game.id
+        } as GameParticipantSettingQueryVariables
+      })
+      if (data?.gameParticipantSetting) {
+        const setting = data.gameParticipantSetting as GameParticipantSetting
+        setValue('webhookUrl', setting.notification?.discordWebhookUrl || '')
+        setValue(
+          'shouldNotifyGameStart',
+          setting.notification?.game?.start || false
+        )
+        setValue(
+          'shouldNotifyReply',
+          setting.notification?.message?.reply || false
+        )
+        setValue(
+          'shouldNotifyDirectMessage',
+          setting.notification?.message?.directMessage || false
+        )
+        setValue(
+          'keyword',
+          setting.notification?.message?.keywords?.join(' ') || ''
+        )
+      }
+    }
+    fetch()
+  }, [])
+
+  const [update] = useMutation<UpdateGameParticipantSettingMutation>(
+    UpdateGameParticipantSettingDocument
+  )
+  const router = useRouter()
+  const onSubmit: SubmitHandler<NotificationFormInput> = useCallback(
+    async (data) => {
+      await update({
+        variables: {
+          input: {
+            gameId: game.id,
+            notification: {
+              discordWebhookUrl: data.webhookUrl,
+              game: {
+                participate: false,
+                start: data.shouldNotifyGameStart
+              },
+              message: {
+                reply: data.shouldNotifyReply,
+                directMessage: data.shouldNotifyDirectMessage,
+                keywords: data.keyword.replace(/[ 　]/g, ' ').split(' ')
+              }
+            }
+          } as UpdateGameParticipantSetting
+        } as UpdateGameParticipantSettingMutationVariables
+      })
+      router.reload()
+    },
+    [update]
+  )
+
+  const canSubmit: boolean = formState.isValid && !formState.isSubmitting
+  const currentWebhookUrl = watch('webhookUrl')
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className='mb-4'>
+        <FormLabel label='通知' />
+      </div>
+      <FormLabel label='Discord Webhook URL' />
+      <InputText name='webhookUrl' control={control} />
+      <div className='my-2'>
+        <input
+          type='checkbox'
+          id='notification-game-start'
+          {...register('shouldNotifyGameStart')}
+          disabled={currentWebhookUrl === ''}
+        />
+        <label htmlFor='notification-game-start' className='ml-2 text-xs'>
+          ゲーム開始通知
+        </label>
+      </div>
+      <div className='my-2'>
+        <input
+          type='checkbox'
+          id='notification-reply'
+          {...register('shouldNotifyReply')}
+          disabled={currentWebhookUrl === ''}
+        />
+        <label htmlFor='notification-reply' className='ml-2 text-xs'>
+          リプライ通知
+        </label>
+      </div>
+      <div className='my-2'>
+        <input
+          type='checkbox'
+          id='notification-direct-message'
+          {...register('shouldNotifyDirectMessage')}
+          disabled={currentWebhookUrl === ''}
+        />
+        <label htmlFor='notification-direct-message' className='ml-2 text-xs'>
+          ダイレクトメッセージ通知
+        </label>
+      </div>
+      <FormLabel label='通知キーワード' />
+      <InputText
+        name='keyword'
+        control={control}
+        disabled={currentWebhookUrl === ''}
+        placeholder='スペース区切り'
+      />
+      <div className='mt-4 flex justify-center'>
+        <SubmitButton label='保存' disabled={!canSubmit} />
+      </div>
+    </form>
   )
 }
 

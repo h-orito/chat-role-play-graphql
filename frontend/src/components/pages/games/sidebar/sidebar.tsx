@@ -89,7 +89,7 @@ export default function Sidebar({
         <div className='border-t border-gray-300 py-2'>
           <ParticipantsButton game={game} openProfileModal={openProfileModal} />
           <GameSettingsButton game={game} />
-          <UserSettingsButton />
+          <UserSettingsButton game={game} myself={myself} />
         </div>
         {isGameMaster && (
           <div className='border-t border-gray-300 py-2'>
@@ -252,9 +252,12 @@ const GameSettingsButton = ({ game }: GameSettingsButtonProps) => {
   )
 }
 
-type UserSettingsButtonProps = {}
+type UserSettingsButtonProps = {
+  game: Game
+  myself: GameParticipant | null
+}
 
-const UserSettingsButton = ({}: UserSettingsButtonProps) => {
+const UserSettingsButton = ({ game, myself }: UserSettingsButtonProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const toggleModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -274,7 +277,11 @@ const UserSettingsButton = ({}: UserSettingsButtonProps) => {
       </div>
       {isOpenModal && (
         <Modal close={toggleModal} hideFooter>
-          <UserSettingsComponent close={toggleModal} />
+          <UserSettingsComponent
+            close={toggleModal}
+            game={game}
+            myself={myself}
+          />
         </Modal>
       )}
     </>

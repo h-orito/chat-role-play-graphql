@@ -297,6 +297,7 @@ type GameParticipantRepository interface {
 	UpdateGameParticipantIcon(ctx context.Context, icon GameParticipantIcon) (err error)
 	DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error)
 	// participant notification
+	FindGameParticipantNotificationSettings(gameParticipantIDs []uint32) (settings []GameParticipantNotification, err error)
 	FindGameParticipantNotificationSetting(gameParticipantID uint32) (notification *GameParticipantNotification, err error)
 	UpdateGameParticipantNotificationSetting(ctx context.Context, ID uint32, setting GameParticipantNotification) (err error)
 	// participant follow

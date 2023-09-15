@@ -144,6 +144,18 @@ export default function Instructions() {
                   </li>
                 </ul>
               </li>
+              <li>
+                ユーザー設定
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
+                  <li>
+                    メッセージの表示順や、1ページあたりの表示件数を変更することができます。
+                  </li>
+                  <li>
+                    ゲーム開始、返信、DM、キーワード通知をDiscord Webhook
+                    URLを設定することで通知することができます。
+                  </li>
+                </ul>
+              </li>
             </ul>
           </div>
           <div className='my-4 bg-gray-200 px-4 py-2'>

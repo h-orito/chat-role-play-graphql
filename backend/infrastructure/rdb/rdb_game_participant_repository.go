@@ -122,6 +122,10 @@ func (*GameParticipantRepository) DeleteGameParticipantIcon(ctx context.Context,
 	return deleteGameParticipantIcon(tx, iconID)
 }
 
+func (repo *GameParticipantRepository) FindGameParticipantNotificationSettings(gameParticipantIDs []uint32) (settings []model.GameParticipantNotification, err error) {
+	return findGameParticipantNotifications(repo.db.Connection, gameParticipantIDs)
+}
+
 func (repo *GameParticipantRepository) FindGameParticipantNotificationSetting(gameParticipantID uint32) (setting *model.GameParticipantNotification, err error) {
 	return findGameParticipantNotification(repo.db.Connection, gameParticipantID)
 }
@@ -500,6 +504,19 @@ func deleteGameParticipantIcon(tx *gorm.DB, iconID uint32) (err error) {
 	return nil
 }
 
+func findGameParticipantNotifications(db *gorm.DB, participantIDs []uint32) ([]model.GameParticipantNotification, error) {
+	rdb, err := findRdbGameParticipantNotifications(db, participantIDs)
+	if err != nil {
+		return nil, err
+	}
+	if rdb == nil {
+		return nil, nil
+	}
+	return array.Map(rdb, func(n GameParticipantNotification) model.GameParticipantNotification {
+		return *n.ToModel()
+	}), nil
+}
+
 func findGameParticipantNotification(db *gorm.DB, participantID uint32) (_ *model.GameParticipantNotification, err error) {
 	rdb, err := findRdbGameParticipantNotification(db, participantID)
 	if err != nil {
@@ -509,6 +526,22 @@ func findGameParticipantNotification(db *gorm.DB, participantID uint32) (_ *mode
 		return nil, nil
 	}
 	return rdb.ToModel(), nil
+}
+
+func findRdbGameParticipantNotifications(db *gorm.DB, participantIDs []uint32) ([]GameParticipantNotification, error) {
+	if len(participantIDs) == 0 {
+		return nil, nil
+	}
+
+	var rdb []GameParticipantNotification
+	result := db.Model(&GameParticipantNotification{}).Where("game_participant_id in (?)", participantIDs).Find(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	return rdb, nil
 }
 
 func findRdbGameParticipantNotification(db *gorm.DB, participantID uint32) (_ *GameParticipantNotification, err error) {

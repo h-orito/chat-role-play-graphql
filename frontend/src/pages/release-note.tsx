@@ -25,6 +25,13 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/09/15'>
+            <li>
+              追加:
+              （参加者限定）ユーザー設定にゲーム開始Discord通知、リプライ通知、DM通知、キーワード通知設定を追加
+            </li>
+          </ReleaseContent>
+
           <ReleaseContent label='仕様変更' date='2023/09/14'>
             <li>仕様変更: 自分以外のフォロー/フォロワーが見えないように変更</li>
           </ReleaseContent>
@@ -134,6 +141,7 @@ export default function CreateGame() {
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>宛先</li>
+                      <li>秘話</li>
                       <li>PL発言（PL発言タイムライン）</li>
                       <li>カットイン</li>
                       <li>
@@ -159,7 +167,6 @@ export default function CreateGame() {
                   <li>
                     ユーザー設定
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
-                      <li>通知</li>
                       <li>表示設定</li>
                       <li>ミュート</li>
                       <li>画像の大きさ2倍</li>
@@ -173,6 +180,14 @@ export default function CreateGame() {
                       <li>ひとことメモ</li>
                       <li>フォローフリーとか連れ出し歓迎とかのタグ機能</li>
                       <li>PL秘匿オンオフ</li>
+                    </ul>
+                  </li>
+                  <li>
+                    その他UI
+                    <ul className='list-inside list-disc pl-8 text-left text-xs'>
+                      <li>最上部最下部遷移ボタン</li>
+                      <li>発言欄を最下部固定</li>
+                      <li>DMの発言を作る際返信のように参照できるようにする</li>
                     </ul>
                   </li>
                 </ul>
