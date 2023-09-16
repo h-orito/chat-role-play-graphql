@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
 
 export type UserSettings = {
@@ -20,12 +21,17 @@ export const useUserPagingSettings = (): [
   UserPagingSettings,
   (pagingSettings: UserPagingSettings) => void
 ] => {
-  const [getCookie, setCookie] = useCookies()
-  const userSettings = getCookie['user-settings'] || defaultUserSettings
-  const pagingSettings = userSettings.paging
+  const [cookies, setCookie] = useCookies(['user-settings'])
+  const userSettings = cookies['user-settings'] || defaultUserSettings
   const savePagingSettings = (pagingSettings: UserPagingSettings): void => {
-    userSettings.paging = pagingSettings
-    setCookie('user-settings', userSettings)
+    const newSettings = {
+      ...userSettings,
+      paging: pagingSettings
+    }
+    setCookie('user-settings', newSettings, {
+      path: '/chat-role-play',
+      maxAge: 60 * 60 * 24 * 365
+    })
   }
-  return [pagingSettings, savePagingSettings]
+  return [userSettings.paging, savePagingSettings]
 }

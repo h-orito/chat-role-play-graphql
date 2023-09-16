@@ -200,7 +200,10 @@ const RatingWarningModal = ({ game }: { game: Game }) => {
   const router = useRouter()
   const handleShow = () => {
     ratingCookie[game.id] = true
-    setCookie('rating', ratingCookie, { maxAge: 60 * 60 * 24 * 365 })
+    setCookie('rating', ratingCookie, {
+      path: '/chat-role-play',
+      maxAge: 60 * 60 * 24 * 365
+    })
     setShowModal(false)
   }
 
