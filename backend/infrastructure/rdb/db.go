@@ -115,7 +115,7 @@ func Paginate(query *model.PagingQuery) func(db *gorm.DB) *gorm.DB {
 		} else if query.Latest {
 			return db.Limit(size).Order("id desc")
 		} else {
-			return db.Offset(offset).Limit(size)
+			return db.Offset(offset).Limit(size).Order("id asc")
 		}
 	}
 }
