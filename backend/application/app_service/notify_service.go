@@ -241,6 +241,6 @@ func (s *notifyService) notifyDirectMessage(
 
 func (s *notifyService) includeAnyKeyword(text string, keywords []string) bool {
 	return array.Any(keywords, func(keyword string) bool {
-		return strings.Contains(text, keyword)
+		return len(keyword) > 0 && strings.Contains(text, keyword)
 	})
 }

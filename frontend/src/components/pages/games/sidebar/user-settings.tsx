@@ -183,7 +183,10 @@ const NotificationSettings = ({
               message: {
                 reply: data.shouldNotifyReply,
                 directMessage: data.shouldNotifyDirectMessage,
-                keywords: data.keyword.replace(/[ 　]/g, ' ').split(' ')
+                keywords: data.keyword
+                  .replace(/[ 　]/g, ' ')
+                  .split(' ')
+                  .filter((k) => k !== '')
               }
             }
           } as UpdateGameParticipantSetting
