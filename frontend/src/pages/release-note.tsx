@@ -28,8 +28,12 @@ export default function CreateGame() {
           <ReleaseContent label='不具合修正' date='2023/09/16'>
             <li>
               不具合修正: ブラウザを閉じるとユーザー設定が初期化される不具合修正
+            </li>
+            <li>
               不具合修正:
               キーワード通知でキーワードが含まれていなくても通知される不具合修正
+            </li>
+            <li>
               不具合修正: 昇順指定のとき時系列順に表示されていない不具合を修正
             </li>
           </ReleaseContent>
