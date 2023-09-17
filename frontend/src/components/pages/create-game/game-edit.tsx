@@ -83,8 +83,8 @@ export default function GameEdit(props: Props) {
     <div>
       <div className='p-4'>
         <div className='flex justify-center'>
-          <p className='my-2 bg-gray-100 p-4 text-xs'>
-            <span className='text-red-500'>*&nbsp;</span>
+          <p className='notification-background notification-text my-2 p-4 text-xs'>
+            <span className='danger-text'>*&nbsp;</span>
             がついている項目は必須です。
             <br />
             また、キャラチップ設定以外は作成後に変更することができます。
@@ -292,12 +292,12 @@ export default function GameEdit(props: Props) {
             {props.canModifyCharachips != false ? (
               <>
                 <div className='flex justify-center'>
-                  <p className='my-2 bg-gray-100 p-4 text-xs'>
+                  <p className='notification-background notification-text my-2 p-4 text-xs'>
                     選択すると、オリジナルキャラクターに加え、選択したキャラチップのキャラクターを利用して参加することができます。
                     <br />
                     複数選択することも可能です。
                     <br />
-                    <span className='text-red-500'>
+                    <span className='danger-text'>
                       この項目は後から変更することができません。
                     </span>
                   </p>
@@ -327,7 +327,7 @@ export default function GameEdit(props: Props) {
           <div className='my-4'>
             <FormLabel label='期間' />
             <div className='flex justify-center'>
-              <p className='my-2 bg-gray-100 p-4 text-xs'>
+              <p className='notification-background notification-text my-2 p-4 text-xs'>
                 一定時間経過するごとに[接頭辞]1[接尾辞], [接頭辞]2[接尾辞],
                 ..のように期間を区切ることができます。
                 <br />
@@ -412,7 +412,7 @@ export default function GameEdit(props: Props) {
               閲覧はパスワードを知らなくても可能です。
             </FormLabel>
             <div className='flex justify-center'>
-              <p className='my-2 bg-gray-100 p-4 text-xs'>
+              <p className='notification-background notification-text my-2 p-4 text-xs'>
                 設定更新の際、毎回空欄となります。ご注意ください。
               </p>
             </div>
@@ -456,12 +456,12 @@ const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
   }
   return (
     <label className='block text-sm font-bold'>
-      {required && <span className='text-red-500'>*&nbsp;</span>}
+      {required && <span className='danger-text'>*&nbsp;</span>}
       {label}
       {children && (
         <>
           <button onClick={openModal}>
-            <QuestionMarkCircleIcon className='ml-1 h-4 w-4 text-blue-500' />
+            <QuestionMarkCircleIcon className='primary-text ml-1 h-4 w-4' />
           </button>
           {isModalOpen && (
             <Modal close={toggleModal} hideFooter>

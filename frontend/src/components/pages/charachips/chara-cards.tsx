@@ -16,7 +16,7 @@ export default function CharaCards({ charachip }: Props) {
 
 const CharaCard = ({ chara }: { chara: Chara }) => {
   return (
-    <div className='flex flex-col rounded-lg border border-gray-300'>
+    <div className='base-border flex flex-col rounded-lg border'>
       <div className='w-full rounded-t-lg p-4'>
         <div className='flex justify-center gap-2'>
           {chara.images.map((image) => (

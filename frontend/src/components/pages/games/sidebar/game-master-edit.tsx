@@ -89,7 +89,7 @@ export default function GameMasterEdit({ game }: Props) {
       <div className='mb-4'>
         <p className='font-bold'>ゲームマスター</p>
         {game.gameMasters.map((gameMaster) => (
-          <div className='flex border border-gray-300 p-2' key={gameMaster.id}>
+          <div className='base-border flex border p-2' key={gameMaster.id}>
             <p className='my-auto'>{gameMaster.player.name}</p>
             <DangerButton
               className='ml-auto'
@@ -105,7 +105,7 @@ export default function GameMasterEdit({ game }: Props) {
         <p className='font-bold'>ゲームマスター追加</p>
         <div className='mb-2 flex'>
           <input
-            className='flex-1 rounded border border-gray-300 px-2 py-1 text-xs'
+            className='base-border flex-1 rounded border px-2 py-1 text-xs'
             value={playerName}
             placeholder='プレイヤー名'
             onChange={(e) => setPlayerName(e.target.value)}
@@ -120,7 +120,7 @@ export default function GameMasterEdit({ game }: Props) {
           </PrimaryButton>
         </div>
         {players.map((player) => (
-          <div className='flex border border-gray-300 p-2' key={player.id}>
+          <div className='base-border flex border p-2' key={player.id}>
             <p className='my-auto'>{player.name}</p>
             <PrimaryButton
               className='ml-auto'

@@ -45,11 +45,13 @@ export default function CheckGroup({
       {items.map((item, index) => {
         const roundClass =
           index === 0
-            ? 'rounded-l-sm border-l'
+            ? 'rounded-l-sm border-l border-y'
             : index === candidates.length - 1
-            ? 'rounded-r-sm border-r'
+            ? 'rounded-r-sm border-r border-y'
             : 'border'
-        const checkedClass = selected.includes(item.value) ? 'bg-blue-300' : ''
+        const checkedClass = selected.includes(item.value)
+          ? 'primary-active'
+          : ''
         return (
           <div className={`${className}`} key={index}>
             <input
@@ -61,7 +63,7 @@ export default function CheckGroup({
               onChange={handleChange}
             />
             <label
-              className={`cursor-pointer border-y border-blue-500 px-2 py-1 ${checkedClass} ${roundClass}`}
+              className={`primary-border cursor-pointer px-2 py-1 ${checkedClass} ${roundClass}`}
               htmlFor={`${name}_${index}`}
             >
               {item.label}

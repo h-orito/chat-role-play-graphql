@@ -2,9 +2,7 @@ import Modal from '@/components/modal/modal'
 import Policy from '@/components/pages/index/policy'
 import Term from '@/components/pages/index/term'
 import PageHeader from '@/components/pages/page-header'
-import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import Head from 'next/head'
-import Link from 'next/link'
 import { useState } from 'react'
 
 export default function Rules() {

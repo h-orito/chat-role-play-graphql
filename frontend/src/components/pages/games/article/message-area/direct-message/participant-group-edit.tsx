@@ -68,7 +68,7 @@ export default function ParticipantGroupEdit({
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='my-4'>
           <label className='text-xs font-bold'>グループ名</label>
-          <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+          <p className='notification-background my-1 rounded-sm p-2 text-xs leading-5'>
             グループに所属するメンバー全員にこの名前で表示されます。
           </p>
           <InputText

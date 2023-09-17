@@ -18,8 +18,8 @@ export default function ParticipantsCheckbox({
       {displayParticipants.map((participant) => {
         const checked = selects.includes(participant)
         const checkedClass = checked
-          ? 'border-blue-500 bg-blue-100'
-          : 'border-gray-300'
+          ? 'primary-border primary-background'
+          : 'base-border'
         return (
           <label
             key={participant.id}

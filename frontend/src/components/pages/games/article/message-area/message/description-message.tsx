@@ -32,11 +32,11 @@ export default function DescriptionMessage({
         {message.sender && (
           <div className='flex pb-1'>
             <button onClick={handleProfileClick}>
-              <p className='text-xs hover:text-blue-500'>
+              <p className='primary-hover-text text-xs'>
                 ENo.{message.sender.entryNumber}&nbsp;{message.sender.name}
               </p>
             </button>
-            <p className='ml-auto self-end text-xs text-gray-500'>
+            <p className='secondary-text ml-auto self-end text-xs'>
               {iso2display(message.time.sendAt)}
             </p>
           </div>

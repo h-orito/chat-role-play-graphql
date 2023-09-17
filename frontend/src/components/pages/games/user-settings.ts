@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
 
 export type UserSettings = {
   paging: UserPagingSettings
+  display?: UserDisplaySettings
 }
 
 export type UserPagingSettings = {
@@ -10,11 +10,22 @@ export type UserPagingSettings = {
   isDesc: boolean
 }
 
+export type UserDisplaySettings = {
+  themeName: string
+}
+
+const defaultPagingSettings: UserPagingSettings = {
+  pageSize: 10,
+  isDesc: true
+}
+
+const defaultDisplaySettings: UserDisplaySettings = {
+  themeName: 'light'
+}
+
 export const defaultUserSettings: UserSettings = {
-  paging: {
-    pageSize: 10,
-    isDesc: true
-  }
+  paging: defaultPagingSettings,
+  display: defaultDisplaySettings
 }
 
 export const useUserPagingSettings = (): [
@@ -34,4 +45,24 @@ export const useUserPagingSettings = (): [
     })
   }
   return [userSettings.paging, savePagingSettings]
+}
+
+export const useUserDisplaySettings = (): [
+  UserDisplaySettings,
+  (displaySettings: UserDisplaySettings) => void
+] => {
+  const [cookies, setCookie] = useCookies(['user-settings'])
+  const userSettings: UserSettings =
+    cookies['user-settings'] || defaultUserSettings
+  const saveDisplaySettings = (displaySettings: UserDisplaySettings): void => {
+    const newSettings = {
+      ...userSettings,
+      display: displaySettings
+    }
+    setCookie('user-settings', newSettings, {
+      path: '/chat-role-play',
+      maxAge: 60 * 60 * 24 * 365
+    })
+  }
+  return [userSettings.display ?? defaultDisplaySettings, saveDisplaySettings]
 }

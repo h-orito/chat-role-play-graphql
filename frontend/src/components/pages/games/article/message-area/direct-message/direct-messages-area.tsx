@@ -107,12 +107,9 @@ export default function DirectMessagesArea({
         </div>
       )}
       {groups.map((group: GameParticipantGroup) => (
-        <div
-          key={group.id}
-          className='border-t border-gray-300 p-4 last:border-b'
-        >
+        <div key={group.id} className='base-border border-t p-4 last:border-b'>
           <button onClick={() => openDirectMessageModal(group)}>
-            <p className='hover:text-blue-500'>{group.name}</p>
+            <p className='primary-hover-text'>{group.name}</p>
           </button>
         </div>
       ))}

@@ -24,9 +24,9 @@ export default function ArticleModal({
   return (
     <Portal target={target}>
       <div
-        className={`absolute inset-x-0 inset-y-0 h-full w-full overflow-y-auto bg-white text-sm ${zindexClass}`}
+        className={`base-background absolute inset-x-0 inset-y-0 h-full w-full overflow-y-auto text-sm ${zindexClass}`}
       >
-        <div className='flex border-b border-gray-300 p-2'>
+        <div className='base-border flex border-b p-2'>
           <button className='px-2' onClick={close}>
             <ArrowLeftIcon className='mr-1 h-6 w-6' />
           </button>
@@ -36,7 +36,7 @@ export default function ArticleModal({
           close: close
         })}
         {!hideFooter && (
-          <div className='mt-2 flex justify-end border-t border-gray-300 pt-2'>
+          <div className='base-border mt-2 flex justify-end border-t pt-2'>
             <SecondaryButton click={close}>閉じる</SecondaryButton>
           </div>
         )}

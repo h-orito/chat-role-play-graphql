@@ -30,7 +30,7 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
               <span key={idx}>
                 {idx !== 0 && <span>、</span>}
                 <Link
-                  className='text-blue-500'
+                  className='primary-text'
                   href={`/charachips/${base64ToId(c.id)}`}
                   target='_blank'
                 >
@@ -99,19 +99,19 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
   })
   return (
     <div>
-      <table className='table-auto border border-gray-300'>
+      <table className='base-border table-auto border'>
         <thead>
-          <tr className='bg-blue-200'>
-            <th className='border border-gray-300 p-2 text-left'>項目</th>
-            <th className='border border-gray-300 p-2'>設定</th>
+          <tr className='primary-background'>
+            <th className='base-border border p-2 text-left'>項目</th>
+            <th className='base-border border p-2'>設定</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item: SettingItem) => {
             return (
               <tr key={item.name}>
-                <td className='border border-gray-300 p-2'>{item.name}</td>
-                <td className='whitespace-pre-wrap break-words border border-gray-300 p-2 text-left'>
+                <td className='base-border border p-2'>{item.name}</td>
+                <td className='base-border whitespace-pre-wrap break-words border p-2 text-left'>
                   {item.value}
                 </td>
               </tr>

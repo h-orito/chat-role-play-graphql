@@ -19,7 +19,7 @@ export default function Participants({
       {displayParticipants.map((participant) => (
         <button
           key={participant.id}
-          className='flex rounded-md border border-gray-300 p-4 hover:bg-gray-100'
+          className='base-border flex rounded-md border p-4 hover:bg-gray-100'
           onClick={() => openProfileModal(participant.id)}
         >
           <div>

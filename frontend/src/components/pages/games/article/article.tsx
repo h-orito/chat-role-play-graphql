@@ -172,7 +172,7 @@ const ArticleHeader = ({ tab }: HeaderProps) => {
       ? '検索'
       : 'ダイレクトメッセージ'
   return (
-    <div className='flex justify-center border-b border-gray-300 px-4 py-2 font-bold md:hidden'>
+    <div className='sidebar-background base-border flex justify-center border-b px-4 py-2 font-bold md:hidden'>
       {tabName}
     </div>
   )

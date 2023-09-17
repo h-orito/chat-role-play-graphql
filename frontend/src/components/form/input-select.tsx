@@ -30,9 +30,11 @@ export default function InputSelect({
 
   return (
     <div>
-      {label && <label className='block text-xs font-bold'>{label}</label>}
+      {label && (
+        <label className='base-text block text-xs font-bold'>{label}</label>
+      )}
       <Select
-        className={className}
+        className={`${className ?? ''} text-gray-700`}
         defaultValue={defaultOptions}
         options={candidates}
         isSearchable

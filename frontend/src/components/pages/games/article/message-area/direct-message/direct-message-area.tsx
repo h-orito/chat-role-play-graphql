@@ -120,14 +120,14 @@ export default function DirectMessageArea({
 
   return (
     <div className='flex flex-1 flex-col'>
-      <div className='flex border-b border-gray-300 px-4 py-2'>
+      <div className='base-border flex border-b px-4 py-2'>
         <p className='self-center'>
           メンバー:{' '}
           {group.participants.map((p: GameParticipant) => p.name).join('、')}
         </p>
         {canModify && (
           <button
-            className='ml-auto pl-4 hover:bg-slate-200'
+            className='primary-hover-background ml-auto pl-4'
             onClick={() => openModifyGroupModal(group)}
           >
             <PencilIcon className='mr-1 h-4 w-4' />
@@ -136,13 +136,13 @@ export default function DirectMessageArea({
       </div>
       {canModify && (
         <button
-          className='fixed bottom-20 right-4 z-10 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+          className='primary-active fixed bottom-20 right-4 z-10 rounded-full p-3 hover:bg-slate-200'
           onClick={() => setIsOpenTalkModal(true)}
         >
           <EnvelopeIcon className='h-8 w-8' />
         </button>
       )}
-      <div className='flex border-b border-gray-300'>
+      <div className='base-border flex border-b'>
         <DirectSearchCondition
           game={game}
           myself={myself}

@@ -8,7 +8,6 @@ import {
 import { useState } from 'react'
 import Datetime from '@/components/form/datetime'
 import PrimaryButton from '@/components/button/primary-button'
-import CheckGroup from '@/components/form/check-group'
 import Modal from '@/components/modal/modal'
 import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import ParticipantsCheckbox from '../../../participant/participants-checkbox'
@@ -123,7 +122,7 @@ export default function DirectSearchCondition({
         <div className='my-2'>
           <label className='text-xs font-bold'>キーワード</label>
           <input
-            className='w-full rounded border border-gray-300 px-2 py-1 text-xs'
+            className='base-border w-full rounded border px-2 py-1 text-xs'
             value={keyword}
             placeholder='スペース区切りでOR検索'
             onChange={(e) => setKeyword(e.target.value)}

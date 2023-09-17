@@ -31,6 +31,7 @@ import Modal from '@/components/modal/modal'
 import SecondaryButton from '@/components/button/scondary-button'
 import { useRouter } from 'next/router'
 import PrimaryButton from '@/components/button/primary-button'
+import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 
 export const getServerSideProps = async (context: any) => {
   const { id } = context.params
@@ -53,7 +54,7 @@ type Props = {
   game: Game
 }
 
-export default function GamePage({ gameId, game }: Props) {
+const GamePage = ({ gameId, game }: Props) => {
   const [loading, setLoading] = useState(false)
   const [myself, setMyself] = useState<GameParticipant | null>(null)
   const [myPlayer, setMyPlayer] = useState<Player | null>(null)
@@ -188,6 +189,13 @@ export default function GamePage({ gameId, game }: Props) {
   )
 }
 
+GamePage.getThemeName = () => {
+  const [displaySettings] = useUserDisplaySettings()
+  return displaySettings.themeName
+}
+
+export default GamePage
+
 const RatingWarningModal = ({ game }: { game: Game }) => {
   const [getCookie, setCookie] = useCookies()
   const rating = game.labels.find((l) =>
@@ -221,7 +229,7 @@ const RatingWarningModal = ({ game }: { game: Game }) => {
           <div>
             <p>
               この村は年齢制限が{' '}
-              <span className='text-lg text-red-500'>
+              <span className='danger-text text-lg'>
                 <strong>{rating.name}</strong>
               </span>{' '}
               に設定されており、

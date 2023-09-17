@@ -177,12 +177,12 @@ const LeaveButton = ({ game }: { game: Game }) => {
 const ParticipantName = ({ profile }: { profile: GameParticipantProfile }) => {
   return (
     <p className='text-lg font-bold'>
-      <span className='text-sm font-normal text-gray-500'>
+      <span className='secondary-text text-sm font-normal'>
         ENo{profile.entryNumber}.&nbsp;
       </span>
       {profile.name}
       {profile.isGone ? (
-        <span className='text-sm font-normal text-gray-500'>（退出済み）</span>
+        <span className='secondary-text text-sm font-normal'>（退出済み）</span>
       ) : (
         ''
       )}

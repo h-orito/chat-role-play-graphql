@@ -2,7 +2,12 @@ import { useCallback, useEffect, useState } from 'react'
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import InputSelect from '@/components/form/input-select'
-import { UserPagingSettings, useUserPagingSettings } from '../user-settings'
+import {
+  UserDisplaySettings,
+  UserPagingSettings,
+  useUserDisplaySettings,
+  useUserPagingSettings
+} from '../user-settings'
 import PrimaryButton from '@/components/button/primary-button'
 import RadioGroup from '@/components/form/radio-group'
 import { useRouter } from 'next/router'
@@ -36,6 +41,10 @@ export default function UserSettingsComponent({
     <div className='text-center'>
       <div className='my-4 flex justify-center'>
         <PagingSettings />
+      </div>
+      <hr />
+      <div className='my-4 flex justify-center'>
+        <DisplaySettings />
       </div>
       {myself && (
         <>
@@ -96,6 +105,47 @@ const PagingSettings = () => {
           candidates={orderCandidates}
           selected={order}
           setSelected={setOrder}
+        />
+      </div>
+      <div className='flex justify-center'>
+        <PrimaryButton click={() => save()}>保存</PrimaryButton>
+      </div>
+    </div>
+  )
+}
+
+const DisplaySettings = () => {
+  const [userDisplaySettings, setUserDisplaySettings] = useUserDisplaySettings()
+  const themeCandidates = [
+    {
+      label: 'ライト',
+      value: 'light'
+    },
+    {
+      label: 'ダーク',
+      value: 'dark'
+    }
+  ]
+  const [themeName, setThemeName] = useState(userDisplaySettings.themeName)
+  const router = useRouter()
+  const save = () => {
+    setUserDisplaySettings({
+      themeName: themeName
+    } as UserDisplaySettings)
+    router.reload()
+  }
+  return (
+    <div>
+      <div className='mb-4'>
+        <FormLabel label='表示設定' />
+      </div>
+      <FormLabel label='テーマ' />
+      <div className='mb-4'>
+        <InputSelect
+          className='w-64 md:w-96'
+          candidates={themeCandidates}
+          selected={userDisplaySettings.themeName}
+          setSelected={(value: string) => setThemeName(value)}
         />
       </div>
       <div className='flex justify-center'>
