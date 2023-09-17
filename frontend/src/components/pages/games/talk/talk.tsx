@@ -171,6 +171,11 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
       ? 'エピローグを迎えるまでは自分しか参照できません。'
       : ''
 
+  const shouldMonologueReplyWarning =
+    game.status !== 'Epilogue' &&
+    talkType !== MessageType.Monologue &&
+    replyTarget != null
+
   return (
     <div className='py-2'>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -186,6 +191,11 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
           />
           <div className='notification-background notification-text mt-2 rounded-sm p-2 text-xs'>
             <p>{talkTypeDescription}</p>
+            {shouldMonologueReplyWarning && (
+              <p className='danger-text'>
+                独り言に独り言以外で返信すると、他の人も返信元の独り言を参照することができるためご注意ください。
+              </p>
+            )}
           </div>
         </div>
         <div className='my-2'>
