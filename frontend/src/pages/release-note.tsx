@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/09/17'>
+            <li>追加: ユーザー設定にテーマ変更機能を追加（ライト、ダーク）</li>
+          </ReleaseContent>
+
           <ReleaseContent label='不具合修正' date='2023/09/16'>
             <li>
               不具合修正: ブラウザを閉じるとユーザー設定が初期化される不具合修正
@@ -139,7 +143,6 @@ export default function CreateGame() {
                     ゲーム設定
                     <ul className='list-inside list-disc pl-4 text-left text-xs'>
                       <li>キャッチ画像</li>
-                      <li>テーマ（最低限ライトとダークモード）</li>
                       <li>終了後DM公開</li>
                     </ul>
                   </li>
@@ -174,6 +177,7 @@ export default function CreateGame() {
                     発言抽出
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>宛先</li>
+                      <li>自分宛発言</li>
                     </ul>
                   </li>
                   <li>日記</li>

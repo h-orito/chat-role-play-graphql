@@ -6,7 +6,7 @@ type Props = {
 export default function WarnButton({ click, children }: Props) {
   return (
     <button
-      className='rounded-sm border border-yellow-500 bg-yellow-100 px-4 py-1 hover:bg-yellow-300'
+      className='warning-button rounded-sm border px-4 py-1'
       onClick={click}
     >
       {children}

@@ -51,8 +51,8 @@ export default function DirectMessageComponent({
   const starClass = isFav
     ? 'text-yellow-500'
     : myself != null && myself.id !== directMessage.sender?.participantId
-    ? 'hover:text-yellow-500'
-    : ''
+    ? 'hover:text-yellow-500 secondary-text'
+    : 'secondary-text'
 
   const [favorite] = useMutation<FavoriteDirectMutation>(
     FavoriteDirectDocument,
@@ -108,18 +108,27 @@ export default function DirectMessageComponent({
     openProfileModal(directMessage.sender!.participantId)
   }
 
+  const messageClass =
+    directMessage.content.type === 'TalkNormal'
+      ? 'talk-normal'
+      : directMessage.content.type === 'Monologue'
+      ? 'talk-monologue'
+      : directMessage.content.type === 'Description'
+      ? 'description'
+      : ''
+
   return (
     <div>
       <div className='w-full px-4 py-2'>
         {directMessage.sender && (
           <div className='flex pb-1'>
             <button onClick={handleProfileClick}>
-              <p className='text-xs hover:text-blue-500'>
+              <p className='primary-hover-text text-xs'>
                 ENo.{directMessage.sender.entryNumber}&nbsp;
                 {directMessage.sender.name}
               </p>
             </button>
-            <p className='ml-auto self-end text-xs text-gray-500'>
+            <p className='secondary-text ml-auto self-end text-xs'>
               {iso2display(directMessage.time.sendAt)}
             </p>
           </div>
@@ -138,7 +147,7 @@ export default function DirectMessageComponent({
           {!preview && (
             <div className='ml-2 flex-1 text-sm'>
               <div
-                className='w-full whitespace-pre-wrap break-words rounded border border-gray-300 p-2 text-gray-700'
+                className={`message ${messageClass}`}
                 style={{ minHeight: `${directMessage.sender!.icon!.height}px` }}
               >
                 <MessageText
@@ -149,16 +158,14 @@ export default function DirectMessageComponent({
               <div className='flex justify-end pt-1'>
                 <div className='flex'>
                   <button onClick={() => handleFav()} disabled={!canFav}>
-                    <StarIcon
-                      className={`y-6 h-6 text-gray-500 ${starClass}`}
-                    />
+                    <StarIcon className={`y-4 h-4 ${starClass}`} />
                   </button>
                   {favCount > 0 && (
                     <button
                       className='pr-2 hover:font-bold'
                       onClick={() => openFavoritesModal(directMessage.id)}
                     >
-                      <p className='ml-1 self-center text-gray-500'>
+                      <p className='secondary-text ml-1 self-center'>
                         {favCount}
                       </p>
                     </button>

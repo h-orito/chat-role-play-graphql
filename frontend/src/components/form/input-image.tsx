@@ -88,7 +88,7 @@ export default function InputImage({
           削除
         </DangerButton>
       )}
-      {errorMessage && <p className='text-xs text-red-500'>{errorMessage}</p>}
+      {errorMessage && <p className='danger-text text-xs'>{errorMessage}</p>}
     </div>
   )
 }

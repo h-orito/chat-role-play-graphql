@@ -46,7 +46,7 @@ const DecorateButton = ({ click, children }: DecorateButtonProps) => {
 
   return (
     <button
-      className='ml-1 min-w-[24px] rounded-sm border border-gray-300 p-1 text-xs first:ml-0 hover:bg-blue-300'
+      className='base-border ml-1 min-w-[24px] rounded-sm border p-1 text-xs first:ml-0 hover:bg-blue-300'
       onClick={onClick}
     >
       {children}
@@ -227,7 +227,7 @@ const RandomKeywordSelect = (props: Props) => {
   }
   return (
     <select
-      className='botder-gray-300 ml-1 border p-1 text-xs'
+      className='base-border ml-1 border p-1 text-xs text-gray-700'
       value={selected}
       onChange={(e: any) => handleRandomSelected(e.target.value)}
     >

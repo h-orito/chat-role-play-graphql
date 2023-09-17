@@ -1,7 +1,19 @@
+import { getThemeCSS } from '../theme/theme'
+
 export default function RootLayout({
-  children
+  children,
+  themeName = 'light'
 }: {
   children: React.ReactNode
+  themeName?: string
 }) {
-  return <div>{children}</div>
+  const themeCSS = getThemeCSS(themeName)
+  return (
+    <>
+      <div>{children}</div>
+      <style jsx global>{`
+        ${themeCSS}
+      `}</style>
+    </>
+  )
 }

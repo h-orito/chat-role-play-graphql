@@ -29,7 +29,8 @@ export default function RadioGroup({
             : index === candidates.length - 1
             ? 'rounded-r-sm border-r'
             : 'border'
-        const checkedClass = selected === candidate.value ? 'bg-blue-300' : ''
+        const checkedClass =
+          selected === candidate.value ? 'primary-active' : ''
         return (
           <div className='' key={index}>
             <input
@@ -43,7 +44,7 @@ export default function RadioGroup({
               disabled={disabled}
             />
             <label
-              className={`cursor-pointer border-y border-blue-500 px-2 py-1 ${checkedClass} ${roundClass} ${className}`}
+              className={`primary-border cursor-pointer border-y px-2 py-1 ${checkedClass} ${roundClass} ${className}`}
               htmlFor={`${name}_${index}`}
             >
               {candidate.label}

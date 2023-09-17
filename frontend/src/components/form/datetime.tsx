@@ -24,7 +24,9 @@ export default function Datetime({ className, value, setValue }: Props) {
   }
   return (
     <input
-      className={`${className} rounded border border-gray-300 px-2 py-1`}
+      className={`${
+        className ?? ''
+      } base-border rounded border px-2 py-1 text-gray-700`}
       type='datetime-local'
       value={toDatetime(value)}
       onChange={handleChange}

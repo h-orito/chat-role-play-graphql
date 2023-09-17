@@ -7,7 +7,9 @@ type Props = {
 export default function SecondaryButton({ click, children, className }: Props) {
   return (
     <button
-      className={`${className} rounded-sm border border-gray-500 bg-gray-100 px-4 py-1 hover:bg-gray-300`}
+      className={`${
+        className ?? ''
+      } secondary-button secondary-text rounded-sm border px-4 py-1`}
       onClick={click}
     >
       {children}

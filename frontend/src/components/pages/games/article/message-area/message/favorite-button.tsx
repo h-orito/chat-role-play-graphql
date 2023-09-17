@@ -84,20 +84,20 @@ export default function FavoriteButton({
   const starClass = isFav
     ? 'text-yellow-500'
     : canFav
-    ? 'hover:text-yellow-500'
-    : 'text-gray-300'
+    ? 'hover:text-yellow-500 secondary-text'
+    : 'secondary-text'
 
   return (
     <>
       <button onClick={() => handleFav()} disabled={!canFav}>
-        <StarIcon className={`y-4 h-4 text-gray-500 ${starClass}`} />
+        <StarIcon className={`y-4 h-4 ${starClass}`} />
       </button>
       {favCount > 0 && (
         <button
           className='pr-2 hover:font-bold'
           onClick={() => openFavoritesModal(message.id)}
         >
-          <p className='ml-1 self-center text-gray-500'>{favCount}</p>
+          <p className='secondary-text ml-1 self-center'>{favCount}</p>
         </button>
       )}
     </>

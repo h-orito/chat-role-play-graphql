@@ -137,7 +137,7 @@ const TalkSystem = forwardRef<TalkSystemRefHandle, Props>(
             )}
           </div>
           {preview && (
-            <div className='my-4 border-t border-gray-300 pt-2'>
+            <div className='base-border my-4 border-t pt-2'>
               <p className='font-bold'>プレビュー</p>
               <div>
                 <SystemMessage message={preview!} />

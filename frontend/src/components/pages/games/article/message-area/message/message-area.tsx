@@ -367,7 +367,7 @@ const TalkButton = forwardRef<TalkButtonRefHandle, TalkButtonProps>(
     return (
       <>
         <button
-          className='absolute bottom-10 right-4 z-10 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+          className='primary-active absolute bottom-10 right-4 z-10 rounded-full p-3 hover:bg-slate-200'
           onClick={() => setIsOpenTalkModal(true)}
         >
           <PencilSquareIcon className='h-8 w-8' />
@@ -416,7 +416,7 @@ const DescriptionButton = ({
   return (
     <>
       <button
-        className='absolute bottom-10 right-24 z-10 rounded-full bg-blue-400 p-3 hover:bg-slate-200'
+        className='primary-active absolute bottom-10 right-24 z-10 rounded-full p-3 hover:bg-slate-200'
         onClick={() => setIsOpenModal(true)}
       >
         <DocumentTextIcon className='h-8 w-8' />

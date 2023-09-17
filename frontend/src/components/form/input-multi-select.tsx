@@ -31,7 +31,7 @@ export default function InputMultiSelect({
     <div className='flex justify-center'>
       {label && <label className='block text-xs font-bold'>{label}</label>}
       <Select
-        className='w-64 md:w-96'
+        className='w-64 text-gray-700 md:w-96'
         defaultValue={defaultOptions}
         options={candidates}
         isMulti

@@ -8,7 +8,7 @@ type Props = {
 
 export default function GamePeriodLinks({ game, periodId, setQuery }: Props) {
   return (
-    <div className='border-b border-gray-300 p-2 text-center text-xs'>
+    <div className='base-border border-b p-2 text-center text-xs'>
       {game.periods.map((period) => {
         return (
           <span key={period.id} className='ml-2 first:ml-0'>
@@ -16,7 +16,7 @@ export default function GamePeriodLinks({ game, periodId, setQuery }: Props) {
               <strong>{period.name}</strong>
             ) : (
               <button
-                className='hover:text-blue-500'
+                className='primary-text'
                 onClick={() => setQuery(period.id)}
               >
                 {period.name}

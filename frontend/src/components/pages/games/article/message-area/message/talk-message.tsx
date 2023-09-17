@@ -63,15 +63,15 @@ export default function TalkMessage({
         )}
         {message.sender && (
           <div className='flex text-xs'>
-            <p className='text-gray-500'>#{message.content.number}</p>
+            <p className='secondary-text'>#{message.content.number}</p>
             &nbsp;
             <button onClick={handleProfileClick}>
-              <p className='hover:text-blue-500'>
+              <p className='primary-hover-text'>
                 ENo.{message.sender.entryNumber}&nbsp;
                 {message.sender.name}
               </p>
             </button>
-            <p className='ml-auto text-gray-500'>
+            <p className='secondary-text ml-auto'>
               {iso2display(message.time.sendAt)}
             </p>
           </div>
@@ -173,14 +173,14 @@ const ReplyButton = ({
   return (
     <>
       <button className='hover:font-bold' onClick={() => handleReply(message)}>
-        <ChatBubbleOvalLeftEllipsisIcon className='y-4 h-4 text-gray-500' />
+        <ChatBubbleOvalLeftEllipsisIcon className='y-4 secondary-text h-4' />
       </button>
       {message.reactions.replyCount > 0 && (
         <button
           className='pr-2 hover:font-bold'
           onClick={() => toggleReplies()}
         >
-          <p className='ml-1 self-center text-gray-500'>
+          <p className='secondary-text ml-1 self-center'>
             {message.reactions.replyCount}
           </p>
         </button>

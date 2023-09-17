@@ -19,7 +19,7 @@ export default function CharachipCards({ charachips }: Props) {
 const CharachipCard = ({ charachip }: { charachip: Charachip }) => {
   return (
     <Link href={`/charachips/${base64ToId(charachip.id)}`} className='relative'>
-      <div className='flex flex-col rounded-lg border border-gray-300 hover:border-blue-500'>
+      <div className='base-border flex flex-col rounded-lg border hover:border-blue-500'>
         <div className='w-full rounded-t-lg p-4'>
           <div className='flex justify-center gap-2'>
             {charachip.charas.map((chara) => (

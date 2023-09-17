@@ -53,13 +53,17 @@ const InputText = <
   )
 
   const errorMessage = errors[name]?.message as string | undefined
-  const borderClass = errorMessage ? 'border-red-500' : 'border-gray-300'
+  const borderClass = errorMessage ? 'danger-border' : 'base-border'
 
   return (
     <div>
-      {label && <label className='block text-xs font-bold'>{label}</label>}
+      {label && (
+        <label className='base-text block text-xs font-bold'>{label}</label>
+      )}
       <input
-        className={`${className ?? ''} rounded border ${borderClass} px-2 py-1`}
+        className={`${
+          className ?? ''
+        } rounded border ${borderClass} px-2 py-1 text-gray-700`}
         name={field.name}
         ref={field.ref}
         value={field.value}
@@ -67,7 +71,7 @@ const InputText = <
         onBlur={handleBlur}
         {...fieldProps}
       />
-      {errorMessage && <p className='text-xs text-red-500'>{errorMessage}</p>}
+      {errorMessage && <p className='danger-text text-xs'>{errorMessage}</p>}
     </div>
   )
 }

@@ -66,11 +66,11 @@ export default function Paging({
   }
 
   return (
-    <div className='flex justify-center border-b border-gray-300'>
+    <div className='base-border flex justify-center border-b'>
       <ul className='flex py-2 text-xs'>
         <li>
           <button
-            className='w-8 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
+            className='base-border w-8 border px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
             onClick={() => setPageNumber(1)}
             disabled={!messages.hasPrePage}
           >
@@ -79,7 +79,7 @@ export default function Paging({
         </li>
         <li>
           <button
-            className='w-8 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
+            className='base-border w-8 border px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
             onClick={() =>
               setPageNumber(
                 query?.isLatest === true
@@ -95,10 +95,10 @@ export default function Paging({
         {pageCounts.map((pageCount) => (
           <li key={pageCount}>
             <button
-              className={`w-10 border border-gray-300 px-2 py-1 hover:bg-slate-200 ${
+              className={`base-border w-10 border px-2 py-1 hover:bg-slate-200 ${
                 query?.isLatest !== true &&
                 pageCount === messages.currentPageNumber
-                  ? 'bg-blue-300'
+                  ? 'primary-active'
                   : ''
               }`}
               onClick={() => setPageNumber(pageCount)}
@@ -109,7 +109,7 @@ export default function Paging({
         ))}
         <li>
           <button
-            className='w-8 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
+            className='base-border w-8 border px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
             onClick={() =>
               setPageNumber(
                 query?.isLatest === true
@@ -124,7 +124,7 @@ export default function Paging({
         </li>
         <li>
           <button
-            className='w-8 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
+            className='base-border w-8 border px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white md:w-10'
             onClick={() => setPageNumber(messages.allPageCount)}
             disabled={!messages.hasNextPage}
           >
@@ -134,8 +134,8 @@ export default function Paging({
         {query?.isDesc === false && (
           <li>
             <button
-              className={`w-12 border border-gray-300 px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white ${
-                query?.isLatest === true ? 'bg-blue-300' : ''
+              className={`base-border w-12 border px-2 py-1 hover:bg-slate-200 disabled:bg-gray-400 disabled:text-white ${
+                query?.isLatest === true ? 'primary-active' : ''
               }`}
               onClick={() => setLatest()}
             >

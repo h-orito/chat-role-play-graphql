@@ -64,14 +64,16 @@ const InputTextarea = <
   )
 
   const errorMessage = errors[name]?.message as string | undefined
-  const borderClass = errorMessage ? 'border-red-500' : 'border-gray-300'
+  const borderClass = errorMessage ? 'danger-border' : 'base-border'
 
   return (
     <div>
-      {label && <label className='block text-xs font-bold'>{label}</label>}
+      {label && (
+        <label className='base-text block text-xs font-bold'>{label}</label>
+      )}
       <TextareaAutosize
         id={field.name}
-        className={`${textareaclassname} rounded border ${borderClass} w-full px-2 py-1`}
+        className={`${textareaclassname} rounded border ${borderClass} w-full px-2 py-1 text-gray-700`}
         ref={field.ref}
         value={field.value}
         onChange={handleChange}
@@ -79,7 +81,7 @@ const InputTextarea = <
         {...props}
       />
       {maxLength && <TextCount maxLength={maxLength} value={field.value} />}
-      {errorMessage && <p className='text-xs text-red-500'>{errorMessage}</p>}
+      {errorMessage && <p className='danger-text text-xs'>{errorMessage}</p>}
     </div>
   )
 }
@@ -89,7 +91,7 @@ export default InputTextarea
 const TextCount = (props: { maxLength: number; value: string }) => {
   const isOver = props.value.length > props.maxLength
   return (
-    <p className={`flex justify-end ${isOver ? 'text-red-500' : ''}`}>
+    <p className={`flex justify-end ${isOver ? 'danger-text' : ''}`}>
       {props.value.length} / {props.maxLength}
     </p>
   )

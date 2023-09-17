@@ -109,7 +109,7 @@ export default function Participate({ close, game }: Props) {
     <div>
       {bizError && (
         <div className='my-4'>
-          <div className='my-1 rounded-sm bg-red-200 p-2'>
+          <div className='danger-background my-1 rounded-sm p-2'>
             <ul className='list-inside list-disc text-xs'>
               <li>{bizError}</li>
             </ul>
@@ -185,7 +185,7 @@ export default function Participate({ close, game }: Props) {
                 </div>
                 <div className='my-4'>
                   <label className='text-xs font-bold'>キャラクター</label>
-                  <div className='my-1 rounded-sm border border-red-200 bg-red-200 p-2'>
+                  <div className='danger-background my-1 rounded-sm p-2'>
                     <ul className='list-inside list-disc text-xs'>
                       <li>
                         参加後に変更することができないためご注意ください。
@@ -225,7 +225,7 @@ export default function Participate({ close, game }: Props) {
 
         <div className='my-4'>
           <label className='text-xs font-bold'>キャラクター名</label>
-          <div className='my-1 rounded-sm border border-gray-200 bg-gray-200 p-2'>
+          <div className='notification-background notification-text my-1 rounded-sm border p-2'>
             <ul className='list-inside list-disc text-xs'>
               {canChangeName ? (
                 <li>後で変更可能です。</li>

@@ -47,7 +47,7 @@ export default function FollowsCount({
   return (
     <>
       <button
-        className='hover:text-blue-500'
+        className='primary-hover-text'
         onClick={() => setIsOpenFollowsModal(true)}
       >
         フォロー: <span className='font-bold'>{profile.followsCount}</span>

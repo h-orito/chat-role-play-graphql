@@ -98,7 +98,7 @@ export default function SearchCondition({
   }
 
   return (
-    <div className='w-full border-b border-gray-300 px-4 py-2'>
+    <div className='base-border w-full border-b px-4 py-2'>
       <div className='flex'>
         <button
           className='flex w-full justify-start'
@@ -143,7 +143,7 @@ export default function SearchCondition({
           <label className='text-xs font-bold'>キーワード</label>
           <div>
             <input
-              className='w-full rounded border border-gray-300 px-2 py-1 text-xs'
+              className='base-border w-full rounded border px-2 py-1 text-xs'
               value={keyword}
               placeholder='スペース区切りでOR検索'
               onChange={(e) => setKeyword(e.target.value)}

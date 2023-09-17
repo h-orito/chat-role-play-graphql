@@ -184,7 +184,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
             setSelected={setTalkType}
             disabled={preview != null}
           />
-          <div className='mt-2 rounded-sm bg-gray-200 p-2 text-xs'>
+          <div className='notification-background notification-text mt-2 rounded-sm p-2 text-xs'>
             <p>{talkTypeDescription}</p>
           </div>
         </div>
@@ -277,7 +277,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
       {preview && (
         <div className='my-4'>
           <p className='text-xs font-bold'>プレビュー</p>
-          <div className='border border-gray-300 pt-2'>
+          <div className='base-border border pt-2'>
             <div>
               <TalkMessage
                 message={preview!}
@@ -294,7 +294,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
       {replyTarget && (
         <div className='mb-4'>
           <p className='text-xs font-bold'>返信先</p>
-          <div className='border border-gray-300 pt-2'>
+          <div className='base-border border pt-2'>
             <div>
               <TalkMessage
                 message={replyTarget!}
