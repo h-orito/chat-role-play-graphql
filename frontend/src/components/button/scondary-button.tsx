@@ -9,7 +9,7 @@ export default function SecondaryButton({ click, children, className }: Props) {
     <button
       className={`${
         className ?? ''
-      } secondary-button secondary-text rounded-sm border px-4 py-1`}
+      } secondary-button rounded-sm border px-4 py-1`}
       onClick={click}
     >
       {children}

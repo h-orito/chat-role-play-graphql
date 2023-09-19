@@ -61,9 +61,6 @@ export default function CreateGame() {
   const [registerGame] = useMutation<RegisterGameMutation>(
     RegisterGameDocument,
     {
-      onCompleted(e) {
-        // TODO
-      },
       onError(error) {
         console.error(error)
       }
@@ -119,7 +116,8 @@ export default function CreateGame() {
               rule: {
                 isGameMasterProducer: false,
                 canShorten: true,
-                canSendDirectMessage: true
+                canSendDirectMessage: true,
+                theme: null
               } as NewGameRuleSetting,
               password: {
                 password: data.password.length > 0 ? data.password : null
@@ -154,6 +152,7 @@ export default function CreateGame() {
           labelName='作成'
           charachipIds={charachipIds}
           setCharachipIds={setCharachipIds}
+          canModifyTheme={false}
         />
       </article>
     </main>

@@ -105,7 +105,7 @@ export default function GameMasterEdit({ game }: Props) {
         <p className='font-bold'>ゲームマスター追加</p>
         <div className='mb-2 flex'>
           <input
-            className='base-border flex-1 rounded border px-2 py-1 text-xs'
+            className='base-border flex-1 rounded border px-2 py-1 text-xs text-gray-700'
             value={playerName}
             placeholder='プレイヤー名'
             onChange={(e) => setPlayerName(e.target.value)}

@@ -30,7 +30,7 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
               <span key={idx}>
                 {idx !== 0 && <span>、</span>}
                 <Link
-                  className='primary-text'
+                  className='base-link'
                   href={`/charachips/${base64ToId(c.id)}`}
                   target='_blank'
                 >

@@ -196,6 +196,7 @@ type GameRuleSetting {
   isGameMasterProducer: Boolean!
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
+  theme: String
 }
 
 type GamePasswordSetting {
@@ -605,6 +606,7 @@ input NewGameRuleSetting {
   isGameMasterProducer: Boolean!
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
+  theme: String
 }
 
 input NewGamePasswordSetting {
@@ -689,6 +691,7 @@ input UpdateGameRuleSetting {
   isGameMasterProducer: Boolean!
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
+  theme: String
 }
 
 input UpdateGamePasswordSetting {

@@ -55,6 +55,7 @@ func (g NewGame) MapToGame() model.Game {
 			Rule: model.GameRuleSettings{
 				CanShorten:           g.Settings.Rule.CanShorten,
 				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
+				Theme:                g.Settings.Rule.Theme,
 			},
 			Password: model.GamePasswordSettings{
 				HasPassword: g.Settings.Password.Password != nil,
@@ -99,6 +100,7 @@ func (g UpdateGameSetting) MapToGameSetting() model.GameSettings {
 		Rule: model.GameRuleSettings{
 			CanShorten:           g.Settings.Rule.CanShorten,
 			CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
+			Theme:                g.Settings.Rule.Theme,
 		},
 		Password: model.GamePasswordSettings{
 			HasPassword: g.Settings.Password.Password != nil,

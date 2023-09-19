@@ -73,7 +73,7 @@ const Article = forwardRef<ArticleRefHandle, Props>(
     return (
       <article
         id='article'
-        className='mut-height-guard relative flex h-screen max-h-screen w-full flex-1 flex-col'
+        className='mut-height-guard base-background relative flex h-screen max-h-screen w-full flex-1 flex-col'
       >
         <ArticleHeader tab={tab} />
         <ArticleMenu

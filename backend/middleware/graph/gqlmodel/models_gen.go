@@ -250,9 +250,10 @@ type GamePeriod struct {
 }
 
 type GameRuleSetting struct {
-	IsGameMasterProducer bool `json:"isGameMasterProducer"`
-	CanShorten           bool `json:"canShorten"`
-	CanSendDirectMessage bool `json:"canSendDirectMessage"`
+	IsGameMasterProducer bool    `json:"isGameMasterProducer"`
+	CanShorten           bool    `json:"canShorten"`
+	CanSendDirectMessage bool    `json:"canSendDirectMessage"`
+	Theme                *string `json:"theme,omitempty"`
 }
 
 type GameSettings struct {
@@ -429,9 +430,10 @@ type NewGamePasswordSetting struct {
 }
 
 type NewGameRuleSetting struct {
-	IsGameMasterProducer bool `json:"isGameMasterProducer"`
-	CanShorten           bool `json:"canShorten"`
-	CanSendDirectMessage bool `json:"canSendDirectMessage"`
+	IsGameMasterProducer bool    `json:"isGameMasterProducer"`
+	CanShorten           bool    `json:"canShorten"`
+	CanSendDirectMessage bool    `json:"canSendDirectMessage"`
+	Theme                *string `json:"theme,omitempty"`
 }
 
 type NewGameSettings struct {
@@ -705,9 +707,10 @@ type UpdateGamePeriodPayload struct {
 }
 
 type UpdateGameRuleSetting struct {
-	IsGameMasterProducer bool `json:"isGameMasterProducer"`
-	CanShorten           bool `json:"canShorten"`
-	CanSendDirectMessage bool `json:"canSendDirectMessage"`
+	IsGameMasterProducer bool    `json:"isGameMasterProducer"`
+	CanShorten           bool    `json:"canShorten"`
+	CanSendDirectMessage bool    `json:"canSendDirectMessage"`
+	Theme                *string `json:"theme,omitempty"`
 }
 
 type UpdateGameSetting struct {

@@ -18,8 +18,11 @@ import {
 } from '@/lib/generated/graphql'
 import { useLazyQuery } from '@apollo/client'
 import InputMultiSelect from '@/components/form/input-multi-select'
-import InputSelect from '@/components/form/input-select'
 import RadioGroup from '@/components/form/radio-group'
+import ThemeEdit from './theme-edit'
+import InputSelect from '@/components/form/input-select'
+import { themeMap, themeOptions } from '@/components/theme/theme'
+import PrimaryButton from '@/components/button/primary-button'
 
 type Props = {
   defaultValues: GameFormInput
@@ -32,6 +35,9 @@ type Props = {
   onSubmit: SubmitHandler<GameFormInput>
   labelName: string
   canModifyCharachips?: boolean
+  canModifyTheme?: boolean
+  theme?: string | null
+  setTheme?: Dispatch<SetStateAction<string | null>>
 }
 
 export interface GameFormInput {
@@ -427,12 +433,87 @@ export default function GameEdit(props: Props) {
               }}
             />
           </div>
+          {props.canModifyTheme == true && (
+            <>
+              <hr />
+              <ThemeForm theme={props.theme!} setTheme={props.setTheme!} />
+            </>
+          )}
           <hr />
           <div className='my-4 flex justify-center'>
             <SubmitButton label={props.labelName} disabled={!canSubmit} />
           </div>
         </form>
       </div>
+    </div>
+  )
+}
+
+const ThemeForm = ({
+  theme,
+  setTheme
+}: {
+  theme: string | null
+  setTheme: Dispatch<SetStateAction<string | null>>
+}) => {
+  const [isUseTheme, setIsUseTheme] = useState(theme ? 'use' : 'none')
+  const handleChangeUseTheme = (value: string) => {
+    if (value === 'none') {
+      if (
+        window.confirm('設定中のテーマ内容が破棄されますが、よろしいですか？')
+      ) {
+        setTheme(null)
+        setIsUseTheme(value)
+      }
+    } else {
+      if (theme === null) {
+        setTheme(JSON.stringify(themeMap.get('light')))
+      }
+      setIsUseTheme(value)
+    }
+  }
+  const [templateTheme, setTemplateTheme] = useState(themeOptions[0].value)
+  const handlePaste = (e: any) => {
+    e.preventDefault()
+    if (!window.confirm('現在のテーマ内容が破棄されますが、よろしいですか？')) {
+      return
+    }
+    const newTheme = themeMap.get(templateTheme)!
+    setTheme(JSON.stringify(newTheme))
+  }
+  return (
+    <div className='my-4'>
+      <FormLabel label='オリジナルテーマ'>
+        設定されている場合、各ユーザーがこのテーマを使用することができるようになります。
+      </FormLabel>
+      <div className='mt-2 flex justify-center'>
+        <RadioGroup
+          name='use-theme'
+          candidates={[
+            { label: '設定しない', value: 'none' },
+            { label: '設定する', value: 'use' }
+          ]}
+          selected={isUseTheme}
+          setSelected={handleChangeUseTheme}
+        />
+      </div>
+      {isUseTheme === 'use' && (
+        <>
+          <div className='base-border my-4 border-b'>
+            <strong>既存テーマ流用</strong>
+            <div className='mb-4 flex justify-center gap-2'>
+              <InputSelect
+                className='w-24 md:w-36'
+                candidates={themeOptions}
+                selected={templateTheme}
+                setSelected={(value: string) => setTemplateTheme(value)}
+              />
+              <PrimaryButton click={handlePaste}>反映</PrimaryButton>
+            </div>
+          </div>
+          <ThemeEdit theme={theme} setTheme={setTheme} />
+        </>
+      )}
     </div>
   )
 }
@@ -461,7 +542,7 @@ const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
       {children && (
         <>
           <button onClick={openModal}>
-            <QuestionMarkCircleIcon className='primary-text ml-1 h-4 w-4' />
+            <QuestionMarkCircleIcon className='base-link ml-1 h-4 w-4' />
           </button>
           {isModalOpen && (
             <Modal close={toggleModal} hideFooter>

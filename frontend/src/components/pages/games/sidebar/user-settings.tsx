@@ -27,6 +27,7 @@ import { useLazyQuery, useMutation } from '@apollo/client'
 import InputText from '@/components/form/input-text'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import SubmitButton from '@/components/button/submit-button'
+import { themeOptions } from '@/components/theme/theme'
 
 export default function UserSettingsComponent({
   close,
@@ -116,16 +117,6 @@ const PagingSettings = () => {
 
 const DisplaySettings = () => {
   const [userDisplaySettings, setUserDisplaySettings] = useUserDisplaySettings()
-  const themeCandidates = [
-    {
-      label: 'ライト',
-      value: 'light'
-    },
-    {
-      label: 'ダーク',
-      value: 'dark'
-    }
-  ]
   const [themeName, setThemeName] = useState(userDisplaySettings.themeName)
   const router = useRouter()
   const save = () => {
@@ -134,16 +125,22 @@ const DisplaySettings = () => {
     } as UserDisplaySettings)
     router.reload()
   }
+  const candidates = [
+    ...themeOptions,
+    { label: 'ゲームオリジナル', value: 'original' }
+  ]
   return (
     <div>
       <div className='mb-4'>
         <FormLabel label='表示設定' />
       </div>
-      <FormLabel label='テーマ' />
+      <FormLabel label='テーマ'>
+        ゲームオリジナルを選択していて、ゲームオリジナルテーマが存在しない場合、「light」で表示されます。
+      </FormLabel>
       <div className='mb-4'>
         <InputSelect
           className='w-64 md:w-96'
-          candidates={themeCandidates}
+          candidates={candidates}
           selected={userDisplaySettings.themeName}
           setSelected={(value: string) => setThemeName(value)}
         />

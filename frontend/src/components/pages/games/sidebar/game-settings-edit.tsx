@@ -65,13 +65,13 @@ export default function GameSettingsEdit({ game }: Props) {
   const [charachipIds, setCharachipIds] = useState<string[]>(
     game.settings.chara.charachips.map((c) => c.id)
   )
+  const [theme, setTheme] = useState<string | null>(
+    game.settings.rule.theme ?? null
+  )
 
   const [updateGameSettings] = useMutation<UpdateGameSettingsMutation>(
     UpdateGameSettingsDocument,
     {
-      onCompleted(e) {
-        // TODO
-      },
       onError(error) {
         console.error(error)
       }
@@ -127,7 +127,8 @@ export default function GameSettingsEdit({ game }: Props) {
               rule: {
                 isGameMasterProducer: false,
                 canShorten: true,
-                canSendDirectMessage: true
+                canSendDirectMessage: true,
+                theme: theme
               },
               password: {
                 password: data.password.length > 0 ? data.password : null
@@ -138,7 +139,7 @@ export default function GameSettingsEdit({ game }: Props) {
       })
       router.reload()
     },
-    [updateGameSettings, target, rating]
+    [updateGameSettings, target, rating, theme]
   )
 
   return (
@@ -154,6 +155,9 @@ export default function GameSettingsEdit({ game }: Props) {
         charachipIds={charachipIds}
         setCharachipIds={setCharachipIds}
         canModifyCharachips={false}
+        canModifyTheme={true}
+        theme={theme}
+        setTheme={setTheme}
       />
     </div>
   )

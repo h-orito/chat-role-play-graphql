@@ -279,6 +279,7 @@ const (
 	GameSettingKeyFinishGameAt
 	GameSettingKeyCanShorten
 	GameSettingKeyCanSendDirectMessage
+	GameSettingKeyTheme
 	GameSettingKeyPassword
 )
 
@@ -310,6 +311,8 @@ func (pa GameSettingKey) String() string {
 		return "CanShorten"
 	case GameSettingKeyCanSendDirectMessage:
 		return "CanSendDirectMessage"
+	case GameSettingKeyTheme:
+		return "Theme"
 	case GameSettingKeyPassword:
 		return "Password"
 	default:
@@ -332,6 +335,7 @@ func GameSettingKeyValues() []GameSettingKey {
 		GameSettingKeyFinishGameAt,
 		GameSettingKeyCanShorten,
 		GameSettingKeyCanSendDirectMessage,
+		GameSettingKeyTheme,
 		GameSettingKeyPassword,
 	}
 }
@@ -369,6 +373,7 @@ func ToGameSettingsModel(
 		Rule: model.GameRuleSettings{
 			CanShorten:           gameSettingsToBool(settings, GameSettingKeyCanShorten, false),
 			CanSendDirectMessage: gameSettingsToBool(settings, GameSettingKeyCanSendDirectMessage, false),
+			Theme:                gameSettingsToString(settings, GameSettingKeyTheme, nil),
 		},
 		Password: model.GamePasswordSettings{
 			HasPassword: password != nil && len(*password) > 0,

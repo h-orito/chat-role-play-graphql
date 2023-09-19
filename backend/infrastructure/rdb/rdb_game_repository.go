@@ -533,6 +533,9 @@ func registerGameSettings(db *gorm.DB, ID uint32, settings model.GameSettings) (
 	if err := registerGameSetting(db, ID, GameSettingKeyCanSendDirectMessage, boolToString(settings.Rule.CanSendDirectMessage)); err != nil {
 		return err
 	}
+	if err := registerGameSetting(db, ID, GameSettingKeyTheme, orEmpty(settings.Rule.Theme)); err != nil {
+		return err
+	}
 	if err := registerGameSetting(db, ID, GameSettingKeyPassword, orEmpty(settings.Password.Password)); err != nil {
 		return err
 	}
@@ -577,6 +580,9 @@ func updateGameSettings(db *gorm.DB, gameID uint32, settings model.GameSettings)
 		return err
 	}
 	if err := updateGameSetting(db, gameID, GameSettingKeyCanSendDirectMessage, boolToString(settings.Rule.CanSendDirectMessage)); err != nil {
+		return err
+	}
+	if err := updateGameSetting(db, gameID, GameSettingKeyTheme, orEmpty(settings.Rule.Theme)); err != nil {
 		return err
 	}
 	if err := updateGameSetting(db, gameID, GameSettingKeyPassword, orEmpty(settings.Password.Password)); err != nil {

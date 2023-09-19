@@ -173,7 +173,7 @@ const GameStatus = ({ game }: StatusProps) => {
 
   return (
     <div className='mb-4 px-4 text-xs'>
-      <span className='primary-border primary-text rounded-md border px-1'>
+      <span className='primary-border base-link rounded-md border px-1'>
         {statusName}
       </span>
       {statusDescription && <p>{statusDescription}</p>}
@@ -321,7 +321,7 @@ const GameSettingsEditButton = ({ game }: GameSettingsEditButtonProps) => {
         <p className='flex-1 self-center text-left'>ゲーム設定変更</p>
       </button>
       {isOpenGameSettingsEditModal && (
-        <Modal close={toggleGameSettingsEditModal}>
+        <Modal close={toggleGameSettingsEditModal} hideOnClickOutside={false}>
           <GameSettingsEdit game={game} />
         </Modal>
       )}

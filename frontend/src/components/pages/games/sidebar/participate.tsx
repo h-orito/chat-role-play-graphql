@@ -126,7 +126,7 @@ export default function Participate({ close, game }: Props) {
             onChange={(e: any) => setCheckedTerm((prev) => !prev)}
           />
           <label htmlFor='term-check' className='ml-2 text-xs'>
-            <Link target='_blank' href='/rules' className='text-blue-500'>
+            <Link target='_blank' href='/rules' className='base-link'>
               ルール
             </Link>
             を確認し、守るべき事項について理解しました。
@@ -225,7 +225,7 @@ export default function Participate({ close, game }: Props) {
 
         <div className='my-4'>
           <label className='text-xs font-bold'>キャラクター名</label>
-          <div className='notification-background notification-text my-1 rounded-sm border p-2'>
+          <div className='notification-background notification-border notification-text my-1 rounded-sm border p-2'>
             <ul className='list-inside list-disc text-xs'>
               {canChangeName ? (
                 <li>後で変更可能です。</li>

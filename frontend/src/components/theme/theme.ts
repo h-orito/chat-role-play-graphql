@@ -1,14 +1,6 @@
-type Theme = {
-  base: {
-    text: string
-    background: string
-    border: string
-  }
-  sidebar: {
-    text: string
-    background: string
-    hover: string
-  }
+export type Theme = {
+  base: BaseTheme
+  sidebar: SidebarTheme
   primary: TypeTheme
   secondary: TypeTheme
   warning: TypeTheme
@@ -16,9 +8,23 @@ type Theme = {
   notification: TypeTheme
 }
 
-const lightTheme: Theme = {
+export type BaseTheme = {
+  text: string
+  link: string
+  background: string
+  border: string
+}
+
+export type SidebarTheme = {
+  text: string
+  background: string
+  hover: string
+}
+
+export const lightTheme: Theme = {
   base: {
     text: '#374151',
+    link: '#3b82f6',
     background: '#fff',
     border: '#d1d5db'
   },
@@ -28,7 +34,7 @@ const lightTheme: Theme = {
     hover: '#e2e8f0'
   },
   primary: {
-    text: '#3b82f6',
+    text: '#374151',
     border: '#3b82f6',
     background: '#dbeafe',
     active: '#93c5fd'
@@ -46,7 +52,7 @@ const lightTheme: Theme = {
     active: '#fde047'
   },
   danger: {
-    text: '#ef4444',
+    text: '#000',
     border: '#ef4444',
     background: '#fee2e2',
     active: '#fca5a5'
@@ -62,6 +68,7 @@ const lightTheme: Theme = {
 const darkTheme: Theme = {
   base: {
     text: '#fff',
+    link: '#14b4ff',
     background: '#222222',
     border: '#464545'
   },
@@ -71,7 +78,7 @@ const darkTheme: Theme = {
     hover: '#222222'
   },
   primary: {
-    text: '#14b4ff',
+    text: '#fff',
     border: '#3b82f6',
     background: '#3991f4',
     active: '#3b82f6'
@@ -89,20 +96,20 @@ const darkTheme: Theme = {
     active: '#fde047'
   },
   danger: {
-    text: '#ef4444',
+    text: '#fff',
     border: '#ef4444',
-    background: '#fee2e2',
-    active: '#fca5a5'
+    background: '#f87171',
+    active: '#ef4444'
   },
   notification: {
-    text: '#000',
-    border: '#f3f3f6',
-    background: '#f3f3f6',
+    text: '#eee',
+    border: '#777',
+    background: '#777',
     active: '#eee'
   }
 }
 
-type TypeTheme = {
+export type TypeTheme = {
   text: string
   border: string
   background: string
@@ -110,6 +117,7 @@ type TypeTheme = {
 }
 
 const buttonCss = (typeTheme: TypeTheme) => `
+color: ${typeTheme.text};
 border-color: ${typeTheme.border};
 background-color: ${typeTheme.background};
 &:hover {
@@ -121,13 +129,28 @@ background-color: ${typeTheme.background};
 }
 `
 
-const themeMap: Map<string, Theme> = new Map<string, Theme>([
+export const themeOptions = [
+  {
+    label: 'ライト',
+    value: 'light'
+  },
+  {
+    label: 'ダーク',
+    value: 'dark'
+  }
+]
+
+export const themeMap: Map<string, Theme> = new Map<string, Theme>([
   ['light', lightTheme],
   ['dark', darkTheme]
 ])
 
 export const getThemeCSS = (themeName: string = 'light'): string => {
   const theme = themeMap.get(themeName)!
+  return convertThemeToCSS(theme)
+}
+
+export const convertThemeToCSS = (theme: Theme): string => {
   return `
     body {
         color: ${theme.base.text};
@@ -135,6 +158,9 @@ export const getThemeCSS = (themeName: string = 'light'): string => {
     }
     .base-text {
         color: ${theme.base.text};
+    }
+    .base-link {
+        color: ${theme.base.link};
     }
     .base-background {
         background-color: ${theme.base.background};

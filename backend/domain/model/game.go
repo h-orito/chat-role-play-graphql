@@ -232,6 +232,7 @@ type GameTimeSettings struct {
 type GameRuleSettings struct {
 	CanShorten           bool
 	CanSendDirectMessage bool
+	Theme                *string
 }
 
 type GamePasswordSettings struct {

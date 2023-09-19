@@ -1,13 +1,11 @@
 import { getThemeCSS } from '../theme/theme'
 
 export default function RootLayout({
-  children,
-  themeName = 'light'
+  children
 }: {
   children: React.ReactNode
-  themeName?: string
 }) {
-  const themeCSS = getThemeCSS(themeName)
+  const themeCSS = getThemeCSS('light')
   return (
     <>
       <div>{children}</div>

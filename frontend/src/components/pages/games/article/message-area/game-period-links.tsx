@@ -15,10 +15,7 @@ export default function GamePeriodLinks({ game, periodId, setQuery }: Props) {
             {periodId === period.id ? (
               <strong>{period.name}</strong>
             ) : (
-              <button
-                className='primary-text'
-                onClick={() => setQuery(period.id)}
-              >
+              <button className='base-link' onClick={() => setQuery(period.id)}>
                 {period.name}
               </button>
             )}

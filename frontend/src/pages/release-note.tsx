@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/09/20'>
+            <li>追加: ゲーム設定にゲームオリジナルテーマ設定を追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/09/17'>
             <li>追加: ユーザー設定にテーマ変更機能を追加（ライト、ダーク）</li>
           </ReleaseContent>
