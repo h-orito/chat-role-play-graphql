@@ -94,6 +94,13 @@ export default function GameSettings({ close, game }: GameSettingsProps) {
     value: settings.rule.canSendDirectMessage ? '可能' : '不可'
   })
   items.push({
+    name: 'ゲームオリジナルテーマ',
+    value:
+      settings.rule.theme != null && settings.rule.theme.length > 0
+        ? 'あり'
+        : 'なし'
+  })
+  items.push({
     name: 'ゲーム参加パスワード',
     value: settings.password.hasPassword ? 'あり' : 'なし'
   })

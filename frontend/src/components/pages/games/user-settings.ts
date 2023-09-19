@@ -20,7 +20,7 @@ const defaultPagingSettings: UserPagingSettings = {
 }
 
 const defaultDisplaySettings: UserDisplaySettings = {
-  themeName: 'light'
+  themeName: 'original'
 }
 
 export const defaultUserSettings: UserSettings = {
