@@ -176,7 +176,11 @@ func MapToGameParticipant(p model.GameParticipant) *gqlmodel.GameParticipant {
 	}
 }
 
-func MapToGameParticipantProfile(p model.GameParticipantProfile, participant model.GameParticipant) *gqlmodel.GameParticipantProfile {
+func MapToGameParticipantProfile(
+	p model.GameParticipantProfile,
+	participant model.GameParticipant,
+	player model.Player,
+) *gqlmodel.GameParticipantProfile {
 	return &gqlmodel.GameParticipantProfile{
 		ParticipantID:   intIdToBase64(p.GameParticipantID, "GameParticipant"),
 		Name:            participant.Name,
@@ -186,6 +190,8 @@ func MapToGameParticipantProfile(p model.GameParticipantProfile, participant mod
 		Introduction:    p.Introduction,
 		FollowsCount:    p.FollowsCount,
 		FollowersCount:  p.FollowersCount,
+		IsPlayerOpen:    p.IsPlayerOpen,
+		PlayerName:      &player.Name,
 	}
 }
 

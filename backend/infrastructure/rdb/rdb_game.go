@@ -125,6 +125,7 @@ type GameParticipantProfile struct {
 	GameParticipantID uint32 `gorm:"primaryKey"`
 	ProfileImageUrl   *string
 	Introduction      *string
+	IsPlayerOpen      bool
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 }
@@ -139,6 +140,7 @@ func (p GameParticipantProfile) ToModel(
 		Introduction:      p.Introduction,
 		FollowsCount:      followsCount,
 		FollowersCount:    followersCount,
+		IsPlayerOpen:      p.IsPlayerOpen,
 	}
 }
 

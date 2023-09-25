@@ -231,6 +231,8 @@ type GameParticipantProfile struct {
 	Introduction    *string `json:"introduction,omitempty"`
 	FollowsCount    int     `json:"followsCount"`
 	FollowersCount  int     `json:"followersCount"`
+	IsPlayerOpen    bool    `json:"isPlayerOpen"`
+	PlayerName      *string `json:"playerName,omitempty"`
 }
 
 type GameParticipantSetting struct {
@@ -675,6 +677,7 @@ type UpdateGameParticipantProfile struct {
 	ProfileIconID    *string         `json:"profileIconId,omitempty"`
 	Introduction     *string         `json:"introduction,omitempty"`
 	Memo             *string         `json:"memo,omitempty"`
+	IsPlayerOpen     bool            `json:"isPlayerOpen"`
 }
 
 type UpdateGameParticipantProfilePayload struct {

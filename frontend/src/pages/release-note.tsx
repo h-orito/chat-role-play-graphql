@@ -25,6 +25,12 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/09/25'>
+            <li>
+              追加: ユーザープロフィール設定に「プレイヤー情報を公開する」を追加
+            </li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/09/20'>
             <li>追加: ゲーム設定にゲームオリジナルテーマ設定を追加</li>
           </ReleaseContent>
@@ -200,7 +206,6 @@ export default function CreateGame() {
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>ひとことメモ</li>
                       <li>フォローフリーとか連れ出し歓迎とかのタグ機能</li>
-                      <li>PL秘匿オンオフ</li>
                     </ul>
                   </li>
                   <li>

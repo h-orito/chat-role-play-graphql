@@ -32,6 +32,7 @@ type Props = {
 interface FormInput {
   name: string
   introduction: string | null
+  isPlayerOpen: boolean
 }
 
 export default function ProfileEdit({
@@ -43,12 +44,14 @@ export default function ProfileEdit({
   icons,
   refetchProfile
 }: Props) {
-  const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
-    defaultValues: {
-      name: profile.name,
-      introduction: profile.introduction ?? ''
-    }
-  })
+  const { register, control, formState, handleSubmit, setValue } =
+    useForm<FormInput>({
+      defaultValues: {
+        name: profile.name,
+        introduction: profile.introduction ?? '',
+        isPlayerOpen: profile.isPlayerOpen
+      }
+    })
   const [images, setImages] = useState<File[]>([])
   const [iconId, setIconId] = useState<string | null>(
     myself?.profileIcon?.id ?? null
@@ -86,7 +89,8 @@ export default function ProfileEdit({
             profileImageUrl: images.length > 0 ? null : profile.profileImageUrl,
             profileIconId: iconId,
             introduction: data.introduction,
-            memo: null // TODO: 消えてしまうかも
+            memo: null, // TODO: 消えてしまうかも
+            isPlayerOpen: data.isPlayerOpen
           } as UpdateGameParticipantProfile
         } as UpdateGameParticipantProfileMutationVariables
       })
@@ -194,6 +198,22 @@ export default function ProfileEdit({
               </button>
             </div>
           )}
+        </div>
+        <div className='my-4'>
+          <label className='text-xs font-bold'>プレイヤー情報</label>
+          <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
+            チェックを入れると、プロフィールにプレイヤー名が表示されます。
+            <br />
+            エピローグを迎えると、チェックを入れていなくても公開されます。
+          </p>
+          <input
+            type='checkbox'
+            id='open-player'
+            {...register('isPlayerOpen')}
+          />
+          <label htmlFor='open-player' className='ml-2 text-xs'>
+            プレイヤー情報を公開する
+          </label>
         </div>
         <div className='flex justify-end'>
           <SubmitButton label='更新する' disabled={!canSubmit} />

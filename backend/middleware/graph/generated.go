@@ -223,8 +223,10 @@ type ComplexityRoot struct {
 		FollowsCount    func(childComplexity int) int
 		Introduction    func(childComplexity int) int
 		IsGone          func(childComplexity int) int
+		IsPlayerOpen    func(childComplexity int) int
 		Name            func(childComplexity int) int
 		ParticipantID   func(childComplexity int) int
+		PlayerName      func(childComplexity int) int
 		ProfileImageURL func(childComplexity int) int
 	}
 
@@ -1296,6 +1298,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GameParticipantProfile.IsGone(childComplexity), true
 
+	case "GameParticipantProfile.isPlayerOpen":
+		if e.complexity.GameParticipantProfile.IsPlayerOpen == nil {
+			break
+		}
+
+		return e.complexity.GameParticipantProfile.IsPlayerOpen(childComplexity), true
+
 	case "GameParticipantProfile.name":
 		if e.complexity.GameParticipantProfile.Name == nil {
 			break
@@ -1309,6 +1318,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GameParticipantProfile.ParticipantID(childComplexity), true
+
+	case "GameParticipantProfile.playerName":
+		if e.complexity.GameParticipantProfile.PlayerName == nil {
+			break
+		}
+
+		return e.complexity.GameParticipantProfile.PlayerName(childComplexity), true
 
 	case "GameParticipantProfile.profileImageUrl":
 		if e.complexity.GameParticipantProfile.ProfileImageURL == nil {
@@ -3095,6 +3111,8 @@ type GameParticipantProfile {
   introduction: String
   followsCount: Int!
   followersCount: Int!
+  isPlayerOpen: Boolean!
+  playerName: String
 }
 
 type GameParticipantIcon {
@@ -3710,6 +3728,7 @@ input UpdateGameParticipantProfile {
   profileIconId: ID
   introduction: String
   memo: String
+  isPlayerOpen: Boolean!
 }
 
 type UpdateGameParticipantProfilePayload {
@@ -9492,6 +9511,91 @@ func (ec *executionContext) fieldContext_GameParticipantProfile_followersCount(c
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameParticipantProfile_isPlayerOpen(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameParticipantProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameParticipantProfile_isPlayerOpen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsPlayerOpen, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameParticipantProfile_isPlayerOpen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameParticipantProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameParticipantProfile_playerName(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameParticipantProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameParticipantProfile_playerName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlayerName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameParticipantProfile_playerName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameParticipantProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -16014,6 +16118,10 @@ func (ec *executionContext) fieldContext_Query_gameParticipantProfile(ctx contex
 				return ec.fieldContext_GameParticipantProfile_followsCount(ctx, field)
 			case "followersCount":
 				return ec.fieldContext_GameParticipantProfile_followersCount(ctx, field)
+			case "isPlayerOpen":
+				return ec.fieldContext_GameParticipantProfile_isPlayerOpen(ctx, field)
+			case "playerName":
+				return ec.fieldContext_GameParticipantProfile_playerName(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GameParticipantProfile", field.Name)
 		},
@@ -23169,7 +23277,7 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantProfile(ctx conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"gameId", "name", "profileImageFile", "profileImageUrl", "profileIconId", "introduction", "memo"}
+	fieldsInOrder := [...]string{"gameId", "name", "profileImageFile", "profileImageUrl", "profileIconId", "introduction", "memo", "isPlayerOpen"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23239,6 +23347,15 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantProfile(ctx conte
 				return it, err
 			}
 			it.Memo = data
+		case "isPlayerOpen":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isPlayerOpen"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsPlayerOpen = data
 		}
 	}
 
@@ -25583,6 +25700,13 @@ func (ec *executionContext) _GameParticipantProfile(ctx context.Context, sel ast
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "isPlayerOpen":
+			out.Values[i] = ec._GameParticipantProfile_isPlayerOpen(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "playerName":
+			out.Values[i] = ec._GameParticipantProfile_playerName(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

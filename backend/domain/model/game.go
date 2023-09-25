@@ -139,6 +139,7 @@ type GameParticipantProfile struct {
 	Introduction      *string
 	FollowsCount      int
 	FollowersCount    int
+	IsPlayerOpen      bool
 }
 
 type GameParticipantIcon struct {

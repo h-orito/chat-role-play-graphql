@@ -43,6 +43,7 @@ func (*GameParticipantRepository) RegisterGameParticipant(ctx context.Context, g
 	// game_participant_profile
 	if err := registerGameParticipantProfile(tx, p.ID, model.GameParticipantProfile{
 		GameParticipantID: p.ID,
+		IsPlayerOpen:      false,
 	}); err != nil {
 		return nil, err
 	}
@@ -380,7 +381,7 @@ func findRdbGameParticipantProfile(db *gorm.DB, gameParticipantID uint32) (profi
 		return nil, nil
 	}
 	if result.Error != nil {
-		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+		return nil, fmt.Errorf("failed to find: %s", result.Error)
 	}
 	return &rdb, nil
 }
@@ -390,9 +391,10 @@ func registerGameParticipantProfile(db *gorm.DB, ID uint32, profile model.GamePa
 		GameParticipantID: ID,
 		ProfileImageUrl:   profile.ProfileImageURL,
 		Introduction:      profile.Introduction,
+		IsPlayerOpen:      profile.IsPlayerOpen,
 	}
 	if result := db.Create(&rdb); result.Error != nil {
-		return fmt.Errorf("failed to save: %s \n", result.Error)
+		return fmt.Errorf("failed to save: %s", result.Error)
 	}
 	return nil
 }
@@ -404,8 +406,9 @@ func updateGameParticipantProfile(db *gorm.DB, ID uint32, profile model.GamePart
 	}
 	rdb.ProfileImageUrl = profile.ProfileImageURL
 	rdb.Introduction = profile.Introduction
+	rdb.IsPlayerOpen = profile.IsPlayerOpen
 	if result := db.Save(&rdb); result.Error != nil {
-		return fmt.Errorf("failed to save: %s \n", result.Error)
+		return fmt.Errorf("failed to save: %s", result.Error)
 	}
 	return nil
 }

@@ -3,8 +3,8 @@ module chat-role-play
 go 1.20
 
 require (
-	github.com/99designs/gqlgen v0.17.37
-	github.com/vektah/gqlparser/v2 v2.5.9
+	github.com/99designs/gqlgen v0.17.38
+	github.com/vektah/gqlparser/v2 v2.5.10
 )
 
 require (

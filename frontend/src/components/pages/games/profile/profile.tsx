@@ -109,6 +109,7 @@ export default function Profile({
               icons={icons}
             />
           </div>
+          <PlayerName game={game} profile={profile} />
           {profile.introduction && (
             <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-xs text-gray-700'>
               <MessageText rawText={profile.introduction} />
@@ -186,6 +187,26 @@ const ParticipantName = ({ profile }: { profile: GameParticipantProfile }) => {
       ) : (
         ''
       )}
+    </p>
+  )
+}
+
+const PlayerName = ({
+  game,
+  profile
+}: {
+  game: Game
+  profile: GameParticipantProfile
+}) => {
+  const shouldShowPlayer =
+    ['Epilogue', 'Finished', 'Cancelled'].includes(game.status) ||
+    profile?.isPlayerOpen == true
+
+  if (!shouldShowPlayer) return <></>
+
+  return (
+    <p className='secondary-text text-xs font-normal'>
+      PL: {profile.playerName}
     </p>
   )
 }

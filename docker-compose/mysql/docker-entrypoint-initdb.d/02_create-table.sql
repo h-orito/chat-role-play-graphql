@@ -231,6 +231,7 @@ create table game_participant_profiles (
     game_participant_id   int unsigned not null auto_increment comment 'ゲーム参加者ID',
     profile_image_url     varchar(1000) comment 'プロフィール画像URL',
     introduction          text comment '自己紹介',
+    is_player_open        boolean not null comment 'ユーザー情報を公開するか',
     created_at datetime not null comment '作成日時',
     updated_at datetime not null comment '更新日時',
     primary key (game_participant_id)

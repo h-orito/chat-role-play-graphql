@@ -137,6 +137,8 @@ type GameParticipantProfile {
   introduction: String
   followsCount: Int!
   followersCount: Int!
+  isPlayerOpen: Boolean!
+  playerName: String
 }
 
 type GameParticipantIcon {
@@ -752,6 +754,7 @@ input UpdateGameParticipantProfile {
   profileIconId: ID
   introduction: String
   memo: String
+  isPlayerOpen: Boolean!
 }
 
 type UpdateGameParticipantProfilePayload {

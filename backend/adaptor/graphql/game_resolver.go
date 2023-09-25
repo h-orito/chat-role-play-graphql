@@ -213,6 +213,7 @@ func (r *mutationResolver) updateGameParticipantProfile(ctx context.Context, inp
 	profile := model.GameParticipantProfile{
 		ProfileImageURL: imageUrl,
 		Introduction:    input.Introduction,
+		IsPlayerOpen:    input.IsPlayerOpen,
 	}
 	if err := r.gameUsecase.UpdateParticipantProfile(ctx, gameId, *user, input.Name, input.Memo, iconID, profile); err != nil {
 		return nil, err
@@ -523,11 +524,11 @@ func (r *queryResolver) gameParticipantProfile(ctx context.Context, participantI
 	if err != nil {
 		return nil, err
 	}
-	profile, participant, err := r.gameUsecase.FindParticipantProfile(participantId)
+	profile, participant, player, err := r.gameUsecase.FindParticipantProfile(participantId)
 	if err != nil {
 		return nil, err
 	}
-	return MapToGameParticipantProfile(*profile, *participant), nil
+	return MapToGameParticipantProfile(*profile, *participant, *player), nil
 }
 
 func (r *queryResolver) gameParticipantFollows(ctx context.Context, participantID string) ([]*gqlmodel.GameParticipant, error) {

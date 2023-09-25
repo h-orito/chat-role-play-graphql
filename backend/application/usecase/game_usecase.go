@@ -31,7 +31,7 @@ type GameUsecase interface {
 	Participate(ctx context.Context, gameID uint32, user model.User, participant model.GameParticipant, password *string) (saved *model.GameParticipant, err error)
 	Leave(ctx context.Context, gameID uint32, user model.User) (err error)
 	// game participant profile
-	FindParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, participant *model.GameParticipant, err error)
+	FindParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, participant *model.GameParticipant, player *model.Player, err error)
 	UpdateParticipantProfile(ctx context.Context, gameID uint32, user model.User, name string, memo *string, iconId *uint32, profile model.GameParticipantProfile) (err error)
 	// game participant icon
 	FindGameParticipantIcons(model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error)
@@ -464,18 +464,30 @@ func (g *gameUsecase) Leave(ctx context.Context, gameID uint32, user model.User)
 	return nil
 }
 
-func (g *gameUsecase) FindParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, participant *model.GameParticipant, err error) {
+func (g *gameUsecase) FindParticipantProfile(participantID uint32) (
+	profile *model.GameParticipantProfile,
+	participant *model.GameParticipant,
+	player *model.Player,
+	err error,
+) {
 	profile, err = g.gameService.FindGameParticipantProfile(participantID)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	participant, err = g.gameService.FindGameParticipant(model.GameParticipantQuery{
 		ID: &participantID,
 	})
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
-	return profile, participant, nil
+	if participant == nil {
+		return profile, participant, nil, nil
+	}
+	player, err = g.playerService.Find(participant.PlayerID)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	return profile, participant, player, nil
 }
 
 func (g *gameUsecase) UpdateParticipantProfile(
@@ -502,6 +514,7 @@ func (g *gameUsecase) UpdateParticipantProfile(
 			GameParticipantID: myself.ID,
 			ProfileImageURL:   profile.ProfileImageURL,
 			Introduction:      profile.Introduction,
+			IsPlayerOpen:      profile.IsPlayerOpen,
 		})
 	})
 	return err
