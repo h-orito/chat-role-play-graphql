@@ -30,13 +30,13 @@ export default function ArticleMenu({
     ? 'flex md:hidden border-t'
     : 'hidden md:flex border-b'
   return (
-    <div className={`${wrapperClass} base-border`}>
+    <div className={`${wrapperClass} base-border text-sm`}>
       <div className={`flex flex-1 text-center md:hidden`}>
         <button
           className='sidebar-background flex w-full justify-center px-4 py-2'
           onClick={toggleSidebar}
         >
-          <Bars4Icon className={`mr-1 h-6 w-6`} />
+          <Bars4Icon className={`mr-1 h-5 w-5`} />
         </button>
       </div>
       <HomeButton
@@ -106,7 +106,7 @@ const HomeButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <HomeIcon
-        className={`mr-1 h-6 w-6 ${
+        className={`mr-1 h-5 w-5 ${
           props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
@@ -119,7 +119,7 @@ const FollowsButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <UsersIcon
-        className={`mr-1 h-6 w-6 ${
+        className={`mr-1 h-5 w-5 ${
           props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
@@ -132,7 +132,7 @@ const SearchButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <MagnifyingGlassIcon
-        className={`mr-1 h-6 w-6 ${
+        className={`mr-1 h-5 w-5 ${
           props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
@@ -145,11 +145,12 @@ const DirectMessageButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <EnvelopeIcon
-        className={`mr-1 h-6 w-6 ${
+        className={`mr-1 h-5 w-5 ${
           props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
-      <span className='hidden md:block'>ダイレクトメッセージ</span>
+      <span className='hidden lg:block'>ダイレクトメッセージ</span>
+      <span className='hidden md:block lg:hidden'>DM</span>
     </MenuButton>
   )
 }
