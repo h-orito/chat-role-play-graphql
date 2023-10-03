@@ -172,6 +172,7 @@ type GameParticipantNotification struct {
 	GameParticipate   bool
 	GameStart         bool
 	MessageReply      bool
+	SecretMessage     bool
 	DirectMessage     bool
 	Keywords          string
 	CreatedAt         time.Time
@@ -188,6 +189,7 @@ func (n GameParticipantNotification) ToModel() *model.GameParticipantNotificatio
 		},
 		Message: model.MessageNotificationSetting{
 			Reply:         n.MessageReply,
+			Secret:        n.SecretMessage,
 			DirectMessage: n.DirectMessage,
 			Keywords:      strings.Split(n.Keywords, ","),
 		},

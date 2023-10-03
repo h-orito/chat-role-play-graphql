@@ -22,6 +22,11 @@ query GameMessages($gameId: ID!, $query: MessagesQuery!) {
           height
         }
       }
+      receiver {
+        participantId
+        name
+        entryNumber
+      }
       replyTo {
         messageId
         participantId

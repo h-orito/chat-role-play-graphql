@@ -156,6 +156,7 @@ interface NotificationFormInput {
   webhookUrl: string
   shouldNotifyGameStart: boolean
   shouldNotifyReply: boolean
+  shouldNotifySecret: boolean
   shouldNotifyDirectMessage: boolean
   keyword: string
 }
@@ -173,6 +174,7 @@ const NotificationSettings = ({
         webhookUrl: '',
         shouldNotifyGameStart: false,
         shouldNotifyReply: false,
+        shouldNotifySecret: false,
         shouldNotifyDirectMessage: false,
         keyword: ''
       }
@@ -197,6 +199,10 @@ const NotificationSettings = ({
         setValue(
           'shouldNotifyReply',
           setting.notification?.message?.reply || false
+        )
+        setValue(
+          'shouldNotifySecret',
+          setting.notification?.message?.secret || false
         )
         setValue(
           'shouldNotifyDirectMessage',
@@ -229,6 +235,7 @@ const NotificationSettings = ({
               },
               message: {
                 reply: data.shouldNotifyReply,
+                secret: data.shouldNotifySecret,
                 directMessage: data.shouldNotifyDirectMessage,
                 keywords: data.keyword
                   .replace(/[ 　]/g, ' ')
@@ -273,6 +280,17 @@ const NotificationSettings = ({
         />
         <label htmlFor='notification-reply' className='ml-2 text-xs'>
           リプライ通知
+        </label>
+      </div>
+      <div className='my-2'>
+        <input
+          type='checkbox'
+          id='notification-secret'
+          {...register('shouldNotifySecret')}
+          disabled={currentWebhookUrl === ''}
+        />
+        <label htmlFor='notification-secret' className='ml-2 text-xs'>
+          秘話通知
         </label>
       </div>
       <div className='my-2'>

@@ -20,6 +20,11 @@ query MessageReplies($gameId: ID!, $messageId: ID!) {
         height
       }
     }
+    receiver {
+      participantId
+      name
+      entryNumber
+    }
     replyTo {
       messageId
       participantId

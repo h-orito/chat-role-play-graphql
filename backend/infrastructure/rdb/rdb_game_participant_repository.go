@@ -566,6 +566,7 @@ func registerGameParticipantNotification(db *gorm.DB, ID uint32, setting model.G
 		GameParticipate:   setting.Game.Participate,
 		GameStart:         setting.Game.Start,
 		MessageReply:      setting.Message.Reply,
+		SecretMessage:     setting.Message.Secret,
 		DirectMessage:     setting.Message.DirectMessage,
 		Keywords:          strings.Join(setting.Message.Keywords, ","),
 	}
@@ -584,6 +585,7 @@ func updateGameParticipantNotification(db *gorm.DB, ID uint32, setting model.Gam
 	rdb.GameParticipate = setting.Game.Participate
 	rdb.GameStart = setting.Game.Start
 	rdb.MessageReply = setting.Message.Reply
+	rdb.SecretMessage = setting.Message.Secret
 	rdb.DirectMessage = setting.Message.DirectMessage
 	rdb.Keywords = strings.Join(setting.Message.Keywords, ",")
 	if result := db.Save(&rdb); result.Error != nil {

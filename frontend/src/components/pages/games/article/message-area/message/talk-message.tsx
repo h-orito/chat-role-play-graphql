@@ -6,7 +6,8 @@ import {
   Message,
   MessageRecipient,
   MessageRepliesDocument,
-  MessageRepliesQuery
+  MessageRepliesQuery,
+  MessageType
 } from '@/lib/generated/graphql'
 import Image from 'next/image'
 import { ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline'
@@ -54,6 +55,8 @@ export default function TalkMessage({
       ? 'talk-monologue'
       : message.content.type === 'Description'
       ? 'description'
+      : message.content.type === 'Secret'
+      ? 'talk-secret'
       : ''
   return (
     <div>
@@ -71,6 +74,15 @@ export default function TalkMessage({
                 {message.sender.name}
               </p>
             </button>
+            {message.receiver && (
+              <>
+                &nbsp;→&nbsp;
+                <p className='primary-hover-text'>
+                  ENo.{message.receiver.entryNumber}&nbsp;
+                  {message.receiver.name}
+                </p>
+              </>
+            )}
             <p className='secondary-text ml-auto'>
               {iso2display(message.time.sendAt)}
             </p>
@@ -101,6 +113,7 @@ export default function TalkMessage({
               <div className='flex'>
                 <ReplyButton
                   game={game}
+                  myself={myself}
                   message={message}
                   showReplies={showReplies}
                   setShowReplies={setShowReplies}
@@ -137,6 +150,7 @@ export default function TalkMessage({
 
 type ReplyButtonProps = {
   game: Game
+  myself: GameParticipant | null
   message: Message
   showReplies: boolean
   setShowReplies: React.Dispatch<React.SetStateAction<boolean>>
@@ -146,6 +160,7 @@ type ReplyButtonProps = {
 }
 const ReplyButton = ({
   game,
+  myself,
   message,
   showReplies,
   setShowReplies,
@@ -170,9 +185,18 @@ const ReplyButton = ({
     setShowReplies(!showReplies)
   }
 
+  const isDisabled =
+    myself == null ||
+    (message.content.type === MessageType.Secret &&
+      message.sender?.participantId === myself.id)
+
   return (
     <>
-      <button className='hover:font-bold' onClick={() => handleReply(message)}>
+      <button
+        className='hover:font-bold'
+        onClick={() => handleReply(message)}
+        disabled={isDisabled}
+      >
         <ChatBubbleOvalLeftEllipsisIcon className='y-4 secondary-text h-4' />
       </button>
       {message.reactions.replyCount > 0 && (

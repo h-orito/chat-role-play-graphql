@@ -170,6 +170,7 @@ type GameNotificationSetting struct {
 
 type MessageNotificationSetting struct {
 	Reply         bool
+	Secret        bool
 	DirectMessage bool
 	Keywords      []string
 }

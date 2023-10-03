@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -194,7 +195,12 @@ func findRdbMessages(
 	err error,
 ) {
 	// 何も結果が取れない場合は空配列を返す
-	if query.Types != nil && len(*query.Types) == 0 && query.IncludeMonologue != nil && !*query.IncludeMonologue {
+	if query.Types != nil &&
+		len(*query.Types) == 0 &&
+		query.IncludeMonologue != nil &&
+		!*query.IncludeMonologue &&
+		query.IncludeSecret != nil &&
+		!*query.IncludeSecret {
 		return []Message{}, 0, nil
 	}
 
@@ -274,20 +280,37 @@ func setMessageTypeDbQuery(db *gorm.DB, query model.MessagesQuery, myself *model
 		return
 	}
 	if typeCodes != nil && len(*typeCodes) > 0 {
-		if query.IncludeMonologue != nil && *query.IncludeMonologue {
+		if (query.IncludeMonologue != nil && *query.IncludeMonologue) ||
+			(query.IncludeSecret != nil && *query.IncludeSecret) {
 			db = db.Where(
-				"message_type_code IN (?) OR (message_type_code = ? and sender_game_participant_id = ?)",
+				fmt.Sprintf("message_type_code IN (?) or (%s)", getMyselfQueryString(query, *myself)),
 				*typeCodes,
-				model.MessageTypeMonologue.String(),
-				myself.ID,
 			)
 		} else {
 			db = db.Where("message_type_code IN (?)", *typeCodes)
 		}
-	} else if query.IncludeMonologue != nil && *query.IncludeMonologue {
-		db = db.Where("message_type_code = ? and sender_game_participant_id = ?",
-			model.MessageTypeMonologue.String(), myself.ID)
+	} else if (query.IncludeMonologue != nil && *query.IncludeMonologue) ||
+		(query.IncludeSecret != nil && *query.IncludeSecret) {
+		db = db.Where(getMyselfQueryString(query, *myself))
 	}
+}
+
+func getMyselfQueryString(query model.MessagesQuery, myself model.GameParticipant) string {
+	orQueries := []string{}
+	if query.IncludeMonologue != nil && *query.IncludeMonologue {
+		orQueries = append(orQueries,
+			fmt.Sprintf("(message_type_code = '%s' and sender_game_participant_id = %d)",
+				model.MessageTypeMonologue.String(), myself.ID))
+	}
+	if query.IncludeSecret != nil && *query.IncludeSecret {
+		orQueries = append(orQueries,
+			fmt.Sprintf("(message_type_code = '%s' and sender_game_participant_id = %d)",
+				model.MessageTypeSecret.String(), myself.ID))
+		orQueries = append(orQueries,
+			fmt.Sprintf("(message_type_code = '%s' and receiver_game_participant_id = %d)",
+				model.MessageTypeSecret.String(), myself.ID))
+	}
+	return strings.Join(orQueries, " or ")
 }
 
 func selectMaxMessageSendUnixTimeMilli(db *gorm.DB, gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error) {
@@ -352,7 +375,6 @@ func findMessageFavoriteGameParticipants(db *gorm.DB, gameID uint32, messageID u
 	return findGameParticipants(db, model.GameParticipantsQuery{
 		IDs: &gameParticipantIDs,
 	})
-
 }
 
 func registerMessage(tx *gorm.DB, gameID uint32, message model.Message) error {
@@ -370,6 +392,11 @@ func registerMessage(tx *gorm.DB, gameID uint32, message model.Message) error {
 		rdb.SenderIconID = message.Sender.SenderIconID
 		rdb.SenderName = &message.Sender.SenderName
 		rdb.SenderEntryNumber = &message.Sender.SenderEntryNumber
+	}
+	if message.Receiver != nil {
+		rdb.ReceiverGameParticipantID = &message.Receiver.GameParticipantID
+		rdb.ReceiverName = &message.Receiver.ReceiverName
+		rdb.ReceiverEntryNumber = &message.Receiver.ReceiverEntryNumber
 	}
 	if message.ReplyTo != nil {
 		rdb.ReplyToMessageID = &message.ReplyTo.MessageID

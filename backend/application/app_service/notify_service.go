@@ -60,6 +60,15 @@ func (s *notifyService) NotifyGameStart(game model.Game) error {
 }
 
 func (s *notifyService) NotifyMessage(game model.Game, message model.Message) error {
+	var pIDs []uint32
+	// 秘話
+	if message.Type == model.MessageTypeSecret {
+		ids, err := s.notifySecret(game, message)
+		if err != nil {
+			return err
+		}
+		pIDs = ids
+	}
 	// 見られない場合は通知しない
 	viewableTypes := s.messageDomainService.GetViewableMessageTypes(game, []model.PlayerAuthority{})
 	if array.None(viewableTypes, func(t model.MessageType) bool {
@@ -69,7 +78,7 @@ func (s *notifyService) NotifyMessage(game model.Game, message model.Message) er
 	}
 
 	// keyword
-	pIDs, err := s.notifyMessageKeyword(game, message)
+	pIDs, err := s.notifyMessageKeyword(game, message, pIDs)
 	if err != nil {
 		return err
 	}
@@ -101,12 +110,37 @@ func (s *notifyService) NotifyDirectMessage(game model.Game, message model.Direc
 
 // ---
 
-func (s *notifyService) notifyMessageKeyword(
+func (s *notifyService) notifySecret(
 	game model.Game,
 	message model.Message,
 ) ([]uint32, error) {
+	setting, err := s.gameParticipantRepository.FindGameParticipantNotificationSetting(message.Receiver.GameParticipantID)
+	if err != nil {
+		return []uint32{}, err
+	}
+	if setting.DiscordWebhookUrl == nil || !setting.Message.Secret {
+		return []uint32{}, nil
+	}
+	s.notificationRepository.Notify(
+		*setting.DiscordWebhookUrl,
+		game.ID,
+		fmt.Sprintf("%sから秘話が届きました。", message.Sender.SenderName),
+		false,
+	)
+	return []uint32{}, nil
+}
+
+func (s *notifyService) notifyMessageKeyword(
+	game model.Game,
+	message model.Message,
+	alreadyNotifiedPIDs []uint32,
+) ([]uint32, error) {
 	participantIDs := array.Map(array.Filter(game.Participants.List, func(p model.GameParticipant) bool {
-		return !p.IsGone && (message.Sender == nil || p.ID != message.Sender.GameParticipantID)
+		return !p.IsGone &&
+			(message.Sender == nil || p.ID != message.Sender.GameParticipantID) &&
+			array.None(alreadyNotifiedPIDs, func(pid uint32) bool {
+				return pid == p.ID
+			})
 	}), func(p model.GameParticipant) uint32 {
 		return p.ID
 	})

@@ -280,6 +280,7 @@ type ComplexityRoot struct {
 		Content   func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Reactions func(childComplexity int) int
+		Receiver  func(childComplexity int) int
 		ReplyTo   func(childComplexity int) int
 		Sender    func(childComplexity int) int
 		Time      func(childComplexity int) int
@@ -296,12 +297,19 @@ type ComplexityRoot struct {
 		DirectMessage func(childComplexity int) int
 		Keywords      func(childComplexity int) int
 		Reply         func(childComplexity int) int
+		Secret        func(childComplexity int) int
 	}
 
 	MessageReactions struct {
 		FavoriteCount          func(childComplexity int) int
 		FavoriteParticipantIds func(childComplexity int) int
 		ReplyCount             func(childComplexity int) int
+	}
+
+	MessageReceiver struct {
+		EntryNumber   func(childComplexity int) int
+		Name          func(childComplexity int) int
+		ParticipantID func(childComplexity int) int
 	}
 
 	MessageRecipient struct {
@@ -1535,6 +1543,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Message.Reactions(childComplexity), true
 
+	case "Message.receiver":
+		if e.complexity.Message.Receiver == nil {
+			break
+		}
+
+		return e.complexity.Message.Receiver(childComplexity), true
+
 	case "Message.replyTo":
 		if e.complexity.Message.ReplyTo == nil {
 			break
@@ -1605,6 +1620,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.MessageNotificationCondition.Reply(childComplexity), true
 
+	case "MessageNotificationCondition.secret":
+		if e.complexity.MessageNotificationCondition.Secret == nil {
+			break
+		}
+
+		return e.complexity.MessageNotificationCondition.Secret(childComplexity), true
+
 	case "MessageReactions.favoriteCount":
 		if e.complexity.MessageReactions.FavoriteCount == nil {
 			break
@@ -1625,6 +1647,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.MessageReactions.ReplyCount(childComplexity), true
+
+	case "MessageReceiver.entryNumber":
+		if e.complexity.MessageReceiver.EntryNumber == nil {
+			break
+		}
+
+		return e.complexity.MessageReceiver.EntryNumber(childComplexity), true
+
+	case "MessageReceiver.name":
+		if e.complexity.MessageReceiver.Name == nil {
+			break
+		}
+
+		return e.complexity.MessageReceiver.Name(childComplexity), true
+
+	case "MessageReceiver.participantId":
+		if e.complexity.MessageReceiver.ParticipantID == nil {
+			break
+		}
+
+		return e.complexity.MessageReceiver.ParticipantID(childComplexity), true
 
 	case "MessageRecipient.messageId":
 		if e.complexity.MessageRecipient.MessageID == nil {
@@ -3124,6 +3167,7 @@ type GameNotificationCondition {
 
 type MessageNotificationCondition {
   reply: Boolean!
+  secret: Boolean!
   directMessage: Boolean!
   keywords: [String!]!
 }
@@ -3263,6 +3307,7 @@ type Message {
   content: MessageContent!
   time: MessageTime!
   sender: MessageSender
+  receiver: MessageReceiver
   replyTo: MessageRecipient
   reactions: MessageReactions!
 }
@@ -3277,6 +3322,7 @@ type MessageContent {
 enum MessageType {
   TalkNormal
   Monologue
+  Secret
   Description
   SystemPublic
   SystemPrivate
@@ -3292,6 +3338,12 @@ type MessageSender {
   name: String!
   entryNumber: Int!
   icon: GameParticipantIcon
+}
+
+type MessageReceiver {
+  participantId: ID!
+  name: String!
+  entryNumber: Int!
 }
 
 type MessageRecipient {
@@ -3821,6 +3873,7 @@ input UpdateGameNotificationCondition {
 
 input UpdateMessageNotificationCondition {
   reply: Boolean!
+  secret: Boolean!
   directMessage: Boolean!
   keywords: [String!]!
 }
@@ -3936,6 +3989,7 @@ input NewMessage {
   type: MessageType!
   iconId: ID
   name: String
+  receiverParticipantId: ID
   replyToMessageId: ID
   text: String!
   isConvertDisabled: Boolean!
@@ -10996,6 +11050,55 @@ func (ec *executionContext) fieldContext_Message_sender(ctx context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _Message_receiver(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.Message) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Message_receiver(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Receiver, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.MessageReceiver)
+	fc.Result = res
+	return ec.marshalOMessageReceiver2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageReceiver(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Message_receiver(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Message",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "participantId":
+				return ec.fieldContext_MessageReceiver_participantId(ctx, field)
+			case "name":
+				return ec.fieldContext_MessageReceiver_name(ctx, field)
+			case "entryNumber":
+				return ec.fieldContext_MessageReceiver_entryNumber(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MessageReceiver", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Message_replyTo(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.Message) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Message_replyTo(ctx, field)
 	if err != nil {
@@ -11315,6 +11418,50 @@ func (ec *executionContext) fieldContext_MessageNotificationCondition_reply(ctx 
 	return fc, nil
 }
 
+func (ec *executionContext) _MessageNotificationCondition_secret(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.MessageNotificationCondition) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MessageNotificationCondition_secret(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Secret, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MessageNotificationCondition_secret(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MessageNotificationCondition",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _MessageNotificationCondition_directMessage(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.MessageNotificationCondition) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_MessageNotificationCondition_directMessage(ctx, field)
 	if err != nil {
@@ -11530,6 +11677,138 @@ func (ec *executionContext) fieldContext_MessageReactions_favoriteParticipantIds
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MessageReceiver_participantId(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.MessageReceiver) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MessageReceiver_participantId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ParticipantID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MessageReceiver_participantId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MessageReceiver",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MessageReceiver_name(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.MessageReceiver) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MessageReceiver_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MessageReceiver_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MessageReceiver",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MessageReceiver_entryNumber(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.MessageReceiver) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MessageReceiver_entryNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EntryNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MessageReceiver_entryNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MessageReceiver",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -11943,6 +12222,8 @@ func (ec *executionContext) fieldContext_Messages_list(ctx context.Context, fiel
 				return ec.fieldContext_Message_time(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
+			case "receiver":
+				return ec.fieldContext_Message_receiver(ctx, field)
 			case "replyTo":
 				return ec.fieldContext_Message_replyTo(ctx, field)
 			case "reactions":
@@ -15156,6 +15437,8 @@ func (ec *executionContext) fieldContext_NotificationCondition_message(ctx conte
 			switch field.Name {
 			case "reply":
 				return ec.fieldContext_MessageNotificationCondition_reply(ctx, field)
+			case "secret":
+				return ec.fieldContext_MessageNotificationCondition_secret(ctx, field)
 			case "directMessage":
 				return ec.fieldContext_MessageNotificationCondition_directMessage(ctx, field)
 			case "keywords":
@@ -17091,6 +17374,8 @@ func (ec *executionContext) fieldContext_Query_message(ctx context.Context, fiel
 				return ec.fieldContext_Message_time(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
+			case "receiver":
+				return ec.fieldContext_Message_receiver(ctx, field)
 			case "replyTo":
 				return ec.fieldContext_Message_replyTo(ctx, field)
 			case "reactions":
@@ -17160,6 +17445,8 @@ func (ec *executionContext) fieldContext_Query_messageReplies(ctx context.Contex
 				return ec.fieldContext_Message_time(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
+			case "receiver":
+				return ec.fieldContext_Message_receiver(ctx, field)
 			case "replyTo":
 				return ec.fieldContext_Message_replyTo(ctx, field)
 			case "reactions":
@@ -18363,6 +18650,8 @@ func (ec *executionContext) fieldContext_RegisterMessageDryRunPayload_message(ct
 				return ec.fieldContext_Message_time(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
+			case "receiver":
+				return ec.fieldContext_Message_receiver(ctx, field)
 			case "replyTo":
 				return ec.fieldContext_Message_replyTo(ctx, field)
 			case "reactions":
@@ -22757,7 +23046,7 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"gameId", "type", "iconId", "name", "replyToMessageId", "text", "isConvertDisabled"}
+	fieldsInOrder := [...]string{"gameId", "type", "iconId", "name", "receiverParticipantId", "replyToMessageId", "text", "isConvertDisabled"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22800,6 +23089,15 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 				return it, err
 			}
 			it.Name = data
+		case "receiverParticipantId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receiverParticipantId"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ReceiverParticipantID = data
 		case "replyToMessageId":
 			var err error
 
@@ -24031,7 +24329,7 @@ func (ec *executionContext) unmarshalInputUpdateMessageNotificationCondition(ctx
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"reply", "directMessage", "keywords"}
+	fieldsInOrder := [...]string{"reply", "secret", "directMessage", "keywords"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24047,6 +24345,15 @@ func (ec *executionContext) unmarshalInputUpdateMessageNotificationCondition(ctx
 				return it, err
 			}
 			it.Reply = data
+		case "secret":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("secret"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Secret = data
 		case "directMessage":
 			var err error
 
@@ -26335,6 +26642,8 @@ func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "sender":
 			out.Values[i] = ec._Message_sender(ctx, field, obj)
+		case "receiver":
+			out.Values[i] = ec._Message_receiver(ctx, field, obj)
 		case "replyTo":
 			out.Values[i] = ec._Message_replyTo(ctx, field, obj)
 		case "reactions":
@@ -26435,6 +26744,11 @@ func (ec *executionContext) _MessageNotificationCondition(ctx context.Context, s
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "secret":
+			out.Values[i] = ec._MessageNotificationCondition_secret(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "directMessage":
 			out.Values[i] = ec._MessageNotificationCondition_directMessage(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -26491,6 +26805,55 @@ func (ec *executionContext) _MessageReactions(ctx context.Context, sel ast.Selec
 			}
 		case "favoriteParticipantIds":
 			out.Values[i] = ec._MessageReactions_favoriteParticipantIds(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var messageReceiverImplementors = []string{"MessageReceiver"}
+
+func (ec *executionContext) _MessageReceiver(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.MessageReceiver) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, messageReceiverImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MessageReceiver")
+		case "participantId":
+			out.Values[i] = ec._MessageReceiver_participantId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._MessageReceiver_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "entryNumber":
+			out.Values[i] = ec._MessageReceiver_entryNumber(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -31941,6 +32304,13 @@ func (ec *executionContext) marshalOMessage2ᚖchatᚑroleᚑplayᚋmiddleware�
 		return graphql.Null
 	}
 	return ec._Message(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOMessageReceiver2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageReceiver(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.MessageReceiver) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._MessageReceiver(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOMessageRecipient2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageRecipient(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.MessageRecipient) graphql.Marshaler {

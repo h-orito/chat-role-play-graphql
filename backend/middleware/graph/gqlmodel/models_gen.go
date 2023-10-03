@@ -299,6 +299,7 @@ type Message struct {
 	Content   *MessageContent   `json:"content"`
 	Time      *MessageTime      `json:"time"`
 	Sender    *MessageSender    `json:"sender,omitempty"`
+	Receiver  *MessageReceiver  `json:"receiver,omitempty"`
 	ReplyTo   *MessageRecipient `json:"replyTo,omitempty"`
 	Reactions *MessageReactions `json:"reactions"`
 }
@@ -312,6 +313,7 @@ type MessageContent struct {
 
 type MessageNotificationCondition struct {
 	Reply         bool     `json:"reply"`
+	Secret        bool     `json:"secret"`
 	DirectMessage bool     `json:"directMessage"`
 	Keywords      []string `json:"keywords"`
 }
@@ -320,6 +322,12 @@ type MessageReactions struct {
 	ReplyCount             int      `json:"replyCount"`
 	FavoriteCount          int      `json:"favoriteCount"`
 	FavoriteParticipantIds []string `json:"favoriteParticipantIds"`
+}
+
+type MessageReceiver struct {
+	ParticipantID string `json:"participantId"`
+	Name          string `json:"name"`
+	EntryNumber   int    `json:"entryNumber"`
 }
 
 type MessageRecipient struct {
@@ -468,13 +476,14 @@ type NewGameTimeSetting struct {
 }
 
 type NewMessage struct {
-	GameID            string      `json:"gameId"`
-	Type              MessageType `json:"type"`
-	IconID            *string     `json:"iconId,omitempty"`
-	Name              *string     `json:"name,omitempty"`
-	ReplyToMessageID  *string     `json:"replyToMessageId,omitempty"`
-	Text              string      `json:"text"`
-	IsConvertDisabled bool        `json:"isConvertDisabled"`
+	GameID                string      `json:"gameId"`
+	Type                  MessageType `json:"type"`
+	IconID                *string     `json:"iconId,omitempty"`
+	Name                  *string     `json:"name,omitempty"`
+	ReceiverParticipantID *string     `json:"receiverParticipantId,omitempty"`
+	ReplyToMessageID      *string     `json:"replyToMessageId,omitempty"`
+	Text                  string      `json:"text"`
+	IsConvertDisabled     bool        `json:"isConvertDisabled"`
 }
 
 type NewMessageFavorite struct {
@@ -767,6 +776,7 @@ type UpdateGameTimeSetting struct {
 
 type UpdateMessageNotificationCondition struct {
 	Reply         bool     `json:"reply"`
+	Secret        bool     `json:"secret"`
 	DirectMessage bool     `json:"directMessage"`
 	Keywords      []string `json:"keywords"`
 }
@@ -855,6 +865,7 @@ type MessageType string
 const (
 	MessageTypeTalkNormal    MessageType = "TalkNormal"
 	MessageTypeMonologue     MessageType = "Monologue"
+	MessageTypeSecret        MessageType = "Secret"
 	MessageTypeDescription   MessageType = "Description"
 	MessageTypeSystemPublic  MessageType = "SystemPublic"
 	MessageTypeSystemPrivate MessageType = "SystemPrivate"
@@ -863,6 +874,7 @@ const (
 var AllMessageType = []MessageType{
 	MessageTypeTalkNormal,
 	MessageTypeMonologue,
+	MessageTypeSecret,
 	MessageTypeDescription,
 	MessageTypeSystemPublic,
 	MessageTypeSystemPrivate,
@@ -870,7 +882,7 @@ var AllMessageType = []MessageType{
 
 func (e MessageType) IsValid() bool {
 	switch e {
-	case MessageTypeTalkNormal, MessageTypeMonologue, MessageTypeDescription, MessageTypeSystemPublic, MessageTypeSystemPrivate:
+	case MessageTypeTalkNormal, MessageTypeMonologue, MessageTypeSecret, MessageTypeDescription, MessageTypeSystemPublic, MessageTypeSystemPrivate:
 		return true
 	}
 	return false

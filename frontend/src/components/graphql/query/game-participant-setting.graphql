@@ -8,6 +8,7 @@ query GameParticipantSetting($gameId: ID!) {
       }
       message {
         reply
+        secret
         directMessage
         keywords
       }

@@ -214,6 +214,7 @@ func MapToGameParticipantSetting(p model.GameParticipantNotification) *gqlmodel.
 			},
 			Message: &gqlmodel.MessageNotificationCondition{
 				Reply:         p.Message.Reply,
+				Secret:        p.Message.Secret,
 				DirectMessage: p.Message.DirectMessage,
 				Keywords:      p.Message.Keywords,
 			},

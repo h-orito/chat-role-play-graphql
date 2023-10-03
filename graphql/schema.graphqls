@@ -124,6 +124,7 @@ type GameNotificationCondition {
 
 type MessageNotificationCondition {
   reply: Boolean!
+  secret: Boolean!
   directMessage: Boolean!
   keywords: [String!]!
 }
@@ -263,6 +264,7 @@ type Message {
   content: MessageContent!
   time: MessageTime!
   sender: MessageSender
+  receiver: MessageReceiver
   replyTo: MessageRecipient
   reactions: MessageReactions!
 }
@@ -277,6 +279,7 @@ type MessageContent {
 enum MessageType {
   TalkNormal
   Monologue
+  Secret
   Description
   SystemPublic
   SystemPrivate
@@ -292,6 +295,12 @@ type MessageSender {
   name: String!
   entryNumber: Int!
   icon: GameParticipantIcon
+}
+
+type MessageReceiver {
+  participantId: ID!
+  name: String!
+  entryNumber: Int!
 }
 
 type MessageRecipient {
@@ -821,6 +830,7 @@ input UpdateGameNotificationCondition {
 
 input UpdateMessageNotificationCondition {
   reply: Boolean!
+  secret: Boolean!
   directMessage: Boolean!
   keywords: [String!]!
 }
@@ -936,6 +946,7 @@ input NewMessage {
   type: MessageType!
   iconId: ID
   name: String
+  receiverParticipantId: ID
   replyToMessageId: ID
   text: String!
   isConvertDisabled: Boolean!

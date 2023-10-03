@@ -344,6 +344,7 @@ func (r *mutationResolver) updateGameParticipantSetting(ctx context.Context, inp
 		},
 		Message: model.MessageNotificationSetting{
 			Reply:         input.Notification.Message.Reply,
+			Secret:        input.Notification.Message.Secret,
 			DirectMessage: input.Notification.Message.DirectMessage,
 			Keywords:      input.Notification.Message.Keywords,
 		},

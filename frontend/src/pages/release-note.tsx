@@ -27,6 +27,7 @@ export default function CreateGame() {
 
           <ReleaseContent label='機能追加' date='2023/10/03'>
             <li>追加: 期間削除機能を追加</li>
+            <li>追加: 発言種別に秘話を追加</li>
           </ReleaseContent>
 
           <ReleaseContent label='機能追加' date='2023/09/25'>
@@ -171,7 +172,6 @@ export default function CreateGame() {
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>宛先</li>
-                      <li>秘話</li>
                       <li>PL発言（PL発言タイムライン）</li>
                       <li>カットイン</li>
                       <li>
@@ -192,6 +192,7 @@ export default function CreateGame() {
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>宛先</li>
                       <li>自分宛発言</li>
+                      <li>ふぁぼった発言</li>
                     </ul>
                   </li>
                   <li>日記</li>
