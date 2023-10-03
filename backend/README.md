@@ -3,7 +3,7 @@
 ### GraphQL スキーマ定義変更
 
 1. ../graphql/schema.graphqls を変更
-1. `gqlgen generate`
+1. `go run github.com/99designs/gqlgen generate`
 
 ### 環境変数
 

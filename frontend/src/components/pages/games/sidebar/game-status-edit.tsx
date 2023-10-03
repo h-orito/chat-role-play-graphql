@@ -7,7 +7,11 @@ import {
   UpdateStatusDocument,
   UpdateStatusMutation,
   UpdateGameStatus,
-  UpdateStatusMutationVariables
+  UpdateStatusMutationVariables,
+  DeletePeriodDocument,
+  DeletePeriodMutation,
+  DeleteGamePeriod,
+  DeletePeriodMutationVariables
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
 import dayjs from 'dayjs'
@@ -23,6 +27,7 @@ import InputSelect from '@/components/form/input-select'
 import SubmitButton from '@/components/button/submit-button'
 import InputText from '@/components/form/input-text'
 import InputDateTime from '@/components/form/input-datetime'
+import DangerButton from '@/components/button/danger-button'
 
 type Props = {
   game: Game
@@ -38,6 +43,14 @@ export default function GameStatusEdit({ game }: Props) {
       <div className='my-4 flex justify-center'>
         <UpdateGamePeriodForm game={game} />
       </div>
+      {game.periods.length > 1 && (
+        <>
+          <hr />
+          <div className='my-4 flex justify-center'>
+            <DeleteGamePeriodForm game={game} />
+          </div>
+        </>
+      )}
     </div>
   )
 }
@@ -87,7 +100,7 @@ const UpdateGameStatusForm = ({ game }: Props) => {
   )
 }
 
-interface FormInput {
+interface UpdatePeriodFormInput {
   name: string
   endAt: string
 }
@@ -97,14 +110,15 @@ const UpdateGamePeriodForm = ({ game }: Props) => {
   dayjs.extend(timezone)
   dayjs.tz.setDefault('Asia/Tokyo')
 
-  const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
-    defaultValues: {
-      name: game.periods[game.periods.length - 1].name,
-      endAt: dayjs(game.periods[game.periods.length - 1].endAt).format(
-        'YYYY-MM-DDTHH:mm'
-      )
-    } as FormInput
-  })
+  const { control, formState, handleSubmit, setValue } =
+    useForm<UpdatePeriodFormInput>({
+      defaultValues: {
+        name: game.periods[game.periods.length - 1].name,
+        endAt: dayjs(game.periods[game.periods.length - 1].endAt).format(
+          'YYYY-MM-DDTHH:mm'
+        )
+      } as UpdatePeriodFormInput
+    })
 
   const candidates = game.periods.map((p, index) => ({
     label: p.name,
@@ -126,7 +140,7 @@ const UpdateGamePeriodForm = ({ game }: Props) => {
 
   const [updatePeriod] = useMutation<UpdatePeriodMutation>(UpdatePeriodDocument)
   const router = useRouter()
-  const onSubmit: SubmitHandler<FormInput> = useCallback(
+  const onSubmit: SubmitHandler<UpdatePeriodFormInput> = useCallback(
     async (data) => {
       await updatePeriod({
         variables: {
@@ -205,6 +219,88 @@ const UpdateGamePeriodForm = ({ game }: Props) => {
         <SubmitButton label='更新' />
       </div>
     </form>
+  )
+}
+
+const DeleteGamePeriodForm = ({ game }: Props) => {
+  const candidates = game.periods.map((p) => ({
+    label: p.name,
+    value: p.id
+  }))
+  const [targetPeriodId, setTargetPeriodId] = useState(
+    candidates[candidates.length - 1].value
+  )
+  const targetIndex = game.periods.findIndex((p) => p.id === targetPeriodId)!
+  const destCandidatePeriods = []
+  if (targetIndex - 1 >= 0)
+    destCandidatePeriods.push(game.periods[targetIndex - 1])
+  if (targetIndex + 1 < game.periods.length) {
+    destCandidatePeriods.push(game.periods[targetIndex + 1])
+  }
+  const destCandidates = destCandidatePeriods.map((p) => ({
+    label: p.name,
+    value: p.id
+  }))
+  const [destPeriodId, setDestPeriodId] = useState(destCandidates[0].value)
+
+  const handleTargetSelect = (id: string) => {
+    setTargetPeriodId(id)
+  }
+
+  const [deletePeriod] = useMutation<DeletePeriodMutation>(DeletePeriodDocument)
+  const router = useRouter()
+  const onSubmit = useCallback(async () => {
+    if (!destCandidates.some((c) => c.value === destPeriodId)) {
+      window.alert('削除対象の直前か直後の期間を選択してください')
+      return
+    }
+    if (
+      !window.confirm(
+        'この操作は元に戻せません。本当に期間を削除してよろしいですか？'
+      )
+    )
+      return
+    await deletePeriod({
+      variables: {
+        input: {
+          gameId: game.id,
+          targetPeriodId: targetPeriodId,
+          destPeriodId: destPeriodId
+        } as DeleteGamePeriod
+      } as DeletePeriodMutationVariables
+    })
+    router.reload()
+  }, [deletePeriod, targetPeriodId, destPeriodId, destCandidates])
+
+  return (
+    <div>
+      <FormLabel label='期間削除'>
+        期間を削除できます。該当期間の発言内容やト書きは、移行先の期間に変更されます。
+        <br />
+        移行先の期間は、削除対象の直前または直後の期間から選択してください。
+      </FormLabel>
+      <div className='my-4'>
+        <InputSelect
+          className='w-64 md:w-96'
+          label='削除対象の期間'
+          candidates={candidates}
+          selected={targetPeriodId}
+          setSelected={handleTargetSelect}
+        />
+      </div>
+      <div className='my-4'>
+        <InputSelect
+          className='w-64 md:w-96'
+          label='メッセージの移行先の期間'
+          candidates={destCandidates}
+          selected={destPeriodId}
+          setSelected={(id: string) => setDestPeriodId(id)}
+        />
+      </div>
+      <div className='flex justify-center'>
+        <DangerButton click={onSubmit}>削除</DangerButton>
+      </div>
+    </div>
   )
 }
 

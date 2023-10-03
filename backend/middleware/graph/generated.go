@@ -103,6 +103,10 @@ type ComplexityRoot struct {
 		Ok func(childComplexity int) int
 	}
 
+	DeleteGamePeriodPayload struct {
+		Ok func(childComplexity int) int
+	}
+
 	DeleteMessageFavoritePayload struct {
 		Ok func(childComplexity int) int
 	}
@@ -335,6 +339,7 @@ type ComplexityRoot struct {
 		DeleteGameParticipant         func(childComplexity int, input gqlmodel.DeleteGameParticipant) int
 		DeleteGameParticipantFollow   func(childComplexity int, input gqlmodel.DeleteGameParticipantFollow) int
 		DeleteGameParticipantIcon     func(childComplexity int, input gqlmodel.DeleteGameParticipantIcon) int
+		DeleteGamePeriod              func(childComplexity int, input gqlmodel.DeleteGamePeriod) int
 		DeleteMessageFavorite         func(childComplexity int, input gqlmodel.DeleteMessageFavorite) int
 		DeletePlayerSnsAccount        func(childComplexity int, input gqlmodel.DeletePlayerSnsAccount) int
 		RegisterDebugMessages         func(childComplexity int, input gqlmodel.RegisterDebugMessages) int
@@ -575,6 +580,7 @@ type MutationResolver interface {
 	UpdateGameStatus(ctx context.Context, input gqlmodel.UpdateGameStatus) (*gqlmodel.UpdateGameStatusPayload, error)
 	UpdateGameSetting(ctx context.Context, input gqlmodel.UpdateGameSetting) (*gqlmodel.UpdateGameSettingPayload, error)
 	UpdateGamePeriod(ctx context.Context, input gqlmodel.UpdateGamePeriod) (*gqlmodel.UpdateGamePeriodPayload, error)
+	DeleteGamePeriod(ctx context.Context, input gqlmodel.DeleteGamePeriod) (*gqlmodel.DeleteGamePeriodPayload, error)
 	ChangePeriodIfNeeded(ctx context.Context, input gqlmodel.ChangePeriod) (*gqlmodel.ChangePeriodIfNeededPayload, error)
 	RegisterGameParticipant(ctx context.Context, input gqlmodel.NewGameParticipant) (*gqlmodel.RegisterGameParticipantPayload, error)
 	UpdateGameParticipantProfile(ctx context.Context, input gqlmodel.UpdateGameParticipantProfile) (*gqlmodel.UpdateGameParticipantProfilePayload, error)
@@ -795,6 +801,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.DeleteGameParticipantPayload.Ok(childComplexity), true
+
+	case "DeleteGamePeriodPayload.ok":
+		if e.complexity.DeleteGamePeriodPayload.Ok == nil {
+			break
+		}
+
+		return e.complexity.DeleteGamePeriodPayload.Ok(childComplexity), true
 
 	case "DeleteMessageFavoritePayload.ok":
 		if e.complexity.DeleteMessageFavoritePayload.Ok == nil {
@@ -1796,6 +1809,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteGameParticipantIcon(childComplexity, args["input"].(gqlmodel.DeleteGameParticipantIcon)), true
+
+	case "Mutation.deleteGamePeriod":
+		if e.complexity.Mutation.DeleteGamePeriod == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteGamePeriod_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteGamePeriod(childComplexity, args["input"].(gqlmodel.DeleteGamePeriod)), true
 
 	case "Mutation.deleteMessageFavorite":
 		if e.complexity.Mutation.DeleteMessageFavorite == nil {
@@ -2822,6 +2847,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputDeleteGameParticipant,
 		ec.unmarshalInputDeleteGameParticipantFollow,
 		ec.unmarshalInputDeleteGameParticipantIcon,
+		ec.unmarshalInputDeleteGamePeriod,
 		ec.unmarshalInputDeleteMessageFavorite,
 		ec.unmarshalInputDeletePlayerSnsAccount,
 		ec.unmarshalInputDesignersQuery,
@@ -3449,6 +3475,8 @@ type Mutation {
     @isAuthenticated
   updateGamePeriod(input: UpdateGamePeriod!): UpdateGamePeriodPayload!
     @isAuthenticated
+  deleteGamePeriod(input: DeleteGamePeriod!): DeleteGamePeriodPayload!
+    @isAuthenticated
   changePeriodIfNeeded(input: ChangePeriod!): ChangePeriodIfNeededPayload!
     @isAuthenticated
 
@@ -3704,6 +3732,16 @@ input ChangePeriod {
 }
 
 type ChangePeriodIfNeededPayload {
+  ok: Boolean!
+}
+
+input DeleteGamePeriod {
+  gameId: ID!
+  targetPeriodId: ID!
+  destPeriodId: ID!
+}
+
+type DeleteGamePeriodPayload {
   ok: Boolean!
 }
 
@@ -4101,6 +4139,21 @@ func (ec *executionContext) field_Mutation_deleteGameParticipant_args(ctx contex
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNDeleteGameParticipant2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGameParticipant(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteGamePeriod_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 gqlmodel.DeleteGamePeriod
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteGamePeriod2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGamePeriod(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -6021,6 +6074,50 @@ func (ec *executionContext) _DeleteGameParticipantPayload_ok(ctx context.Context
 func (ec *executionContext) fieldContext_DeleteGameParticipantPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteGameParticipantPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteGamePeriodPayload_ok(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.DeleteGamePeriodPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DeleteGamePeriodPayload_ok(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Ok, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DeleteGamePeriodPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteGamePeriodPayload",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -12709,6 +12806,85 @@ func (ec *executionContext) fieldContext_Mutation_updateGamePeriod(ctx context.C
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_updateGamePeriod_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteGamePeriod(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteGamePeriod(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeleteGamePeriod(rctx, fc.Args["input"].(gqlmodel.DeleteGamePeriod))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*gqlmodel.DeleteGamePeriodPayload); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *chat-role-play/middleware/graph/gqlmodel.DeleteGamePeriodPayload`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.DeleteGamePeriodPayload)
+	fc.Result = res
+	return ec.marshalNDeleteGamePeriodPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGamePeriodPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteGamePeriod(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_DeleteGamePeriodPayload_ok(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteGamePeriodPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteGamePeriod_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -21246,6 +21422,53 @@ func (ec *executionContext) unmarshalInputDeleteGameParticipantIcon(ctx context.
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDeleteGamePeriod(ctx context.Context, obj interface{}) (gqlmodel.DeleteGamePeriod, error) {
+	var it gqlmodel.DeleteGamePeriod
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"gameId", "targetPeriodId", "destPeriodId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "gameId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.GameID = data
+		case "targetPeriodId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targetPeriodId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TargetPeriodID = data
+		case "destPeriodId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("destPeriodId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DestPeriodID = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputDeleteMessageFavorite(ctx context.Context, obj interface{}) (gqlmodel.DeleteMessageFavorite, error) {
 	var it gqlmodel.DeleteMessageFavorite
 	asMap := map[string]interface{}{}
@@ -24483,6 +24706,45 @@ func (ec *executionContext) _DeleteGameParticipantPayload(ctx context.Context, s
 	return out
 }
 
+var deleteGamePeriodPayloadImplementors = []string{"DeleteGamePeriodPayload"}
+
+func (ec *executionContext) _DeleteGamePeriodPayload(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.DeleteGamePeriodPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteGamePeriodPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteGamePeriodPayload")
+		case "ok":
+			out.Values[i] = ec._DeleteGamePeriodPayload_ok(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var deleteMessageFavoritePayloadImplementors = []string{"DeleteMessageFavoritePayload"}
 
 func (ec *executionContext) _DeleteMessageFavoritePayload(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.DeleteMessageFavoritePayload) graphql.Marshaler {
@@ -26560,6 +26822,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "updateGamePeriod":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateGamePeriod(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteGamePeriod":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteGamePeriod(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -29372,6 +29641,25 @@ func (ec *executionContext) marshalNDeleteGameParticipantPayload2ᚖchatᚑrole�
 		return graphql.Null
 	}
 	return ec._DeleteGameParticipantPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNDeleteGamePeriod2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGamePeriod(ctx context.Context, v interface{}) (gqlmodel.DeleteGamePeriod, error) {
+	res, err := ec.unmarshalInputDeleteGamePeriod(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDeleteGamePeriodPayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGamePeriodPayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.DeleteGamePeriodPayload) graphql.Marshaler {
+	return ec._DeleteGamePeriodPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteGamePeriodPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGamePeriodPayload(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.DeleteGamePeriodPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteGamePeriodPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNDeleteMessageFavorite2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteMessageFavorite(ctx context.Context, v interface{}) (gqlmodel.DeleteMessageFavorite, error) {

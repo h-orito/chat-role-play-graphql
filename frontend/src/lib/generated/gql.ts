@@ -16,6 +16,7 @@ const documents = {
     "mutation ChangePeriod($input: ChangePeriod!) {\n  changePeriodIfNeeded(input: $input) {\n    ok\n  }\n}": types.ChangePeriodDocument,
     "mutation DeleteGameMaster($input: DeleteGameMaster!) {\n  deleteGameMaster(input: $input) {\n    ok\n  }\n}": types.DeleteGameMasterDocument,
     "mutation Leave($input: DeleteGameParticipant!) {\n  deleteGameParticipant(input: $input) {\n    ok\n  }\n}": types.LeaveDocument,
+    "mutation DeletePeriod($input: DeleteGamePeriod!) {\n  deleteGamePeriod(input: $input) {\n    ok\n  }\n}": types.DeletePeriodDocument,
     "mutation DeleteParticipantIcon($input: DeleteGameParticipantIcon!) {\n  deleteGameParticipantIcon(input: $input) {\n    ok\n  }\n}": types.DeleteParticipantIconDocument,
     "mutation FavoriteDirect($input: NewDirectMessageFavorite!) {\n  registerDirectMessageFavorite(input: $input) {\n    ok\n  }\n}": types.FavoriteDirectDocument,
     "mutation UnfavoriteDirect($input: DeleteDirectMessageFavorite!) {\n  deleteDirectMessageFavorite(input: $input) {\n    ok\n  }\n}": types.UnfavoriteDirectDocument,
@@ -92,6 +93,10 @@ export function graphql(source: "mutation DeleteGameMaster($input: DeleteGameMas
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "mutation Leave($input: DeleteGameParticipant!) {\n  deleteGameParticipant(input: $input) {\n    ok\n  }\n}"): (typeof documents)["mutation Leave($input: DeleteGameParticipant!) {\n  deleteGameParticipant(input: $input) {\n    ok\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation DeletePeriod($input: DeleteGamePeriod!) {\n  deleteGamePeriod(input: $input) {\n    ok\n  }\n}"): (typeof documents)["mutation DeletePeriod($input: DeleteGamePeriod!) {\n  deleteGamePeriod(input: $input) {\n    ok\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

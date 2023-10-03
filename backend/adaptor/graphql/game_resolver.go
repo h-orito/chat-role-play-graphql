@@ -142,6 +142,29 @@ func (r *mutationResolver) updateGamePeriod(ctx context.Context, input gqlmodel.
 	return &gqlmodel.UpdateGamePeriodPayload{Ok: true}, nil
 }
 
+func (r *mutationResolver) deleteGamePeriod(ctx context.Context, input gqlmodel.DeleteGamePeriod) (*gqlmodel.DeleteGamePeriodPayload, error) {
+	gameId, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
+	targetPeriodID, err := idToUint32(input.TargetPeriodID)
+	if err != nil {
+		return nil, err
+	}
+	destPeriodID, err := idToUint32(input.DestPeriodID)
+	if err != nil {
+		return nil, err
+	}
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, err
+	}
+	if err := r.gameUsecase.DeleteGamePeriod(ctx, *user, gameId, targetPeriodID, destPeriodID); err != nil {
+		return nil, err
+	}
+	return &gqlmodel.DeleteGamePeriodPayload{Ok: true}, nil
+}
+
 func (r *mutationResolver) registerGameParticipant(ctx context.Context, input gqlmodel.NewGameParticipant) (*gqlmodel.RegisterGameParticipantPayload, error) {
 	gameId, err := idToUint32(input.GameID)
 	if err != nil {

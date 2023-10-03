@@ -23,6 +23,7 @@ type GameUsecase interface {
 	UpdateGameStatus(ctx context.Context, user model.User, gameID uint32, status model.GameStatus) (err error)
 	UpdateGameSetting(ctx context.Context, user model.User, gameID uint32, gameName string, labels []model.GameLabel, settings model.GameSettings) (err error)
 	UpdateGamePeriod(ctx context.Context, user model.User, gameID uint32, period model.GamePeriod) (err error)
+	DeleteGamePeriod(ctx context.Context, user model.User, gameID uint32, targetPeriodID uint32, destPeriodID uint32) (err error)
 	ChangePeriodIfNeeded(ctx context.Context, gameID uint32) error
 	// game participant
 	FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
@@ -324,6 +325,61 @@ func (g *gameUsecase) UpdateGamePeriod(
 		}
 
 		return nil, g.gameService.UpdateGamePeriod(ctx, gameID, period)
+	})
+	return err
+}
+
+func (g *gameUsecase) DeleteGamePeriod(
+	ctx context.Context,
+	user model.User,
+	gameID uint32,
+	targetPeriodID uint32,
+	destPeriodID uint32,
+) (err error) {
+	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		game, err := g.gameService.FindGame(gameID)
+		if err != nil {
+			return nil, err
+		}
+		if g == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+		player, err := g.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		authorities, err := g.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, err
+		}
+		err = g.gameMasterDomainService.AssertModifyGameMaster(*game, *player, authorities)
+		if err != nil {
+			return nil, err
+		}
+		// 削除対象の期間のindex
+		var targetIndex int
+		for i, p := range game.Periods {
+			if p.ID == targetPeriodID {
+				targetIndex = i
+				break
+			}
+		}
+		// 移行先の期間のindex
+		var destIndex int
+		for i, p := range game.Periods {
+			if p.ID == destPeriodID {
+				destIndex = i
+				break
+			}
+		}
+		// 一つ前か後の期間のみ指定可能
+		if targetIndex != destIndex-1 && targetIndex != destIndex+1 {
+			return nil, errors.New("dest game period is invalid")
+		}
+		return nil, g.gameService.DeleteGamePeriod(ctx, gameID, targetPeriodID, destPeriodID)
 	})
 	return err
 }

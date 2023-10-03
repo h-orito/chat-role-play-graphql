@@ -150,6 +150,24 @@ func (repo *GameRepository) UpdateGamePeriod(ctx context.Context, gameID uint32,
 	return nil
 }
 
+func (repo *GameRepository) DeleteGamePeriod(
+	ctx context.Context,
+	gameID uint32,
+	targetPeriodID uint32,
+	destPeriodID uint32,
+) (err error) {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return fmt.Errorf("failed to get tx from context")
+	}
+	// 日記やメッセージを移動先の期間に変更し、削除対象の期間を削除
+	err = deleteGamePeriod(tx, targetPeriodID, destPeriodID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (repo *GameRepository) UpdateGameSettings(
 	ctx context.Context,
 	ID uint32,
@@ -455,6 +473,30 @@ func registerGamePeriod(db *gorm.DB, gameID uint32, gm model.GamePeriod) (err er
 	}
 	if result := db.Create(&gp); result.Error != nil {
 		return fmt.Errorf("failed to save: %s \n", result.Error)
+	}
+	return nil
+}
+
+func deleteGamePeriod(db *gorm.DB, targetGamePeriodID uint32, destGamePeriodID uint32) (err error) {
+	// 日記とメッセージを移動
+	if err := db.Model(&Message{}).
+		Where("game_period_id = ?", targetGamePeriodID).
+		Update("game_period_id", destGamePeriodID).Error; err != nil {
+		return err
+	}
+	if err := db.Model(&DirectMessage{}).
+		Where("game_period_id = ?", targetGamePeriodID).
+		Update("game_period_id", destGamePeriodID).Error; err != nil {
+		return err
+	}
+	if err := db.Model(&GameParticipantDiary{}).
+		Where("game_period_id = ?", targetGamePeriodID).
+		Update("game_period_id", destGamePeriodID).Error; err != nil {
+		return err
+	}
+	// 削除対象の期間を削除
+	if err := db.Where("id = ?", targetGamePeriodID).Delete(&GamePeriod{}).Error; err != nil {
+		return err
 	}
 	return nil
 }

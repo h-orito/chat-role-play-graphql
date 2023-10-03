@@ -143,7 +143,7 @@ export default function SearchCondition({
           <label className='text-xs font-bold'>キーワード</label>
           <div>
             <input
-              className='base-border w-full rounded border px-2 py-1 text-xs'
+              className='base-border w-full rounded border px-2 py-1 text-xs text-gray-700'
               value={keyword}
               placeholder='スペース区切りでOR検索'
               onChange={(e) => setKeyword(e.target.value)}

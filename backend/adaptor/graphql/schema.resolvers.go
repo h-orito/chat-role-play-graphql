@@ -100,6 +100,11 @@ func (r *mutationResolver) UpdateGamePeriod(ctx context.Context, input gqlmodel.
 	return r.updateGamePeriod(ctx, input)
 }
 
+// DeleteGamePeriod is the resolver for the deleteGamePeriod field.
+func (r *mutationResolver) DeleteGamePeriod(ctx context.Context, input gqlmodel.DeleteGamePeriod) (*gqlmodel.DeleteGamePeriodPayload, error) {
+	return r.deleteGamePeriod(ctx, input)
+}
+
 // ChangePeriodIfNeeded is the resolver for the changePeriodIfNeeded field.
 func (r *mutationResolver) ChangePeriodIfNeeded(ctx context.Context, input gqlmodel.ChangePeriod) (*gqlmodel.ChangePeriodIfNeededPayload, error) {
 	return r.changePeriodIfNeeded(ctx, input)

@@ -475,6 +475,8 @@ type Mutation {
     @isAuthenticated
   updateGamePeriod(input: UpdateGamePeriod!): UpdateGamePeriodPayload!
     @isAuthenticated
+  deleteGamePeriod(input: DeleteGamePeriod!): DeleteGamePeriodPayload!
+    @isAuthenticated
   changePeriodIfNeeded(input: ChangePeriod!): ChangePeriodIfNeededPayload!
     @isAuthenticated
 
@@ -730,6 +732,16 @@ input ChangePeriod {
 }
 
 type ChangePeriodIfNeededPayload {
+  ok: Boolean!
+}
+
+input DeleteGamePeriod {
+  gameId: ID!
+  targetPeriodId: ID!
+  destPeriodId: ID!
+}
+
+type DeleteGamePeriodPayload {
   ok: Boolean!
 }
 

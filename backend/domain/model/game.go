@@ -274,6 +274,7 @@ type GameRepository interface {
 	UpdateGameStatus(ctx context.Context, gameID uint32, status GameStatus) (err error)
 	RegisterGamePeriod(ctx context.Context, gameID uint32, period GamePeriod) (err error)
 	UpdateGamePeriod(ctx context.Context, gameID uint32, period GamePeriod) (err error)
+	DeleteGamePeriod(ctx context.Context, gameID uint32, targetPeriodID uint32, destPeriodID uint32) (err error)
 	UpdateGameSettings(
 		ctx context.Context,
 		gameID uint32,

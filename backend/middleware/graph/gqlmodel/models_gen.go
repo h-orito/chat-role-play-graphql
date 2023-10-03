@@ -105,6 +105,16 @@ type DeleteGameParticipantPayload struct {
 	Ok bool `json:"ok"`
 }
 
+type DeleteGamePeriod struct {
+	GameID         string `json:"gameId"`
+	TargetPeriodID string `json:"targetPeriodId"`
+	DestPeriodID   string `json:"destPeriodId"`
+}
+
+type DeleteGamePeriodPayload struct {
+	Ok bool `json:"ok"`
+}
+
 type DeleteMessageFavorite struct {
 	GameID    string `json:"gameId"`
 	MessageID string `json:"messageId"`

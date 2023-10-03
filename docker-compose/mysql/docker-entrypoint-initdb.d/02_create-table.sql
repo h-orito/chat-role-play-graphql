@@ -344,8 +344,7 @@ create table game_participant_diaries (
     diary_body           text         not null comment '日記本文',
     created_at datetime     not null comment '作成日時',
     updated_at datetime     not null comment '更新日時',
-    primary key (id),
-    unique (game_id, game_participant_id, game_period_id)
+    primary key (id)
 );
 
 alter table game_participant_diaries

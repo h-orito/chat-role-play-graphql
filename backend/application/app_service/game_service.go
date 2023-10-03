@@ -20,6 +20,7 @@ type GameService interface {
 	DeleteGameMaster(ctx context.Context, gameMasterID uint32) (err error)
 	UpdateGameStatus(ctx context.Context, gameID uint32, status model.GameStatus) (err error)
 	UpdateGamePeriod(ctx context.Context, gameID uint32, period model.GamePeriod) (err error)
+	DeleteGamePeriod(ctx context.Context, gameID uint32, targetPeriodID uint32, destPeriodID uint32) (err error)
 	UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, labels []model.GameLabel, settings model.GameSettings) (err error)
 	ChangePeriodIfNeeded(ctx context.Context, gameID uint32) (err error)
 	// game participant
@@ -105,6 +106,15 @@ func (g *gameService) UpdateGameStatus(ctx context.Context, gameID uint32, statu
 
 func (g *gameService) UpdateGamePeriod(ctx context.Context, gameID uint32, period model.GamePeriod) (err error) {
 	return g.gameRepository.UpdateGamePeriod(ctx, gameID, period)
+}
+
+func (g *gameService) DeleteGamePeriod(
+	ctx context.Context,
+	gameID uint32,
+	targetPeriodID uint32,
+	destPeriodID uint32,
+) (err error) {
+	return g.gameRepository.DeleteGamePeriod(ctx, gameID, targetPeriodID, destPeriodID)
 }
 
 func (g *gameService) UpdateGameSettings(

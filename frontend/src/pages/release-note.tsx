@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/10/03'>
+            <li>追加: 期間削除機能を追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/09/25'>
             <li>
               追加: ユーザープロフィール設定に「プレイヤー情報を公開する」を追加

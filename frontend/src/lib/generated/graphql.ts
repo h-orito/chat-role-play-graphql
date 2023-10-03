@@ -114,6 +114,17 @@ export type DeleteGameParticipantPayload = {
   ok: Scalars['Boolean']['output'];
 };
 
+export type DeleteGamePeriod = {
+  destPeriodId: Scalars['ID']['input'];
+  gameId: Scalars['ID']['input'];
+  targetPeriodId: Scalars['ID']['input'];
+};
+
+export type DeleteGamePeriodPayload = {
+  __typename?: 'DeleteGamePeriodPayload';
+  ok: Scalars['Boolean']['output'];
+};
+
 export type DeleteMessageFavorite = {
   gameId: Scalars['ID']['input'];
   messageId: Scalars['ID']['input'];
@@ -458,6 +469,7 @@ export type Mutation = {
   deleteGameParticipant: DeleteGameParticipantPayload;
   deleteGameParticipantFollow: DeleteGameParticipantFollowPayload;
   deleteGameParticipantIcon: DeleteGameParticipantIconPayload;
+  deleteGamePeriod: DeleteGamePeriodPayload;
   deleteMessageFavorite: DeleteMessageFavoritePayload;
   deletePlayerSnsAccount: DeletePlayerSnsAccountPayload;
   registerDebugMessages: RegisterDebugMessagesPayload;
@@ -516,6 +528,11 @@ export type MutationDeleteGameParticipantFollowArgs = {
 
 export type MutationDeleteGameParticipantIconArgs = {
   input: DeleteGameParticipantIcon;
+};
+
+
+export type MutationDeleteGamePeriodArgs = {
+  input: DeleteGamePeriod;
 };
 
 
@@ -1342,6 +1359,13 @@ export type LeaveMutationVariables = Exact<{
 
 export type LeaveMutation = { __typename?: 'Mutation', deleteGameParticipant: { __typename?: 'DeleteGameParticipantPayload', ok: boolean } };
 
+export type DeletePeriodMutationVariables = Exact<{
+  input: DeleteGamePeriod;
+}>;
+
+
+export type DeletePeriodMutation = { __typename?: 'Mutation', deleteGamePeriod: { __typename?: 'DeleteGamePeriodPayload', ok: boolean } };
+
 export type DeleteParticipantIconMutationVariables = Exact<{
   input: DeleteGameParticipantIcon;
 }>;
@@ -1692,6 +1716,7 @@ export type QCharachipsQuery = { __typename?: 'Query', charachips: Array<{ __typ
 export const ChangePeriodDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ChangePeriod"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ChangePeriod"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"changePeriodIfNeeded"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<ChangePeriodMutation, ChangePeriodMutationVariables>;
 export const DeleteGameMasterDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteGameMaster"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteGameMaster"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteGameMaster"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeleteGameMasterMutation, DeleteGameMasterMutationVariables>;
 export const LeaveDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Leave"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteGameParticipant"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteGameParticipant"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<LeaveMutation, LeaveMutationVariables>;
+export const DeletePeriodDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeletePeriod"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteGamePeriod"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteGamePeriod"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeletePeriodMutation, DeletePeriodMutationVariables>;
 export const DeleteParticipantIconDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteParticipantIcon"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteGameParticipantIcon"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteGameParticipantIcon"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<DeleteParticipantIconMutation, DeleteParticipantIconMutationVariables>;
 export const FavoriteDirectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"FavoriteDirect"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NewDirectMessageFavorite"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerDirectMessageFavorite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<FavoriteDirectMutation, FavoriteDirectMutationVariables>;
 export const UnfavoriteDirectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UnfavoriteDirect"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteDirectMessageFavorite"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteDirectMessageFavorite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<UnfavoriteDirectMutation, UnfavoriteDirectMutationVariables>;
