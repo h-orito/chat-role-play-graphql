@@ -43,6 +43,7 @@ func (*GameParticipantRepository) RegisterGameParticipant(ctx context.Context, g
 	// game_participant_profile
 	if err := registerGameParticipantProfile(tx, p.ID, model.GameParticipantProfile{
 		GameParticipantID: p.ID,
+		IsPlayerOpen:      false,
 	}); err != nil {
 		return nil, err
 	}
@@ -120,6 +121,10 @@ func (*GameParticipantRepository) DeleteGameParticipantIcon(ctx context.Context,
 		return fmt.Errorf("failed to get tx from context")
 	}
 	return deleteGameParticipantIcon(tx, iconID)
+}
+
+func (repo *GameParticipantRepository) FindGameParticipantNotificationSettings(gameParticipantIDs []uint32) (settings []model.GameParticipantNotification, err error) {
+	return findGameParticipantNotifications(repo.db.Connection, gameParticipantIDs)
 }
 
 func (repo *GameParticipantRepository) FindGameParticipantNotificationSetting(gameParticipantID uint32) (setting *model.GameParticipantNotification, err error) {
@@ -376,7 +381,7 @@ func findRdbGameParticipantProfile(db *gorm.DB, gameParticipantID uint32) (profi
 		return nil, nil
 	}
 	if result.Error != nil {
-		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+		return nil, fmt.Errorf("failed to find: %s", result.Error)
 	}
 	return &rdb, nil
 }
@@ -386,9 +391,10 @@ func registerGameParticipantProfile(db *gorm.DB, ID uint32, profile model.GamePa
 		GameParticipantID: ID,
 		ProfileImageUrl:   profile.ProfileImageURL,
 		Introduction:      profile.Introduction,
+		IsPlayerOpen:      profile.IsPlayerOpen,
 	}
 	if result := db.Create(&rdb); result.Error != nil {
-		return fmt.Errorf("failed to save: %s \n", result.Error)
+		return fmt.Errorf("failed to save: %s", result.Error)
 	}
 	return nil
 }
@@ -400,8 +406,9 @@ func updateGameParticipantProfile(db *gorm.DB, ID uint32, profile model.GamePart
 	}
 	rdb.ProfileImageUrl = profile.ProfileImageURL
 	rdb.Introduction = profile.Introduction
+	rdb.IsPlayerOpen = profile.IsPlayerOpen
 	if result := db.Save(&rdb); result.Error != nil {
-		return fmt.Errorf("failed to save: %s \n", result.Error)
+		return fmt.Errorf("failed to save: %s", result.Error)
 	}
 	return nil
 }
@@ -500,6 +507,19 @@ func deleteGameParticipantIcon(tx *gorm.DB, iconID uint32) (err error) {
 	return nil
 }
 
+func findGameParticipantNotifications(db *gorm.DB, participantIDs []uint32) ([]model.GameParticipantNotification, error) {
+	rdb, err := findRdbGameParticipantNotifications(db, participantIDs)
+	if err != nil {
+		return nil, err
+	}
+	if rdb == nil {
+		return nil, nil
+	}
+	return array.Map(rdb, func(n GameParticipantNotification) model.GameParticipantNotification {
+		return *n.ToModel()
+	}), nil
+}
+
 func findGameParticipantNotification(db *gorm.DB, participantID uint32) (_ *model.GameParticipantNotification, err error) {
 	rdb, err := findRdbGameParticipantNotification(db, participantID)
 	if err != nil {
@@ -509,6 +529,22 @@ func findGameParticipantNotification(db *gorm.DB, participantID uint32) (_ *mode
 		return nil, nil
 	}
 	return rdb.ToModel(), nil
+}
+
+func findRdbGameParticipantNotifications(db *gorm.DB, participantIDs []uint32) ([]GameParticipantNotification, error) {
+	if len(participantIDs) == 0 {
+		return nil, nil
+	}
+
+	var rdb []GameParticipantNotification
+	result := db.Model(&GameParticipantNotification{}).Where("game_participant_id in (?)", participantIDs).Find(&rdb)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	return rdb, nil
 }
 
 func findRdbGameParticipantNotification(db *gorm.DB, participantID uint32) (_ *GameParticipantNotification, err error) {
@@ -530,6 +566,7 @@ func registerGameParticipantNotification(db *gorm.DB, ID uint32, setting model.G
 		GameParticipate:   setting.Game.Participate,
 		GameStart:         setting.Game.Start,
 		MessageReply:      setting.Message.Reply,
+		SecretMessage:     setting.Message.Secret,
 		DirectMessage:     setting.Message.DirectMessage,
 		Keywords:          strings.Join(setting.Message.Keywords, ","),
 	}
@@ -548,6 +585,7 @@ func updateGameParticipantNotification(db *gorm.DB, ID uint32, setting model.Gam
 	rdb.GameParticipate = setting.Game.Participate
 	rdb.GameStart = setting.Game.Start
 	rdb.MessageReply = setting.Message.Reply
+	rdb.SecretMessage = setting.Message.Secret
 	rdb.DirectMessage = setting.Message.DirectMessage
 	rdb.Keywords = strings.Join(setting.Message.Keywords, ",")
 	if result := db.Save(&rdb); result.Error != nil {

@@ -53,6 +53,10 @@ func (repo *GameRepository) RegisterGame(ctx context.Context, game model.Game) (
 	if err != nil {
 		return nil, err
 	}
+	// game_label
+	if err := upsertGameLabels(tx, g.ID, game.Labels); err != nil {
+		return nil, err
+	}
 	// game_period
 	array.ForEach(game.Periods, func(period model.GamePeriod) {
 		if e := registerGamePeriod(tx, g.ID, period); e != nil {
@@ -146,12 +150,39 @@ func (repo *GameRepository) UpdateGamePeriod(ctx context.Context, gameID uint32,
 	return nil
 }
 
-func (repo *GameRepository) UpdateGameSettings(ctx context.Context, ID uint32, gameName string, settings model.GameSettings) (err error) {
+func (repo *GameRepository) DeleteGamePeriod(
+	ctx context.Context,
+	gameID uint32,
+	targetPeriodID uint32,
+	destPeriodID uint32,
+) (err error) {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return fmt.Errorf("failed to get tx from context")
+	}
+	// 日記やメッセージを移動先の期間に変更し、削除対象の期間を削除
+	err = deleteGamePeriod(tx, targetPeriodID, destPeriodID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *GameRepository) UpdateGameSettings(
+	ctx context.Context,
+	ID uint32,
+	gameName string,
+	labels []model.GameLabel,
+	settings model.GameSettings,
+) (err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get tx from context")
 	}
 	if err := tx.Model(&Game{}).Where("id = ?", ID).Update("game_name", gameName).Error; err != nil {
+		return err
+	}
+	if err := upsertGameLabels(tx, ID, labels); err != nil {
 		return err
 	}
 	if err := updateGameSettings(tx, ID, settings); err != nil {
@@ -173,6 +204,7 @@ func findGames(db *gorm.DB, query model.GamesQuery) (games []model.Game, err err
 	})
 	var pts []GameParticipant
 	var periods []GamePeriod
+	var labels []GameLabel
 	var settings []GameSetting
 	var charachips []GameCharachip
 	if len(ids) != 0 {
@@ -183,6 +215,10 @@ func findGames(db *gorm.DB, query model.GamesQuery) (games []model.Game, err err
 			return nil, err
 		}
 		periods, err = findRdbGamePeriods(db, gamePeriodsQuery{GameIDs: &ids})
+		if err != nil {
+			return nil, err
+		}
+		labels, err = findRdbGameLabels(db, gameLabelsQuery{GameIDs: &ids})
 		if err != nil {
 			return nil, err
 		}
@@ -203,6 +239,9 @@ func findGames(db *gorm.DB, query model.GamesQuery) (games []model.Game, err err
 		gamePeriods := array.Filter(periods, func(p GamePeriod) bool {
 			return p.GameID == g.ID
 		})
+		gameLabels := array.Filter(labels, func(l GameLabel) bool {
+			return l.GameID == g.ID
+		})
 		gameSettings := array.Filter(settings, func(s GameSetting) bool {
 			return s.GameID == g.ID
 		})
@@ -213,6 +252,9 @@ func findGames(db *gorm.DB, query model.GamesQuery) (games []model.Game, err err
 			ptsCount,
 			array.Map(gamePeriods, func(p GamePeriod) model.GamePeriod {
 				return *p.ToModel()
+			}),
+			array.Map(gameLabels, func(l GameLabel) model.GameLabel {
+				return *l.ToModel()
 			}),
 			*ToGameSettingsModel(
 				gameSettings,
@@ -230,6 +272,10 @@ func findGame(db *gorm.DB, ID uint32) (_ *model.Game, err error) {
 		return nil, err
 	}
 	gameMasters, err := findGameMasterPlayers(db, ID)
+	if err != nil {
+		return nil, err
+	}
+	rdbLabels, err := findRdbGameLabels(db, gameLabelsQuery{GameID: &ID})
 	if err != nil {
 		return nil, err
 	}
@@ -254,6 +300,9 @@ func findGame(db *gorm.DB, ID uint32) (_ *model.Game, err error) {
 		participants,
 		array.Map(rdbPeriods, func(p GamePeriod) model.GamePeriod {
 			return *p.ToModel()
+		}),
+		array.Map(rdbLabels, func(l GameLabel) model.GameLabel {
+			return *l.ToModel()
 		}),
 		*ToGameSettingsModel(
 			rdbSettings,
@@ -428,6 +477,30 @@ func registerGamePeriod(db *gorm.DB, gameID uint32, gm model.GamePeriod) (err er
 	return nil
 }
 
+func deleteGamePeriod(db *gorm.DB, targetGamePeriodID uint32, destGamePeriodID uint32) (err error) {
+	// 日記とメッセージを移動
+	if err := db.Model(&Message{}).
+		Where("game_period_id = ?", targetGamePeriodID).
+		Update("game_period_id", destGamePeriodID).Error; err != nil {
+		return err
+	}
+	if err := db.Model(&DirectMessage{}).
+		Where("game_period_id = ?", targetGamePeriodID).
+		Update("game_period_id", destGamePeriodID).Error; err != nil {
+		return err
+	}
+	if err := db.Model(&GameParticipantDiary{}).
+		Where("game_period_id = ?", targetGamePeriodID).
+		Update("game_period_id", destGamePeriodID).Error; err != nil {
+		return err
+	}
+	// 削除対象の期間を削除
+	if err := db.Where("id = ?", targetGamePeriodID).Delete(&GamePeriod{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func findRdbGameSettings(db *gorm.DB, query gameSettingsQuery) (_ []GameSetting, err error) {
 	var rdbGameSettings []GameSetting
 	result := db.Model(&GameSetting{})
@@ -502,6 +575,9 @@ func registerGameSettings(db *gorm.DB, ID uint32, settings model.GameSettings) (
 	if err := registerGameSetting(db, ID, GameSettingKeyCanSendDirectMessage, boolToString(settings.Rule.CanSendDirectMessage)); err != nil {
 		return err
 	}
+	if err := registerGameSetting(db, ID, GameSettingKeyTheme, orEmpty(settings.Rule.Theme)); err != nil {
+		return err
+	}
 	if err := registerGameSetting(db, ID, GameSettingKeyPassword, orEmpty(settings.Password.Password)); err != nil {
 		return err
 	}
@@ -546,6 +622,9 @@ func updateGameSettings(db *gorm.DB, gameID uint32, settings model.GameSettings)
 		return err
 	}
 	if err := updateGameSetting(db, gameID, GameSettingKeyCanSendDirectMessage, boolToString(settings.Rule.CanSendDirectMessage)); err != nil {
+		return err
+	}
+	if err := updateGameSetting(db, gameID, GameSettingKeyTheme, orEmpty(settings.Rule.Theme)); err != nil {
 		return err
 	}
 	if err := updateGameSetting(db, gameID, GameSettingKeyPassword, orEmpty(settings.Password.Password)); err != nil {
@@ -626,6 +705,48 @@ func registerGameCharachip(db *gorm.DB, gameID uint32, charachipID uint32) (err 
 		CharachipID: charachipID,
 	}).Error; err != nil {
 		return err
+	}
+	return nil
+}
+
+type gameLabelsQuery struct {
+	GameIDs *[]uint32
+	GameID  *uint32
+}
+
+func findRdbGameLabels(db *gorm.DB, query gameLabelsQuery) (_ []GameLabel, err error) {
+	var rdbGameLabels []GameLabel
+	result := db.Model(&GameLabel{})
+	if query.GameIDs != nil {
+		result = result.Where("game_id in (?)", *query.GameIDs)
+	}
+	if query.GameID != nil {
+		result = result.Where("game_id = ?", *query.GameID)
+	}
+	result = result.Find(&rdbGameLabels)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find: %s \n", result.Error)
+	}
+	return rdbGameLabels, nil
+}
+
+func upsertGameLabels(tx *gorm.DB, gameID uint32, labels []model.GameLabel) error {
+	// 既存のラベルを削除
+	if err := tx.Where("game_id = ?", gameID).Delete(&GameLabel{}).Error; err != nil {
+		return err
+	}
+	// 新しいラベルを登録
+	for _, label := range labels {
+		if err := tx.Create(&GameLabel{
+			GameID:    gameID,
+			LabelName: label.Name,
+			LabelType: label.Type,
+		}).Error; err != nil {
+			return err
+		}
 	}
 	return nil
 }

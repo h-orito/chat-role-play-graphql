@@ -1,0 +1,5 @@
+mutation DeletePeriod($input: DeleteGamePeriod!) {
+  deleteGamePeriod(input: $input) {
+    ok
+  }
+}

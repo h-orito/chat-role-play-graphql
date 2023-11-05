@@ -31,6 +31,7 @@ func (r *queryResolver) designers(ctx context.Context, query gqlmodel.DesignersQ
 			PageSize:   query.Paging.PageSize,
 			PageNumber: query.Paging.PageNumber,
 			Desc:       query.Paging.IsDesc,
+			Latest:     query.Paging.IsLatest,
 		}
 	}
 	designers, err := r.charaUsecase.FindDesigners(model.DesignerQuery{
@@ -80,6 +81,7 @@ func (r *queryResolver) charachips(ctx context.Context, query gqlmodel.Charachip
 			PageSize:   query.Paging.PageSize,
 			PageNumber: query.Paging.PageNumber,
 			Desc:       query.Paging.IsDesc,
+			Latest:     query.Paging.IsLatest,
 		}
 	}
 	charachips, err := r.charaUsecase.FindCharachips(model.CharachipQuery{

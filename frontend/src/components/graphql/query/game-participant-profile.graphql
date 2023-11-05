@@ -8,5 +8,7 @@ query GameParticipantProfile($participantId: ID!) {
     introduction
     followsCount
     followersCount
+    isPlayerOpen
+    playerName
   }
 }

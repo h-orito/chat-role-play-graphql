@@ -18,14 +18,26 @@ import {
 } from '@/lib/generated/graphql'
 import { useLazyQuery } from '@apollo/client'
 import InputMultiSelect from '@/components/form/input-multi-select'
+import RadioGroup from '@/components/form/radio-group'
+import ThemeEdit from './theme-edit'
+import InputSelect from '@/components/form/input-select'
+import { themeMap, themeOptions } from '@/components/theme/theme'
+import PrimaryButton from '@/components/button/primary-button'
 
 type Props = {
   defaultValues: GameFormInput
+  target: string
+  setTarget: Dispatch<SetStateAction<string>>
+  rating: string
+  setRating: Dispatch<SetStateAction<string>>
   charachipIds: string[]
   setCharachipIds: Dispatch<SetStateAction<string[]>>
   onSubmit: SubmitHandler<GameFormInput>
   labelName: string
   canModifyCharachips?: boolean
+  canModifyTheme?: boolean
+  theme?: string | null
+  setTheme?: Dispatch<SetStateAction<string | null>>
 }
 
 export interface GameFormInput {
@@ -77,8 +89,8 @@ export default function GameEdit(props: Props) {
     <div>
       <div className='p-4'>
         <div className='flex justify-center'>
-          <p className='my-2 bg-gray-100 p-4 text-xs'>
-            <span className='text-red-500'>*&nbsp;</span>
+          <p className='notification-background notification-text my-2 p-4 text-xs'>
+            <span className='danger-text'>*&nbsp;</span>
             がついている項目は必須です。
             <br />
             また、キャラチップ設定以外は作成後に変更することができます。
@@ -98,6 +110,41 @@ export default function GameEdit(props: Props) {
                 }
               }}
             />
+          </div>
+          <hr />
+          <div className='my-4'>
+            <FormLabel label='募集範囲' required />
+            <div className='mt-1 flex justify-center'>
+              <RadioGroup
+                name='target'
+                candidates={[
+                  { label: '誰歓', value: '誰歓' },
+                  { label: '身内', value: '身内' },
+                  { label: 'その他', value: '' }
+                ]}
+                selected={props.target}
+                setSelected={props.setTarget}
+              />
+            </div>
+          </div>
+          <hr />
+          <div className='my-4'>
+            <FormLabel label='レーティング' required>
+              R15,R18表現が禁止されている場合があるため、キャラチップの利用規約を確認お願いします。
+            </FormLabel>
+            <div className='mt-1 flex justify-center'>
+              <RadioGroup
+                name='rating'
+                candidates={[
+                  { label: '全年齢', value: '全年齢' },
+                  { label: 'R15', value: 'R15' },
+                  { label: 'R18', value: 'R18' },
+                  { label: 'R18G', value: 'R18G' }
+                ]}
+                selected={props.rating}
+                setSelected={props.setRating}
+              />
+            </div>
           </div>
           <hr />
           <div className='my-4'>
@@ -251,12 +298,12 @@ export default function GameEdit(props: Props) {
             {props.canModifyCharachips != false ? (
               <>
                 <div className='flex justify-center'>
-                  <p className='my-2 bg-gray-100 p-4 text-xs'>
+                  <p className='notification-background notification-text my-2 p-4 text-xs'>
                     選択すると、オリジナルキャラクターに加え、選択したキャラチップのキャラクターを利用して参加することができます。
                     <br />
                     複数選択することも可能です。
                     <br />
-                    <span className='text-red-500'>
+                    <span className='danger-text'>
                       この項目は後から変更することができません。
                     </span>
                   </p>
@@ -286,7 +333,7 @@ export default function GameEdit(props: Props) {
           <div className='my-4'>
             <FormLabel label='期間' />
             <div className='flex justify-center'>
-              <p className='my-2 bg-gray-100 p-4 text-xs'>
+              <p className='notification-background notification-text my-2 p-4 text-xs'>
                 一定時間経過するごとに[接頭辞]1[接尾辞], [接頭辞]2[接尾辞],
                 ..のように期間を区切ることができます。
                 <br />
@@ -371,7 +418,7 @@ export default function GameEdit(props: Props) {
               閲覧はパスワードを知らなくても可能です。
             </FormLabel>
             <div className='flex justify-center'>
-              <p className='my-2 bg-gray-100 p-4 text-xs'>
+              <p className='notification-background notification-text my-2 p-4 text-xs'>
                 設定更新の際、毎回空欄となります。ご注意ください。
               </p>
             </div>
@@ -386,12 +433,87 @@ export default function GameEdit(props: Props) {
               }}
             />
           </div>
+          {props.canModifyTheme == true && (
+            <>
+              <hr />
+              <ThemeForm theme={props.theme!} setTheme={props.setTheme!} />
+            </>
+          )}
           <hr />
           <div className='my-4 flex justify-center'>
             <SubmitButton label={props.labelName} disabled={!canSubmit} />
           </div>
         </form>
       </div>
+    </div>
+  )
+}
+
+const ThemeForm = ({
+  theme,
+  setTheme
+}: {
+  theme: string | null
+  setTheme: Dispatch<SetStateAction<string | null>>
+}) => {
+  const [isUseTheme, setIsUseTheme] = useState(theme ? 'use' : 'none')
+  const handleChangeUseTheme = (value: string) => {
+    if (value === 'none') {
+      if (
+        window.confirm('設定中のテーマ内容が破棄されますが、よろしいですか？')
+      ) {
+        setTheme(null)
+        setIsUseTheme(value)
+      }
+    } else {
+      if (theme === null) {
+        setTheme(JSON.stringify(themeMap.get('light')))
+      }
+      setIsUseTheme(value)
+    }
+  }
+  const [templateTheme, setTemplateTheme] = useState(themeOptions[0].value)
+  const handlePaste = (e: any) => {
+    e.preventDefault()
+    if (!window.confirm('現在のテーマ内容が破棄されますが、よろしいですか？')) {
+      return
+    }
+    const newTheme = themeMap.get(templateTheme)!
+    setTheme(JSON.stringify(newTheme))
+  }
+  return (
+    <div className='my-4'>
+      <FormLabel label='オリジナルテーマ'>
+        設定されている場合、各ユーザーがこのテーマを使用することができるようになります。
+      </FormLabel>
+      <div className='mt-2 flex justify-center'>
+        <RadioGroup
+          name='use-theme'
+          candidates={[
+            { label: '設定しない', value: 'none' },
+            { label: '設定する', value: 'use' }
+          ]}
+          selected={isUseTheme}
+          setSelected={handleChangeUseTheme}
+        />
+      </div>
+      {isUseTheme === 'use' && (
+        <>
+          <div className='base-border my-4 border-b'>
+            <strong>既存テーマ流用</strong>
+            <div className='mb-4 flex justify-center gap-2'>
+              <InputSelect
+                className='w-24 md:w-36'
+                candidates={themeOptions}
+                selected={templateTheme}
+                setSelected={(value: string) => setTemplateTheme(value)}
+              />
+              <PrimaryButton click={handlePaste}>反映</PrimaryButton>
+            </div>
+          </div>
+          <ThemeEdit theme={theme} setTheme={setTheme} />
+        </>
+      )}
     </div>
   )
 }
@@ -415,12 +537,12 @@ const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
   }
   return (
     <label className='block text-sm font-bold'>
-      {required && <span className='text-red-500'>*&nbsp;</span>}
+      {required && <span className='danger-text'>*&nbsp;</span>}
       {label}
       {children && (
         <>
           <button onClick={openModal}>
-            <QuestionMarkCircleIcon className='ml-1 h-4 w-4 text-blue-500' />
+            <QuestionMarkCircleIcon className='base-link ml-1 h-4 w-4' />
           </button>
           {isModalOpen && (
             <Modal close={toggleModal} hideFooter>

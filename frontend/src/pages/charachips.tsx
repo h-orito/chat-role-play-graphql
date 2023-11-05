@@ -21,7 +21,8 @@ export const getServerSideProps = async () => {
         paging: {
           pageSize: 100000,
           pageNumber: 1,
-          isDesc: false
+          isDesc: false,
+          isLatest: false
         } as PageableQuery
       } as CharachipsQuery
     } as CharachipDetailsQueryVariables

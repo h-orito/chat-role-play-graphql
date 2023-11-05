@@ -49,7 +49,7 @@ export default function CharachipPage({ charachipId, charachip }: Props) {
               <a
                 href={charachip.descriptionUrl}
                 target='_blank'
-                className='text-blue-500'
+                className='base-link'
               >
                 {charachip.descriptionUrl}
               </a>

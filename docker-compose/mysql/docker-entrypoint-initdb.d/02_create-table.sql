@@ -146,6 +146,23 @@ create table games (
     primary key (id)
 );
 
+create table game_labels (
+    id          int unsigned not null auto_increment comment 'ID',
+    game_id     int unsigned not null comment 'ゲームID',
+    label_name  varchar(255) not null comment 'ラベル名',
+    label_type  varchar(255) not null comment 'ラベル色',
+    created_at datetime     not null comment '作成日時',
+    updated_at datetime     not null comment '更新日時',
+    primary key (id)    
+);
+
+alter table game_labels
+    add constraint fk_game_labels_games foreign key (game_id)
+    references games (id)
+    on update restrict
+    on delete restrict
+;
+
 create table game_master_players (
     id          int unsigned not null auto_increment comment 'ID',
     game_id     int unsigned not null comment 'ゲームID',
@@ -214,6 +231,7 @@ create table game_participant_profiles (
     game_participant_id   int unsigned not null auto_increment comment 'ゲーム参加者ID',
     profile_image_url     varchar(1000) comment 'プロフィール画像URL',
     introduction          text comment '自己紹介',
+    is_player_open        boolean not null comment 'ユーザー情報を公開するか',
     created_at datetime not null comment '作成日時',
     updated_at datetime not null comment '更新日時',
     primary key (game_participant_id)
@@ -259,6 +277,7 @@ create table game_participant_notifications (
     game_participate     boolean not null comment '参加を通知するか',
     game_start           boolean not null comment '開始を通知するか',
     message_reply        boolean not null comment 'リプライを通知するか',
+    secret_message       boolean not null comment '秘話を通知するか',
     direct_message       boolean not null comment 'ダイレクトメッセージを通知するか',
     keywords             varchar(1000)    comment '通知キーワード（カンマ区切り）',
     created_at datetime     not null comment '作成日時',
@@ -326,8 +345,7 @@ create table game_participant_diaries (
     diary_body           text         not null comment '日記本文',
     created_at datetime     not null comment '作成日時',
     updated_at datetime     not null comment '更新日時',
-    primary key (id),
-    unique (game_id, game_participant_id, game_period_id)
+    primary key (id)
 );
 
 alter table game_participant_diaries
@@ -434,6 +452,9 @@ create table messages (
     sender_icon_id               int unsigned          comment '送信者アイコンID',
     sender_name                  varchar(255)          comment '送信者キャラクター名',
     sender_entry_number          int unsigned          comment '送信者参加番号',
+    receiver_game_participant_id int unsigned          comment '受信者ゲーム参加者ID',
+    receiver_name                varchar(255)          comment '受信者キャラクター名',
+    receiver_entry_number        int unsigned          comment '受信者参加番号',
     reply_to_message_id          bigint unsigned       comment '返信先メッセージID',
     reply_to_game_participant_id int unsigned          comment '返信先ゲーム参加者ID',
     message_type_code            varchar(255) not null comment 'メッセージ種別コード',

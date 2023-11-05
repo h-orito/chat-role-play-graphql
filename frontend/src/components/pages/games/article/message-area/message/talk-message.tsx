@@ -6,7 +6,8 @@ import {
   Message,
   MessageRecipient,
   MessageRepliesDocument,
-  MessageRepliesQuery
+  MessageRepliesQuery,
+  MessageType
 } from '@/lib/generated/graphql'
 import Image from 'next/image'
 import { ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline'
@@ -54,6 +55,8 @@ export default function TalkMessage({
       ? 'talk-monologue'
       : message.content.type === 'Description'
       ? 'description'
+      : message.content.type === 'Secret'
+      ? 'talk-secret'
       : ''
   return (
     <div>
@@ -63,15 +66,24 @@ export default function TalkMessage({
         )}
         {message.sender && (
           <div className='flex text-xs'>
-            <p className='text-gray-500'>#{message.content.number}</p>
+            <p className='secondary-text'>#{message.content.number}</p>
             &nbsp;
             <button onClick={handleProfileClick}>
-              <p className='hover:text-blue-500'>
+              <p className='primary-hover-text'>
                 ENo.{message.sender.entryNumber}&nbsp;
                 {message.sender.name}
               </p>
             </button>
-            <p className='ml-auto text-gray-500'>
+            {message.receiver && (
+              <>
+                &nbsp;→&nbsp;
+                <p className='primary-hover-text'>
+                  ENo.{message.receiver.entryNumber}&nbsp;
+                  {message.receiver.name}
+                </p>
+              </>
+            )}
+            <p className='secondary-text ml-auto'>
               {iso2display(message.time.sendAt)}
             </p>
           </div>
@@ -101,6 +113,7 @@ export default function TalkMessage({
               <div className='flex'>
                 <ReplyButton
                   game={game}
+                  myself={myself}
                   message={message}
                   showReplies={showReplies}
                   setShowReplies={setShowReplies}
@@ -137,6 +150,7 @@ export default function TalkMessage({
 
 type ReplyButtonProps = {
   game: Game
+  myself: GameParticipant | null
   message: Message
   showReplies: boolean
   setShowReplies: React.Dispatch<React.SetStateAction<boolean>>
@@ -146,6 +160,7 @@ type ReplyButtonProps = {
 }
 const ReplyButton = ({
   game,
+  myself,
   message,
   showReplies,
   setShowReplies,
@@ -170,17 +185,26 @@ const ReplyButton = ({
     setShowReplies(!showReplies)
   }
 
+  const isDisabled =
+    myself == null ||
+    (message.content.type === MessageType.Secret &&
+      message.sender?.participantId === myself.id)
+
   return (
     <>
-      <button className='hover:font-bold' onClick={() => handleReply(message)}>
-        <ChatBubbleOvalLeftEllipsisIcon className='y-4 h-4 text-gray-500' />
+      <button
+        className='hover:font-bold'
+        onClick={() => handleReply(message)}
+        disabled={isDisabled}
+      >
+        <ChatBubbleOvalLeftEllipsisIcon className='y-4 secondary-text h-4' />
       </button>
       {message.reactions.replyCount > 0 && (
         <button
           className='pr-2 hover:font-bold'
           onClick={() => toggleReplies()}
         >
-          <p className='ml-1 self-center text-gray-500'>
+          <p className='secondary-text ml-1 self-center'>
             {message.reactions.replyCount}
           </p>
         </button>

@@ -141,3 +141,15 @@ func Uint32Distinct[T uint32](array []uint32) (result []uint32) {
 	}
 	return uniq
 }
+
+func Reverse[T any](array []T) []T {
+	a := make([]T, len(array))
+	copy(a, array)
+
+	for i := len(a)/2 - 1; i >= 0; i-- {
+		opp := len(a) - 1 - i
+		a[i], a[opp] = a[opp], a[i]
+	}
+
+	return a
+}

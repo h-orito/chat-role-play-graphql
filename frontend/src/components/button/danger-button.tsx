@@ -13,7 +13,7 @@ export default function DangerButton({
 }: Props) {
   return (
     <button
-      className={`${className} rounded-sm border border-red-500 bg-red-100 px-4 py-1 hover:bg-red-300 disabled:bg-gray-400 disabled:text-white`}
+      className={`${className ?? ''} danger-button rounded-sm border px-4 py-1`}
       onClick={click}
       disabled={disabled}
     >

@@ -12,8 +12,14 @@ import (
 
 func (g NewGame) MapToGame() model.Game {
 	return model.Game{
-		Name:         g.Name,
-		Status:       model.GameStatusClosed,
+		Name:   g.Name,
+		Status: model.GameStatusClosed,
+		Labels: array.Map(g.Labels, func(label *NewGameLabel) model.GameLabel {
+			return model.GameLabel{
+				Name: label.Name,
+				Type: label.Type,
+			}
+		}),
 		GameMasters:  []model.GameMaster{},
 		Participants: model.GameParticipants{},
 		Periods: []model.GamePeriod{
@@ -49,6 +55,7 @@ func (g NewGame) MapToGame() model.Game {
 			Rule: model.GameRuleSettings{
 				CanShorten:           g.Settings.Rule.CanShorten,
 				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
+				Theme:                g.Settings.Rule.Theme,
 			},
 			Password: model.GamePasswordSettings{
 				HasPassword: g.Settings.Password.Password != nil,
@@ -56,6 +63,15 @@ func (g NewGame) MapToGame() model.Game {
 			},
 		},
 	}
+}
+
+func (g UpdateGameSetting) MapToGaneLabels() []model.GameLabel {
+	return array.Map(g.Labels, func(label *UpdateGameLabel) model.GameLabel {
+		return model.GameLabel{
+			Name: label.Name,
+			Type: label.Type,
+		}
+	})
 }
 
 func (g UpdateGameSetting) MapToGameSetting() model.GameSettings {
@@ -84,6 +100,7 @@ func (g UpdateGameSetting) MapToGameSetting() model.GameSettings {
 		Rule: model.GameRuleSettings{
 			CanShorten:           g.Settings.Rule.CanShorten,
 			CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
+			Theme:                g.Settings.Rule.Theme,
 		},
 		Password: model.GamePasswordSettings{
 			HasPassword: g.Settings.Password.Password != nil,

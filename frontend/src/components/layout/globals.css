@@ -3,21 +3,24 @@
 @tailwind utilities;
 
 @layer components {
-    .message {
-        @apply w-full whitespace-pre-wrap break-words rounded border p-2;
-    }
-    .system-public {
-        @apply bg-white border-gray-300 text-gray-700;
-    }
-    .talk-normal {
-        @apply bg-white border-gray-300 text-gray-700;
-    }
-    .talk-monologue {
-        @apply bg-gray-300 border-gray-300 text-gray-700;
-    }
-    .description {
-        @apply text-gray-700;
-        background-color: #dfdfc9;
-        border-color: #dfdfc9;
-    }
+  .message {
+    @apply w-full whitespace-pre-wrap break-words rounded border p-2 text-sm;
+  }
+  .system-public {
+    @apply border-gray-300 bg-white text-gray-700;
+  }
+  .talk-normal {
+    @apply border-gray-300 bg-white text-gray-700;
+  }
+  .talk-monologue {
+    @apply border-gray-300 bg-gray-300 text-gray-700;
+  }
+  .talk-secret {
+    @apply border-gray-300 bg-violet-300 text-gray-700;
+  }
+  .description {
+    @apply text-gray-700;
+    background-color: #dfdfc9;
+    border-color: #dfdfc9;
+  }
 }

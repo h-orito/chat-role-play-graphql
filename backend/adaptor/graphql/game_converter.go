@@ -14,6 +14,9 @@ func MapToGame(g *model.Game) *gqlmodel.Game {
 		ID:     intIdToBase64(g.ID, "Game"),
 		Name:   g.Name,
 		Status: gqlmodel.GameStatus(g.Status.String()),
+		Labels: array.Map(g.Labels, func(l model.GameLabel) *gqlmodel.GameLabel {
+			return MapToGameLabel(&l)
+		}),
 		GameMasters: array.Map(g.GameMasters, func(gm model.GameMaster) *gqlmodel.GameMaster {
 			return MapToGameMaster(&gm)
 		}),
@@ -48,11 +51,23 @@ func MapToGame(g *model.Game) *gqlmodel.Game {
 				IsGameMasterProducer: false,
 				CanShorten:           g.Settings.Rule.CanShorten,
 				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
+				Theme:                g.Settings.Rule.Theme,
 			},
 			Password: &gqlmodel.GamePasswordSetting{
 				HasPassword: g.Settings.Password.HasPassword,
 			},
 		},
+	}
+}
+
+func MapToGameLabel(l *model.GameLabel) *gqlmodel.GameLabel {
+	if l == nil {
+		return nil
+	}
+	return &gqlmodel.GameLabel{
+		ID:   intIdToBase64(l.ID, "GameLabel"),
+		Name: l.Name,
+		Type: l.Type,
 	}
 }
 
@@ -74,9 +89,12 @@ func MapToSimpleGame(g *model.Game) *gqlmodel.SimpleGame {
 		return nil
 	}
 	return &gqlmodel.SimpleGame{
-		ID:                intIdToBase64(g.ID, "Game"),
-		Name:              g.Name,
-		Status:            gqlmodel.GameStatus(g.Status.String()),
+		ID:     intIdToBase64(g.ID, "Game"),
+		Name:   g.Name,
+		Status: gqlmodel.GameStatus(g.Status.String()),
+		Labels: array.Map(g.Labels, func(l model.GameLabel) *gqlmodel.GameLabel {
+			return MapToGameLabel(&l)
+		}),
 		ParticipantsCount: g.Participants.Count,
 		Periods: array.Map(g.Periods, func(p model.GamePeriod) *gqlmodel.GamePeriod {
 			return MapToGamePeriod(&p)
@@ -104,6 +122,7 @@ func MapToSimpleGame(g *model.Game) *gqlmodel.SimpleGame {
 				IsGameMasterProducer: false,
 				CanShorten:           g.Settings.Rule.CanShorten,
 				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
+				Theme:                g.Settings.Rule.Theme,
 			},
 			Password: &gqlmodel.GamePasswordSetting{
 				HasPassword: g.Settings.Password.HasPassword,
@@ -157,7 +176,11 @@ func MapToGameParticipant(p model.GameParticipant) *gqlmodel.GameParticipant {
 	}
 }
 
-func MapToGameParticipantProfile(p model.GameParticipantProfile, participant model.GameParticipant) *gqlmodel.GameParticipantProfile {
+func MapToGameParticipantProfile(
+	p model.GameParticipantProfile,
+	participant model.GameParticipant,
+	player model.Player,
+) *gqlmodel.GameParticipantProfile {
 	return &gqlmodel.GameParticipantProfile{
 		ParticipantID:   intIdToBase64(p.GameParticipantID, "GameParticipant"),
 		Name:            participant.Name,
@@ -167,6 +190,8 @@ func MapToGameParticipantProfile(p model.GameParticipantProfile, participant mod
 		Introduction:    p.Introduction,
 		FollowsCount:    p.FollowsCount,
 		FollowersCount:  p.FollowersCount,
+		IsPlayerOpen:    p.IsPlayerOpen,
+		PlayerName:      &player.Name,
 	}
 }
 
@@ -189,6 +214,7 @@ func MapToGameParticipantSetting(p model.GameParticipantNotification) *gqlmodel.
 			},
 			Message: &gqlmodel.MessageNotificationCondition{
 				Reply:         p.Message.Reply,
+				Secret:        p.Message.Secret,
 				DirectMessage: p.Message.DirectMessage,
 				Keywords:      p.Message.Keywords,
 			},

@@ -36,9 +36,9 @@ export default function ParticipantIcons({
 
   return (
     <div className='my-4'>
-      <div className='flex'>
+      <div className='flex flex-wrap'>
         {icons.length === 0 && (
-          <div className='relative flex'>
+          <div className=''>
             <Image
               className='block w-full'
               src={'/chat-role-play/images/no-image-icon.png'}

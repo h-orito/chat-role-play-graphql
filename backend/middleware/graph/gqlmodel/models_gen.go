@@ -105,6 +105,16 @@ type DeleteGameParticipantPayload struct {
 	Ok bool `json:"ok"`
 }
 
+type DeleteGamePeriod struct {
+	GameID         string `json:"gameId"`
+	TargetPeriodID string `json:"targetPeriodId"`
+	DestPeriodID   string `json:"destPeriodId"`
+}
+
+type DeleteGamePeriodPayload struct {
+	Ok bool `json:"ok"`
+}
+
 type DeleteMessageFavorite struct {
 	GameID    string `json:"gameId"`
 	MessageID string `json:"messageId"`
@@ -154,6 +164,7 @@ type DirectMessages struct {
 	HasNextPage         bool             `json:"hasNextPage"`
 	CurrentPageNumber   *int             `json:"currentPageNumber,omitempty"`
 	IsDesc              bool             `json:"isDesc"`
+	IsLatest            bool             `json:"isLatest"`
 	LatestUnixTimeMilli uint64           `json:"latestUnixTimeMilli"`
 }
 
@@ -181,6 +192,7 @@ type Game struct {
 	ID           string             `json:"id"`
 	Name         string             `json:"name"`
 	Status       GameStatus         `json:"status"`
+	Labels       []*GameLabel       `json:"labels"`
 	GameMasters  []*GameMaster      `json:"gameMasters"`
 	Participants []*GameParticipant `json:"participants"`
 	Periods      []*GamePeriod      `json:"periods"`
@@ -195,6 +207,12 @@ type GameCapacity struct {
 type GameDiariesQuery struct {
 	ParticipantID *string `json:"participantId,omitempty"`
 	PeriodID      *string `json:"periodId,omitempty"`
+}
+
+type GameLabel struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 type GameNotificationCondition struct {
@@ -223,6 +241,8 @@ type GameParticipantProfile struct {
 	Introduction    *string `json:"introduction,omitempty"`
 	FollowsCount    int     `json:"followsCount"`
 	FollowersCount  int     `json:"followersCount"`
+	IsPlayerOpen    bool    `json:"isPlayerOpen"`
+	PlayerName      *string `json:"playerName,omitempty"`
 }
 
 type GameParticipantSetting struct {
@@ -242,9 +262,10 @@ type GamePeriod struct {
 }
 
 type GameRuleSetting struct {
-	IsGameMasterProducer bool `json:"isGameMasterProducer"`
-	CanShorten           bool `json:"canShorten"`
-	CanSendDirectMessage bool `json:"canSendDirectMessage"`
+	IsGameMasterProducer bool    `json:"isGameMasterProducer"`
+	CanShorten           bool    `json:"canShorten"`
+	CanSendDirectMessage bool    `json:"canSendDirectMessage"`
+	Theme                *string `json:"theme,omitempty"`
 }
 
 type GameSettings struct {
@@ -278,6 +299,7 @@ type Message struct {
 	Content   *MessageContent   `json:"content"`
 	Time      *MessageTime      `json:"time"`
 	Sender    *MessageSender    `json:"sender,omitempty"`
+	Receiver  *MessageReceiver  `json:"receiver,omitempty"`
 	ReplyTo   *MessageRecipient `json:"replyTo,omitempty"`
 	Reactions *MessageReactions `json:"reactions"`
 }
@@ -291,6 +313,7 @@ type MessageContent struct {
 
 type MessageNotificationCondition struct {
 	Reply         bool     `json:"reply"`
+	Secret        bool     `json:"secret"`
 	DirectMessage bool     `json:"directMessage"`
 	Keywords      []string `json:"keywords"`
 }
@@ -299,6 +322,12 @@ type MessageReactions struct {
 	ReplyCount             int      `json:"replyCount"`
 	FavoriteCount          int      `json:"favoriteCount"`
 	FavoriteParticipantIds []string `json:"favoriteParticipantIds"`
+}
+
+type MessageReceiver struct {
+	ParticipantID string `json:"participantId"`
+	Name          string `json:"name"`
+	EntryNumber   int    `json:"entryNumber"`
 }
 
 type MessageRecipient struct {
@@ -318,6 +347,7 @@ type Messages struct {
 	HasNextPage         bool       `json:"hasNextPage"`
 	CurrentPageNumber   *int       `json:"currentPageNumber,omitempty"`
 	IsDesc              bool       `json:"isDesc"`
+	IsLatest            bool       `json:"isLatest"`
 	LatestUnixTimeMilli uint64     `json:"latestUnixTimeMilli"`
 }
 
@@ -358,6 +388,7 @@ type NewDirectMessageFavorite struct {
 
 type NewGame struct {
 	Name     string           `json:"name"`
+	Labels   []*NewGameLabel  `json:"labels"`
 	Settings *NewGameSettings `json:"settings"`
 }
 
@@ -369,6 +400,11 @@ type NewGameCapacity struct {
 type NewGameCharaSetting struct {
 	CharachipIds         []string `json:"charachipIds"`
 	CanOriginalCharacter bool     `json:"canOriginalCharacter"`
+}
+
+type NewGameLabel struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 type NewGameMaster struct {
@@ -414,9 +450,10 @@ type NewGamePasswordSetting struct {
 }
 
 type NewGameRuleSetting struct {
-	IsGameMasterProducer bool `json:"isGameMasterProducer"`
-	CanShorten           bool `json:"canShorten"`
-	CanSendDirectMessage bool `json:"canSendDirectMessage"`
+	IsGameMasterProducer bool    `json:"isGameMasterProducer"`
+	CanShorten           bool    `json:"canShorten"`
+	CanSendDirectMessage bool    `json:"canSendDirectMessage"`
+	Theme                *string `json:"theme,omitempty"`
 }
 
 type NewGameSettings struct {
@@ -439,13 +476,14 @@ type NewGameTimeSetting struct {
 }
 
 type NewMessage struct {
-	GameID            string      `json:"gameId"`
-	Type              MessageType `json:"type"`
-	IconID            *string     `json:"iconId,omitempty"`
-	Name              *string     `json:"name,omitempty"`
-	ReplyToMessageID  *string     `json:"replyToMessageId,omitempty"`
-	Text              string      `json:"text"`
-	IsConvertDisabled bool        `json:"isConvertDisabled"`
+	GameID                string      `json:"gameId"`
+	Type                  MessageType `json:"type"`
+	IconID                *string     `json:"iconId,omitempty"`
+	Name                  *string     `json:"name,omitempty"`
+	ReceiverParticipantID *string     `json:"receiverParticipantId,omitempty"`
+	ReplyToMessageID      *string     `json:"replyToMessageId,omitempty"`
+	Text                  string      `json:"text"`
+	IsConvertDisabled     bool        `json:"isConvertDisabled"`
 }
 
 type NewMessageFavorite struct {
@@ -475,6 +513,7 @@ type PageableQuery struct {
 	PageSize   int  `json:"pageSize"`
 	PageNumber int  `json:"pageNumber"`
 	IsDesc     bool `json:"isDesc"`
+	IsLatest   bool `json:"isLatest"`
 }
 
 type ParticipantsQuery struct {
@@ -508,6 +547,14 @@ type PlayersQuery struct {
 	Ids    []string       `json:"ids,omitempty"`
 	Name   *string        `json:"name,omitempty"`
 	Paging *PageableQuery `json:"paging,omitempty"`
+}
+
+type RegisterDebugMessages struct {
+	GameID string `json:"gameId"`
+}
+
+type RegisterDebugMessagesPayload struct {
+	Ok bool `json:"ok"`
 }
 
 type RegisterDirectMessageDryRunPayload struct {
@@ -574,6 +621,7 @@ type SimpleGame struct {
 	ID                string        `json:"id"`
 	Name              string        `json:"name"`
 	Status            GameStatus    `json:"status"`
+	Labels            []*GameLabel  `json:"labels"`
 	ParticipantsCount int           `json:"participantsCount"`
 	Periods           []*GamePeriod `json:"periods"`
 	Settings          *GameSettings `json:"settings"`
@@ -587,6 +635,11 @@ type UpdateCharaSetting struct {
 type UpdateGameCapacity struct {
 	Min int `json:"min"`
 	Max int `json:"max"`
+}
+
+type UpdateGameLabel struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 type UpdateGameMaster struct {
@@ -643,6 +696,7 @@ type UpdateGameParticipantProfile struct {
 	ProfileIconID    *string         `json:"profileIconId,omitempty"`
 	Introduction     *string         `json:"introduction,omitempty"`
 	Memo             *string         `json:"memo,omitempty"`
+	IsPlayerOpen     bool            `json:"isPlayerOpen"`
 }
 
 type UpdateGameParticipantProfilePayload struct {
@@ -675,14 +729,16 @@ type UpdateGamePeriodPayload struct {
 }
 
 type UpdateGameRuleSetting struct {
-	IsGameMasterProducer bool `json:"isGameMasterProducer"`
-	CanShorten           bool `json:"canShorten"`
-	CanSendDirectMessage bool `json:"canSendDirectMessage"`
+	IsGameMasterProducer bool    `json:"isGameMasterProducer"`
+	CanShorten           bool    `json:"canShorten"`
+	CanSendDirectMessage bool    `json:"canSendDirectMessage"`
+	Theme                *string `json:"theme,omitempty"`
 }
 
 type UpdateGameSetting struct {
 	GameID   string              `json:"gameId"`
 	Name     string              `json:"name"`
+	Labels   []*UpdateGameLabel  `json:"labels"`
 	Settings *UpdateGameSettings `json:"settings"`
 }
 
@@ -720,6 +776,7 @@ type UpdateGameTimeSetting struct {
 
 type UpdateMessageNotificationCondition struct {
 	Reply         bool     `json:"reply"`
+	Secret        bool     `json:"secret"`
 	DirectMessage bool     `json:"directMessage"`
 	Keywords      []string `json:"keywords"`
 }
@@ -808,6 +865,7 @@ type MessageType string
 const (
 	MessageTypeTalkNormal    MessageType = "TalkNormal"
 	MessageTypeMonologue     MessageType = "Monologue"
+	MessageTypeSecret        MessageType = "Secret"
 	MessageTypeDescription   MessageType = "Description"
 	MessageTypeSystemPublic  MessageType = "SystemPublic"
 	MessageTypeSystemPrivate MessageType = "SystemPrivate"
@@ -816,6 +874,7 @@ const (
 var AllMessageType = []MessageType{
 	MessageTypeTalkNormal,
 	MessageTypeMonologue,
+	MessageTypeSecret,
 	MessageTypeDescription,
 	MessageTypeSystemPublic,
 	MessageTypeSystemPrivate,
@@ -823,7 +882,7 @@ var AllMessageType = []MessageType{
 
 func (e MessageType) IsValid() bool {
 	switch e {
-	case MessageTypeTalkNormal, MessageTypeMonologue, MessageTypeDescription, MessageTypeSystemPublic, MessageTypeSystemPrivate:
+	case MessageTypeTalkNormal, MessageTypeMonologue, MessageTypeSecret, MessageTypeDescription, MessageTypeSystemPublic, MessageTypeSystemPrivate:
 		return true
 	}
 	return false

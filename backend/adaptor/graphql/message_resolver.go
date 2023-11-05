@@ -19,7 +19,7 @@ func (r *mutationResolver) registerMessageDryRun(ctx context.Context, input gqlm
 	if user == nil {
 		return nil, nil
 	}
-	msg, err := MapNewMessageToMessage(input)
+	msg, err := mapNewMessageToMessage(input)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.N
 	if user == nil {
 		return nil, nil
 	}
-	msg, err := MapNewMessageToMessage(input)
+	msg, err := mapNewMessageToMessage(input)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.N
 	}, nil
 }
 
-func MapNewMessageToMessage(input gqlmodel.NewMessage) (*model.Message, error) {
+func mapNewMessageToMessage(input gqlmodel.NewMessage) (*model.Message, error) {
 	messageType := model.MessageTypeValueOf(input.Type.String())
 	var sender *model.MessageSender
 	if messageType.IsTalk() {
@@ -70,6 +70,16 @@ func MapNewMessageToMessage(input gqlmodel.NewMessage) (*model.Message, error) {
 			SenderName: *input.Name,
 		}
 	}
+	var receiver *model.MessageReceiver
+	if input.ReceiverParticipantID != nil {
+		receiverID, err := idToUint32(*input.ReceiverParticipantID)
+		if err != nil {
+			return nil, err
+		}
+		receiver = &model.MessageReceiver{
+			GameParticipantID: receiverID,
+		}
+	}
 	var replyTo *model.MessageReplyTo
 	if input.ReplyToMessageID != nil {
 		rtID, err := idToUint64(*input.ReplyToMessageID)
@@ -81,9 +91,10 @@ func MapNewMessageToMessage(input gqlmodel.NewMessage) (*model.Message, error) {
 		}
 	}
 	return &model.Message{
-		Type:    *messageType,
-		Sender:  sender,
-		ReplyTo: replyTo,
+		Type:     *messageType,
+		Sender:   sender,
+		Receiver: receiver,
+		ReplyTo:  replyTo,
 		Content: model.MessageContent{
 			Text:              input.Text,
 			IsConvertDisabled: input.IsConvertDisabled,
@@ -346,6 +357,7 @@ func (r *queryResolver) MapToMessagesQuery(query gqlmodel.MessagesQuery) (*model
 			PageSize:   query.Paging.PageSize,
 			PageNumber: query.Paging.PageNumber,
 			Desc:       query.Paging.IsDesc,
+			Latest:     query.Paging.IsLatest,
 		}
 	}
 
@@ -505,6 +517,7 @@ func (r *queryResolver) MapToDirectMessagesQuery(query gqlmodel.DirectMessagesQu
 			PageSize:   query.Paging.PageSize,
 			PageNumber: query.Paging.PageNumber,
 			Desc:       query.Paging.IsDesc,
+			Latest:     query.Paging.IsLatest,
 		}
 	}
 

@@ -3,13 +3,13 @@ import {
   RegisterGameMutationVariables,
   NewGame,
   RegisterGameDocument,
-  Charachip,
   NewGameCapacity,
   NewGameCharaSetting,
   NewGamePasswordSetting,
   NewGameRuleSetting,
   NewGameSettings,
-  NewGameTimeSetting
+  NewGameTimeSetting,
+  GameLabel
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
 import dayjs from 'dayjs'
@@ -54,26 +54,41 @@ export default function CreateGame() {
     password: ''
   } as GameFormInput
 
+  const [target, setTarget] = useState('誰歓')
+  const [rating, setRating] = useState('全年齢')
   const [charachipIds, setCharachipIds] = useState<string[]>([])
 
   const [registerGame] = useMutation<RegisterGameMutation>(
     RegisterGameDocument,
     {
-      onCompleted(e) {
-        // TODO
-      },
       onError(error) {
         console.error(error)
       }
     }
   )
+
   const router = useRouter()
   const onSubmit: SubmitHandler<GameFormInput> = useCallback(
     async (data) => {
+      const labels: Array<GameLabel> = []
+      if (target !== '') {
+        labels.push({
+          name: target,
+          type: 'success'
+        } as GameLabel)
+      }
+      if (rating !== '全年齢') {
+        labels.push({
+          name: rating,
+          type: 'danger'
+        } as GameLabel)
+      }
+
       const { data: resData } = await registerGame({
         variables: {
           input: {
             name: data.name,
+            labels: labels,
             settings: {
               chara: {
                 charachipIds: charachipIds,
@@ -101,7 +116,8 @@ export default function CreateGame() {
               rule: {
                 isGameMasterProducer: false,
                 canShorten: true,
-                canSendDirectMessage: true
+                canSendDirectMessage: true,
+                theme: null
               } as NewGameRuleSetting,
               password: {
                 password: data.password.length > 0 ? data.password : null
@@ -116,7 +132,7 @@ export default function CreateGame() {
       }
       router.push(`/games/${base64ToId(id)}`)
     },
-    [registerGame, charachipIds]
+    [registerGame, charachipIds, target, rating]
   )
 
   return (
@@ -128,10 +144,15 @@ export default function CreateGame() {
         <PageHeader href='/' header='ゲーム作成' />
         <GameEdit
           defaultValues={defaultValues}
+          target={target}
+          setTarget={setTarget}
+          rating={rating}
+          setRating={setRating}
           onSubmit={onSubmit}
           labelName='作成'
           charachipIds={charachipIds}
           setCharachipIds={setCharachipIds}
+          canModifyTheme={false}
         />
       </article>
     </main>

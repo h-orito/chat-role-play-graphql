@@ -10,6 +10,7 @@ type Game struct {
 	ID           uint32
 	Name         string
 	Status       GameStatus
+	Labels       []GameLabel
 	GameMasters  []GameMaster
 	Participants GameParticipants
 	Periods      []GamePeriod
@@ -86,6 +87,12 @@ type GamesQuery struct {
 	Paging   *PagingQuery
 }
 
+type GameLabel struct {
+	ID   uint32
+	Name string
+	Type string
+}
+
 type GameMaster struct {
 	ID         uint32
 	PlayerID   uint32
@@ -132,6 +139,7 @@ type GameParticipantProfile struct {
 	Introduction      *string
 	FollowsCount      int
 	FollowersCount    int
+	IsPlayerOpen      bool
 }
 
 type GameParticipantIcon struct {
@@ -162,6 +170,7 @@ type GameNotificationSetting struct {
 
 type MessageNotificationSetting struct {
 	Reply         bool
+	Secret        bool
 	DirectMessage bool
 	Keywords      []string
 }
@@ -225,6 +234,7 @@ type GameTimeSettings struct {
 type GameRuleSettings struct {
 	CanShorten           bool
 	CanSendDirectMessage bool
+	Theme                *string
 }
 
 type GamePasswordSettings struct {
@@ -265,7 +275,14 @@ type GameRepository interface {
 	UpdateGameStatus(ctx context.Context, gameID uint32, status GameStatus) (err error)
 	RegisterGamePeriod(ctx context.Context, gameID uint32, period GamePeriod) (err error)
 	UpdateGamePeriod(ctx context.Context, gameID uint32, period GamePeriod) (err error)
-	UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, settings GameSettings) (err error)
+	DeleteGamePeriod(ctx context.Context, gameID uint32, targetPeriodID uint32, destPeriodID uint32) (err error)
+	UpdateGameSettings(
+		ctx context.Context,
+		gameID uint32,
+		gameName string,
+		labels []GameLabel,
+		settings GameSettings,
+	) (err error)
 }
 
 type GameParticipantRepository interface {
@@ -284,6 +301,7 @@ type GameParticipantRepository interface {
 	UpdateGameParticipantIcon(ctx context.Context, icon GameParticipantIcon) (err error)
 	DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error)
 	// participant notification
+	FindGameParticipantNotificationSettings(gameParticipantIDs []uint32) (settings []GameParticipantNotification, err error)
 	FindGameParticipantNotificationSetting(gameParticipantID uint32) (notification *GameParticipantNotification, err error)
 	UpdateGameParticipantNotificationSetting(ctx context.Context, ID uint32, setting GameParticipantNotification) (err error)
 	// participant follow

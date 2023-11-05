@@ -12,6 +12,7 @@ type Config struct {
 	Db    Db
 	Oauth Oauth
 	Image Image
+	Env   string
 }
 
 type Db struct {
@@ -52,5 +53,6 @@ func Load() (*Config, error) {
 			UploaderHost: os.Getenv("IMAGE_UPLOADER_HOST"),
 			Domain:       os.Getenv("IMAGE_DOMAIN"),
 		},
+		Env: os.Getenv("ENV"),
 	}, nil
 }

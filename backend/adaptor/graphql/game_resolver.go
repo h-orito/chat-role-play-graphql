@@ -112,7 +112,7 @@ func (r *mutationResolver) updateGameSetting(ctx context.Context, input gqlmodel
 	if user == nil {
 		return nil, err
 	}
-	if err := r.gameUsecase.UpdateGameSetting(ctx, *user, gameId, input.Name, input.MapToGameSetting()); err != nil {
+	if err := r.gameUsecase.UpdateGameSetting(ctx, *user, gameId, input.Name, input.MapToGaneLabels(), input.MapToGameSetting()); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.UpdateGameSettingPayload{Ok: true}, nil
@@ -140,6 +140,29 @@ func (r *mutationResolver) updateGamePeriod(ctx context.Context, input gqlmodel.
 		return nil, err
 	}
 	return &gqlmodel.UpdateGamePeriodPayload{Ok: true}, nil
+}
+
+func (r *mutationResolver) deleteGamePeriod(ctx context.Context, input gqlmodel.DeleteGamePeriod) (*gqlmodel.DeleteGamePeriodPayload, error) {
+	gameId, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
+	targetPeriodID, err := idToUint32(input.TargetPeriodID)
+	if err != nil {
+		return nil, err
+	}
+	destPeriodID, err := idToUint32(input.DestPeriodID)
+	if err != nil {
+		return nil, err
+	}
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, err
+	}
+	if err := r.gameUsecase.DeleteGamePeriod(ctx, *user, gameId, targetPeriodID, destPeriodID); err != nil {
+		return nil, err
+	}
+	return &gqlmodel.DeleteGamePeriodPayload{Ok: true}, nil
 }
 
 func (r *mutationResolver) registerGameParticipant(ctx context.Context, input gqlmodel.NewGameParticipant) (*gqlmodel.RegisterGameParticipantPayload, error) {
@@ -213,6 +236,7 @@ func (r *mutationResolver) updateGameParticipantProfile(ctx context.Context, inp
 	profile := model.GameParticipantProfile{
 		ProfileImageURL: imageUrl,
 		Introduction:    input.Introduction,
+		IsPlayerOpen:    input.IsPlayerOpen,
 	}
 	if err := r.gameUsecase.UpdateParticipantProfile(ctx, gameId, *user, input.Name, input.Memo, iconID, profile); err != nil {
 		return nil, err
@@ -320,6 +344,7 @@ func (r *mutationResolver) updateGameParticipantSetting(ctx context.Context, inp
 		},
 		Message: model.MessageNotificationSetting{
 			Reply:         input.Notification.Message.Reply,
+			Secret:        input.Notification.Message.Secret,
 			DirectMessage: input.Notification.Message.DirectMessage,
 			Keywords:      input.Notification.Message.Keywords,
 		},
@@ -523,11 +548,11 @@ func (r *queryResolver) gameParticipantProfile(ctx context.Context, participantI
 	if err != nil {
 		return nil, err
 	}
-	profile, participant, err := r.gameUsecase.FindParticipantProfile(participantId)
+	profile, participant, player, err := r.gameUsecase.FindParticipantProfile(participantId)
 	if err != nil {
 		return nil, err
 	}
-	return MapToGameParticipantProfile(*profile, *participant), nil
+	return MapToGameParticipantProfile(*profile, *participant, *player), nil
 }
 
 func (r *queryResolver) gameParticipantFollows(ctx context.Context, participantID string) ([]*gqlmodel.GameParticipant, error) {

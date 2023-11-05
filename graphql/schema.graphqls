@@ -53,6 +53,7 @@ type Game {
   id: ID!
   name: String!
   status: GameStatus!
+  labels: [GameLabel!]!
   gameMasters: [GameMaster!]!
   participants(paging: PageableQuery): [GameParticipant!]!
   periods: [GamePeriod!]!
@@ -63,6 +64,7 @@ type SimpleGame {
   id: ID!
   name: String!
   status: GameStatus!
+  labels: [GameLabel!]!
   participantsCount: Int!
   periods: [GamePeriod!]!
   settings: GameSettings!
@@ -82,6 +84,12 @@ type GameMaster {
   id: ID!
   player: Player!
   isProducer: Boolean!
+}
+
+type GameLabel {
+  id: ID!
+  name: String!
+  type: String!
 }
 
 type GameParticipant {
@@ -116,6 +124,7 @@ type GameNotificationCondition {
 
 type MessageNotificationCondition {
   reply: Boolean!
+  secret: Boolean!
   directMessage: Boolean!
   keywords: [String!]!
 }
@@ -129,6 +138,8 @@ type GameParticipantProfile {
   introduction: String
   followsCount: Int!
   followersCount: Int!
+  isPlayerOpen: Boolean!
+  playerName: String
 }
 
 type GameParticipantIcon {
@@ -188,6 +199,7 @@ type GameRuleSetting {
   isGameMasterProducer: Boolean!
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
+  theme: String
 }
 
 type GamePasswordSetting {
@@ -243,6 +255,7 @@ type Messages implements Pageable {
   hasNextPage: Boolean!
   currentPageNumber: Int
   isDesc: Boolean!
+  isLatest: Boolean!
   latestUnixTimeMilli: Long!
 }
 
@@ -251,6 +264,7 @@ type Message {
   content: MessageContent!
   time: MessageTime!
   sender: MessageSender
+  receiver: MessageReceiver
   replyTo: MessageRecipient
   reactions: MessageReactions!
 }
@@ -265,6 +279,7 @@ type MessageContent {
 enum MessageType {
   TalkNormal
   Monologue
+  Secret
   Description
   SystemPublic
   SystemPrivate
@@ -280,6 +295,12 @@ type MessageSender {
   name: String!
   entryNumber: Int!
   icon: GameParticipantIcon
+}
+
+type MessageReceiver {
+  participantId: ID!
+  name: String!
+  entryNumber: Int!
 }
 
 type MessageRecipient {
@@ -300,6 +321,7 @@ type DirectMessages implements Pageable {
   hasNextPage: Boolean!
   currentPageNumber: Int
   isDesc: Boolean!
+  isLatest: Boolean!
   latestUnixTimeMilli: Long!
 }
 
@@ -376,6 +398,7 @@ input PageableQuery {
   pageSize: Int!
   pageNumber: Int!
   isDesc: Boolean!
+  isLatest: Boolean!
 }
 
 input CharachipsQuery {
@@ -461,6 +484,8 @@ type Mutation {
     @isAuthenticated
   updateGamePeriod(input: UpdateGamePeriod!): UpdateGamePeriodPayload!
     @isAuthenticated
+  deleteGamePeriod(input: DeleteGamePeriod!): DeleteGamePeriodPayload!
+    @isAuthenticated
   changePeriodIfNeeded(input: ChangePeriod!): ChangePeriodIfNeededPayload!
     @isAuthenticated
 
@@ -541,13 +566,24 @@ type Mutation {
   updateGameParticipantGroup(
     input: UpdateGameParticipantGroup!
   ): UpdateGameParticipantGroupPayload! @isAuthenticated
+
+  # debug
+  registerDebugMessages(
+    input: RegisterDebugMessages!
+  ): RegisterDebugMessagesPayload! @isAuthenticated
 }
 
 ## game
 
 input NewGame {
   name: String!
+  labels: [NewGameLabel!]!
   settings: NewGameSettings!
+}
+
+input NewGameLabel {
+  name: String!
+  type: String!
 }
 
 input NewGameSettings {
@@ -583,6 +619,7 @@ input NewGameRuleSetting {
   isGameMasterProducer: Boolean!
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
+  theme: String
 }
 
 input NewGamePasswordSetting {
@@ -625,7 +662,13 @@ type DeleteGameMasterPayload {
 input UpdateGameSetting {
   gameId: ID!
   name: String!
+  labels: [UpdateGameLabel!]!
   settings: UpdateGameSettings!
+}
+
+input UpdateGameLabel {
+  name: String!
+  type: String!
 }
 
 input UpdateGameSettings {
@@ -661,6 +704,7 @@ input UpdateGameRuleSetting {
   isGameMasterProducer: Boolean!
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
+  theme: String
 }
 
 input UpdateGamePasswordSetting {
@@ -700,6 +744,16 @@ type ChangePeriodIfNeededPayload {
   ok: Boolean!
 }
 
+input DeleteGamePeriod {
+  gameId: ID!
+  targetPeriodId: ID!
+  destPeriodId: ID!
+}
+
+type DeleteGamePeriodPayload {
+  ok: Boolean!
+}
+
 ## game participant
 
 input NewGameParticipant {
@@ -721,6 +775,7 @@ input UpdateGameParticipantProfile {
   profileIconId: ID
   introduction: String
   memo: String
+  isPlayerOpen: Boolean!
 }
 
 type UpdateGameParticipantProfilePayload {
@@ -775,6 +830,7 @@ input UpdateGameNotificationCondition {
 
 input UpdateMessageNotificationCondition {
   reply: Boolean!
+  secret: Boolean!
   directMessage: Boolean!
   keywords: [String!]!
 }
@@ -890,6 +946,7 @@ input NewMessage {
   type: MessageType!
   iconId: ID
   name: String
+  receiverParticipantId: ID
   replyToMessageId: ID
   text: String!
   isConvertDisabled: Boolean!
@@ -974,6 +1031,14 @@ input UpdateGameParticipantGroup {
 }
 
 type UpdateGameParticipantGroupPayload {
+  ok: Boolean!
+}
+
+input RegisterDebugMessages {
+  gameId: ID!
+}
+
+type RegisterDebugMessagesPayload {
   ok: Boolean!
 }
 

@@ -21,6 +21,11 @@ mutation TalkDryRun($input: NewMessage!) {
           height
         }
       }
+      receiver {
+        participantId
+        name
+        entryNumber
+      }
       replyTo {
         messageId
         participantId

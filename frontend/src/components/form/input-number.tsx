@@ -53,7 +53,7 @@ const InputNumber = <
   )
 
   const errorMessage = errors[name]?.message as string | undefined
-  const borderClass = errorMessage ? 'border-red-500' : 'border-gray-300'
+  const borderClass = errorMessage ? 'danger-border' : 'base-border'
 
   return (
     <div>
@@ -70,7 +70,7 @@ const InputNumber = <
         onBlur={handleBlur}
         {...fieldProps}
       />
-      {errorMessage && <p className='text-xs text-red-500'>{errorMessage}</p>}
+      {errorMessage && <p className='danger-text text-xs'>{errorMessage}</p>}
     </div>
   )
 }

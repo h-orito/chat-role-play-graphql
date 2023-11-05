@@ -1,0 +1,17 @@
+query GameParticipantSetting($gameId: ID!) {
+  gameParticipantSetting(gameId: $gameId) {
+    notification {
+      discordWebhookUrl
+      game {
+        participate
+        start
+      }
+      message {
+        reply
+        secret
+        directMessage
+        keywords
+      }
+    }
+  }
+}

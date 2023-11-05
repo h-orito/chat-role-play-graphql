@@ -23,6 +23,7 @@ func MapToMessages(ms model.Messages) gqlmodel.Messages {
 		HasNextPage:         ms.HasNextPage,
 		CurrentPageNumber:   currentPageNumber,
 		IsDesc:              ms.IsDesc,
+		IsLatest:            ms.IsLatest,
 		LatestUnixTimeMilli: ms.LatestUnixTimeMilli,
 	}
 
@@ -45,6 +46,14 @@ func MapToMessage(m *model.Message) *gqlmodel.Message {
 			IconID:        iconID,
 		}
 	}
+	var receiver *gqlmodel.MessageReceiver
+	if m.Receiver != nil {
+		receiver = &gqlmodel.MessageReceiver{
+			ParticipantID: intIdToBase64(m.Receiver.GameParticipantID, "GameParticipant"),
+			Name:          m.Receiver.ReceiverName,
+			EntryNumber:   int(m.Receiver.ReceiverEntryNumber),
+		}
+	}
 	var replyTo *gqlmodel.MessageRecipient
 	if m.ReplyTo != nil {
 		replyTo = &gqlmodel.MessageRecipient{
@@ -64,8 +73,9 @@ func MapToMessage(m *model.Message) *gqlmodel.Message {
 			SendAt:            m.Time.SendAt,
 			SendUnixTimeMilli: m.Time.UnixtimeMilli,
 		},
-		Sender:  sender,
-		ReplyTo: replyTo,
+		Sender:   sender,
+		Receiver: receiver,
+		ReplyTo:  replyTo,
 		Reactions: &gqlmodel.MessageReactions{
 			ReplyCount:    int(m.Reactions.ReplyCount),
 			FavoriteCount: int(m.Reactions.FavoriteCount),
@@ -107,6 +117,7 @@ func MapToDirectMessages(ms model.DirectMessages) gqlmodel.DirectMessages {
 		HasNextPage:         ms.HasNextPage,
 		CurrentPageNumber:   currentPageNumber,
 		IsDesc:              ms.IsDesc,
+		IsLatest:            ms.IsLatest,
 		LatestUnixTimeMilli: ms.LatestUnixTimeMilli,
 	}
 

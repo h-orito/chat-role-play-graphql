@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import RadioGroup from '@/components/form/radio-group'
 import {
   DirectMessage,
   Game,
@@ -267,7 +266,7 @@ const TalkDirect = forwardRef<TalkDirectRefHandle, Props>(
           </div>
         </form>
         {preview && (
-          <div className='my-4 border-t border-gray-300 pt-2'>
+          <div className='base-border my-4 border-t pt-2'>
             <p className='font-bold'>プレビュー</p>
             <div>
               <DirectMessageComponent

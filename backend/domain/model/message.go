@@ -13,6 +13,7 @@ type Messages struct {
 	HasNextPage         bool
 	CurrentPageNumber   *uint32
 	IsDesc              bool
+	IsLatest            bool
 	LatestUnixTimeMilli uint64
 }
 
@@ -21,6 +22,7 @@ type Message struct {
 	GamePeriodID uint32
 	Type         MessageType
 	Sender       *MessageSender
+	Receiver     *MessageReceiver
 	ReplyTo      *MessageReplyTo
 	Content      MessageContent
 	Time         MessageTime
@@ -32,6 +34,7 @@ type MessageType int
 const (
 	MessageTypeTalkNormal MessageType = iota
 	MessageTypeMonologue
+	MessageTypeSecret
 	MessageTypeDescription
 	MessageTypeSystemPublic
 	MessageTypeSystemPrivate
@@ -43,6 +46,8 @@ func (mt MessageType) String() string {
 		return "TalkNormal"
 	case MessageTypeMonologue:
 		return "Monologue"
+	case MessageTypeSecret:
+		return "Secret"
 	case MessageTypeDescription:
 		return "Description"
 	case MessageTypeSystemPublic:
@@ -59,6 +64,8 @@ func (mt MessageType) IsTalk() bool {
 	case MessageTypeTalkNormal:
 		return true
 	case MessageTypeMonologue:
+		return true
+	case MessageTypeSecret:
 		return true
 	default:
 		return false
@@ -79,6 +86,7 @@ func MessageTypeValues() []MessageType {
 	return []MessageType{
 		MessageTypeTalkNormal,
 		MessageTypeMonologue,
+		MessageTypeSecret,
 		MessageTypeDescription,
 		MessageTypeSystemPublic,
 		MessageTypeSystemPrivate,
@@ -104,6 +112,12 @@ type MessageSender struct {
 	SenderIconID      *uint32
 	SenderName        string
 	SenderEntryNumber uint32
+}
+
+type MessageReceiver struct {
+	GameParticipantID   uint32
+	ReceiverName        string
+	ReceiverEntryNumber uint32
 }
 
 type MessageReplyTo struct {
@@ -140,6 +154,7 @@ type MessagesQuery struct {
 	OffsetUnixtimeMilli *uint64
 	Paging              *PagingQuery
 	IncludeMonologue    *bool // 後から埋める
+	IncludeSecret       *bool // 後から埋める
 }
 
 type DirectMessages struct {
@@ -149,6 +164,7 @@ type DirectMessages struct {
 	HasNextPage         bool
 	CurrentPageNumber   *uint32
 	IsDesc              bool
+	IsLatest            bool
 	LatestUnixTimeMilli uint64
 }
 

@@ -121,6 +121,8 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 	// 独り言を取得するか
 	shouldIncludeMonologue := shouldIncludeMonologue(query, requestMessageTypes, myself)
 	query.IncludeMonologue = &shouldIncludeMonologue
+	shouldIncludeSecret := shouldIncludeSecrt(query, requestMessageTypes, myself)
+	query.IncludeSecret = &shouldIncludeSecret
 
 	return &query, myself, nil
 }
@@ -148,6 +150,35 @@ func shouldIncludeMonologue(
 	// 求めていなければ不要
 	if array.None(requestMessageTypes, func(mt model.MessageType) bool {
 		return mt == model.MessageTypeMonologue
+	}) {
+		return false
+	}
+	return true
+}
+
+func shouldIncludeSecrt(
+	query model.MessagesQuery,
+	requestMessageTypes []model.MessageType,
+	myself *model.GameParticipant,
+) bool {
+	// 既に秘話が取得対象になっていたら不要
+	if query.Types == nil || array.Any(*query.Types, func(mt model.MessageType) bool {
+		return mt == model.MessageTypeSecret
+	}) {
+		return false
+	}
+	// 自分が取得対象になっていなければ不要
+	if myself == nil {
+		return false
+	}
+	if query.SenderIDs != nil && array.None(*query.SenderIDs, func(id uint32) bool {
+		return id == myself.ID
+	}) {
+		return false
+	}
+	// 求めていなければ不要
+	if array.None(requestMessageTypes, func(mt model.MessageType) bool {
+		return mt == model.MessageTypeSecret
 	}) {
 		return false
 	}
@@ -194,7 +225,7 @@ func (s *messageUsecase) RegisterMessage(
 			return nil, err
 		}
 		if message.ReplyTo != nil {
-			replyToMessage, err := s.messageService.FindMessage(gameID, *&message.ReplyTo.MessageID)
+			replyToMessage, err := s.messageService.FindMessage(gameID, message.ReplyTo.MessageID)
 			if err != nil {
 				return nil, err
 			}
@@ -202,6 +233,11 @@ func (s *messageUsecase) RegisterMessage(
 				return nil, fmt.Errorf("reply to message not found")
 			}
 			msg.ReplyTo.GameParticipantID = replyToMessage.Sender.GameParticipantID
+			msg.Receiver = &model.MessageReceiver{
+				GameParticipantID:   replyToMessage.Sender.GameParticipantID,
+				ReceiverName:        replyToMessage.Sender.SenderName,
+				ReceiverEntryNumber: replyToMessage.Sender.SenderEntryNumber,
+			}
 		}
 		return nil, s.messageService.RegisterMessage(ctx, *game, *msg)
 	})
@@ -254,10 +290,26 @@ func (s *messageUsecase) assertRegisterMessage(
 			SenderEntryNumber: myself.EntryNumber,
 		}
 	}
+	var receiver *model.MessageReceiver
+	if message.Receiver != nil {
+		receiverParticipant, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
+			GameID: &gameID,
+			ID:     &message.Receiver.GameParticipantID,
+		})
+		if err != nil {
+			return nil, err
+		}
+		receiver = &model.MessageReceiver{
+			GameParticipantID:   receiverParticipant.ID,
+			ReceiverName:        receiverParticipant.Name,
+			ReceiverEntryNumber: receiverParticipant.EntryNumber,
+		}
+	}
 	msg := model.Message{
 		GamePeriodID: latestPeriod.ID,
 		Type:         message.Type,
 		Sender:       sender,
+		Receiver:     receiver,
 		ReplyTo:      message.ReplyTo,
 		Content:      message.Content,
 	}

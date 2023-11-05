@@ -25,7 +25,7 @@ export default function CharaSelect({ game, charas, setValue }: Props) {
         return (
           <button
             key={chara.id}
-            className={`rounded-md border p-2 hover:bg-gray-100`}
+            className={`base-border rounded-md border p-2 hover:bg-gray-100`}
             onClick={(e: any) => handleClick(e, chara.id)}
           >
             <div className='flex justify-center'>

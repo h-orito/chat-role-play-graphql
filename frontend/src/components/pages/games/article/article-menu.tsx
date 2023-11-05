@@ -30,13 +30,13 @@ export default function ArticleMenu({
     ? 'flex md:hidden border-t'
     : 'hidden md:flex border-b'
   return (
-    <div className={`${wrapperClass} border-gray-300`}>
+    <div className={`${wrapperClass} base-border text-sm`}>
       <div className={`flex flex-1 text-center md:hidden`}>
         <button
-          className='flex w-full justify-center px-4 py-2 hover:bg-slate-200'
+          className='sidebar-background flex w-full justify-center px-4 py-2'
           onClick={toggleSidebar}
         >
-          <Bars4Icon className={`mr-1 h-6 w-6`} />
+          <Bars4Icon className={`mr-1 h-5 w-5`} />
         </button>
       </div>
       <HomeButton
@@ -87,15 +87,15 @@ const MenuButton = ({
   children
 }: ButtonProps) => {
   const borderClass = isActive
-    ? `box-border ${isFooter ? '' : 'border-b-2'} border-blue-500`
+    ? `box-border ${isFooter ? '' : 'border-b-2'} primary-border`
     : ''
   return (
     <div className={`flex-1 text-center ${borderClass}`}>
       <button
-        className='flex w-full justify-center px-4 py-2 hover:bg-slate-200'
+        className='sidebar-hover sidebar-background flex w-full justify-center px-4 py-2'
         onClick={() => onClickTab()}
       >
-        {existsUnread && <span className='mr-2 text-xs text-blue-500'>●</span>}
+        {existsUnread && <span className='base-link mr-2 text-xs'>●</span>}
         {children}
       </button>
     </div>
@@ -106,8 +106,8 @@ const HomeButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <HomeIcon
-        className={`mr-1 h-6 w-6 ${
-          props.isActive && props.isFooter ? 'text-blue-500' : ''
+        className={`mr-1 h-5 w-5 ${
+          props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
       <span className='hidden md:block'>ホーム</span>
@@ -119,8 +119,8 @@ const FollowsButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <UsersIcon
-        className={`mr-1 h-6 w-6 ${
-          props.isActive && props.isFooter ? 'text-blue-500' : ''
+        className={`mr-1 h-5 w-5 ${
+          props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
       <span className='hidden md:block'>フォロー中</span>
@@ -132,8 +132,8 @@ const SearchButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <MagnifyingGlassIcon
-        className={`mr-1 h-6 w-6 ${
-          props.isActive && props.isFooter ? 'text-blue-500' : ''
+        className={`mr-1 h-5 w-5 ${
+          props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
       <span className='hidden md:block'>検索</span>
@@ -145,11 +145,12 @@ const DirectMessageButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <EnvelopeIcon
-        className={`mr-1 h-6 w-6 ${
-          props.isActive && props.isFooter ? 'text-blue-500' : ''
+        className={`mr-1 h-5 w-5 ${
+          props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
-      <span className='hidden md:block'>ダイレクトメッセージ</span>
+      <span className='hidden lg:block'>ダイレクトメッセージ</span>
+      <span className='hidden md:block lg:hidden'>DM</span>
     </MenuButton>
   )
 }

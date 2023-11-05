@@ -15,7 +15,7 @@ export default function CreateGame() {
             <div className='flex border-b border-gray-500'>
               <p className='font-bold'>既知の不具合</p>
               <p className='ml-auto mt-auto text-xs text-gray-500'>
-                2023/08/13
+                2023/09/11
               </p>
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
@@ -24,6 +24,57 @@ export default function CreateGame() {
           </div>
 
           <hr />
+
+          <ReleaseContent label='機能追加' date='2023/10/03'>
+            <li>追加: 期間削除機能を追加</li>
+            <li>追加: 発言種別に秘話を追加</li>
+          </ReleaseContent>
+
+          <ReleaseContent label='機能追加' date='2023/09/25'>
+            <li>
+              追加: ユーザープロフィール設定に「プレイヤー情報を公開する」を追加
+            </li>
+          </ReleaseContent>
+
+          <ReleaseContent label='機能追加' date='2023/09/20'>
+            <li>追加: ゲーム設定にゲームオリジナルテーマ設定を追加</li>
+          </ReleaseContent>
+
+          <ReleaseContent label='機能追加' date='2023/09/17'>
+            <li>追加: ユーザー設定にテーマ変更機能を追加（ライト、ダーク）</li>
+          </ReleaseContent>
+
+          <ReleaseContent label='不具合修正' date='2023/09/16'>
+            <li>
+              不具合修正: ブラウザを閉じるとユーザー設定が初期化される不具合修正
+            </li>
+            <li>
+              不具合修正:
+              キーワード通知でキーワードが含まれていなくても通知される不具合修正
+            </li>
+            <li>
+              不具合修正: 昇順指定のとき時系列順に表示されていない不具合を修正
+            </li>
+          </ReleaseContent>
+
+          <ReleaseContent label='機能追加' date='2023/09/15'>
+            <li>
+              追加:
+              （参加者限定）ユーザー設定にゲーム開始Discord通知、リプライ通知、DM通知、キーワード通知設定を追加
+            </li>
+          </ReleaseContent>
+
+          <ReleaseContent label='仕様変更' date='2023/09/14'>
+            <li>仕様変更: 自分以外のフォロー/フォロワーが見えないように変更</li>
+          </ReleaseContent>
+
+          <ReleaseContent label='機能追加' date='2023/09/13'>
+            <li>追加: ユーザー設定に1ページあたりの表示件数と昇順降順を追加</li>
+          </ReleaseContent>
+
+          <ReleaseContent label='機能追加' date='2023/09/12'>
+            <li>追加: 募集範囲、年齢制限ラベルを追加</li>
+          </ReleaseContent>
 
           <ReleaseContent label='機能追加' date='2023/08/27'>
             <li>追加: 退出機能を追加</li>
@@ -106,9 +157,7 @@ export default function CreateGame() {
                   <li>
                     ゲーム設定
                     <ul className='list-inside list-disc pl-4 text-left text-xs'>
-                      <li>レーティング</li>
                       <li>キャッチ画像</li>
-                      <li>テーマ（最低限ライトとダークモード）</li>
                       <li>終了後DM公開</li>
                     </ul>
                   </li>
@@ -142,17 +191,16 @@ export default function CreateGame() {
                     発言抽出
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>宛先</li>
+                      <li>自分宛発言</li>
+                      <li>ふぁぼった発言</li>
                     </ul>
                   </li>
                   <li>日記</li>
                   <li>
                     ユーザー設定
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
-                      <li>通知</li>
                       <li>表示設定</li>
                       <li>ミュート</li>
-                      <li>ページングのページサイズ</li>
-                      <li>上が新しい、下が新しい</li>
                       <li>画像の大きさ2倍</li>
                       <li>文字の大きさ2倍</li>
                     </ul>
@@ -163,7 +211,14 @@ export default function CreateGame() {
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>ひとことメモ</li>
                       <li>フォローフリーとか連れ出し歓迎とかのタグ機能</li>
-                      <li>PL秘匿オンオフ</li>
+                    </ul>
+                  </li>
+                  <li>
+                    その他UI
+                    <ul className='list-inside list-disc pl-8 text-left text-xs'>
+                      <li>最上部最下部遷移ボタン</li>
+                      <li>発言欄を最下部固定</li>
+                      <li>DMの発言を作る際返信のように参照できるようにする</li>
                     </ul>
                   </li>
                 </ul>

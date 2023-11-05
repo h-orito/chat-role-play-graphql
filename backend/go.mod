@@ -3,8 +3,8 @@ module chat-role-play
 go 1.20
 
 require (
-	github.com/99designs/gqlgen v0.17.31
-	github.com/vektah/gqlparser/v2 v2.5.1
+	github.com/99designs/gqlgen v0.17.38
+	github.com/vektah/gqlparser/v2 v2.5.10
 )
 
 require (
@@ -15,6 +15,7 @@ require (
 )
 
 require (
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
@@ -26,7 +27,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
-	github.com/hashicorp/golang-lru/v2 v2.0.1 // indirect
+	github.com/hashicorp/golang-lru/v2 v2.0.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect

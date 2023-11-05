@@ -73,7 +73,7 @@ const Article = forwardRef<ArticleRefHandle, Props>(
     return (
       <article
         id='article'
-        className='mut-height-guard relative flex h-screen max-h-screen w-full flex-1 flex-col'
+        className='mut-height-guard base-background relative flex h-screen max-h-screen w-full flex-1 flex-col'
       >
         <ArticleHeader tab={tab} />
         <ArticleMenu
@@ -172,7 +172,7 @@ const ArticleHeader = ({ tab }: HeaderProps) => {
       ? '検索'
       : 'ダイレクトメッセージ'
   return (
-    <div className='flex justify-center border-b border-gray-300 px-4 py-2 font-bold md:hidden'>
+    <div className='sidebar-background base-border flex justify-center border-b px-4 py-2 font-bold md:hidden'>
       {tabName}
     </div>
   )

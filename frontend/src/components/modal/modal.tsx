@@ -7,17 +7,20 @@ type ModalProps = {
   close: (e: any) => void
   children: React.ReactNode
   hideFooter?: boolean
+  hideOnClickOutside?: boolean
 }
 
 export default function Modal({
   header,
   close,
   children,
-  hideFooter
+  hideFooter,
+  hideOnClickOutside = true
 }: ModalProps) {
   const [insideClick, setInsideClick] = useState(false)
   const onMouseDown = (e: any) => setInsideClick(e.target === e.currentTarget)
   const onMouseUp = (e: any) => {
+    if (!hideOnClickOutside) return
     if (e.target === e.currentTarget && insideClick) {
       close(e)
     }
@@ -30,17 +33,15 @@ export default function Modal({
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
-        <div className='md:w-screen-md max-h-[90vh] w-[90vw] max-w-[90vw] overflow-y-auto bg-white p-4 md:max-w-screen-md'>
+        <div className='md:w-screen-md base-background max-h-[90vh] w-[90vw] max-w-[90vw] overflow-y-auto p-4 md:max-w-screen-md'>
           {header && (
-            <p className='mb-2 border-b border-gray-300 pb-2 text-xl'>
-              {header}
-            </p>
+            <p className='base-border mb-2 border-b pb-2 text-xl'>{header}</p>
           )}
           {cloneElement(children as any, {
             close: close
           })}
           {!hideFooter && (
-            <div className='mt-2 flex justify-end border-t border-gray-300 pt-2'>
+            <div className='base-border mt-2 flex justify-end border-t pt-2'>
               <SecondaryButton click={close}>閉じる</SecondaryButton>
             </div>
           )}

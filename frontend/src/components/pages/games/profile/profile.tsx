@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import {
@@ -46,7 +45,6 @@ export default function Profile({
 }: Props) {
   const [profile, setProfile] = useState<GameParticipantProfile | null>(null)
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
-  const [isOpenEditModal, setIsOpenEditModal] = useState(false)
 
   const [fetchProfile] = useLazyQuery<GameParticipantProfileQuery>(
     GameParticipantProfileDocument
@@ -75,6 +73,80 @@ export default function Profile({
     refetchIcons()
   }, [participantId])
 
+  if (profile == null) return <div>Loading...</div>
+
+  const isMyself = myself?.id === profile.participantId
+  const canEdit =
+    isMyself &&
+    ['Closed', 'Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
+      game.status
+    )
+
+  return (
+    <div className='p-4'>
+      <div className='md:flex'>
+        {profile.profileImageUrl && (
+          <div className='mb-4 flex justify-center md:mr-4 md:block'>
+            <img
+              src={profile.profileImageUrl}
+              width={400}
+              alt='プロフィール画像'
+            />
+          </div>
+        )}
+        <div className='md:flex-1'>
+          <div className='flex'>
+            <ParticipantName profile={profile} />
+            <FFButtons
+              game={game}
+              participantId={participantId}
+              myself={myself}
+              profile={profile}
+              refetchMyself={refetchMyself}
+              refetchProfile={refetchProfile}
+              close={close}
+              canEdit={canEdit}
+              icons={icons}
+            />
+          </div>
+          <PlayerName game={game} profile={profile} />
+          {profile.introduction && (
+            <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-xs text-gray-700'>
+              <MessageText rawText={profile.introduction} />
+            </p>
+          )}
+          {isMyself && (
+            <div>
+              <FollowsCount
+                game={game}
+                myself={myself}
+                profile={profile}
+                refetchMyself={refetchMyself}
+              />
+              &nbsp;&nbsp;
+              <FollowersCount
+                game={game}
+                myself={myself}
+                profile={profile}
+                refetchMyself={refetchMyself}
+              />
+            </div>
+          )}
+          <ParticipantIcons
+            game={game}
+            myself={myself}
+            icons={icons}
+            canEdit={canEdit}
+            refetchIcons={refetchIcons}
+          />
+        </div>
+      </div>
+      {canEdit && <LeaveButton game={game} />}
+    </div>
+  )
+}
+
+const LeaveButton = ({ game }: { game: Game }) => {
   const [leave] = useMutation<LeaveMutation>(LeaveDocument, {
     onCompleted(e) {
       location.reload()
@@ -96,14 +168,68 @@ export default function Profile({
     }
   }
 
-  if (profile == null) return <div>Loading...</div>
+  return (
+    <div className='mt-4 flex justify-end'>
+      <DangerButton click={() => confirmToLeave()}>退出する</DangerButton>
+    </div>
+  )
+}
 
-  const canEdit =
-    myself?.id === profile.participantId &&
-    ['Closed', 'Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
-      game.status
-    )
+const ParticipantName = ({ profile }: { profile: GameParticipantProfile }) => {
+  return (
+    <p className='text-lg font-bold'>
+      <span className='secondary-text text-sm font-normal'>
+        ENo{profile.entryNumber}.&nbsp;
+      </span>
+      {profile.name}
+      {profile.isGone ? (
+        <span className='secondary-text text-sm font-normal'>（退出済み）</span>
+      ) : (
+        ''
+      )}
+    </p>
+  )
+}
 
+const PlayerName = ({
+  game,
+  profile
+}: {
+  game: Game
+  profile: GameParticipantProfile
+}) => {
+  const shouldShowPlayer =
+    ['Epilogue', 'Finished', 'Cancelled'].includes(game.status) ||
+    profile?.isPlayerOpen == true
+
+  if (!shouldShowPlayer) return <></>
+
+  return (
+    <p className='secondary-text text-xs font-normal'>
+      PL: {profile.playerName}
+    </p>
+  )
+}
+
+const FFButtons = (
+  props: Props & {
+    refetchProfile: () => void
+    profile: GameParticipantProfile
+    canEdit: boolean
+    icons: Array<GameParticipantIcon>
+  }
+) => {
+  const {
+    game,
+    participantId,
+    myself,
+    profile,
+    refetchMyself,
+    refetchProfile,
+    canEdit,
+    icons
+  } = props
+  const [isOpenEditModal, setIsOpenEditModal] = useState(false)
   const toggleEditModal = (e: any) => {
     if (e.target === e.currentTarget) {
       setIsOpenEditModal(!isOpenEditModal)
@@ -111,114 +237,46 @@ export default function Profile({
   }
 
   return (
-    <div className='p-4'>
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-        <div>
-          {profile.profileImageUrl ? (
-            <img
-              src={profile.profileImageUrl}
-              width={400}
-              alt='プロフィール画像'
-            />
-          ) : (
-            <Image
-              src={'/chat-role-play/images/profile.webp'}
-              width={400}
-              height={600}
-              alt='プロフィール画像'
-            />
-          )}
-        </div>
-        <div>
-          <div className='flex'>
-            <p className='text-lg font-bold'>
-              <span className='text-sm font-normal text-gray-500'>
-                ENo{profile.entryNumber}.&nbsp;
-              </span>
-              {profile.name}
-              {profile.isGone ? (
-                <span className='text-sm font-normal text-gray-500'>
-                  （退出済み）
-                </span>
-              ) : (
-                ''
-              )}
-            </p>
-            <div className='ml-auto'>
-              <FollowButton
-                game={game}
-                participantId={participantId}
-                myself={myself}
-                profile={profile}
-                refetchMyself={refetchMyself}
-                refetchProfile={refetchProfile}
-              />
-              <UnfollowButton
-                game={game}
-                participantId={participantId}
-                myself={myself}
-                profile={profile}
-                refetchMyself={refetchMyself}
-                refetchProfile={refetchProfile}
-              />
-              {canEdit && (
-                <PrimaryButton click={() => setIsOpenEditModal(true)}>
-                  プロフィール編集
-                </PrimaryButton>
-              )}
-            </div>
-          </div>
-          {profile.introduction && (
-            <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-xs text-gray-700'>
-              <MessageText rawText={profile.introduction} />
-            </p>
-          )}
-          <div>
-            <FollowsCount
-              game={game}
-              myself={myself}
-              profile={profile}
-              refetchMyself={refetchMyself}
-            />
-            &nbsp;&nbsp;
-            <FollowersCount
-              game={game}
-              myself={myself}
-              profile={profile}
-              refetchMyself={refetchMyself}
-            />
-          </div>
-          <ParticipantIcons
-            game={game}
-            myself={myself}
-            icons={icons}
-            canEdit={canEdit}
-            refetchIcons={refetchIcons}
-          />
-        </div>
-      </div>
+    <div className='ml-auto'>
+      <FollowButton
+        game={game}
+        participantId={participantId}
+        myself={myself}
+        profile={profile}
+        refetchMyself={refetchMyself}
+        refetchProfile={refetchProfile}
+      />
+      <UnfollowButton
+        game={game}
+        participantId={participantId}
+        myself={myself}
+        profile={profile}
+        refetchMyself={refetchMyself}
+        refetchProfile={refetchProfile}
+      />
       {canEdit && (
-        <div className='mt-4 flex justify-end'>
-          <DangerButton click={() => confirmToLeave()}>退出する</DangerButton>
-        </div>
-      )}
-      {isOpenEditModal && (
-        <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
-          <ProfileEdit
-            game={game}
-            myself={myself}
-            refetchMyself={refetchMyself}
-            profile={profile}
-            icons={icons}
-            refetchProfile={refetchProfile}
-            close={toggleEditModal}
-          />
-        </Modal>
+        <>
+          <PrimaryButton click={() => setIsOpenEditModal(true)}>
+            プロフィール編集
+          </PrimaryButton>
+          {isOpenEditModal && (
+            <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
+              <ProfileEdit
+                game={game}
+                myself={myself}
+                refetchMyself={refetchMyself}
+                profile={profile}
+                icons={icons}
+                refetchProfile={refetchProfile}
+                close={toggleEditModal}
+              />
+            </Modal>
+          )}
+        </>
       )}
     </div>
   )
 }
-
 type FollowButtonProps = {
   game: Game
   participantId: string

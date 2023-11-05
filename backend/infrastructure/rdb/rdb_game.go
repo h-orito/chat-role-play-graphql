@@ -20,12 +20,14 @@ func (g Game) ToModel(
 	gameMasters []model.GameMaster,
 	participants model.GameParticipants,
 	periods []model.GamePeriod,
+	labels []model.GameLabel,
 	settings model.GameSettings,
 ) *model.Game {
 	return &model.Game{
 		ID:           g.ID,
 		Name:         g.GameName,
 		Status:       *model.GameStatusValueOf(g.GameStatusCode),
+		Labels:       labels,
 		GameMasters:  gameMasters,
 		Participants: participants,
 		Periods:      periods,
@@ -36,6 +38,7 @@ func (g Game) ToModel(
 func (g Game) ToSimpleModel(
 	ptsCount int,
 	periods []model.GamePeriod,
+	labels []model.GameLabel,
 	settings model.GameSettings,
 ) *model.Game {
 	return &model.Game{
@@ -43,12 +46,30 @@ func (g Game) ToSimpleModel(
 		Name:        g.GameName,
 		Status:      *model.GameStatusValueOf(g.GameStatusCode),
 		GameMasters: []model.GameMaster{},
+		Labels:      labels,
 		Participants: model.GameParticipants{
 			Count: ptsCount,
 			List:  nil,
 		},
 		Periods:  periods,
 		Settings: settings,
+	}
+}
+
+type GameLabel struct {
+	ID        uint32
+	GameID    uint32
+	LabelName string
+	LabelType string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func (l GameLabel) ToModel() *model.GameLabel {
+	return &model.GameLabel{
+		ID:   l.ID,
+		Name: l.LabelName,
+		Type: l.LabelType,
 	}
 }
 
@@ -104,6 +125,7 @@ type GameParticipantProfile struct {
 	GameParticipantID uint32 `gorm:"primaryKey"`
 	ProfileImageUrl   *string
 	Introduction      *string
+	IsPlayerOpen      bool
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 }
@@ -118,6 +140,7 @@ func (p GameParticipantProfile) ToModel(
 		Introduction:      p.Introduction,
 		FollowsCount:      followsCount,
 		FollowersCount:    followersCount,
+		IsPlayerOpen:      p.IsPlayerOpen,
 	}
 }
 
@@ -149,6 +172,7 @@ type GameParticipantNotification struct {
 	GameParticipate   bool
 	GameStart         bool
 	MessageReply      bool
+	SecretMessage     bool
 	DirectMessage     bool
 	Keywords          string
 	CreatedAt         time.Time
@@ -165,6 +189,7 @@ func (n GameParticipantNotification) ToModel() *model.GameParticipantNotificatio
 		},
 		Message: model.MessageNotificationSetting{
 			Reply:         n.MessageReply,
+			Secret:        n.SecretMessage,
 			DirectMessage: n.DirectMessage,
 			Keywords:      strings.Split(n.Keywords, ","),
 		},
@@ -258,6 +283,7 @@ const (
 	GameSettingKeyFinishGameAt
 	GameSettingKeyCanShorten
 	GameSettingKeyCanSendDirectMessage
+	GameSettingKeyTheme
 	GameSettingKeyPassword
 )
 
@@ -289,6 +315,8 @@ func (pa GameSettingKey) String() string {
 		return "CanShorten"
 	case GameSettingKeyCanSendDirectMessage:
 		return "CanSendDirectMessage"
+	case GameSettingKeyTheme:
+		return "Theme"
 	case GameSettingKeyPassword:
 		return "Password"
 	default:
@@ -311,6 +339,7 @@ func GameSettingKeyValues() []GameSettingKey {
 		GameSettingKeyFinishGameAt,
 		GameSettingKeyCanShorten,
 		GameSettingKeyCanSendDirectMessage,
+		GameSettingKeyTheme,
 		GameSettingKeyPassword,
 	}
 }
@@ -348,6 +377,7 @@ func ToGameSettingsModel(
 		Rule: model.GameRuleSettings{
 			CanShorten:           gameSettingsToBool(settings, GameSettingKeyCanShorten, false),
 			CanSendDirectMessage: gameSettingsToBool(settings, GameSettingKeyCanSendDirectMessage, false),
+			Theme:                gameSettingsToString(settings, GameSettingKeyTheme, nil),
 		},
 		Password: model.GamePasswordSettings{
 			HasPassword: password != nil && len(*password) > 0,

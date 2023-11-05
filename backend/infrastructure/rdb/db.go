@@ -70,18 +70,14 @@ func (t *tx) DoInTx(ctx context.Context, f func(ctx context.Context) (interface{
 	var result interface{} = nil
 	var err error = nil
 	t.db.Transaction(func(tx *gorm.DB) error {
-		// log.Println("start transaction.")
-
 		// contextにトランザクションを保存
 		ctx = context.WithValue(ctx, &txKey, tx)
 
 		// トランザクションの対象処理へコンテキストを引き継ぎ
 		result, err = f(ctx)
 		if err != nil {
-			// log.Println("transaction rollbacked.")
 			return err // rollback
 		}
-		// log.Println("transaction committed.")
 		return nil // commit
 	})
 	return result, err
@@ -116,8 +112,10 @@ func Paginate(query *model.PagingQuery) func(db *gorm.DB) *gorm.DB {
 
 		if query.Desc {
 			return db.Offset(offset).Limit(size).Order("id desc")
+		} else if query.Latest {
+			return db.Limit(size).Order("id desc")
 		} else {
-			return db.Offset(offset).Limit(size)
+			return db.Offset(offset).Limit(size).Order("id asc")
 		}
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"chat-role-play/domain/dom_service"
 	"chat-role-play/domain/model"
 	db "chat-role-play/infrastructure/rdb"
+	"chat-role-play/infrastructure/repository"
 	"chat-role-play/middleware/auth0"
 	"chat-role-play/middleware/graph"
 	"net/http"
@@ -43,15 +44,17 @@ func injectResolver(
 	gameParticipantRepository := injectGameParticipantRepository(database)
 	playerRepository := injectPlayerRepository(database)
 	messageRepository := injectMessageRepository(database)
+	notificationRepository := injectNotificationRepository()
 	// domain service
 	gameMasterDomainService := injectGameMasterDomainService()
 	participateDomainService := injectParticipateDomainService(gameMasterDomainService)
 	messageDomainService := injectMessageDomainService()
 	// application service
 	charaService := injectCharaService(charaRepository)
-	gameService := injectGameService(gameRepository, gameParticipantRepository)
+	notifyService := injectNotifyService(notificationRepository, gameParticipantRepository, messageRepository, messageDomainService)
+	gameService := injectGameService(gameRepository, gameParticipantRepository, notifyService)
 	playerService := injectPlayerService(playerRepository, userRepository)
-	messageService := injectMessageService(messageRepository, messageDomainService)
+	messageService := injectMessageService(messageRepository, messageDomainService, notifyService)
 	// usecase
 	charaUsecase := injectCharaUsecase(charaService, tx)
 	gameUsecase := injectGameUsecase(gameService, playerService, charaService, gameMasterDomainService, participateDomainService, tx)
@@ -132,11 +135,21 @@ func injectCharaService(charaRepository model.CharaRepository) app_service.Chara
 	return app_service.NewCharaService(charaRepository)
 }
 
+func injectNotifyService(
+	notificationRepository model.NotificationRepository,
+	gameParticipantRepository model.GameParticipantRepository,
+	messageRepository model.MessageRepository,
+	messageDomainService dom_service.MessageDomainService,
+) app_service.NotifyService {
+	return app_service.NewNotifyService(notificationRepository, gameParticipantRepository, messageRepository, messageDomainService)
+}
+
 func injectGameService(
 	gameRepository model.GameRepository,
 	gameParticipantRepository model.GameParticipantRepository,
+	notifyService app_service.NotifyService,
 ) app_service.GameService {
-	return app_service.NewGameService(gameRepository, gameParticipantRepository)
+	return app_service.NewGameService(gameRepository, gameParticipantRepository, notifyService)
 }
 
 func injectPlayerService(
@@ -149,8 +162,9 @@ func injectPlayerService(
 func injectMessageService(
 	messageRepository model.MessageRepository,
 	messageDomainService dom_service.MessageDomainService,
+	notifyService app_service.NotifyService,
 ) app_service.MessageService {
-	return app_service.NewMessageService(messageRepository, messageDomainService)
+	return app_service.NewMessageService(messageRepository, messageDomainService, notifyService)
 }
 
 // domain service
@@ -191,6 +205,10 @@ func injectUserRepository(database db.DB) model.UserRepository {
 
 func injectMessageRepository(database db.DB) model.MessageRepository {
 	return db.NewMessageRepository(&database)
+}
+
+func injectNotificationRepository() model.NotificationRepository {
+	return repository.NewNotificationRepository()
 }
 
 // database

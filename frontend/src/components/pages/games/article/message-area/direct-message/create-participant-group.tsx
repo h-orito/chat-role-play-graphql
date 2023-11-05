@@ -72,7 +72,7 @@ export default function CreateParticipantGroup({
     <div className='max-h-full w-full p-4'>
       <div className='mb-4'>
         {alreadyExists ? (
-          <p className='text-red-500'>
+          <p className='danger-text'>
             既にこのメンバーのグループは作成済みです
           </p>
         ) : (

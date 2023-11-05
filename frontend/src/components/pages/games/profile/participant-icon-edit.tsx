@@ -198,10 +198,10 @@ export default function ParticipantIconEdit({
         {icons.length === 0 && <p>アイコンが登録されていません。</p>}
         {icons.length > 0 && (
           <>
-            <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+            <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
               ドラッグアンドドロップで並び替えて「反映」ボタンを押してください。
             </p>
-            <div className='flex'>
+            <div className='flex flex-wrap'>
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -233,7 +233,7 @@ export default function ParticipantIconEdit({
       <form onSubmit={onSubmit}>
         <div className='my-4'>
           <label className='text-xs font-bold'>追加</label>
-          <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+          <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
             jpeg, jpg,
             png形式かつ300kByte以下の画像を選択し、「追加」ボタンを押してください。
             <br />
@@ -252,7 +252,7 @@ export default function ParticipantIconEdit({
       {icons.length > 0 && (
         <div className='mb-1'>
           <label className='text-xs font-bold'>削除</label>
-          <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+          <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
             ゴミ箱アイコンから確認を経て削除することができます。
             <br />
             削除すると元に戻せません。アイコンを削除すると、プロフィールのアイコン一覧と、発言時のアイコン候補から削除されます。

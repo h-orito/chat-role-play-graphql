@@ -1,4 +1,11 @@
-import { Game, GameParticipant, Player } from '@/lib/generated/graphql'
+import {
+  DebugMessagesDocument,
+  DebugMessagesMutation,
+  Game,
+  GameLabel,
+  GameParticipant,
+  Player
+} from '@/lib/generated/graphql'
 import {
   UsersIcon,
   InformationCircleIcon,
@@ -24,6 +31,9 @@ import TalkSystem, { TalkSystemRefHandle } from '../talk/talk-system'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import GameMasterEdit from './game-master-edit'
 import GameStatusEdit from './game-status-edit'
+import { useMutation } from '@apollo/client'
+import { useRouter } from 'next/router'
+import UserSettingsComponent from './user-settings'
 
 type SidebarProps = {
   isSidebarOpen: boolean
@@ -71,17 +81,18 @@ export default function Sidebar({
   return (
     <>
       <nav
-        className={`${displayClass} mut-height-guard h-screen w-64 flex-col border-r border-gray-300 py-4 md:flex`}
+        className={`${displayClass} sidebar-background mut-height-guard base-border h-screen w-64 flex-col border-r py-4 md:flex`}
       >
         <h1 className='mb-2 px-4 text-xl font-bold'>{game.name}</h1>
+        <GameLabels game={game} />
         <GameStatus game={game} />
-        <div className='border-t border-gray-300 py-2'>
+        <div className='base-border border-t py-2'>
           <ParticipantsButton game={game} openProfileModal={openProfileModal} />
           <GameSettingsButton game={game} />
-          <UserSettingsButton />
+          <UserSettingsButton game={game} myself={myself} />
         </div>
         {isGameMaster && (
-          <div className='border-t border-gray-300 py-2'>
+          <div className='base-border border-t py-2'>
             <GameSettingsEditButton game={game} />
             {canModify && (
               <>
@@ -96,19 +107,20 @@ export default function Sidebar({
           </div>
         )}
         {myself && (
-          <div className='border-t border-gray-300 py-2'>
+          <div className='base-border border-t py-2'>
             <ProfileButton
               myself={myself}
               openProfileModal={openProfileModal}
             />
           </div>
         )}
+        <DebugMenu game={game} />
         {canParticipate && (
-          <div className='border-t border-gray-300 py-2'>
+          <div className='base-border border-t py-2'>
             <ParticipateButton game={game} />
           </div>
         )}
-        <div className='border-t border-gray-300 py-2'>
+        <div className='base-border border-t py-2'>
           <TopPageButton />
         </div>
         {isSidebarOpen && (
@@ -161,7 +173,7 @@ const GameStatus = ({ game }: StatusProps) => {
 
   return (
     <div className='mb-4 px-4 text-xs'>
-      <span className='rounded-md border border-blue-500 px-1 text-blue-500'>
+      <span className='primary-border base-link rounded-md border px-1'>
         {statusName}
       </span>
       {statusDescription && <p>{statusDescription}</p>}
@@ -184,10 +196,10 @@ const ParticipantsButton = ({ game, openProfileModal }: ParticipantsProps) => {
     <>
       <div>
         <button
-          className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+          className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
           onClick={() => setIsParticipantsModal(true)}
         >
-          <UsersIcon className='mr-1 h-6 w-6' />
+          <UsersIcon className='mr-1 h-5 w-5' />
           <p className='flex-1 self-center text-left'>参加者</p>
         </button>
       </div>
@@ -224,10 +236,10 @@ const GameSettingsButton = ({ game }: GameSettingsButtonProps) => {
     <>
       <div>
         <button
-          className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+          className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
           onClick={() => setIsOpenGameSettingsModal(true)}
         >
-          <InformationCircleIcon className='mr-1 h-6 w-6' />
+          <InformationCircleIcon className='mr-1 h-5 w-5' />
           <p className='flex-1 self-center text-left'>ゲーム設定</p>
         </button>
       </div>
@@ -240,9 +252,12 @@ const GameSettingsButton = ({ game }: GameSettingsButtonProps) => {
   )
 }
 
-type UserSettingsButtonProps = {}
+type UserSettingsButtonProps = {
+  game: Game
+  myself: GameParticipant | null
+}
 
-const UserSettingsButton = ({}: UserSettingsButtonProps) => {
+const UserSettingsButton = ({ game, myself }: UserSettingsButtonProps) => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const toggleModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -253,16 +268,20 @@ const UserSettingsButton = ({}: UserSettingsButtonProps) => {
     <>
       <div>
         <button
-          className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+          className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
           onClick={() => setIsOpenModal(true)}
         >
-          <WrenchIcon className='mr-1 h-6 w-6' />
+          <WrenchIcon className='mr-1 h-5 w-5' />
           <p className='flex-1 self-center text-left'>ユーザー設定</p>
         </button>
       </div>
       {isOpenModal && (
         <Modal close={toggleModal} hideFooter>
-          <div>準備中</div>
+          <UserSettingsComponent
+            close={toggleModal}
+            game={game}
+            myself={myself}
+          />
         </Modal>
       )}
     </>
@@ -272,8 +291,8 @@ const UserSettingsButton = ({}: UserSettingsButtonProps) => {
 const TopPageButton = () => (
   <div>
     <Link href='/'>
-      <button className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'>
-        <HomeIcon className='mr-1 h-6 w-6' />
+      <button className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'>
+        <HomeIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>トップ画面</p>
       </button>
     </Link>
@@ -295,14 +314,14 @@ const GameSettingsEditButton = ({ game }: GameSettingsEditButtonProps) => {
   return (
     <>
       <button
-        className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+        className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
         onClick={() => setIsOpenGameSettingsEditModal(true)}
       >
-        <LockClosedIcon className='mr-1 h-6 w-6' />
+        <LockClosedIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>ゲーム設定変更</p>
       </button>
       {isOpenGameSettingsEditModal && (
-        <Modal close={toggleGameSettingsEditModal}>
+        <Modal close={toggleGameSettingsEditModal} hideOnClickOutside={false}>
           <GameSettingsEdit game={game} />
         </Modal>
       )}
@@ -324,10 +343,10 @@ const GameStatusEditButton = ({ game }: GameStatusEditButtonProps) => {
   return (
     <>
       <button
-        className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+        className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
         onClick={() => setIsOpenModal(true)}
       >
-        <LockClosedIcon className='mr-1 h-6 w-6' />
+        <LockClosedIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>ステータス・期間変更</p>
       </button>
       {isOpenModal && (
@@ -353,10 +372,10 @@ const GameMasterEditButton = ({ game }: GameMasterEditButtonProps) => {
   return (
     <>
       <button
-        className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+        className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
         onClick={() => setIsOpenModal(true)}
       >
-        <LockClosedIcon className='mr-1 h-6 w-6' />
+        <LockClosedIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>GM追加削除</p>
       </button>
       {isOpenModal && (
@@ -398,10 +417,10 @@ const SystemMessageButton = ({
   return (
     <>
       <button
-        className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+        className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
         onClick={() => setIsOpenModal(true)}
       >
-        <PencilSquareIcon className='mr-1 h-6 w-6' />
+        <PencilSquareIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>GM発言</p>
       </button>
       {isOpenModal && (
@@ -426,10 +445,10 @@ const ProfileButton = ({ myself, openProfileModal }: ProfileButtonProps) => {
   return (
     <>
       <button
-        className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+        className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
         onClick={() => openProfileModal(myself.id)}
       >
-        <UserCircleIcon className='mr-1 h-6 w-6' />
+        <UserCircleIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>{myself.name}</p>
       </button>
     </>
@@ -450,10 +469,10 @@ const ParticipateButton = ({ game }: ParticipateButtonProps) => {
   return (
     <>
       <button
-        className='flex w-full justify-start px-4 py-2 hover:bg-slate-200'
+        className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
         onClick={() => setIsOpenParticipateModal(true)}
       >
-        <UserPlusIcon className='mr-1 h-6 w-6' />
+        <UserPlusIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>参加登録</p>
       </button>
       {isOpenParticipateModal && (
@@ -462,5 +481,59 @@ const ParticipateButton = ({ game }: ParticipateButtonProps) => {
         </Modal>
       )}
     </>
+  )
+}
+
+const GameLabels = ({ game }: { game: Game }) => {
+  return (
+    <div className='mb-2 flex px-4'>
+      {game.labels.map((l: GameLabel, idx: number) => (
+        <Label key={idx} label={l} />
+      ))}
+    </div>
+  )
+}
+
+const Label = ({ label }: { label: GameLabel }) => {
+  const colorClass =
+    label.type === 'success'
+      ? 'bg-green-500'
+      : label.type === 'danger'
+      ? 'bg-red-500'
+      : 'bg-gray-500'
+  return (
+    <span className={`mr-1 rounded-md px-2 text-xs text-white ${colorClass}`}>
+      {label.name}
+    </span>
+  )
+}
+
+const DebugMenu = ({ game }: { game: Game }) => {
+  const [registerMessage] = useMutation<DebugMessagesMutation>(
+    DebugMessagesDocument
+  )
+  const router = useRouter()
+  const registerDebugMessages = async () => {
+    await registerMessage({
+      variables: {
+        input: {
+          gameId: game.id
+        }
+      }
+    })
+    router.reload()
+  }
+
+  if (process.env.NEXT_PUBLIC_ENV !== 'local') return <></>
+  return (
+    <div className='base-border border-t py-2'>
+      <button
+        className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
+        onClick={() => registerDebugMessages()}
+      >
+        <UserPlusIcon className='mr-1 h-5 w-5' />
+        <p className='flex-1 self-center text-left'>100回発言</p>
+      </button>
+    </div>
   )
 }

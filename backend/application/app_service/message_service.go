@@ -32,15 +32,18 @@ type MessageService interface {
 type messageService struct {
 	messageRepository    model.MessageRepository
 	messageDomainService dom_service.MessageDomainService
+	notifyService        NotifyService
 }
 
 func NewMessageService(
 	messageRepository model.MessageRepository,
 	messageDomainService dom_service.MessageDomainService,
+	notifyService NotifyService,
 ) MessageService {
 	return &messageService{
 		messageRepository:    messageRepository,
 		messageDomainService: messageDomainService,
+		notifyService:        notifyService,
 	}
 }
 
@@ -76,7 +79,11 @@ func (s *messageService) RegisterMessage(ctx context.Context, game model.Game, m
 		return err
 	}
 	message.Content = replacedMessageContent
-	return s.messageRepository.RegisterMessage(ctx, game.ID, message)
+	err = s.messageRepository.RegisterMessage(ctx, game.ID, message)
+	if err != nil {
+		return err
+	}
+	return s.notifyService.NotifyMessage(game, message)
 }
 
 // RegisterMessageFavorite implements MessageService.
@@ -130,7 +137,11 @@ func (s *messageService) RegisterDirectMessage(ctx context.Context, game model.G
 		return err
 	}
 	message.Content = replacedMessageContent
-	return s.messageRepository.RegisterDirectMessage(ctx, game.ID, message)
+	err = s.messageRepository.RegisterDirectMessage(ctx, game.ID, message)
+	if err != nil {
+		return err
+	}
+	return s.notifyService.NotifyDirectMessage(game, message)
 }
 
 // RegisterDirectMessageFavorite implements MessageService.

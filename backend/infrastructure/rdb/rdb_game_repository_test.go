@@ -135,7 +135,7 @@ func TestUpdateGameSettings(t *testing.T) {
 	transaction := NewTestTransaction(database.Connection)
 	transaction.DoInTx(context.Background(), func(ctx context.Context) (interface{}, error) {
 		repo := db.NewGameRepository(&database)
-		err := repo.UpdateGameSettings(ctx, 1, "name", model.GameSettings{
+		err := repo.UpdateGameSettings(ctx, 1, "name", []model.GameLabel{}, model.GameSettings{
 			Chara:    model.GameCharaSettings{CharachipIDs: []uint32{1}, CanOriginalCharacter: true},
 			Capacity: model.GameCapacitySettings{Min: 1, Max: 10},
 			Time: model.GameTimeSettings{

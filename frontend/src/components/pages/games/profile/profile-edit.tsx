@@ -32,6 +32,7 @@ type Props = {
 interface FormInput {
   name: string
   introduction: string | null
+  isPlayerOpen: boolean
 }
 
 export default function ProfileEdit({
@@ -43,12 +44,14 @@ export default function ProfileEdit({
   icons,
   refetchProfile
 }: Props) {
-  const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
-    defaultValues: {
-      name: profile.name,
-      introduction: profile.introduction ?? ''
-    }
-  })
+  const { register, control, formState, handleSubmit, setValue } =
+    useForm<FormInput>({
+      defaultValues: {
+        name: profile.name,
+        introduction: profile.introduction ?? '',
+        isPlayerOpen: profile.isPlayerOpen
+      }
+    })
   const [images, setImages] = useState<File[]>([])
   const [iconId, setIconId] = useState<string | null>(
     myself?.profileIcon?.id ?? null
@@ -86,7 +89,8 @@ export default function ProfileEdit({
             profileImageUrl: images.length > 0 ? null : profile.profileImageUrl,
             profileIconId: iconId,
             introduction: data.introduction,
-            memo: null // TODO: 消えてしまうかも
+            memo: null, // TODO: 消えてしまうかも
+            isPlayerOpen: data.isPlayerOpen
           } as UpdateGameParticipantProfile
         } as UpdateGameParticipantProfileMutationVariables
       })
@@ -106,7 +110,7 @@ export default function ProfileEdit({
         <div className='my-4'>
           <label className='text-xs font-bold'>キャラクター名</label>
           {!canChangeName && (
-            <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+            <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
               名称変更不可キャラチップのため、変更できません。
             </p>
           )}
@@ -141,13 +145,13 @@ export default function ProfileEdit({
         <div className='my-4'>
           <label className='text-xs font-bold'>プロフィール画像</label>
           {canChangeProfileImage ? (
-            <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+            <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
               jpeg, jpg, png形式かつ1MByte以下の画像を選択してください。
               <br />
               横400pxで表示されます。
             </p>
           ) : (
-            <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs leading-5'>
+            <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
               キャラチップ利用のため、登録できません。
             </p>
           )}
@@ -161,7 +165,7 @@ export default function ProfileEdit({
         </div>
         <div>
           <label className='text-xs font-bold'>プロフィールアイコン</label>
-          <p className='my-1 rounded-sm bg-gray-200 p-2 text-xs'>
+          <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs'>
             登録済みのアイコンから選択してください。
           </p>
           {icons.length <= 0 && (
@@ -194,6 +198,22 @@ export default function ProfileEdit({
               </button>
             </div>
           )}
+        </div>
+        <div className='my-4'>
+          <label className='text-xs font-bold'>プレイヤー情報</label>
+          <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
+            チェックを入れると、プロフィールにプレイヤー名が表示されます。
+            <br />
+            エピローグを迎えると、チェックを入れていなくても公開されます。
+          </p>
+          <input
+            type='checkbox'
+            id='open-player'
+            {...register('isPlayerOpen')}
+          />
+          <label htmlFor='open-player' className='ml-2 text-xs'>
+            プレイヤー情報を公開する
+          </label>
         </div>
         <div className='flex justify-end'>
           <SubmitButton label='更新する' disabled={!canSubmit} />

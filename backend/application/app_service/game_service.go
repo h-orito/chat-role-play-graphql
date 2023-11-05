@@ -20,7 +20,8 @@ type GameService interface {
 	DeleteGameMaster(ctx context.Context, gameMasterID uint32) (err error)
 	UpdateGameStatus(ctx context.Context, gameID uint32, status model.GameStatus) (err error)
 	UpdateGamePeriod(ctx context.Context, gameID uint32, period model.GamePeriod) (err error)
-	UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, settings model.GameSettings) (err error)
+	DeleteGamePeriod(ctx context.Context, gameID uint32, targetPeriodID uint32, destPeriodID uint32) (err error)
+	UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, labels []model.GameLabel, settings model.GameSettings) (err error)
 	ChangePeriodIfNeeded(ctx context.Context, gameID uint32) (err error)
 	// game participant
 	FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
@@ -53,15 +54,18 @@ type GameService interface {
 type gameService struct {
 	gameRepository            model.GameRepository
 	gameParticipantRepository model.GameParticipantRepository
+	notifyService             NotifyService
 }
 
 func NewGameService(
 	gameRepository model.GameRepository,
 	gameParticipantRepository model.GameParticipantRepository,
+	notifyService NotifyService,
 ) GameService {
 	return &gameService{
 		gameRepository:            gameRepository,
 		gameParticipantRepository: gameParticipantRepository,
+		notifyService:             notifyService,
 	}
 }
 
@@ -104,8 +108,23 @@ func (g *gameService) UpdateGamePeriod(ctx context.Context, gameID uint32, perio
 	return g.gameRepository.UpdateGamePeriod(ctx, gameID, period)
 }
 
-func (g *gameService) UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, settings model.GameSettings) (err error) {
-	return g.gameRepository.UpdateGameSettings(ctx, gameID, gameName, settings)
+func (g *gameService) DeleteGamePeriod(
+	ctx context.Context,
+	gameID uint32,
+	targetPeriodID uint32,
+	destPeriodID uint32,
+) (err error) {
+	return g.gameRepository.DeleteGamePeriod(ctx, gameID, targetPeriodID, destPeriodID)
+}
+
+func (g *gameService) UpdateGameSettings(
+	ctx context.Context,
+	gameID uint32,
+	gameName string,
+	labels []model.GameLabel,
+	settings model.GameSettings,
+) (err error) {
+	return g.gameRepository.UpdateGameSettings(ctx, gameID, gameName, labels, settings)
 }
 
 func (g *gameService) ChangePeriodIfNeeded(ctx context.Context, gameID uint32) (err error) {
@@ -157,6 +176,8 @@ func (g *gameService) startGame(ctx context.Context, game model.Game) error {
 	}); err != nil {
 		return err
 	}
+	// 開始通知
+	g.notifyService.NotifyGameStart(game)
 
 	return nil
 }

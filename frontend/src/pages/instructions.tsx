@@ -144,6 +144,18 @@ export default function Instructions() {
                   </li>
                 </ul>
               </li>
+              <li>
+                ユーザー設定
+                <ul className='ml-4 list-inside list-disc py-1 text-left text-xs leading-5'>
+                  <li>
+                    メッセージの表示順や、1ページあたりの表示件数を変更することができます。
+                  </li>
+                  <li>
+                    ゲーム開始、返信、DM、キーワード通知をDiscord Webhook
+                    URLを設定することで通知することができます。
+                  </li>
+                </ul>
+              </li>
             </ul>
           </div>
           <div className='my-4 bg-gray-200 px-4 py-2'>
@@ -168,7 +180,7 @@ export default function Instructions() {
                   </li>
                   <li>
                     エピローグ:
-                    独り言などの秘匿情報が公開されます（PL情報など一部未実装）。
+                    プレイヤーや独り言、秘話などの秘匿情報が公開されます。
                   </li>
                   <li>
                     終了:
@@ -202,7 +214,7 @@ export default function Instructions() {
                     エピローグを迎えると、「エピローグ」という期間になります。
                   </li>
                   <li>
-                    プロローグやエピローグを含め、後からGMが期間名を編集することもできます。
+                    プロローグやエピローグを含め、後からGMが期間名を編集・削除することもできます。
                   </li>
                   <li>
                     1期間ごとに日記を作成することができます（未実装）。日記は、次の期間になると他の人が閲覧することができるようになります。

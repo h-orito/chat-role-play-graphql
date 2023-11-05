@@ -6,25 +6,28 @@ import (
 )
 
 type Message struct {
-	ID                       uint64
-	GameID                   uint32
-	GamePeriodID             uint32
-	SenderGameParticipantID  *uint32
-	SenderIconID             *uint32
-	SenderName               *string
-	SenderEntryNumber        *uint32
-	ReplyToMessageID         *uint64
-	ReplyToGameParticipantID *uint32
-	MessageTypeCode          string
-	MessageNumber            uint32
-	MessageContent           string
-	SendAt                   time.Time
-	SendUnixtimeMilli        uint64
-	IsConvertDisabled        bool
-	ReplyCount               uint32
-	FavoriteCount            uint32
-	CreatedAt                time.Time
-	UpdatedAt                time.Time
+	ID                        uint64
+	GameID                    uint32
+	GamePeriodID              uint32
+	SenderGameParticipantID   *uint32
+	SenderIconID              *uint32
+	SenderName                *string
+	SenderEntryNumber         *uint32
+	ReceiverGameParticipantID *uint32
+	ReceiverName              *string
+	ReceiverEntryNumber       *uint32
+	ReplyToMessageID          *uint64
+	ReplyToGameParticipantID  *uint32
+	MessageTypeCode           string
+	MessageNumber             uint32
+	MessageContent            string
+	SendAt                    time.Time
+	SendUnixtimeMilli         uint64
+	IsConvertDisabled         bool
+	ReplyCount                uint32
+	FavoriteCount             uint32
+	CreatedAt                 time.Time
+	UpdatedAt                 time.Time
 }
 
 func (m Message) ToModel(favParticipantIDs []uint32) *model.Message {
@@ -35,6 +38,14 @@ func (m Message) ToModel(favParticipantIDs []uint32) *model.Message {
 			SenderIconID:      m.SenderIconID,
 			SenderName:        *m.SenderName,
 			SenderEntryNumber: *m.SenderEntryNumber,
+		}
+	}
+	var receiver *model.MessageReceiver
+	if m.ReceiverGameParticipantID != nil {
+		receiver = &model.MessageReceiver{
+			GameParticipantID:   *m.ReceiverGameParticipantID,
+			ReceiverName:        *m.ReceiverName,
+			ReceiverEntryNumber: *m.ReceiverEntryNumber,
 		}
 	}
 	var replyTo *model.MessageReplyTo
@@ -49,6 +60,7 @@ func (m Message) ToModel(favParticipantIDs []uint32) *model.Message {
 		GamePeriodID: m.GamePeriodID,
 		Type:         *model.MessageTypeValueOf(m.MessageTypeCode),
 		Sender:       sender,
+		Receiver:     receiver,
 		ReplyTo:      replyTo,
 		Content: model.MessageContent{
 			Number:            m.MessageNumber,
