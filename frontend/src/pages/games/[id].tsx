@@ -122,7 +122,11 @@ export default function GamePage({ gameId, game }: Props) {
     }
   )
   const changePeriodIfNeeded = async () => {
-    if (!['Closed', 'Opening', 'Recruiting', 'Progress'].includes(game.status))
+    if (
+      !['Closed', 'Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
+        game.status
+      )
+    )
       return
     await changePeriod({
       variables: {
