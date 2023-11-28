@@ -51,12 +51,14 @@ export default function CreateGame() {
     periodIntervalDays: 1,
     periodIntervalHours: 0,
     periodIntervalMinutes: 0,
-    password: ''
+    password: '',
+    introduction: ''
   } as GameFormInput
 
   const [target, setTarget] = useState('誰歓')
   const [rating, setRating] = useState('全年齢')
   const [charachipIds, setCharachipIds] = useState<string[]>([])
+  const [catchImageFiles, setCatchImageFiles] = useState<File[]>([])
 
   const [registerGame] = useMutation<RegisterGameMutation>(
     RegisterGameDocument,
@@ -90,6 +92,12 @@ export default function CreateGame() {
             name: data.name,
             labels: labels,
             settings: {
+              background: {
+                introduction:
+                  data.introduction.length > 0 ? data.introduction : null,
+                catchImageFile:
+                  catchImageFiles.length > 0 ? catchImageFiles[0] : null
+              },
               chara: {
                 charachipIds: charachipIds,
                 canOriginalCharacter: true
@@ -132,7 +140,7 @@ export default function CreateGame() {
       }
       router.push(`/games/${base64ToId(id)}`)
     },
-    [registerGame, charachipIds, target, rating]
+    [registerGame, charachipIds, target, rating, catchImageFiles]
   )
 
   return (
@@ -153,6 +161,9 @@ export default function CreateGame() {
           charachipIds={charachipIds}
           setCharachipIds={setCharachipIds}
           canModifyTheme={false}
+          catchImageUrl={null}
+          catchImages={catchImageFiles}
+          setCatchImages={setCatchImageFiles}
         />
       </article>
     </main>

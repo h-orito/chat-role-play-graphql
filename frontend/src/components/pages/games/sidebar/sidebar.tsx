@@ -16,7 +16,7 @@ import {
   HomeIcon,
   LockClosedIcon
 } from '@heroicons/react/24/outline'
-import { useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useRef, useState } from 'react'
 import GameSettings from './game-settings'
 import Modal from '@/components/modal/modal'
 import Participate from './participate'
@@ -34,6 +34,9 @@ import GameStatusEdit from './game-status-edit'
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
 import UserSettingsComponent from './user-settings'
+import { useCookies } from 'react-cookie'
+import Image from 'next/image'
+import MessageText from '@/components/pages/games/article/message-area/message-text/message-text'
 
 type SidebarProps = {
   isSidebarOpen: boolean
@@ -87,6 +90,7 @@ export default function Sidebar({
         <GameLabels game={game} />
         <GameStatus game={game} />
         <div className='base-border border-t py-2'>
+          <GameIntroButton game={game} />
           <ParticipantsButton game={game} openProfileModal={openProfileModal} />
           <GameSettingsButton game={game} />
           <UserSettingsButton game={game} myself={myself} />
@@ -179,6 +183,102 @@ const GameStatus = ({ game }: StatusProps) => {
       {statusDescription && <p>{statusDescription}</p>}
     </div>
   )
+}
+
+const GameIntroButton = ({ game }: { game: Game }) => {
+  const [getCookie, setCookie] = useCookies()
+  const introCookie: IntroCookie = getCookie['intro'] || {}
+  const alreadyConfiemed = !!introCookie && introCookie[game.id] === true
+  const background = game.settings.background
+  const hasIntro =
+    (background.introduction != null && background.introduction !== '') ||
+    (background.catchImageUrl != null && background.catchImageUrl !== '')
+  const shouldShowModal = hasIntro && !alreadyConfiemed
+  const [showModal, setShowModal] = useState(shouldShowModal)
+
+  if (!hasIntro) return <></>
+
+  return (
+    <>
+      <div>
+        <button
+          className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
+          onClick={() => setShowModal(true)}
+        >
+          <UsersIcon className='mr-1 h-5 w-5' />
+          <p className='flex-1 self-center text-left'>ゲーム紹介</p>
+        </button>
+      </div>
+      {showModal && (
+        <GameIntroModal
+          game={game}
+          setCookie={setCookie}
+          introCookie={introCookie}
+          setShowModal={setShowModal}
+        />
+      )}
+    </>
+  )
+}
+
+const GameIntroModal = ({
+  game,
+  introCookie,
+  setCookie,
+  setShowModal
+}: {
+  game: Game
+  introCookie: IntroCookie
+  setCookie: any
+  setShowModal: Dispatch<SetStateAction<boolean>>
+}) => {
+  const handleClose = () => {
+    introCookie[game.id] = true
+    setCookie('intro', introCookie, {
+      path: '/chat-role-play',
+      maxAge: 60 * 60 * 24 * 365
+    })
+    setShowModal(false)
+  }
+
+  const background = game.settings.background
+  const hasIntro =
+    background.introduction != null && background.introduction !== ''
+  const hasImage =
+    background.catchImageUrl != null && background.catchImageUrl !== ''
+
+  return (
+    <Modal
+      header={game.name}
+      close={() => handleClose()}
+      hideOnClickOutside={true}
+    >
+      <div className='text-center'>
+        {hasImage != null && (
+          <div
+            className='relative flex h-96 justify-center'
+            style={{ maxWidth: '80vw' }}
+          >
+            <Image
+              src={background.catchImageUrl!}
+              fill
+              style={{ objectFit: 'contain' }}
+              alt='ゲーム紹介画像'
+            />
+          </div>
+        )}
+        {hasIntro && (
+          <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-xs text-gray-700'>
+            <MessageText rawText={background.introduction!} />
+          </p>
+        )}
+      </div>
+    </Modal>
+  )
+}
+
+type IntroCookie = {
+  [gameId: string]: boolean
 }
 
 type ParticipantsProps = {

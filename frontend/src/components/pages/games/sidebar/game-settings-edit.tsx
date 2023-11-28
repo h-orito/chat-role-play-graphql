@@ -52,6 +52,7 @@ export default function GameSettingsEdit({ game }: Props) {
       (game.settings.time.periodIntervalSeconds / 60 / 60) % 24
     ),
     periodIntervalMinutes: (game.settings.time.periodIntervalSeconds / 60) % 60,
+    introduction: game.settings.background.introduction || '',
     password: ''
   } as GameFormInput
 
@@ -68,6 +69,7 @@ export default function GameSettingsEdit({ game }: Props) {
   const [theme, setTheme] = useState<string | null>(
     game.settings.rule.theme ?? null
   )
+  const [catchImageFiles, setCatchImageFiles] = useState<File[]>([])
 
   const [updateGameSettings] = useMutation<UpdateGameSettingsMutation>(
     UpdateGameSettingsDocument,
@@ -101,6 +103,16 @@ export default function GameSettingsEdit({ game }: Props) {
             name: data.name,
             labels: labels,
             settings: {
+              background: {
+                introduction:
+                  data.introduction.length > 0 ? data.introduction : null,
+                catchImageFile:
+                  catchImageFiles.length > 0 ? catchImageFiles[0] : null,
+                catchImageUrl:
+                  catchImageFiles.length > 0
+                    ? null
+                    : game.settings.background.catchImageUrl
+              },
               chara: {
                 charachipIds: charachipIds,
                 canOriginalCharacter: true
@@ -139,7 +151,7 @@ export default function GameSettingsEdit({ game }: Props) {
       })
       router.reload()
     },
-    [updateGameSettings, target, rating, theme]
+    [updateGameSettings, target, rating, theme, catchImageFiles]
   )
 
   return (
@@ -158,6 +170,9 @@ export default function GameSettingsEdit({ game }: Props) {
         canModifyTheme={true}
         theme={theme}
         setTheme={setTheme}
+        catchImageUrl={game.settings.background.catchImageUrl ?? null}
+        catchImages={catchImageFiles}
+        setCatchImages={setCatchImageFiles}
       />
     </div>
   )

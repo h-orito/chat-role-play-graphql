@@ -19,7 +19,17 @@ func (r *mutationResolver) registerGame(ctx context.Context, input gqlmodel.NewG
 	if user == nil {
 		return nil, fmt.Errorf("not authenticated")
 	}
-	game, err := r.gameUsecase.RegisterGame(ctx, *user, input.MapToGame())
+	var imageUrl *string
+	if input.Settings.Background.CatchImageURL != nil {
+		imageUrl = input.Settings.Background.CatchImageURL
+	} else if input.Settings.Background.CatchImageFile != nil {
+		url, err := r.imageUsecase.Upload(input.Settings.Background.CatchImageFile.File)
+		if err != nil {
+			return nil, err
+		}
+		imageUrl = url
+	}
+	game, err := r.gameUsecase.RegisterGame(ctx, *user, input.MapToGame(imageUrl))
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +122,17 @@ func (r *mutationResolver) updateGameSetting(ctx context.Context, input gqlmodel
 	if user == nil {
 		return nil, err
 	}
-	if err := r.gameUsecase.UpdateGameSetting(ctx, *user, gameId, input.Name, input.MapToGaneLabels(), input.MapToGameSetting()); err != nil {
+	var imageUrl *string
+	if input.Settings.Background.CatchImageURL != nil {
+		imageUrl = input.Settings.Background.CatchImageURL
+	} else if input.Settings.Background.CatchImageFile != nil {
+		url, err := r.imageUsecase.Upload(input.Settings.Background.CatchImageFile.File)
+		if err != nil {
+			return nil, err
+		}
+		imageUrl = url
+	}
+	if err := r.gameUsecase.UpdateGameSetting(ctx, *user, gameId, input.Name, input.MapToGameLabels(), input.MapToGameSetting(imageUrl)); err != nil {
 		return nil, err
 	}
 	return &gqlmodel.UpdateGameSettingPayload{Ok: true}, nil

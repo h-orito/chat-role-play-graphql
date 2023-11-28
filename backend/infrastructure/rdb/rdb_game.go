@@ -270,7 +270,9 @@ type GameSetting struct {
 type GameSettingKey int
 
 const (
-	GameSettingKeyCanOriginalCharacter GameSettingKey = iota
+	GameSettingKeyBackgroundIntroduction GameSettingKey = iota
+	GameSettingKeyBackgroundCatchImageUrl
+	GameSettingKeyCanOriginalCharacter
 	GameSettingKeyCapacityMin
 	GameSettingKeyCapacityMax
 	GameSettingKeyPeriodPrefix
@@ -289,6 +291,10 @@ const (
 
 func (pa GameSettingKey) String() string {
 	switch pa {
+	case GameSettingKeyBackgroundIntroduction:
+		return "BackgroundIntroduction"
+	case GameSettingKeyBackgroundCatchImageUrl:
+		return "BackgroundCatchImageUrl"
 	case GameSettingKeyCanOriginalCharacter:
 		return "CanOriginalCharacter"
 	case GameSettingKeyCapacityMin:
@@ -326,6 +332,10 @@ func (pa GameSettingKey) String() string {
 
 func GameSettingKeyValues() []GameSettingKey {
 	return []GameSettingKey{
+		GameSettingKeyBackgroundIntroduction,
+		GameSettingKeyBackgroundCatchImageUrl,
+		GameSettingKeyBackgroundIntroduction,
+		GameSettingKeyBackgroundCatchImageUrl,
 		GameSettingKeyCanOriginalCharacter,
 		GameSettingKeyCapacityMin,
 		GameSettingKeyCapacityMax,
@@ -356,6 +366,10 @@ func ToGameSettingsModel(
 ) *model.GameSettings {
 	password := gameSettingsToString(settings, GameSettingKeyPassword, nil)
 	return &model.GameSettings{
+		Background: model.GameBackgroundSettings{
+			Introduction:  gameSettingsToString(settings, GameSettingKeyBackgroundIntroduction, nil),
+			CatchImageURL: gameSettingsToString(settings, GameSettingKeyBackgroundCatchImageUrl, nil),
+		},
 		Chara: model.GameCharaSettings{
 			CharachipIDs:         charachipIds,
 			CanOriginalCharacter: gameSettingsToBool(settings, GameSettingKeyCanOriginalCharacter, false),

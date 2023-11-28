@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func (g NewGame) MapToGame() model.Game {
+func (g NewGame) MapToGame(imageURL *string) model.Game {
 	return model.Game{
 		Name:   g.Name,
 		Status: model.GameStatusClosed,
@@ -31,6 +31,10 @@ func (g NewGame) MapToGame() model.Game {
 			},
 		},
 		Settings: model.GameSettings{
+			Background: model.GameBackgroundSettings{
+				Introduction:  g.Settings.Background.Introduction,
+				CatchImageURL: imageURL,
+			},
 			Chara: model.GameCharaSettings{
 				CharachipIDs: array.Map(g.Settings.Chara.CharachipIds, func(id string) uint32 {
 					i, _ := idToUint32(id)
@@ -65,7 +69,7 @@ func (g NewGame) MapToGame() model.Game {
 	}
 }
 
-func (g UpdateGameSetting) MapToGaneLabels() []model.GameLabel {
+func (g UpdateGameSetting) MapToGameLabels() []model.GameLabel {
 	return array.Map(g.Labels, func(label *UpdateGameLabel) model.GameLabel {
 		return model.GameLabel{
 			Name: label.Name,
@@ -74,8 +78,12 @@ func (g UpdateGameSetting) MapToGaneLabels() []model.GameLabel {
 	})
 }
 
-func (g UpdateGameSetting) MapToGameSetting() model.GameSettings {
+func (g UpdateGameSetting) MapToGameSetting(imageUrl *string) model.GameSettings {
 	return model.GameSettings{
+		Background: model.GameBackgroundSettings{
+			Introduction:  g.Settings.Background.Introduction,
+			CatchImageURL: imageUrl,
+		},
 		Chara: model.GameCharaSettings{
 			CharachipIDs: array.Map(g.Settings.Chara.CharachipIds, func(id string) uint32 {
 				i, _ := idToUint32(id)

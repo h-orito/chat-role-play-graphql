@@ -23,6 +23,9 @@ import ThemeEdit from './theme-edit'
 import InputSelect from '@/components/form/input-select'
 import { themeMap, themeOptions } from '@/components/theme/theme'
 import PrimaryButton from '@/components/button/primary-button'
+import TalkTextDecorators from '../games/talk/talk-text-decorators'
+import InputTextarea from '@/components/form/input-textarea'
+import InputImage from '@/components/form/input-image'
 
 type Props = {
   defaultValues: GameFormInput
@@ -38,6 +41,9 @@ type Props = {
   canModifyTheme?: boolean
   theme?: string | null
   setTheme?: Dispatch<SetStateAction<string | null>>
+  catchImageUrl: string | null
+  catchImages: File[]
+  setCatchImages: Dispatch<SetStateAction<File[]>>
 }
 
 export interface GameFormInput {
@@ -56,6 +62,7 @@ export interface GameFormInput {
   periodIntervalHours: number
   periodIntervalMinutes: number
   password: string
+  introduction: string
 }
 
 export default function GameEdit(props: Props) {
@@ -79,9 +86,12 @@ export default function GameEdit(props: Props) {
     fetch()
   }, [])
 
-  const { control, formState, handleSubmit } = useForm<GameFormInput>({
-    defaultValues: props.defaultValues
-  })
+  const { control, formState, handleSubmit, setValue } = useForm<GameFormInput>(
+    {
+      defaultValues: props.defaultValues
+    }
+  )
+  const updateIntroduction = (str: string) => setValue('introduction', str)
 
   const canSubmit: boolean = !formState.isSubmitting
 
@@ -90,7 +100,7 @@ export default function GameEdit(props: Props) {
       <div className='p-4'>
         <div className='flex justify-center'>
           <p className='notification-background notification-text my-2 p-4 text-xs'>
-            <span className='danger-text'>*&nbsp;</span>
+            <span className='text-red-500'>*&nbsp;</span>
             がついている項目は必須です。
             <br />
             また、キャラチップ設定以外は作成後に変更することができます。
@@ -303,7 +313,7 @@ export default function GameEdit(props: Props) {
                     <br />
                     複数選択することも可能です。
                     <br />
-                    <span className='danger-text'>
+                    <span className='text-red-500'>
                       この項目は後から変更することができません。
                     </span>
                   </p>
@@ -433,6 +443,35 @@ export default function GameEdit(props: Props) {
               }}
             />
           </div>
+          <hr />
+          <div className='my-4'>
+            <FormLabel label='ゲーム紹介' />
+            <label className='text-xs font-bold'>ゲーム紹介文</label>
+            <div className='mb-1 flex justify-center'>
+              <TalkTextDecorators
+                selector='#introduction'
+                setMessage={updateIntroduction}
+              />
+            </div>
+            <InputTextarea
+              name='introduction'
+              control={control}
+              rules={{}}
+              minRows={5}
+            />
+            <label className='mt-4 text-xs font-bold'>キャッチ画像</label>
+            <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
+              jpeg, jpg, png形式かつ1MByte以下の画像を選択してください。
+              <br />
+              トップページでは概ね453x240pxで比率を維持して中央部分が表示されます。
+            </p>
+
+            <InputImage
+              name='profileImage'
+              setImages={props.setCatchImages}
+              defaultImageUrl={props.catchImageUrl}
+            />
+          </div>
           {props.canModifyTheme == true && (
             <>
               <hr />
@@ -537,7 +576,7 @@ const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
   }
   return (
     <label className='block text-sm font-bold'>
-      {required && <span className='danger-text'>*&nbsp;</span>}
+      {required && <span className='text-red-500'>*&nbsp;</span>}
       {label}
       {children && (
         <>

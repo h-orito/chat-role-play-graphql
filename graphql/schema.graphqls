@@ -167,11 +167,17 @@ type GameParticipantDiary {
 }
 
 type GameSettings {
+  background: GameBackgroundSetting!
   chara: GameCharaSetting!
   capacity: GameCapacity!
   time: GameTimeSetting!
   rule: GameRuleSetting!
   password: GamePasswordSetting!
+}
+
+type GameBackgroundSetting {
+  introduction: String
+  catchImageUrl: String
 }
 
 type GameCharaSetting {
@@ -587,11 +593,18 @@ input NewGameLabel {
 }
 
 input NewGameSettings {
+  background: NewGameBackgroundSetting!
   chara: NewGameCharaSetting!
   capacity: NewGameCapacity!
   time: NewGameTimeSetting!
   rule: NewGameRuleSetting!
   password: NewGamePasswordSetting!
+}
+
+input NewGameBackgroundSetting {
+  introduction: String
+  catchImageFile: Upload
+  catchImageUrl: String
 }
 
 input NewGameCharaSetting {
@@ -672,11 +685,18 @@ input UpdateGameLabel {
 }
 
 input UpdateGameSettings {
+  background: UpdateGameBackgroundSetting!
   chara: UpdateCharaSetting!
   capacity: UpdateGameCapacity!
   time: UpdateGameTimeSetting!
   rule: UpdateGameRuleSetting!
   password: UpdateGamePasswordSetting!
+}
+
+input UpdateGameBackgroundSetting {
+  introduction: String
+  catchImageFile: Upload
+  catchImageUrl: String
 }
 
 input UpdateCharaSetting {

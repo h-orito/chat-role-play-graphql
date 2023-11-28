@@ -536,6 +536,12 @@ func registerGameSettings(db *gorm.DB, ID uint32, settings model.GameSettings) (
 		return er
 	}
 
+	if err := registerGameSetting(db, ID, GameSettingKeyBackgroundIntroduction, orEmpty(settings.Background.Introduction)); err != nil {
+		return err
+	}
+	if err := registerGameSetting(db, ID, GameSettingKeyBackgroundCatchImageUrl, orEmpty(settings.Background.CatchImageURL)); err != nil {
+		return err
+	}
 	if err := registerGameSetting(db, ID, GameSettingKeyCanOriginalCharacter, boolToString(settings.Chara.CanOriginalCharacter)); err != nil {
 		return err
 	}
@@ -585,6 +591,12 @@ func registerGameSettings(db *gorm.DB, ID uint32, settings model.GameSettings) (
 }
 
 func updateGameSettings(db *gorm.DB, gameID uint32, settings model.GameSettings) (err error) {
+	if err := updateGameSetting(db, gameID, GameSettingKeyBackgroundIntroduction, orEmpty(settings.Background.Introduction)); err != nil {
+		return err
+	}
+	if err := updateGameSetting(db, gameID, GameSettingKeyBackgroundCatchImageUrl, orEmpty(settings.Background.CatchImageURL)); err != nil {
+		return err
+	}
 	if err := updateGameSetting(db, gameID, GameSettingKeyCanOriginalCharacter, boolToString(settings.Chara.CanOriginalCharacter)); err != nil {
 		return err
 	}

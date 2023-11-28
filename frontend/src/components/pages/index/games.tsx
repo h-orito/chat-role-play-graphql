@@ -56,14 +56,16 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
       break
   }
 
-  // TODO: ゲーム画像を設定できるようにする
-  const gameImage = '/chat-role-play/images/game.jpg'
+  const gameImage =
+    game.settings.background.catchImageUrl != null
+      ? game.settings.background.catchImageUrl
+      : '/chat-role-play/images/game.jpg'
 
   return (
     <Link href={`/games/${base64ToId(game.id)}`} className='relative'>
       <div className='flex flex-col rounded-lg border border-gray-300 hover:border-blue-500'>
         <div
-          className='h-60 w-full rounded-t-lg bg-cover bg-no-repeat p-4'
+          className='h-60 w-full rounded-t-lg bg-cover bg-center bg-no-repeat p-4'
           style={{
             backgroundImage: `url(${gameImage})`
           }}

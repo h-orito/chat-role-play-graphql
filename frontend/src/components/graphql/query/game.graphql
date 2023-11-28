@@ -36,6 +36,10 @@ query Game($id: ID!) {
       endAt
     }
     settings {
+      background {
+        introduction
+        catchImageUrl
+      }
       chara {
         charachips {
           id

@@ -25,6 +25,10 @@ query IndexGames($pageSize: Int!, $pageNumber: Int!, $statuses: [GameStatus!]) {
       endAt
     }
     settings {
+      background {
+        introduction
+        catchImageUrl
+      }
       chara {
         charachips {
           name

@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2023/11/29'>
+            <li>追加: ゲームのキャッチ画像、紹介文を追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/10/03'>
             <li>追加: 期間削除機能を追加</li>
             <li>追加: 発言種別に秘話を追加</li>
@@ -157,7 +161,6 @@ export default function CreateGame() {
                   <li>
                     ゲーム設定
                     <ul className='list-inside list-disc pl-4 text-left text-xs'>
-                      <li>キャッチ画像</li>
                       <li>終了後DM公開</li>
                     </ul>
                   </li>

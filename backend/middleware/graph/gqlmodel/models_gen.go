@@ -199,6 +199,11 @@ type Game struct {
 	Settings     *GameSettings      `json:"settings"`
 }
 
+type GameBackgroundSetting struct {
+	Introduction  *string `json:"introduction,omitempty"`
+	CatchImageURL *string `json:"catchImageUrl,omitempty"`
+}
+
 type GameCapacity struct {
 	Min int `json:"min"`
 	Max int `json:"max"`
@@ -269,11 +274,12 @@ type GameRuleSetting struct {
 }
 
 type GameSettings struct {
-	Chara    *GameCharaSetting    `json:"chara"`
-	Capacity *GameCapacity        `json:"capacity"`
-	Time     *GameTimeSetting     `json:"time"`
-	Rule     *GameRuleSetting     `json:"rule"`
-	Password *GamePasswordSetting `json:"password"`
+	Background *GameBackgroundSetting `json:"background"`
+	Chara      *GameCharaSetting      `json:"chara"`
+	Capacity   *GameCapacity          `json:"capacity"`
+	Time       *GameTimeSetting       `json:"time"`
+	Rule       *GameRuleSetting       `json:"rule"`
+	Password   *GamePasswordSetting   `json:"password"`
 }
 
 type GameTimeSetting struct {
@@ -392,6 +398,12 @@ type NewGame struct {
 	Settings *NewGameSettings `json:"settings"`
 }
 
+type NewGameBackgroundSetting struct {
+	Introduction   *string         `json:"introduction,omitempty"`
+	CatchImageFile *graphql.Upload `json:"catchImageFile,omitempty"`
+	CatchImageURL  *string         `json:"catchImageUrl,omitempty"`
+}
+
 type NewGameCapacity struct {
 	Min int `json:"min"`
 	Max int `json:"max"`
@@ -457,11 +469,12 @@ type NewGameRuleSetting struct {
 }
 
 type NewGameSettings struct {
-	Chara    *NewGameCharaSetting    `json:"chara"`
-	Capacity *NewGameCapacity        `json:"capacity"`
-	Time     *NewGameTimeSetting     `json:"time"`
-	Rule     *NewGameRuleSetting     `json:"rule"`
-	Password *NewGamePasswordSetting `json:"password"`
+	Background *NewGameBackgroundSetting `json:"background"`
+	Chara      *NewGameCharaSetting      `json:"chara"`
+	Capacity   *NewGameCapacity          `json:"capacity"`
+	Time       *NewGameTimeSetting       `json:"time"`
+	Rule       *NewGameRuleSetting       `json:"rule"`
+	Password   *NewGamePasswordSetting   `json:"password"`
 }
 
 type NewGameTimeSetting struct {
@@ -632,6 +645,12 @@ type UpdateCharaSetting struct {
 	CanOriginalCharacter bool     `json:"canOriginalCharacter"`
 }
 
+type UpdateGameBackgroundSetting struct {
+	Introduction   *string         `json:"introduction,omitempty"`
+	CatchImageFile *graphql.Upload `json:"catchImageFile,omitempty"`
+	CatchImageURL  *string         `json:"catchImageUrl,omitempty"`
+}
+
 type UpdateGameCapacity struct {
 	Min int `json:"min"`
 	Max int `json:"max"`
@@ -747,11 +766,12 @@ type UpdateGameSettingPayload struct {
 }
 
 type UpdateGameSettings struct {
-	Chara    *UpdateCharaSetting        `json:"chara"`
-	Capacity *UpdateGameCapacity        `json:"capacity"`
-	Time     *UpdateGameTimeSetting     `json:"time"`
-	Rule     *UpdateGameRuleSetting     `json:"rule"`
-	Password *UpdateGamePasswordSetting `json:"password"`
+	Background *UpdateGameBackgroundSetting `json:"background"`
+	Chara      *UpdateCharaSetting          `json:"chara"`
+	Capacity   *UpdateGameCapacity          `json:"capacity"`
+	Time       *UpdateGameTimeSetting       `json:"time"`
+	Rule       *UpdateGameRuleSetting       `json:"rule"`
+	Password   *UpdateGamePasswordSetting   `json:"password"`
 }
 
 type UpdateGameStatus struct {

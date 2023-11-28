@@ -203,11 +203,17 @@ type GameParticipantDiariesQuery struct {
 }
 
 type GameSettings struct {
-	Chara    GameCharaSettings
-	Capacity GameCapacitySettings
-	Time     GameTimeSettings
-	Rule     GameRuleSettings
-	Password GamePasswordSettings
+	Background GameBackgroundSettings
+	Chara      GameCharaSettings
+	Capacity   GameCapacitySettings
+	Time       GameTimeSettings
+	Rule       GameRuleSettings
+	Password   GamePasswordSettings
+}
+
+type GameBackgroundSettings struct {
+	Introduction  *string
+	CatchImageURL *string
 }
 
 type GameCharaSettings struct {

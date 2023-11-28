@@ -27,6 +27,10 @@ func MapToGame(g *model.Game) *gqlmodel.Game {
 			return MapToGamePeriod(&p)
 		}),
 		Settings: &gqlmodel.GameSettings{
+			Background: &gqlmodel.GameBackgroundSetting{
+				Introduction:  g.Settings.Background.Introduction,
+				CatchImageURL: g.Settings.Background.CatchImageURL,
+			},
 			Chara: &gqlmodel.GameCharaSetting{
 				CharachipIDs: array.Map(g.Settings.Chara.CharachipIDs, func(id uint32) string {
 					return intIdToBase64(id, "Charachip")
@@ -100,6 +104,10 @@ func MapToSimpleGame(g *model.Game) *gqlmodel.SimpleGame {
 			return MapToGamePeriod(&p)
 		}),
 		Settings: &gqlmodel.GameSettings{
+			Background: &gqlmodel.GameBackgroundSetting{
+				Introduction:  g.Settings.Background.Introduction,
+				CatchImageURL: g.Settings.Background.CatchImageURL,
+			},
 			Chara: &gqlmodel.GameCharaSetting{
 				Charachips:           []*gqlmodel.Charachip{},
 				CanOriginalCharacter: g.Settings.Chara.CanOriginalCharacter,

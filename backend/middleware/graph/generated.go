@@ -24,6 +24,7 @@ import (
 // NewExecutableSchema creates an ExecutableSchema from the ResolverRoot interface.
 func NewExecutableSchema(cfg Config) graphql.ExecutableSchema {
 	return &executableSchema{
+		schema:     cfg.Schema,
 		resolvers:  cfg.Resolvers,
 		directives: cfg.Directives,
 		complexity: cfg.Complexity,
@@ -31,6 +32,7 @@ func NewExecutableSchema(cfg Config) graphql.ExecutableSchema {
 }
 
 type Config struct {
+	Schema     *ast.Schema
 	Resolvers  ResolverRoot
 	Directives DirectiveRoot
 	Complexity ComplexityRoot
@@ -156,6 +158,11 @@ type ComplexityRoot struct {
 		Status       func(childComplexity int) int
 	}
 
+	GameBackgroundSetting struct {
+		CatchImageURL func(childComplexity int) int
+		Introduction  func(childComplexity int) int
+	}
+
 	GameCapacity struct {
 		Max func(childComplexity int) int
 		Min func(childComplexity int) int
@@ -258,11 +265,12 @@ type ComplexityRoot struct {
 	}
 
 	GameSettings struct {
-		Capacity func(childComplexity int) int
-		Chara    func(childComplexity int) int
-		Password func(childComplexity int) int
-		Rule     func(childComplexity int) int
-		Time     func(childComplexity int) int
+		Background func(childComplexity int) int
+		Capacity   func(childComplexity int) int
+		Chara      func(childComplexity int) int
+		Password   func(childComplexity int) int
+		Rule       func(childComplexity int) int
+		Time       func(childComplexity int) int
 	}
 
 	GameTimeSetting struct {
@@ -649,12 +657,16 @@ type QueryResolver interface {
 }
 
 type executableSchema struct {
+	schema     *ast.Schema
 	resolvers  ResolverRoot
 	directives DirectiveRoot
 	complexity ComplexityRoot
 }
 
 func (e *executableSchema) Schema() *ast.Schema {
+	if e.schema != nil {
+		return e.schema
+	}
 	return parsedSchema
 }
 
@@ -1017,6 +1029,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Game.Status(childComplexity), true
+
+	case "GameBackgroundSetting.catchImageUrl":
+		if e.complexity.GameBackgroundSetting.CatchImageURL == nil {
+			break
+		}
+
+		return e.complexity.GameBackgroundSetting.CatchImageURL(childComplexity), true
+
+	case "GameBackgroundSetting.introduction":
+		if e.complexity.GameBackgroundSetting.Introduction == nil {
+			break
+		}
+
+		return e.complexity.GameBackgroundSetting.Introduction(childComplexity), true
 
 	case "GameCapacity.max":
 		if e.complexity.GameCapacity.Max == nil {
@@ -1430,6 +1456,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GameRuleSetting.Theme(childComplexity), true
+
+	case "GameSettings.background":
+		if e.complexity.GameSettings.Background == nil {
+			break
+		}
+
+		return e.complexity.GameSettings.Background(childComplexity), true
 
 	case "GameSettings.capacity":
 		if e.complexity.GameSettings.Capacity == nil {
@@ -2902,6 +2935,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewDirectMessage,
 		ec.unmarshalInputNewDirectMessageFavorite,
 		ec.unmarshalInputNewGame,
+		ec.unmarshalInputNewGameBackgroundSetting,
 		ec.unmarshalInputNewGameCapacity,
 		ec.unmarshalInputNewGameCharaSetting,
 		ec.unmarshalInputNewGameLabel,
@@ -2924,6 +2958,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputPlayersQuery,
 		ec.unmarshalInputRegisterDebugMessages,
 		ec.unmarshalInputUpdateCharaSetting,
+		ec.unmarshalInputUpdateGameBackgroundSetting,
 		ec.unmarshalInputUpdateGameCapacity,
 		ec.unmarshalInputUpdateGameLabel,
 		ec.unmarshalInputUpdateGameMaster,
@@ -3030,14 +3065,14 @@ func (ec *executionContext) introspectSchema() (*introspection.Schema, error) {
 	if ec.DisableIntrospection {
 		return nil, errors.New("introspection disabled")
 	}
-	return introspection.WrapSchema(parsedSchema), nil
+	return introspection.WrapSchema(ec.Schema()), nil
 }
 
 func (ec *executionContext) introspectType(name string) (*introspection.Type, error) {
 	if ec.DisableIntrospection {
 		return nil, errors.New("introspection disabled")
 	}
-	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
+	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
 var sources = []*ast.Source{
@@ -3210,11 +3245,17 @@ type GameParticipantDiary {
 }
 
 type GameSettings {
+  background: GameBackgroundSetting!
   chara: GameCharaSetting!
   capacity: GameCapacity!
   time: GameTimeSetting!
   rule: GameRuleSetting!
   password: GamePasswordSetting!
+}
+
+type GameBackgroundSetting {
+  introduction: String
+  catchImageUrl: String
 }
 
 type GameCharaSetting {
@@ -3630,11 +3671,18 @@ input NewGameLabel {
 }
 
 input NewGameSettings {
+  background: NewGameBackgroundSetting!
   chara: NewGameCharaSetting!
   capacity: NewGameCapacity!
   time: NewGameTimeSetting!
   rule: NewGameRuleSetting!
   password: NewGamePasswordSetting!
+}
+
+input NewGameBackgroundSetting {
+  introduction: String
+  catchImageFile: Upload
+  catchImageUrl: String
 }
 
 input NewGameCharaSetting {
@@ -3715,11 +3763,18 @@ input UpdateGameLabel {
 }
 
 input UpdateGameSettings {
+  background: UpdateGameBackgroundSetting!
   chara: UpdateCharaSetting!
   capacity: UpdateGameCapacity!
   time: UpdateGameTimeSetting!
   rule: UpdateGameRuleSetting!
   password: UpdateGamePasswordSetting!
+}
+
+input UpdateGameBackgroundSetting {
+  introduction: String
+  catchImageFile: Upload
+  catchImageUrl: String
 }
 
 input UpdateCharaSetting {
@@ -7517,6 +7572,8 @@ func (ec *executionContext) fieldContext_Game_settings(ctx context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "background":
+				return ec.fieldContext_GameSettings_background(ctx, field)
 			case "chara":
 				return ec.fieldContext_GameSettings_chara(ctx, field)
 			case "capacity":
@@ -7529,6 +7586,88 @@ func (ec *executionContext) fieldContext_Game_settings(ctx context.Context, fiel
 				return ec.fieldContext_GameSettings_password(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GameSettings", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameBackgroundSetting_introduction(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameBackgroundSetting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameBackgroundSetting_introduction(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Introduction, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameBackgroundSetting_introduction(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameBackgroundSetting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameBackgroundSetting_catchImageUrl(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameBackgroundSetting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameBackgroundSetting_catchImageUrl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CatchImageURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameBackgroundSetting_catchImageUrl(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameBackgroundSetting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -10236,6 +10375,56 @@ func (ec *executionContext) fieldContext_GameRuleSetting_theme(ctx context.Conte
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameSettings_background(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameSettings) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameSettings_background(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Background, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.GameBackgroundSetting)
+	fc.Result = res
+	return ec.marshalNGameBackgroundSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameBackgroundSetting(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameSettings_background(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameSettings",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "introduction":
+				return ec.fieldContext_GameBackgroundSetting_introduction(ctx, field)
+			case "catchImageUrl":
+				return ec.fieldContext_GameBackgroundSetting_catchImageUrl(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GameBackgroundSetting", field.Name)
 		},
 	}
 	return fc, nil
@@ -19180,6 +19369,8 @@ func (ec *executionContext) fieldContext_SimpleGame_settings(ctx context.Context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "background":
+				return ec.fieldContext_GameSettings_background(ctx, field)
 			case "chara":
 				return ec.fieldContext_GameSettings_chara(ctx, field)
 			case "capacity":
@@ -22383,6 +22574,53 @@ func (ec *executionContext) unmarshalInputNewGame(ctx context.Context, obj inter
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewGameBackgroundSetting(ctx context.Context, obj interface{}) (gqlmodel.NewGameBackgroundSetting, error) {
+	var it gqlmodel.NewGameBackgroundSetting
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"introduction", "catchImageFile", "catchImageUrl"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "introduction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("introduction"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Introduction = data
+		case "catchImageFile":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("catchImageFile"))
+			data, err := ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CatchImageFile = data
+		case "catchImageUrl":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("catchImageUrl"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CatchImageURL = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewGameCapacity(ctx context.Context, obj interface{}) (gqlmodel.NewGameCapacity, error) {
 	var it gqlmodel.NewGameCapacity
 	asMap := map[string]interface{}{}
@@ -22889,13 +23127,22 @@ func (ec *executionContext) unmarshalInputNewGameSettings(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"chara", "capacity", "time", "rule", "password"}
+	fieldsInOrder := [...]string{"background", "chara", "capacity", "time", "rule", "password"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "background":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("background"))
+			data, err := ec.unmarshalNNewGameBackgroundSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameBackgroundSetting(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Background = data
 		case "chara":
 			var err error
 
@@ -23474,6 +23721,53 @@ func (ec *executionContext) unmarshalInputUpdateCharaSetting(ctx context.Context
 				return it, err
 			}
 			it.CanOriginalCharacter = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateGameBackgroundSetting(ctx context.Context, obj interface{}) (gqlmodel.UpdateGameBackgroundSetting, error) {
+	var it gqlmodel.UpdateGameBackgroundSetting
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"introduction", "catchImageFile", "catchImageUrl"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "introduction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("introduction"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Introduction = data
+		case "catchImageFile":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("catchImageFile"))
+			data, err := ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CatchImageFile = data
+		case "catchImageUrl":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("catchImageUrl"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CatchImageURL = data
 		}
 	}
 
@@ -24134,13 +24428,22 @@ func (ec *executionContext) unmarshalInputUpdateGameSettings(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"chara", "capacity", "time", "rule", "password"}
+	fieldsInOrder := [...]string{"background", "chara", "capacity", "time", "rule", "password"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "background":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("background"))
+			data, err := ec.unmarshalNUpdateGameBackgroundSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameBackgroundSetting(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Background = data
 		case "chara":
 			var err error
 
@@ -25427,6 +25730,44 @@ func (ec *executionContext) _Game(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var gameBackgroundSettingImplementors = []string{"GameBackgroundSetting"}
+
+func (ec *executionContext) _GameBackgroundSetting(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.GameBackgroundSetting) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, gameBackgroundSettingImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GameBackgroundSetting")
+		case "introduction":
+			out.Values[i] = ec._GameBackgroundSetting_introduction(ctx, field, obj)
+		case "catchImageUrl":
+			out.Values[i] = ec._GameBackgroundSetting_catchImageUrl(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var gameCapacityImplementors = []string{"GameCapacity"}
 
 func (ec *executionContext) _GameCapacity(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.GameCapacity) graphql.Marshaler {
@@ -26498,6 +26839,11 @@ func (ec *executionContext) _GameSettings(ctx context.Context, sel ast.Selection
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("GameSettings")
+		case "background":
+			out.Values[i] = ec._GameSettings_background(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "chara":
 			out.Values[i] = ec._GameSettings_chara(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -30215,6 +30561,16 @@ func (ec *executionContext) marshalNGame2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgr
 	return ec._Game(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNGameBackgroundSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameBackgroundSetting(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.GameBackgroundSetting) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GameBackgroundSetting(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNGameCapacity2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameCapacity(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.GameCapacity) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -30949,6 +31305,11 @@ func (ec *executionContext) unmarshalNNewGame2chatᚑroleᚑplayᚋmiddlewareᚋ
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNNewGameBackgroundSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameBackgroundSetting(ctx context.Context, v interface{}) (*gqlmodel.NewGameBackgroundSetting, error) {
+	res, err := ec.unmarshalInputNewGameBackgroundSetting(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNNewGameCapacity2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameCapacity(ctx context.Context, v interface{}) (*gqlmodel.NewGameCapacity, error) {
 	res, err := ec.unmarshalInputNewGameCapacity(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -31511,6 +31872,11 @@ func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel
 
 func (ec *executionContext) unmarshalNUpdateCharaSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateCharaSetting(ctx context.Context, v interface{}) (*gqlmodel.UpdateCharaSetting, error) {
 	res, err := ec.unmarshalInputUpdateCharaSetting(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateGameBackgroundSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameBackgroundSetting(ctx context.Context, v interface{}) (*gqlmodel.UpdateGameBackgroundSetting, error) {
+	res, err := ec.unmarshalInputUpdateGameBackgroundSetting(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
