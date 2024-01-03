@@ -57,7 +57,7 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
   }
 
   const gameImage =
-    game.settings.background.catchImageUrl != null
+    game.settings.background.catchImageUrl != null && game.settings.background.catchImageUrl.length > 0
       ? game.settings.background.catchImageUrl
       : '/chat-role-play/images/game.jpg'
 
