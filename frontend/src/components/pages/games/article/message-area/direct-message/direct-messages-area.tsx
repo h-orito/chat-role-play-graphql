@@ -14,6 +14,7 @@ import ArticleModal from '@/components/modal/article-modal'
 import DirectMessageArea from './direct-message-area'
 import Modal from '@/components/modal/modal'
 import DirectFavoriteParticipants from './direct-favorite-participants'
+import DirectArticleModal from './direct-article-modal'
 
 type Props = {
   game: Game
@@ -115,7 +116,6 @@ export default function DirectMessagesArea({
       ))}
       {isOpenCreateModal && (
         <ArticleModal
-          target='#direct-message-area'
           header='新規ダイレクトメッセージグループ'
           close={toggleCreateModal}
           hideFooter
@@ -130,23 +130,15 @@ export default function DirectMessagesArea({
         </ArticleModal>
       )}
       {isOpenDirectMessageModal && (
-        <ArticleModal
-          target='#direct-message-area'
-          header={`${directMessageGroup ? directMessageGroup.name : ''}`}
-          zindex={40}
+        <DirectMessageArea
+          game={game}
+          myself={myself}
+          group={directMessageGroup!}
           close={toggleDirectMessageModal}
-          hideFooter
-        >
-          <DirectMessageArea
-            game={game}
-            myself={myself}
-            group={directMessageGroup!}
-            close={toggleDirectMessageModal}
-            openProfileModal={openProfileModal}
-            openFavoritesModal={openFavoritesModal}
-            refetchGroups={refetchGroups}
-          />
-        </ArticleModal>
+          openProfileModal={openProfileModal}
+          openFavoritesModal={openFavoritesModal}
+          refetchGroups={refetchGroups}
+        />
       )}
       {isOpenFavoritesModal && (
         <Modal header='ふぁぼした人' close={toggleFavoritesModal} hideFooter>

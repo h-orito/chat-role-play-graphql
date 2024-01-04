@@ -11,15 +11,16 @@ import {
   DirectMessage
 } from '@/lib/generated/graphql'
 import { useLazyQuery } from '@apollo/client'
-import { useEffect, useRef, useState } from 'react'
+import { cloneElement, useEffect, useRef, useState } from 'react'
 import Paging from '../paging'
 import DirectMessageComponent from './direct-message'
 import DirectSearchCondition from './direct-search-condition'
-import { EnvelopeIcon, PencilIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import ParticipantGroupEdit from './participant-group-edit'
-import TalkDirect, { TalkDirectRefHandle } from '../../../talk/talk-direct'
 import { useUserPagingSettings } from '../../../user-settings'
+import DirectFooterMenu from './footer-menu/direct-footer-menu'
+import Portal from '@/components/modal/portal'
 
 type Props = {
   close: (e: any) => void
@@ -31,15 +32,16 @@ type Props = {
   refetchGroups: () => void
 }
 
-export default function DirectMessageArea({
-  close,
-  game,
-  myself,
-  group,
-  openProfileModal,
-  openFavoritesModal,
-  refetchGroups
-}: Props) {
+export default function DirectMessageArea(props: Props) {
+  const {
+    close,
+    game,
+    myself,
+    group,
+    openProfileModal,
+    openFavoritesModal,
+    refetchGroups
+  } = props
   const [pagingSettings] = useUserPagingSettings()
   const defaultQuery: DirectMessagesQuery | null = {
     participantGroupId: group.id,
@@ -92,6 +94,127 @@ export default function DirectMessageArea({
     search(newQuery)
   }
 
+  const canModify = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
+    game.status
+  )
+
+  const directMessageAreaRef = useRef<HTMLDivElement>(null)
+  const scrollToTop = () => {
+    directMessageAreaRef?.current?.scroll({ top: 0, behavior: 'smooth' })
+  }
+  const scrollToBottom = () => {
+    directMessageAreaRef?.current?.scroll({
+      top: directMessageAreaRef?.current?.scrollHeight,
+      behavior: 'smooth'
+    })
+  }
+
+  return (
+    <DirectMessageModal
+      {...props}
+      search={search}
+      close={close}
+      canModify={canModify}
+      scrollToTop={scrollToTop}
+      scrollToBottom={scrollToBottom}
+    >
+      <div className='flex h-full flex-1 flex-col overflow-y-auto'>
+        <div
+          className='flex-1 flex-col overflow-y-auto'
+          ref={directMessageAreaRef}
+        >
+          <DirectMessageGroupMembers {...props} canModify={canModify} />
+          <div className='base-border flex border-b'>
+            <DirectSearchCondition
+              game={game}
+              myself={myself}
+              group={group}
+              query={query!}
+              search={search}
+            />
+          </div>
+          <Paging
+            messages={directMessages}
+            query={query!.paging as PageableQuery | undefined}
+            setPageableQuery={setPageableQuery}
+          />
+          <div className='flex-1'>
+            {directMessages.list.map((message: DirectMessage) => (
+              <DirectMessageComponent
+                game={game}
+                directMessage={message}
+                myself={myself}
+                key={message.id}
+                openProfileModal={openProfileModal}
+                openFavoritesModal={openFavoritesModal}
+              />
+            ))}
+          </div>
+          <Paging
+            messages={directMessages}
+            query={query!.paging as PageableQuery | undefined}
+            setPageableQuery={setPageableQuery}
+          />
+        </div>
+      </div>
+    </DirectMessageModal>
+  )
+}
+
+const DirectMessageModal = (
+  props: {
+    children: React.ReactNode
+    search: (query?: DirectMessagesQuery) => Promise<void>
+    close: (e: any) => void
+    canModify: boolean
+    scrollToTop: () => void
+    scrollToBottom: () => void
+  } & Props
+) => {
+  const {
+    close,
+    game,
+    myself,
+    group,
+    search,
+    canModify,
+    scrollToTop,
+    scrollToBottom
+  } = props
+  return (
+    <Portal target='#direct-message-area'>
+      <div className='base-background absolute inset-x-0 inset-y-0 z-50 h-full w-full text-sm'>
+        <div className='flex h-full flex-col overflow-y-auto'>
+          <div className='base-border flex border-b p-2'>
+            <button className='px-2' onClick={close}>
+              <ArrowLeftIcon className='mr-1 h-6 w-6' />
+            </button>
+            <p className='justify-center text-xl'>{group.name}</p>
+          </div>
+          {cloneElement(props.children as any, {
+            close: close
+          })}
+          <DirectFooterMenu
+            game={game}
+            myself={myself}
+            group={group}
+            search={search}
+            canTalk={canModify}
+            scrollToTop={scrollToTop}
+            scrollToBottom={scrollToBottom}
+          />
+        </div>
+      </div>
+    </Portal>
+  )
+}
+
+const DirectMessageGroupMembers = (
+  props: {
+    canModify: boolean
+  } & Props
+) => {
+  const { game, refetchGroups, group, canModify } = props
   const [isOpenModifyGroupModal, setIsOpenModifyGroupModal] = useState(false)
   const toggleModifyGroupModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -102,77 +225,20 @@ export default function DirectMessageArea({
     setIsOpenModifyGroupModal(true)
   }
 
-  const [isOpenTalkModal, setIsOpenTalkModal] = useState(false)
-  const talkRef = useRef({} as TalkDirectRefHandle)
-  const toggleTalkModal = (e: any) => {
-    const shouldWarning = talkRef.current && talkRef.current.shouldWarnClose()
-    if (
-      shouldWarning &&
-      !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
-    )
-      return
-    setIsOpenTalkModal(!isOpenTalkModal)
-  }
-
-  const canModify = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
-    game.status
-  )
-
   return (
-    <div className='flex flex-1 flex-col'>
-      <div className='base-border flex border-b px-4 py-2'>
-        <p className='self-center'>
-          メンバー:{' '}
-          {group.participants.map((p: GameParticipant) => p.name).join('、')}
-        </p>
-        {canModify && (
-          <button
-            className='primary-hover-background ml-auto pl-4'
-            onClick={() => openModifyGroupModal(group)}
-          >
-            <PencilIcon className='mr-1 h-4 w-4' />
-          </button>
-        )}
-      </div>
+    <div className='base-border flex border-b px-4 py-2'>
+      <p className='self-center'>
+        メンバー:{' '}
+        {group.participants.map((p: GameParticipant) => p.name).join('、')}
+      </p>
       {canModify && (
         <button
-          className='primary-active fixed bottom-20 right-4 z-10 rounded-full p-3 hover:bg-slate-200'
-          onClick={() => setIsOpenTalkModal(true)}
+          className='primary-hover-background ml-auto pl-4'
+          onClick={() => openModifyGroupModal(group)}
         >
-          <EnvelopeIcon className='h-8 w-8' />
+          <PencilIcon className='mr-1 h-4 w-4' />
         </button>
       )}
-      <div className='base-border flex border-b'>
-        <DirectSearchCondition
-          game={game}
-          myself={myself}
-          group={group}
-          query={query!}
-          search={search}
-        />
-      </div>
-      <Paging
-        messages={directMessages}
-        query={query!.paging as PageableQuery | undefined}
-        setPageableQuery={setPageableQuery}
-      />
-      <div className='flex-1'>
-        {directMessages.list.map((message: DirectMessage) => (
-          <DirectMessageComponent
-            game={game}
-            directMessage={message}
-            myself={myself}
-            key={message.id}
-            openProfileModal={openProfileModal}
-            openFavoritesModal={openFavoritesModal}
-          />
-        ))}
-      </div>
-      <Paging
-        messages={directMessages}
-        query={query!.paging as PageableQuery | undefined}
-        setPageableQuery={setPageableQuery}
-      />
       {isOpenModifyGroupModal && (
         <Modal close={toggleModifyGroupModal} hideFooter>
           <ParticipantGroupEdit
@@ -180,18 +246,6 @@ export default function DirectMessageArea({
             group={group}
             close={toggleModifyGroupModal}
             refetchGroups={refetchGroups}
-          />
-        </Modal>
-      )}
-      {isOpenTalkModal && (
-        <Modal close={toggleTalkModal} hideFooter>
-          <TalkDirect
-            game={game}
-            myself={myself!}
-            gameParticipantGroup={group!}
-            closeWithoutWarning={() => setIsOpenTalkModal(false)}
-            search={search}
-            ref={talkRef}
           />
         </Modal>
       )}
