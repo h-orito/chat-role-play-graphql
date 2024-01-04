@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2024/01/04'>
+            <li>追加: 最上部へ、最下部へボタンを追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2023/11/29'>
             <li>追加: ゲームのキャッチ画像、紹介文を追加</li>
           </ReleaseContent>
