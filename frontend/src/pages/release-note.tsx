@@ -222,6 +222,7 @@ export default function CreateGame() {
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>ひとことメモ</li>
                       <li>フォローフリーとか連れ出し歓迎とかのタグ機能</li>
+                      <li>アイコン一括アップロード</li>
                     </ul>
                   </li>
                   <li>

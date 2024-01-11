@@ -251,7 +251,7 @@ func findRdbCharas(db *gorm.DB, query model.CharaQuery) (charas []Chara, err err
 		result = result.Scopes(Paginate(query.Paging))
 	} else {
 		result = result.Scopes(Paginate(&model.PagingQuery{
-			PageSize:   10000,
+			PageSize:   100000,
 			PageNumber: 1,
 			Desc:       false,
 		}))
@@ -324,7 +324,7 @@ func findRdbCharaImages(db *gorm.DB, query model.CharaImageQuery) (images []Char
 		result = result.Scopes(Paginate(query.Paging))
 	} else {
 		result = result.Scopes(Paginate(&model.PagingQuery{
-			PageSize:   10000,
+			PageSize:   100000,
 			PageNumber: 1,
 			Desc:       false,
 		}))
