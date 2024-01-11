@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2024/01/11'>
+            <li>変更: 発言欄を最下部固定</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2024/01/04'>
             <li>追加: 最上部へ、最下部へボタンを追加</li>
           </ReleaseContent>
@@ -223,8 +227,6 @@ export default function CreateGame() {
                   <li>
                     その他UI
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
-                      <li>最上部最下部遷移ボタン</li>
-                      <li>発言欄を最下部固定</li>
                       <li>DMの発言を作る際返信のように参照できるようにする</li>
                     </ul>
                   </li>

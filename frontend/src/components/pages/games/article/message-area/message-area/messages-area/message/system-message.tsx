@@ -1,5 +1,5 @@
 import { Message } from '@/lib/generated/graphql'
-import MessageText from '../message-text/message-text'
+import MessageText from '../../../message-text/message-text'
 
 type Props = {
   message: Message

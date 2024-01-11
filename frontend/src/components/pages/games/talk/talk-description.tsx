@@ -11,20 +11,25 @@ import {
   TalkMutationVariables
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react'
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState
+} from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import InputTextarea from '@/components/form/input-textarea'
 import SubmitButton from '@/components/button/submit-button'
 import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
-import DescriptionMessage from '../article/message-area/message/description-message'
+import DescriptionMessage from '@/components/pages/games/article/message-area/message-area/messages-area/message/description-message'
 import InputText from '@/components/form/input-text'
 
 type Props = {
   game: Game
   myself: GameParticipant
-  closeWithoutWarning: () => void
-  search: () => void
+  handleCompleted: () => void
 }
 
 interface FormInput {
@@ -38,7 +43,7 @@ export interface TalkDescriptionRefHandle {
 
 const TalkDescription = forwardRef<TalkDescriptionRefHandle, Props>(
   (props: Props, ref: any) => {
-    const { game, myself, closeWithoutWarning, search } = props
+    const { game, myself, handleCompleted } = props
     const { control, formState, handleSubmit, setValue, watch } =
       useForm<FormInput>({
         defaultValues: {
@@ -48,22 +53,22 @@ const TalkDescription = forwardRef<TalkDescriptionRefHandle, Props>(
       })
     const canSubmit: boolean = formState.isValid && !formState.isSubmitting
 
-    const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument, {
-      onError(error) {
-        console.error(error)
-      }
-    })
+    const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument)
     const [talk] = useMutation<TalkMutation>(TalkDocument, {
       onCompleted() {
-        closeWithoutWarning()
-        search()
-      },
-      onError(error) {
-        console.error(error)
+        init()
+        handleCompleted()
       }
     })
 
     const [preview, setPreview] = useState<Message | null>(null)
+
+    const init = () => {
+      setPreview(null)
+      setValue('name', myself.name)
+      setValue('talkMessage', '')
+    }
+
     const onSubmit: SubmitHandler<FormInput> = useCallback(
       async (data) => {
         const mes = {
@@ -89,6 +94,11 @@ const TalkDescription = forwardRef<TalkDescriptionRefHandle, Props>(
           })
           if (data?.registerMessageDryRun == null) return
           setPreview(data.registerMessageDryRun.message as Message)
+          const selector = document.querySelector('#talk-description')!
+          selector.scroll({
+            top: selector.scrollHeight,
+            behavior: 'smooth'
+          })
         }
       },
       [talk, formState]
@@ -102,8 +112,17 @@ const TalkDescription = forwardRef<TalkDescriptionRefHandle, Props>(
     }))
     const updateTalkMessage = (str: string) => setValue('talkMessage', str)
 
+    const scrollToPreview = () => {
+      document.querySelector('#description-preview')!.scrollIntoView({
+        behavior: 'smooth'
+      })
+    }
+
     return (
-      <div className='px-4 py-2'>
+      <div
+        id='talk-description'
+        className='max-h-[30vh] overflow-y-auto px-4 py-2'
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className='my-2'>
             <p className='text-xs font-bold'>名前</p>
@@ -147,7 +166,7 @@ const TalkDescription = forwardRef<TalkDescriptionRefHandle, Props>(
               disabled={preview != null}
             />
           </div>
-          <div className='mt-4 flex justify-end'>
+          <div id='description-preview' className='mt-4 flex justify-end'>
             <SubmitButton
               label={preview ? 'プレビュー内容で送信' : 'プレビュー'}
               disabled={!canSubmit}
@@ -159,18 +178,12 @@ const TalkDescription = forwardRef<TalkDescriptionRefHandle, Props>(
             )}
           </div>
           {preview && (
-            <div className='my-4 border-t border-gray-300 pt-2'>
-              <p className='font-bold'>プレビュー</p>
-              <div>
-                <DescriptionMessage
-                  message={preview!}
-                  game={game}
-                  myself={myself}
-                  openProfileModal={() => {}}
-                  openFavoritesModal={() => {}}
-                />
-              </div>
-            </div>
+            <DescriptionPreview
+              preview={preview}
+              game={game}
+              myself={myself}
+              scrollToPreview={scrollToPreview}
+            />
           )}
         </form>
       </div>
@@ -179,3 +192,34 @@ const TalkDescription = forwardRef<TalkDescriptionRefHandle, Props>(
 )
 
 export default TalkDescription
+
+const DescriptionPreview = ({
+  preview,
+  game,
+  myself,
+  scrollToPreview
+}: {
+  preview: Message | null
+  game: Game
+  myself: GameParticipant
+  scrollToPreview: () => void
+}) => {
+  useEffect(() => {
+    scrollToPreview()
+  }, [])
+
+  return (
+    <div className='my-4 border-t border-gray-300 pt-2'>
+      <p className='font-bold'>プレビュー</p>
+      <div>
+        <DescriptionMessage
+          message={preview!}
+          game={game}
+          myself={myself}
+          openProfileModal={() => {}}
+          openFavoritesModal={() => {}}
+        />
+      </div>
+    </div>
+  )
+}

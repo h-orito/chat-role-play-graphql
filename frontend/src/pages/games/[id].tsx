@@ -26,14 +26,18 @@ import {
 } from '@/lib/generated/graphql'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { ReactElement, useEffect, useRef, useState } from 'react'
-import { useCookies } from 'react-cookie'
-import Modal from '@/components/modal/modal'
-import SecondaryButton from '@/components/button/scondary-button'
-import { useRouter } from 'next/router'
-import PrimaryButton from '@/components/button/primary-button'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
+import RatingWarningModal from '@/components/pages/games/rating-warning-modal'
+
+const periodChangeStatuses = [
+  'Closed',
+  'Opening',
+  'Recruiting',
+  'Progress',
+  'Epilogue'
+]
 
 export const getServerSideProps = async (context: any) => {
   const { id } = context.params
@@ -119,22 +123,9 @@ const GamePage = ({ game }: Props) => {
       return () => clearInterval(timer)
     }, [])
   }
-  const [changePeriod] = useMutation<ChangePeriodMutation>(
-    ChangePeriodDocument,
-    {
-      onCompleted(e) {},
-      onError(error) {
-        console.error(error)
-      }
-    }
-  )
+  const [changePeriod] = useMutation<ChangePeriodMutation>(ChangePeriodDocument)
   const changePeriodIfNeeded = async () => {
-    if (
-      !['Closed', 'Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
-        game.status
-      )
-    )
-      return
+    if (!periodChangeStatuses.includes(game.status)) return
     await changePeriod({
       variables: {
         input: {
@@ -202,63 +193,6 @@ GamePage.getLayout = (page: ReactElement) => {
 }
 
 export default GamePage
-
-const RatingWarningModal = ({ game }: { game: Game }) => {
-  const [getCookie, setCookie] = useCookies()
-  const rating = game.labels.find((l) =>
-    ['R15', 'R18', 'R18G'].includes(l.name)
-  )
-  const ratingCookie: RatingCookie = getCookie['rating'] || {}
-  const alreadyConfiemed = !!ratingCookie && ratingCookie[game.id] === true
-  const shouldShowRatingWarning = !!rating && !alreadyConfiemed
-  const [showModal, setShowModal] = useState(true)
-  const router = useRouter()
-  const handleShow = () => {
-    ratingCookie[game.id] = true
-    setCookie('rating', ratingCookie, {
-      path: '/chat-role-play',
-      maxAge: 60 * 60 * 24 * 365
-    })
-    setShowModal(false)
-  }
-
-  if (!shouldShowRatingWarning) return <></>
-
-  return (
-    <>
-      {showModal && (
-        <Modal
-          header='年齢制限確認'
-          close={() => setShowModal(false)}
-          hideFooter={true}
-          hideOnClickOutside={false}
-        >
-          <div>
-            <p>
-              この村は年齢制限が{' '}
-              <span className='danger-text text-lg'>
-                <strong>{rating.name}</strong>
-              </span>{' '}
-              に設定されており、
-              <br />
-              暴力表現や性描写などが含まれる可能性があります。
-            </p>
-            <div className='flex justify-end'>
-              <SecondaryButton className='mr-2' click={() => router.push('/')}>
-                表示せず戻る
-              </SecondaryButton>
-              <PrimaryButton click={() => handleShow()}>表示する</PrimaryButton>
-            </div>
-          </div>
-        </Modal>
-      )}
-    </>
-  )
-}
-
-type RatingCookie = {
-  [gameId: string]: boolean
-}
 
 const ThemeCSS = ({ game }: { game: Game }) => {
   const [displaySettings] = useUserDisplaySettings()

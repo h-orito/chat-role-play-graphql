@@ -1,8 +1,11 @@
 import {
   Game,
+  GameMessagesDocument,
   GameMessagesQuery,
   GameParticipant,
+  Message,
   Messages,
+  MessagesLatestDocument,
   MessagesLatestQuery,
   MessagesQuery
 } from '@/lib/generated/graphql'
@@ -14,21 +17,17 @@ import {
   useState
 } from 'react'
 import SearchCondition from './search-condition'
-import { LazyQueryExecFunction, OperationVariables } from '@apollo/client'
-import { useUserPagingSettings } from '../../../user-settings'
-import MessagesArea, { MessagesAreaRefHandle } from './messages-area'
-import { TalkButtonRefHandle } from './footer-menu/talk-button'
-import FooterMenu from './footer-menu/footer-menu'
+import { useLazyQuery } from '@apollo/client'
+import { useUserPagingSettings } from '@/components/pages/games/user-settings'
+import MessagesArea, {
+  MessagesAreaRefHandle
+} from './messages-area/messages-area'
 
 type Props = {
   game: Game
   className?: string
   myself: GameParticipant | null
-  fetchMessages: LazyQueryExecFunction<GameMessagesQuery, OperationVariables>
-  fetchMessagesLatest: LazyQueryExecFunction<
-    MessagesLatestQuery,
-    OperationVariables
-  >
+  reply: (message: Message) => void
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   isViewing: boolean
@@ -40,6 +39,9 @@ type Props = {
 
 export interface MessageAreaRefHandle {
   fetchLatest: () => void
+  search: (query?: MessagesQuery) => void
+  scrollToTop: () => void
+  scrollToBottom: () => void
 }
 
 const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
@@ -48,14 +50,18 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       game,
       className,
       myself,
-      fetchMessages,
-      fetchMessagesLatest,
       isViewing,
       existsUnread,
       setExistUnread,
       onlyFollowing = false,
       searchable = false
     } = props
+
+    const [fetchMessages] =
+      useLazyQuery<GameMessagesQuery>(GameMessagesDocument)
+    const [fetchMessagesLatest] = useLazyQuery<MessagesLatestQuery>(
+      MessagesLatestDocument
+    )
 
     const [pagingSettings] = useUserPagingSettings()
     const defaultMessageQuery: MessagesQuery = {
@@ -87,6 +93,15 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     useImperativeHandle(ref, () => ({
       async fetchLatest() {
         return await search()
+      },
+      search(query: MessagesQuery = messageQuery) {
+        return search(query)
+      },
+      scrollToTop() {
+        messagesAreaRef.current.scrollToTop()
+      },
+      scrollToBottom() {
+        messagesAreaRef.current.scrollToBottom()
       }
     }))
 
@@ -151,7 +166,6 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         game.status
       )
 
-    const talkButtonRef = useRef({} as TalkButtonRefHandle)
     const messagesAreaRef = useRef({} as MessagesAreaRefHandle)
 
     return (
@@ -165,15 +179,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
           messageQuery={messageQuery}
           canTalk={canTalk}
           search={search}
-          talkButtonRef={talkButtonRef}
           {...props}
-        />
-        <FooterMenu
-          {...props}
-          search={search}
-          canTalk={canTalk}
-          talkButtonRef={talkButtonRef}
-          messagesAreaRef={messagesAreaRef}
         />
       </div>
     )

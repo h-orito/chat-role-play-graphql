@@ -12,14 +12,14 @@ import {
 } from '@/lib/generated/graphql'
 import { useLazyQuery } from '@apollo/client'
 import { cloneElement, useEffect, useRef, useState } from 'react'
-import Paging from '../paging'
+import Paging from '../message-area/messages-area/paging'
 import DirectMessageComponent from './direct-message'
 import DirectSearchCondition from './direct-search-condition'
 import { ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import ParticipantGroupEdit from './participant-group-edit'
 import { useUserPagingSettings } from '../../../user-settings'
-import DirectFooterMenu from './footer-menu/direct-footer-menu'
+import DirectFooterMenu from './direct-footer-menu'
 import Portal from '@/components/modal/portal'
 
 type Props = {

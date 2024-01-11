@@ -15,7 +15,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import InputTextarea from '@/components/form/input-textarea'
 import SubmitButton from '@/components/button/submit-button'
 import SecondaryButton from '@/components/button/scondary-button'
-import SystemMessage from '../article/message-area/message/system-message'
+import SystemMessage from '@/components/pages/games/article/message-area/message-area/messages-area/message/system-message'
 import TalkTextDecorators from './talk-text-decorators'
 
 type Props = {

@@ -28,7 +28,7 @@ import InputTextarea from '@/components/form/input-textarea'
 import InputText from '@/components/form/input-text'
 import Modal from '@/components/modal/modal'
 import SubmitButton from '@/components/button/submit-button'
-import TalkMessage from '../article/message-area/message/talk-message'
+import TalkMessage from '@/components/pages/games/article/message-area/message-area/messages-area/message/talk-message'
 import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
 import PrimaryButton from '@/components/button/primary-button'
@@ -37,9 +37,7 @@ import ParticipantSelect from '../participant/participant-select'
 type Props = {
   game: Game
   myself: GameParticipant
-  closeWithoutWarning: () => void
-  search: () => void
-  replyTarget?: Message | null
+  handleCompleted: () => void
 }
 
 interface FormInput {
@@ -49,10 +47,11 @@ interface FormInput {
 
 export interface TalkRefHandle {
   shouldWarnClose(): boolean
+  replyTo(message: Message): void
 }
 
 const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
-  const { game, myself, closeWithoutWarning, search, replyTarget } = props
+  const { game, myself, handleCompleted } = props
 
   const { control, formState, handleSubmit, setValue, watch } =
     useForm<FormInput>({
@@ -61,31 +60,31 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
         talkMessage: ''
       }
     })
-
+  const talkMessage = watch('talkMessage')
   const updateTalkMessage = (str: string) => setValue('talkMessage', str)
 
-  // 返信先が秘話か
-  const isSecretReply =
-    replyTarget != null && replyTarget.content.type === MessageType.Secret
-  // 返信相手
-  const replyParticipant =
-    replyTarget != null
-      ? game.participants.find(
-          (p) => p.id === replyTarget!.sender!.participantId
-        )!
-      : null
-
-  const [talkType, setTalkType] = useState(
-    isSecretReply ? MessageType.Secret : MessageType.TalkNormal
-  )
-  const [receiver, setReceiver] = useState<GameParticipant | null>(
-    replyParticipant
-  )
+  // 発言種別
+  const [talkType, setTalkType] = useState(MessageType.TalkNormal)
+  // 返信先メッセージ
+  const [replyTarget, setReplyTarget] = useState<Message | null>(null)
+  // 送信相手
+  const [receiver, setReceiver] = useState<GameParticipant | null>(null)
+  // アイコン候補
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
+  // 選択中のアイコン
   const [iconId, setIconId] = useState<string>('')
+  // 装飾やランダム変換しない
   const [isConvertDisabled, setIsConvertDisabled] = useState(false)
 
   const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
+  const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument)
+  const [talk] = useMutation<TalkMutation>(TalkDocument, {
+    onCompleted() {
+      init()
+      handleCompleted()
+    }
+  })
+
   useEffect(() => {
     const fetch = async () => {
       const { data } = await fetchIcons({
@@ -99,26 +98,23 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
     fetch()
   }, [])
 
-  const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument, {
-    onError(error) {
-      console.error(error)
-    }
-  })
-  const [talk] = useMutation<TalkMutation>(TalkDocument, {
-    onCompleted() {
-      closeWithoutWarning()
-      search()
-    },
-    onError(error) {
-      console.error(error)
-    }
-  })
+  const init = () => {
+    setTalkType(MessageType.TalkNormal)
+    setPreview(null)
+    setReplyTarget(null)
+    setReceiver(null)
+    setValue('name', myself.name)
+    setValue('talkMessage', '')
+    setIconId(icons[0].id)
+    setIsConvertDisabled(false)
+  }
 
   const canSubmit: boolean =
     formState.isValid &&
     !formState.isSubmitting &&
     (talkType !== MessageType.Secret ||
       (receiver != null && receiver.id !== myself.id))
+
   const [preview, setPreview] = useState<Message | null>(null)
   const onSubmit: SubmitHandler<FormInput> = useCallback(
     async (data) => {
@@ -155,26 +151,48 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
         setPreview(data.registerMessageDryRun.message as Message)
       }
     },
-    [talk, talkType, receiver, iconId, formState]
+    [talk, replyTarget, talkType, receiver, iconId, formState]
   )
 
-  const talkMessage = watch('talkMessage')
   useImperativeHandle(ref, () => ({
     shouldWarnClose() {
       return 0 < talkMessage.length
+    },
+    replyTo(message: Message) {
+      setReplyTarget(message)
+      setReceiver(
+        game.participants.find((p) => p.id === message!.sender!.participantId)!
+      )
+      if (message.content.type === MessageType.Secret) {
+        setTalkType(MessageType.Secret)
+      }
     }
   }))
+
+  const scrollToPreview = () => {
+    document.querySelector('#talk-preview')!.scrollIntoView({
+      behavior: 'smooth'
+    })
+  }
+
+  const cancelReply = (e: any) => {
+    setReplyTarget(null)
+    if (talkType !== MessageType.Secret) {
+      setReceiver(null)
+    }
+  }
 
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
 
   return (
-    <div className='py-2'>
+    <div className='max-h-[40vh] overflow-y-auto px-4 py-2'>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TalkType
           {...props}
           talkType={talkType}
           setTalkType={setTalkType}
           preview={preview}
+          replyTarget={replyTarget}
         />
         <Receiver
           {...props}
@@ -202,7 +220,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
             setIsConvertDisabled={setIsConvertDisabled}
           />
         </div>
-        <div className='mt-4 flex justify-end'>
+        <div id='talk-preview' className='mt-4 flex justify-end'>
           <SubmitButton
             label={preview ? 'プレビュー内容で送信' : 'プレビュー'}
             disabled={!canSubmit}
@@ -215,25 +233,21 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
         </div>
       </form>
       {preview && (
-        <div className='my-4'>
-          <p className='text-xs font-bold'>プレビュー</p>
-          <div className='base-border border pt-2'>
-            <div>
-              <TalkMessage
-                message={preview!}
-                game={game}
-                myself={myself}
-                openProfileModal={() => {}}
-                openFavoritesModal={() => {}}
-                handleReply={() => {}}
-              />
-            </div>
-          </div>
-        </div>
+        <TalkPreview
+          preview={preview}
+          game={game}
+          myself={myself}
+          scrollToPreview={scrollToPreview}
+        />
       )}
       {replyTarget && (
         <div className='mb-4'>
-          <p className='text-xs font-bold'>返信先</p>
+          <div className='flex'>
+            <p className='text-xs font-bold'>返信先</p>
+            <button className='ml-2 text-xs' onClick={() => cancelReply(null)}>
+              返信解除
+            </button>
+          </div>
           <div className='base-border border pt-2'>
             <div>
               <TalkMessage
@@ -259,7 +273,7 @@ type TalkTypeProps = {
   talkType: MessageType
   setTalkType: (talkType: MessageType) => void
   preview?: Message | null
-  replyTarget?: Message | null
+  replyTarget: Message | null
 }
 
 const TalkType = ({
@@ -536,6 +550,40 @@ const MessageContent = ({
         <label htmlFor='convert-disabled' className='ml-1 text-xs'>
           装飾やランダム変換しない
         </label>
+      </div>
+    </div>
+  )
+}
+
+const TalkPreview = ({
+  preview,
+  game,
+  myself,
+  scrollToPreview
+}: {
+  preview: Message | null
+  game: Game
+  myself: GameParticipant
+  scrollToPreview: () => void
+}) => {
+  useEffect(() => {
+    scrollToPreview()
+  }, [])
+
+  return (
+    <div className='my-4'>
+      <p className='text-xs font-bold'>プレビュー</p>
+      <div className='base-border border pt-2'>
+        <div>
+          <TalkMessage
+            message={preview!}
+            game={game}
+            myself={myself}
+            openProfileModal={() => {}}
+            openFavoritesModal={() => {}}
+            handleReply={() => {}}
+          />
+        </div>
       </div>
     </div>
   )

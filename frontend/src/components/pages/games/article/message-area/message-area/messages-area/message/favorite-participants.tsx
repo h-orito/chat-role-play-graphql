@@ -6,7 +6,7 @@ import {
 } from '@/lib/generated/graphql'
 import { useLazyQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
-import Participants from '../../../participant/participants'
+import Participants from '../../../../../participant/participants'
 
 type Props = {
   close: (e: any) => void

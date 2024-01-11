@@ -16,7 +16,7 @@ import { useLazyQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import FavoriteButton from './favorite-button'
 import MessageComponent from './message'
-import MessageText from '../message-text/message-text'
+import MessageText from '../../../message-text/message-text'
 
 type MessageProps = {
   game: Game

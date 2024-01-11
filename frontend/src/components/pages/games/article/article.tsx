@@ -1,20 +1,23 @@
+import { Game, GameParticipant } from '@/lib/generated/graphql'
 import {
-  Game,
-  GameMessagesDocument,
-  GameMessagesQuery,
-  GameParticipant,
-  MessagesLatestDocument,
-  MessagesLatestQuery
-} from '@/lib/generated/graphql'
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState
+} from 'react'
 import Modal from '@/components/modal/modal'
-import FavoriteParticipants from './message-area/message/favorite-participants'
-import { useLazyQuery } from '@apollo/client'
+import FavoriteParticipants from './message-area/message-area/messages-area/message/favorite-participants'
 import MessageArea, {
   MessageAreaRefHandle
-} from './message-area/message/message-area'
+} from './message-area/message-area/message-area'
 import DirectMessagesArea from './message-area/direct-message/direct-messages-area'
 import ArticleMenu from './article-menu'
+import MessageFooterMenu, {
+  MessageFooterMenuRefHandle
+} from './message-footer-menu'
+import { set } from 'react-hook-form'
+import { googleAdnsenseStyleGuard } from '@/components/adsense/google-adsense-guard'
 
 type Props = {
   game: Game
@@ -43,24 +46,23 @@ const Article = forwardRef<ArticleRefHandle, Props>(
       setIsOpenFavoritesModal(true)
     }
 
-    const [fetchMessages] =
-      useLazyQuery<GameMessagesQuery>(GameMessagesDocument)
-    const [fetchMessagesLatest] = useLazyQuery<MessagesLatestQuery>(
-      MessagesLatestDocument
-    )
-
     const [existsHomeUnread, setExistsHomeUnread] = useState(false)
     const [existFollowsUnread, setExistFollowsUnread] = useState(false)
     const [existSearchUnread, setExistSearchUnread] = useState(false)
 
     const homeRef = useRef({} as MessageAreaRefHandle)
     const followRef = useRef({} as MessageAreaRefHandle)
+    const searchRef = useRef({} as MessageAreaRefHandle)
+    const messageFooterMenuRef = useRef({} as MessageFooterMenuRefHandle)
+    const reply = (message: any) => messageFooterMenuRef.current?.reply(message)
+
     const handleTabChange = (tab: string) => {
       setTab(tab)
       if (tab === 'home') {
         homeRef.current.fetchLatest()
       } else if (tab === 'follow') {
         followRef.current.fetchLatest()
+      } else {
       }
     }
 
@@ -69,6 +71,18 @@ const Article = forwardRef<ArticleRefHandle, Props>(
         return homeRef.current.fetchLatest()
       }
     }))
+
+    const getCurrentMessageAreaRef = () => {
+      return tab === 'home' ? homeRef : tab === 'follow' ? followRef : searchRef
+    }
+    const search = () => getCurrentMessageAreaRef().current.search()
+    const scrollToTop = () => getCurrentMessageAreaRef().current.scrollToTop()
+    const scrollToBottom = () =>
+      getCurrentMessageAreaRef().current.scrollToBottom()
+
+    useEffect(() => {
+      googleAdnsenseStyleGuard()
+    }, [])
 
     return (
       <article
@@ -89,8 +103,7 @@ const Article = forwardRef<ArticleRefHandle, Props>(
           className={`${tab === 'home' ? '' : 'hidden'}`}
           game={game}
           myself={myself}
-          fetchMessages={fetchMessages}
-          fetchMessagesLatest={fetchMessagesLatest}
+          reply={reply}
           openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
           isViewing={tab === 'home'}
@@ -103,8 +116,7 @@ const Article = forwardRef<ArticleRefHandle, Props>(
             className={`${tab === 'follow' ? '' : 'hidden'}`}
             game={game}
             myself={myself}
-            fetchMessages={fetchMessages}
-            fetchMessagesLatest={fetchMessagesLatest}
+            reply={reply}
             openProfileModal={openProfileModal}
             openFavoritesModal={openFavoritesModal}
             isViewing={tab === 'follow'}
@@ -114,11 +126,11 @@ const Article = forwardRef<ArticleRefHandle, Props>(
           />
         )}
         <MessageArea
+          ref={searchRef}
           className={`${tab === 'search' ? '' : 'hidden'}`}
           game={game}
           myself={myself}
-          fetchMessages={fetchMessages}
-          fetchMessagesLatest={fetchMessagesLatest}
+          reply={reply}
           openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
           isViewing={tab === 'search'}
@@ -145,6 +157,15 @@ const Article = forwardRef<ArticleRefHandle, Props>(
             />
           </Modal>
         )}
+        <MessageFooterMenu
+          ref={messageFooterMenuRef}
+          className={`${tab === 'dm' ? 'hidden' : ''}`}
+          game={game}
+          myself={myself}
+          search={search}
+          scrollToTop={scrollToTop}
+          scrollToBottom={scrollToBottom}
+        />
         <ArticleMenu
           myself={myself}
           tab={tab}

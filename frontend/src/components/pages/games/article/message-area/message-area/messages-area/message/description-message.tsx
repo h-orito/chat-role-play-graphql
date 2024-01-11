@@ -1,7 +1,7 @@
 import { Game, GameParticipant, Message } from '@/lib/generated/graphql'
-import MessageText from '../message-text/message-text'
+import MessageText from '../../../message-text/message-text'
 import { iso2display } from '@/components/util/datetime/datetime'
-import FavoriteButton from './favorite-button'
+import FavoriteButton from '@/components/pages/games/article/message-area/message-area/messages-area/message/favorite-button'
 
 type Props = {
   game: Game

@@ -1,35 +1,22 @@
 import {
   Game,
-  GameMessagesQuery,
   GameParticipant,
   Message,
   Messages,
-  MessagesLatestQuery,
   MessagesQuery,
   PageableQuery
 } from '@/lib/generated/graphql'
-import MessageComponent from './message'
-import Paging from '../paging'
-import {
-  MutableRefObject,
-  forwardRef,
-  useImperativeHandle,
-  useRef
-} from 'react'
-import { LazyQueryExecFunction, OperationVariables } from '@apollo/client'
-import GamePeriodLinks from '../game-period-links'
+import MessageComponent from './message/message'
+import Paging from './paging'
+import { forwardRef, useImperativeHandle, useRef } from 'react'
+import GamePeriodLinks from '../../game-period-links'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
-import { TalkButtonRefHandle } from './footer-menu/talk-button'
 
 type Props = {
   game: Game
   className?: string
   myself: GameParticipant | null
-  fetchMessages: LazyQueryExecFunction<GameMessagesQuery, OperationVariables>
-  fetchMessagesLatest: LazyQueryExecFunction<
-    MessagesLatestQuery,
-    OperationVariables
-  >
+  reply: (message: Message) => void
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   isViewing: boolean
@@ -40,7 +27,6 @@ type Props = {
   messages: Messages
   canTalk: boolean
   search: (query?: MessagesQuery) => void
-  talkButtonRef: MutableRefObject<TalkButtonRefHandle>
 }
 
 export interface MessagesAreaRefHandle {
@@ -56,8 +42,7 @@ const MessagesArea = forwardRef<MessagesAreaRefHandle, Props>(
       searchable,
       search,
       onlyFollowing,
-      canTalk,
-      talkButtonRef
+      canTalk
     } = props
     const messageAreaRef = useRef<HTMLDivElement>(null)
 
@@ -82,8 +67,8 @@ const MessagesArea = forwardRef<MessagesAreaRefHandle, Props>(
     }
 
     const handleReply = (message: Message) => {
-      if (!canTalk || !talkButtonRef.current) return
-      talkButtonRef.current.reply(message)
+      if (!canTalk) return
+      props.reply(message)
     }
 
     return (
