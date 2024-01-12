@@ -205,10 +205,11 @@ func MapToGameParticipantProfile(
 
 func MapToGameParticipantIcon(p model.GameParticipantIcon) *gqlmodel.GameParticipantIcon {
 	return &gqlmodel.GameParticipantIcon{
-		ID:     intIdToBase64(p.ID, "GameParticipantIcon"),
-		URL:    p.IconImageURL,
-		Width:  int(p.Width),
-		Height: int(p.Height),
+		ID:           intIdToBase64(p.ID, "GameParticipantIcon"),
+		URL:          p.IconImageURL,
+		Width:        int(p.Width),
+		Height:       int(p.Height),
+		DisplayOrder: int(p.DisplayOrder),
 	}
 }
 

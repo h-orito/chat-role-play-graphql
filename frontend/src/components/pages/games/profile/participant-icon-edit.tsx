@@ -18,7 +18,9 @@ import {
 import { useMutation } from '@apollo/client'
 import {
   CSSProperties,
+  Dispatch,
   HTMLAttributes,
+  SetStateAction,
   forwardRef,
   useCallback,
   useState
@@ -60,8 +62,52 @@ export default function ParticipantIconEdit({
   refetchIcons
 }: Props) {
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>(defaultIcons)
+  const [submitting, setSubmitting] = useState<boolean>(false)
 
-  // sort icon -----------------------------------------------
+  return (
+    <div>
+      <IconSortArea
+        game={game}
+        icons={icons}
+        setIcons={setIcons}
+        refetchIcons={refetchIcons}
+        submitting={submitting}
+        setSubmitting={setSubmitting}
+      />
+      <IconUploadArea
+        game={game}
+        refetchIcons={refetchIcons}
+        setIcons={setIcons}
+        submitting={submitting}
+        setSubmitting={setSubmitting}
+      />
+      {icons.length > 0 && (
+        <IconDeleteArea
+          game={game}
+          icons={icons}
+          setIcons={setIcons}
+          refetchIcons={refetchIcons}
+        />
+      )}
+    </div>
+  )
+}
+
+const IconSortArea = ({
+  game,
+  icons,
+  setIcons,
+  refetchIcons,
+  submitting,
+  setSubmitting
+}: {
+  game: Game
+  icons: Array<GameParticipantIcon>
+  setIcons: Dispatch<SetStateAction<GameParticipantIcon[]>>
+  refetchIcons: () => Promise<Array<GameParticipantIcon>>
+  submitting: boolean
+  setSubmitting: Dispatch<SetStateAction<boolean>>
+}) => {
   // see https://iwaking.com/blog/sort-images-with-dnd-kit-react-typescript
   const [activeIcon, setActiveIcon] = useState<GameParticipantIcon>()
   const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor))
@@ -85,215 +131,67 @@ export default function ParticipantIconEdit({
     setActiveIcon(undefined)
   }
   const handleDragCancel = () => setActiveIcon(undefined)
-  const [updateIcon] = useMutation<UpdateIconMutation>(UpdateIconDocument, {
-    onCompleted(e) {
-      setSubmitting(false)
-    },
-    onError(error) {
-      setSubmitting(false)
-      console.error(error)
-    }
-  })
+  const [updateIcon] = useMutation<UpdateIconMutation>(UpdateIconDocument)
   const handleSaveSort = async () => {
     setSubmitting(true)
-    const changed = []
-    // 変更のあったアイコンのみ更新
-    for (let i = 0; i < icons.length; i++) {
-      const icon = icons[i]
-      const prev = defaultIcons[i]
-      if (icon.id != prev.id) changed.push(icon)
-    }
-    // アイコンを更新後再取得
+    // 並び順に変更のあったアイコンのみ更新
     const results = []
-    for (let i = 0; i < changed.length; i++) {
-      const icon = changed[i]
-      results.push(
-        updateIcon({
-          variables: {
-            input: {
-              gameId: game.id,
-              id: icon.id,
-              displayOrder: i + 1
-            } as UpdateGameParticipantIcon
-          } as UpdateIconMutationVariables
-        })
-      )
+    for (let i = 0; i < icons.length; i++) {
+      const newDisplayOrder = i + 1
+      const icon = icons[i]
+      if (icon.displayOrder !== newDisplayOrder) {
+        results.push(
+          updateIcon({
+            variables: {
+              input: {
+                gameId: game.id,
+                id: icon.id,
+                displayOrder: newDisplayOrder
+              } as UpdateGameParticipantIcon
+            } as UpdateIconMutationVariables
+          })
+        )
+      }
     }
     await Promise.all(results)
     const newIcons = await refetchIcons()
     setIcons(newIcons)
+    setSubmitting(false)
   }
 
-  // upload new icon --------------------------------------
-  const [images, setImages] = useState<File[]>([])
-  const [submitting, setSubmitting] = useState<boolean>(false)
-  const canSubmit: boolean = images.length > 0 && !submitting
-  const [uploadIcons] = useMutation<UploadIconsMutation>(UploadIconsDocument, {
-    onCompleted(e) {
-      setSubmitting(false)
-      setImages([])
-      refetchIcons().then((icons) => {
-        setIcons(icons)
-      })
-    },
-    onError(error) {
-      setSubmitting(false)
-      console.error(error)
-    }
-  })
-
-  const onSubmit = useCallback(
-    (e: any) => {
-      e.preventDefault()
-      setSubmitting(true)
-      uploadIcons({
-        variables: {
-          input: {
-            gameId: game.id,
-            iconFiles: images,
-            width: 60,
-            height: 60
-          }
-        } as UploadIconsMutationVariables
-      })
-    },
-    [uploadIcons, images]
-  )
-
-  // delete icon --------------------------------------
-  const [deleteIcon] = useMutation<DeleteParticipantIconMutation>(
-    DeleteParticipantIconDocument,
-    {
-      onCompleted(e) {
-        refetchIcons().then((icons) => {
-          setIcons(icons)
-        })
-      },
-      onError(error) {
-        console.error(error)
-      }
-    }
-  )
-
-  const handleDelete = useCallback(
-    (e: any, iconId: string) => {
-      e.preventDefault()
-      if (window.confirm('アイコンを削除しますか？') === false) return
-      deleteIcon({
-        variables: {
-          input: {
-            gameId: game.id,
-            iconId: iconId
-          }
-        } as DeleteParticipantIconMutationVariables
-      })
-    },
-    [deleteIcon]
-  )
-
   return (
-    <div>
-      <div className='mb-1'>
-        <label className='text-xs font-bold'>並び替え</label>
-        {icons.length === 0 && <p>アイコンが登録されていません。</p>}
-        {icons.length > 0 && (
-          <>
-            <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
-              ドラッグアンドドロップで並び替えて「反映」ボタンを押してください。
-            </p>
-            <div className='flex flex-wrap'>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDragCancel={handleDragCancel}
-              >
-                <SortableContext items={icons} strategy={rectSortingStrategy}>
-                  {icons.map((icon) => (
-                    <SortableItem key={icon.id} icon={icon} />
-                  ))}
-                </SortableContext>
-                <DragOverlay adjustScale style={{ transformOrigin: '0 0 ' }}>
-                  {activeIcon ? <Icon icon={activeIcon} isDragging /> : null}
-                </DragOverlay>
-              </DndContext>
-            </div>
-            <div className='flex justify-end'>
-              <PrimaryButton
-                disabled={submitting}
-                click={() => handleSaveSort()}
-              >
-                反映
-              </PrimaryButton>
-            </div>
-          </>
-        )}
-      </div>
-      <form onSubmit={onSubmit}>
-        <div className='my-4'>
-          <label className='text-xs font-bold'>追加</label>
-          <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
-            jpeg, jpg,
-            png形式かつ300kByte以下の画像を選択し、「追加」ボタンを押してください。
-            <br />
-            縦横ともに60pxで表示されます。
-          </p>
-          {images.length > 0 && (
-            <div>
-              {images
-                .map((file: File) => URL.createObjectURL(file))
-                .map((url: string) => (
-                  <img
-                    key={url}
-                    className='mb-2 inline-block w-32'
-                    src={url}
-                    alt='画像'
-                  />
-                ))}
-            </div>
-          )}
-          <InputImages
-            name='iconImages'
-            images={images}
-            setImages={setImages}
-            maxFileKByte={300}
-          />
-        </div>
-        <div className='flex justify-end'>
-          <SubmitButton label='追加' disabled={!canSubmit} />
-        </div>
-      </form>
+    <div className='mb-1'>
+      <label className='text-xs font-bold'>並び替え</label>
+      {icons.length === 0 && <p>アイコンが登録されていません。</p>}
       {icons.length > 0 && (
-        <div className='mb-1'>
-          <label className='text-xs font-bold'>削除</label>
+        <>
           <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
-            ゴミ箱アイコンから確認を経て削除することができます。
-            <br />
-            削除すると元に戻せません。アイコンを削除すると、プロフィールのアイコン一覧と、発言時のアイコン候補から削除されます。
-            <br />
-            発言済みのメッセージのアイコンは削除されません。
+            ドラッグアンドドロップで並び替えて「反映」ボタンを押してください。
           </p>
-          <div className='flex'>
-            {icons.map((icon) => (
-              <div className='relative flex' key={icon.id}>
-                <Image
-                  className='block w-full'
-                  src={icon.url}
-                  width={60}
-                  height={60}
-                  alt='プロフィール画像'
-                />
-                <button
-                  className='absolute right-0 top-0'
-                  onClick={(e: any) => handleDelete(e, icon.id)}
-                >
-                  <TrashIcon className='h-4 w-4 bg-red-500 text-white' />
-                </button>
-              </div>
-            ))}
+          <div className='flex flex-wrap'>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+            >
+              <SortableContext items={icons} strategy={rectSortingStrategy}>
+                {icons.map((icon) => (
+                  <SortableItem key={icon.id} icon={icon} />
+                ))}
+              </SortableContext>
+              <DragOverlay adjustScale style={{ transformOrigin: '0 0 ' }}>
+                {activeIcon ? <Icon icon={activeIcon} isDragging /> : null}
+              </DragOverlay>
+            </DndContext>
           </div>
-        </div>
+          <div className='flex justify-end'>
+            <PrimaryButton disabled={submitting} click={() => handleSaveSort()}>
+              反映
+            </PrimaryButton>
+          </div>
+        </>
       )}
     </div>
   )
@@ -356,3 +254,163 @@ const Icon = forwardRef<HTMLDivElement, IconProps>(
     )
   }
 )
+
+const IconUploadArea = ({
+  game,
+  refetchIcons,
+  setIcons,
+  submitting,
+  setSubmitting
+}: {
+  game: Game
+  refetchIcons: () => Promise<Array<GameParticipantIcon>>
+  setIcons: Dispatch<SetStateAction<GameParticipantIcon[]>>
+  submitting: boolean
+  setSubmitting: Dispatch<SetStateAction<boolean>>
+}) => {
+  // upload new icon --------------------------------------
+  const [images, setImages] = useState<File[]>([])
+  const canSubmit: boolean = images.length > 0 && !submitting
+  const [uploadIcons] = useMutation<UploadIconsMutation>(UploadIconsDocument, {
+    onCompleted(e) {
+      setSubmitting(false)
+      setImages([])
+      refetchIcons().then((icons) => {
+        setIcons(icons)
+      })
+    },
+    onError(error) {
+      setSubmitting(false)
+      console.error(error)
+    }
+  })
+
+  const onSubmit = useCallback(
+    (e: any) => {
+      e.preventDefault()
+      setSubmitting(true)
+      uploadIcons({
+        variables: {
+          input: {
+            gameId: game.id,
+            iconFiles: images,
+            width: 60,
+            height: 60
+          }
+        } as UploadIconsMutationVariables
+      })
+    },
+    [uploadIcons, images]
+  )
+
+  return (
+    <form onSubmit={onSubmit}>
+      <div className='my-4'>
+        <label className='text-xs font-bold'>追加</label>
+        <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
+          jpeg, jpg,
+          png形式かつ300kByte以下の画像を選択し、「追加」ボタンを押してください。
+          <br />
+          縦横ともに60pxで表示されます。
+        </p>
+        {images.length > 0 && (
+          <div>
+            {images
+              .map((file: File) => URL.createObjectURL(file))
+              .map((url: string) => (
+                <img
+                  key={url}
+                  className='mb-2 inline-block w-32'
+                  src={url}
+                  alt='画像'
+                />
+              ))}
+          </div>
+        )}
+        <InputImages
+          name='iconImages'
+          images={images}
+          setImages={setImages}
+          maxFileKByte={300}
+        />
+      </div>
+      <div className='flex justify-end'>
+        <SubmitButton label='追加' disabled={!canSubmit} />
+      </div>
+    </form>
+  )
+}
+
+const IconDeleteArea = ({
+  game,
+  icons,
+  setIcons,
+  refetchIcons
+}: {
+  game: Game
+  icons: Array<GameParticipantIcon>
+  setIcons: Dispatch<SetStateAction<GameParticipantIcon[]>>
+  refetchIcons: () => Promise<Array<GameParticipantIcon>>
+}) => {
+  const [deleteIcon] = useMutation<DeleteParticipantIconMutation>(
+    DeleteParticipantIconDocument,
+    {
+      onCompleted(e) {
+        refetchIcons().then((icons) => {
+          setIcons(icons)
+        })
+      },
+      onError(error) {
+        console.error(error)
+      }
+    }
+  )
+
+  const handleDelete = useCallback(
+    (e: any, iconId: string) => {
+      e.preventDefault()
+      if (window.confirm('アイコンを削除しますか？') === false) return
+      deleteIcon({
+        variables: {
+          input: {
+            gameId: game.id,
+            iconId: iconId
+          }
+        } as DeleteParticipantIconMutationVariables
+      })
+    },
+    [deleteIcon]
+  )
+
+  return (
+    <div className='mb-1'>
+      <label className='text-xs font-bold'>削除</label>
+      <p className='notification-background notification-text my-1 rounded-sm p-2 text-xs leading-5'>
+        ゴミ箱アイコンから確認を経て削除することができます。
+        <br />
+        削除すると元に戻せません。アイコンを削除すると、プロフィールのアイコン一覧と、発言時のアイコン候補から削除されます。
+        <br />
+        発言済みのメッセージのアイコンは削除されません。
+      </p>
+      <div className='flex'>
+        {icons.map((icon) => (
+          <div className='relative flex' key={icon.id}>
+            <Image
+              className='block w-full'
+              src={icon.url}
+              width={60}
+              height={60}
+              alt='プロフィール画像'
+            />
+            <button
+              className='absolute right-0 top-0'
+              onClick={(e: any) => handleDelete(e, icon.id)}
+            >
+              <TrashIcon className='h-4 w-4 bg-red-500 text-white' />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
