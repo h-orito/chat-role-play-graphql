@@ -369,6 +369,7 @@ type ComplexityRoot struct {
 		RegisterGameParticipantFollow func(childComplexity int, input gqlmodel.NewGameParticipantFollow) int
 		RegisterGameParticipantGroup  func(childComplexity int, input gqlmodel.NewGameParticipantGroup) int
 		RegisterGameParticipantIcon   func(childComplexity int, input gqlmodel.NewGameParticipantIcon) int
+		RegisterGameParticipantIcons  func(childComplexity int, input gqlmodel.NewGameParticipantIcons) int
 		RegisterMessage               func(childComplexity int, input gqlmodel.NewMessage) int
 		RegisterMessageDryRun         func(childComplexity int, input gqlmodel.NewMessage) int
 		RegisterMessageFavorite       func(childComplexity int, input gqlmodel.NewMessageFavorite) int
@@ -478,6 +479,10 @@ type ComplexityRoot struct {
 
 	RegisterGameParticipantIconPayload struct {
 		GameParticipantIcon func(childComplexity int) int
+	}
+
+	RegisterGameParticipantIconsPayload struct {
+		GameParticipantIcons func(childComplexity int) int
 	}
 
 	RegisterGameParticipantPayload struct {
@@ -601,6 +606,7 @@ type MutationResolver interface {
 	RegisterGameParticipant(ctx context.Context, input gqlmodel.NewGameParticipant) (*gqlmodel.RegisterGameParticipantPayload, error)
 	UpdateGameParticipantProfile(ctx context.Context, input gqlmodel.UpdateGameParticipantProfile) (*gqlmodel.UpdateGameParticipantProfilePayload, error)
 	RegisterGameParticipantIcon(ctx context.Context, input gqlmodel.NewGameParticipantIcon) (*gqlmodel.RegisterGameParticipantIconPayload, error)
+	RegisterGameParticipantIcons(ctx context.Context, input gqlmodel.NewGameParticipantIcons) (*gqlmodel.RegisterGameParticipantIconsPayload, error)
 	UpdateGameParticipantIcon(ctx context.Context, input gqlmodel.UpdateGameParticipantIcon) (*gqlmodel.UpdateGameParticipantIconPayload, error)
 	DeleteGameParticipantIcon(ctx context.Context, input gqlmodel.DeleteGameParticipantIcon) (*gqlmodel.DeleteGameParticipantIconPayload, error)
 	UpdateGameParticipantSetting(ctx context.Context, input gqlmodel.UpdateGameParticipantSetting) (*gqlmodel.UpdateGameParticipantSettingPayload, error)
@@ -2054,6 +2060,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.RegisterGameParticipantIcon(childComplexity, args["input"].(gqlmodel.NewGameParticipantIcon)), true
 
+	case "Mutation.registerGameParticipantIcons":
+		if e.complexity.Mutation.RegisterGameParticipantIcons == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_registerGameParticipantIcons_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RegisterGameParticipantIcons(childComplexity, args["input"].(gqlmodel.NewGameParticipantIcons)), true
+
 	case "Mutation.registerMessage":
 		if e.complexity.Mutation.RegisterMessage == nil {
 			break
@@ -2733,6 +2751,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.RegisterGameParticipantIconPayload.GameParticipantIcon(childComplexity), true
 
+	case "RegisterGameParticipantIconsPayload.gameParticipantIcons":
+		if e.complexity.RegisterGameParticipantIconsPayload.GameParticipantIcons == nil {
+			break
+		}
+
+		return e.complexity.RegisterGameParticipantIconsPayload.GameParticipantIcons(childComplexity), true
+
 	case "RegisterGameParticipantPayload.gameParticipant":
 		if e.complexity.RegisterGameParticipantPayload.GameParticipant == nil {
 			break
@@ -2945,6 +2970,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewGameParticipantFollow,
 		ec.unmarshalInputNewGameParticipantGroup,
 		ec.unmarshalInputNewGameParticipantIcon,
+		ec.unmarshalInputNewGameParticipantIcons,
 		ec.unmarshalInputNewGamePasswordSetting,
 		ec.unmarshalInputNewGameRuleSetting,
 		ec.unmarshalInputNewGameSettings,
@@ -3583,6 +3609,9 @@ type Mutation {
   registerGameParticipantIcon(
     input: NewGameParticipantIcon!
   ): RegisterGameParticipantIconPayload! @isAuthenticated
+  registerGameParticipantIcons(
+    input: NewGameParticipantIcons!
+  ): RegisterGameParticipantIconsPayload! @isAuthenticated
   updateGameParticipantIcon(
     input: UpdateGameParticipantIcon!
   ): UpdateGameParticipantIconPayload! @isAuthenticated
@@ -3889,6 +3918,17 @@ input NewGameParticipantIcon {
 
 type RegisterGameParticipantIconPayload {
   gameParticipantIcon: GameParticipantIcon!
+}
+
+input NewGameParticipantIcons {
+  gameId: ID!
+  iconFiles: [Upload!]!
+  width: Int!
+  height: Int!
+}
+
+type RegisterGameParticipantIconsPayload {
+  gameParticipantIcons: [GameParticipantIcon!]
 }
 
 input UpdateGameParticipantIcon {
@@ -4428,6 +4468,21 @@ func (ec *executionContext) field_Mutation_registerGameParticipantIcon_args(ctx 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewGameParticipantIcon2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantIcon(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_registerGameParticipantIcons_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 gqlmodel.NewGameParticipantIcons
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewGameParticipantIcons2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantIcons(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -13677,6 +13732,85 @@ func (ec *executionContext) fieldContext_Mutation_registerGameParticipantIcon(ct
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_registerGameParticipantIcons(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_registerGameParticipantIcons(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().RegisterGameParticipantIcons(rctx, fc.Args["input"].(gqlmodel.NewGameParticipantIcons))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*gqlmodel.RegisterGameParticipantIconsPayload); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *chat-role-play/middleware/graph/gqlmodel.RegisterGameParticipantIconsPayload`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*gqlmodel.RegisterGameParticipantIconsPayload)
+	fc.Result = res
+	return ec.marshalNRegisterGameParticipantIconsPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterGameParticipantIconsPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_registerGameParticipantIcons(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "gameParticipantIcons":
+				return ec.fieldContext_RegisterGameParticipantIconsPayload_gameParticipantIcons(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RegisterGameParticipantIconsPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_registerGameParticipantIcons_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_updateGameParticipantIcon(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_updateGameParticipantIcon(ctx, field)
 	if err != nil {
@@ -18660,6 +18794,59 @@ func (ec *executionContext) fieldContext_RegisterGameParticipantIconPayload_game
 	return fc, nil
 }
 
+func (ec *executionContext) _RegisterGameParticipantIconsPayload_gameParticipantIcons(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.RegisterGameParticipantIconsPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RegisterGameParticipantIconsPayload_gameParticipantIcons(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GameParticipantIcons, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*gqlmodel.GameParticipantIcon)
+	fc.Result = res
+	return ec.marshalOGameParticipantIcon2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIconᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RegisterGameParticipantIconsPayload_gameParticipantIcons(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RegisterGameParticipantIconsPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_GameParticipantIcon_id(ctx, field)
+			case "url":
+				return ec.fieldContext_GameParticipantIcon_url(ctx, field)
+			case "width":
+				return ec.fieldContext_GameParticipantIcon_width(ctx, field)
+			case "height":
+				return ec.fieldContext_GameParticipantIcon_height(ctx, field)
+			case "displayOrder":
+				return ec.fieldContext_GameParticipantIcon_displayOrder(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GameParticipantIcon", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _RegisterGameParticipantPayload_gameParticipant(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.RegisterGameParticipantPayload) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_RegisterGameParticipantPayload_gameParticipant(ctx, field)
 	if err != nil {
@@ -23011,6 +23198,62 @@ func (ec *executionContext) unmarshalInputNewGameParticipantIcon(ctx context.Con
 				return it, err
 			}
 			it.IconFile = data
+		case "width":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("width"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Width = data
+		case "height":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("height"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Height = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNewGameParticipantIcons(ctx context.Context, obj interface{}) (gqlmodel.NewGameParticipantIcons, error) {
+	var it gqlmodel.NewGameParticipantIcons
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"gameId", "iconFiles", "width", "height"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "gameId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.GameID = data
+		case "iconFiles":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconFiles"))
+			data, err := ec.unmarshalNUpload2ᚕᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUploadᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IconFiles = data
 		case "width":
 			var err error
 
@@ -27570,6 +27813,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "registerGameParticipantIcons":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_registerGameParticipantIcons(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "updateGameParticipantIcon":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateGameParticipantIcon(ctx, field)
@@ -28911,6 +29161,42 @@ func (ec *executionContext) _RegisterGameParticipantIconPayload(ctx context.Cont
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var registerGameParticipantIconsPayloadImplementors = []string{"RegisterGameParticipantIconsPayload"}
+
+func (ec *executionContext) _RegisterGameParticipantIconsPayload(ctx context.Context, sel ast.SelectionSet, obj *gqlmodel.RegisterGameParticipantIconsPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, registerGameParticipantIconsPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RegisterGameParticipantIconsPayload")
+		case "gameParticipantIcons":
+			out.Values[i] = ec._RegisterGameParticipantIconsPayload_gameParticipantIcons(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -31372,6 +31658,11 @@ func (ec *executionContext) unmarshalNNewGameParticipantIcon2chatᚑroleᚑplay�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNNewGameParticipantIcons2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantIcons(ctx context.Context, v interface{}) (gqlmodel.NewGameParticipantIcons, error) {
+	res, err := ec.unmarshalInputNewGameParticipantIcons(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNNewGamePasswordSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGamePasswordSetting(ctx context.Context, v interface{}) (*gqlmodel.NewGamePasswordSetting, error) {
 	res, err := ec.unmarshalInputNewGamePasswordSetting(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -31673,6 +31964,20 @@ func (ec *executionContext) marshalNRegisterGameParticipantIconPayload2ᚖchat�
 		return graphql.Null
 	}
 	return ec._RegisterGameParticipantIconPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRegisterGameParticipantIconsPayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterGameParticipantIconsPayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterGameParticipantIconsPayload) graphql.Marshaler {
+	return ec._RegisterGameParticipantIconsPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRegisterGameParticipantIconsPayload2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterGameParticipantIconsPayload(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.RegisterGameParticipantIconsPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._RegisterGameParticipantIconsPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNRegisterGameParticipantPayload2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterGameParticipantPayload(ctx context.Context, sel ast.SelectionSet, v gqlmodel.RegisterGameParticipantPayload) graphql.Marshaler {
@@ -32161,6 +32466,59 @@ func (ec *executionContext) marshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋg
 	return res
 }
 
+func (ec *executionContext) unmarshalNUpload2ᚕᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUploadᚄ(ctx context.Context, v interface{}) ([]*graphql.Upload, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]*graphql.Upload, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNUpload2ᚕᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUploadᚄ(ctx context.Context, sel ast.SelectionSet, v []*graphql.Upload) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, v interface{}) (*graphql.Upload, error) {
+	res, err := graphql.UnmarshalUpload(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, sel ast.SelectionSet, v *graphql.Upload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	res := graphql.MarshalUpload(*v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
 	return ec.___Directive(ctx, sel, &v)
 }
@@ -32503,6 +32861,53 @@ func (ec *executionContext) marshalOGameParticipantDiary2ᚖchatᚑroleᚑplay�
 		return graphql.Null
 	}
 	return ec._GameParticipantDiary(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOGameParticipantIcon2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIconᚄ(ctx context.Context, sel ast.SelectionSet, v []*gqlmodel.GameParticipantIcon) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNGameParticipantIcon2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIcon(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalOGameParticipantIcon2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIcon(ctx context.Context, sel ast.SelectionSet, v *gqlmodel.GameParticipantIcon) graphql.Marshaler {

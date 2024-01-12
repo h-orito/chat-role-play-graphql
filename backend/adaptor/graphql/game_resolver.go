@@ -305,6 +305,38 @@ func (r *mutationResolver) registerGameParticipantIcon(ctx context.Context, inpu
 	}, nil
 }
 
+func (r *mutationResolver) registerGameParticipantIcons(ctx context.Context, input gqlmodel.NewGameParticipantIcons) (*gqlmodel.RegisterGameParticipantIconsPayload, error) {
+	gameId, err := idToUint32(input.GameID)
+	if err != nil {
+		return nil, err
+	}
+	user := auth.GetUser(ctx)
+	if user == nil {
+		return nil, err
+	}
+	var icons []*model.GameParticipantIcon
+	for _, file := range input.IconFiles {
+		url, err := r.imageUsecase.Upload(file.File)
+		if err != nil {
+			return nil, err
+		}
+		icon, err := r.gameUsecase.RegisterGameParticipantIcon(ctx, gameId, *user, model.GameParticipantIcon{
+			IconImageURL: *url,
+			Width:        uint32(input.Width),
+			Height:       uint32(input.Height),
+		})
+		if err != nil {
+			return nil, err
+		}
+		icons = append(icons, icon)
+	}
+	return &gqlmodel.RegisterGameParticipantIconsPayload{
+		GameParticipantIcons: array.Map(icons, func(icon *model.GameParticipantIcon) *gqlmodel.GameParticipantIcon {
+			return MapToGameParticipantIcon(*icon)
+		}),
+	}, nil
+}
+
 func (r *mutationResolver) updateGameParticipantIcon(ctx context.Context, input gqlmodel.UpdateGameParticipantIcon) (*gqlmodel.UpdateGameParticipantIconPayload, error) {
 	gameId, err := idToUint32(input.GameID)
 	if err != nil {

@@ -1,0 +1,7 @@
+mutation UploadIcons($input: NewGameParticipantIcons!) {
+  registerGameParticipantIcons(input: $input) {
+    gameParticipantIcons {
+      id
+    }
+  }
+}

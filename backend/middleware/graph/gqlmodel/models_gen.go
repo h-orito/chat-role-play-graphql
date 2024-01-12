@@ -457,6 +457,13 @@ type NewGameParticipantIcon struct {
 	Height   int            `json:"height"`
 }
 
+type NewGameParticipantIcons struct {
+	GameID    string            `json:"gameId"`
+	IconFiles []*graphql.Upload `json:"iconFiles"`
+	Width     int               `json:"width"`
+	Height    int               `json:"height"`
+}
+
 type NewGamePasswordSetting struct {
 	Password *string `json:"password,omitempty"`
 }
@@ -600,6 +607,10 @@ type RegisterGameParticipantGroupPayload struct {
 
 type RegisterGameParticipantIconPayload struct {
 	GameParticipantIcon *GameParticipantIcon `json:"gameParticipantIcon"`
+}
+
+type RegisterGameParticipantIconsPayload struct {
+	GameParticipantIcons []*GameParticipantIcon `json:"gameParticipantIcons,omitempty"`
 }
 
 type RegisterGameParticipantPayload struct {

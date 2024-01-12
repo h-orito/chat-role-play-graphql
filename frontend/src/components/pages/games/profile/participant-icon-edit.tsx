@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import SubmitButton from '@/components/button/submit-button'
-import InputImage from '@/components/form/input-image'
 import {
   DeleteParticipantIconDocument,
   DeleteParticipantIconMutation,
@@ -12,9 +11,9 @@ import {
   UpdateIconDocument,
   UpdateIconMutation,
   UpdateIconMutationVariables,
-  UploadIconDocument,
-  UploadIconMutation,
-  UploadIconMutationVariables
+  UploadIconsDocument,
+  UploadIconsMutation,
+  UploadIconsMutationVariables
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
 import {
@@ -43,6 +42,7 @@ import {
   useSortable
 } from '@dnd-kit/sortable'
 import PrimaryButton from '@/components/button/primary-button'
+import InputImages from '@/components/form/input-images'
 
 type Props = {
   close: (e: any) => void
@@ -128,7 +128,7 @@ export default function ParticipantIconEdit({
   const [images, setImages] = useState<File[]>([])
   const [submitting, setSubmitting] = useState<boolean>(false)
   const canSubmit: boolean = images.length > 0 && !submitting
-  const [uploadIcon] = useMutation<UploadIconMutation>(UploadIconDocument, {
+  const [uploadIcons] = useMutation<UploadIconsMutation>(UploadIconsDocument, {
     onCompleted(e) {
       setSubmitting(false)
       setImages([])
@@ -146,18 +146,18 @@ export default function ParticipantIconEdit({
     (e: any) => {
       e.preventDefault()
       setSubmitting(true)
-      uploadIcon({
+      uploadIcons({
         variables: {
           input: {
             gameId: game.id,
-            iconFile: images.length > 0 ? images[0] : null,
+            iconFiles: images,
             width: 60,
             height: 60
           }
-        } as UploadIconMutationVariables
+        } as UploadIconsMutationVariables
       })
     },
-    [uploadIcon, images]
+    [uploadIcons, images]
   )
 
   // delete icon --------------------------------------
@@ -239,8 +239,23 @@ export default function ParticipantIconEdit({
             <br />
             縦横ともに60pxで表示されます。
           </p>
-          <InputImage
-            name='iconImage'
+          {images.length > 0 && (
+            <div>
+              {images
+                .map((file: File) => URL.createObjectURL(file))
+                .map((url: string) => (
+                  <img
+                    key={url}
+                    className='mb-2 inline-block w-32'
+                    src={url}
+                    alt='画像'
+                  />
+                ))}
+            </div>
+          )}
+          <InputImages
+            name='iconImages'
+            images={images}
             setImages={setImages}
             maxFileKByte={300}
           />

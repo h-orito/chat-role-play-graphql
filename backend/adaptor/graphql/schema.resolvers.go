@@ -125,6 +125,11 @@ func (r *mutationResolver) RegisterGameParticipantIcon(ctx context.Context, inpu
 	return r.registerGameParticipantIcon(ctx, input)
 }
 
+// RegisterGameParticipantIcons is the resolver for the registerGameParticipantIcons field.
+func (r *mutationResolver) RegisterGameParticipantIcons(ctx context.Context, input gqlmodel.NewGameParticipantIcons) (*gqlmodel.RegisterGameParticipantIconsPayload, error) {
+	return r.registerGameParticipantIcons(ctx, input)
+}
+
 // UpdateGameParticipantIcon is the resolver for the updateGameParticipantIcon field.
 func (r *mutationResolver) UpdateGameParticipantIcon(ctx context.Context, input gqlmodel.UpdateGameParticipantIcon) (*gqlmodel.UpdateGameParticipantIconPayload, error) {
 	return r.updateGameParticipantIcon(ctx, input)

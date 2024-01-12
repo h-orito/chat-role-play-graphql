@@ -505,6 +505,9 @@ type Mutation {
   registerGameParticipantIcon(
     input: NewGameParticipantIcon!
   ): RegisterGameParticipantIconPayload! @isAuthenticated
+  registerGameParticipantIcons(
+    input: NewGameParticipantIcons!
+  ): RegisterGameParticipantIconsPayload! @isAuthenticated
   updateGameParticipantIcon(
     input: UpdateGameParticipantIcon!
   ): UpdateGameParticipantIconPayload! @isAuthenticated
@@ -811,6 +814,17 @@ input NewGameParticipantIcon {
 
 type RegisterGameParticipantIconPayload {
   gameParticipantIcon: GameParticipantIcon!
+}
+
+input NewGameParticipantIcons {
+  gameId: ID!
+  iconFiles: [Upload!]!
+  width: Int!
+  height: Int!
+}
+
+type RegisterGameParticipantIconsPayload {
+  gameParticipantIcons: [GameParticipantIcon!]
 }
 
 input UpdateGameParticipantIcon {

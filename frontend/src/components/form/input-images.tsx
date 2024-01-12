@@ -5,8 +5,8 @@ import PrimaryButton from '../button/primary-button'
 interface Props {
   label?: string
   name: string
+  images: File[]
   setImages: Dispatch<SetStateAction<File[]>>
-  defaultImageUrl?: string | null
   maxFileKByte?: number
   disabled?: boolean
 }
@@ -19,16 +19,15 @@ const allowImageTypes = [
   'image/webp'
 ]
 
-export default function InputImage({
+export default function InputImages({
   label,
   name,
+  images,
   setImages,
-  defaultImageUrl,
   maxFileKByte = 1024,
   disabled = false
 }: Props) {
   const [errorMessage, setErrorMessage] = useState('')
-  const [previewImageUrl, setPreviewImageUrl] = useState(defaultImageUrl)
   const inputRef = useRef<HTMLInputElement>(null!)
 
   const onProfileButtonClick = (e: any) => {
@@ -40,43 +39,40 @@ export default function InputImage({
     if (event.target.files === null || event.target.files.length === 0) {
       return
     }
-    const file = event.target.files[0]
+    const files = Array.from(event.target.files)
     // 初期化することで同じファイルを連続で選択してもonChagngeが発動するように設定し、画像をキャンセルしてすぐに同じ画像を選ぶ動作に対応
     event.target.value = ''
     setErrorMessage('')
 
-    if (!allowImageTypes.includes(file.type)) {
+    if (files.some((file: File) => !allowImageTypes.includes(file.type))) {
       setErrorMessage('jpeg, jpg, png, gif, webpのファイルを選択してください')
       return
     }
 
-    if (file.size > maxFileKByte * 1024) {
-      setErrorMessage(`${maxFileKByte}kByte以下のファイルを選択してください`)
+    if (files.some((file: File) => file.size > maxFileKByte * 1024)) {
+      const sizeOverFiles = files.filter(
+        (file: File) => file.size > maxFileKByte * 1024
+      )
+      setErrorMessage(
+        `${maxFileKByte}kByteを超えたファイルを選択しています。 ${sizeOverFiles
+          .map((file: File) => file.name)
+          .join(', ')}}`
+      )
       return
     }
 
-    setImages([file])
-    setPreviewImageUrl(URL.createObjectURL(file))
+    setImages(files)
   }
 
   const handleCancel = (e: any) => {
     e.preventDefault()
     setErrorMessage('')
     setImages([])
-    setPreviewImageUrl('')
   }
 
   return (
     <div>
       {label && <label className='block text-xs font-bold'>{label}</label>}
-      {previewImageUrl && (
-        <img
-          className='mb-2 w-32'
-          src={previewImageUrl}
-          alt={label ? label : '画像'}
-        />
-      )}
-
       <input
         type='file'
         name={name}
@@ -85,11 +81,12 @@ export default function InputImage({
         accept='image/*'
         onChange={handleFile}
         hidden
+        multiple
       />
       <PrimaryButton click={onProfileButtonClick} disabled={disabled}>
         画像を選択
       </PrimaryButton>
-      {previewImageUrl != null && (
+      {images.length > 0 && (
         <DangerButton className='ml-2' click={(e: any) => handleCancel(e)}>
           削除
         </DangerButton>

@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2024/01/12'>
+            <li>変更: アイコンアップロードを複数枚選択できるよう変更</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2024/01/11'>
             <li>変更: 発言欄を最下部固定</li>
           </ReleaseContent>
@@ -222,7 +226,6 @@ export default function CreateGame() {
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>ひとことメモ</li>
                       <li>フォローフリーとか連れ出し歓迎とかのタグ機能</li>
-                      <li>アイコン一括アップロード</li>
                     </ul>
                   </li>
                   <li>
