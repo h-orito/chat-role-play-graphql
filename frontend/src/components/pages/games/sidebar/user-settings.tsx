@@ -118,10 +118,14 @@ const PagingSettings = () => {
 const DisplaySettings = () => {
   const [userDisplaySettings, setUserDisplaySettings] = useUserDisplaySettings()
   const [themeName, setThemeName] = useState(userDisplaySettings.themeName)
+  const [iconSizeRatio, setIconSizeRatio] = useState(
+    userDisplaySettings.iconSizeRatio ?? 1
+  )
   const router = useRouter()
   const save = () => {
     setUserDisplaySettings({
-      themeName: themeName
+      themeName: themeName,
+      iconSizeRatio: iconSizeRatio
     } as UserDisplaySettings)
     router.reload()
   }
@@ -143,6 +147,30 @@ const DisplaySettings = () => {
           candidates={candidates}
           selected={userDisplaySettings.themeName}
           setSelected={(value: string) => setThemeName(value)}
+        />
+      </div>
+      <FormLabel label='アイコン表示サイズ'>
+        アイコンを通常よりも大きく表示することができます。
+      </FormLabel>
+      <div className='mb-4'>
+        <InputSelect
+          className='w-64 md:w-96'
+          candidates={[
+            {
+              label: '通常',
+              value: 1
+            },
+            {
+              label: '1.5倍',
+              value: 1.5
+            },
+            {
+              label: '2倍',
+              value: 2
+            }
+          ]}
+          selected={userDisplaySettings.iconSizeRatio ?? 1}
+          setSelected={(value: number) => setIconSizeRatio(value)}
         />
       </div>
       <div className='flex justify-center'>

@@ -25,6 +25,7 @@ type MessageProps = {
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   preview?: boolean
+  imageSizeRatio: number
 }
 
 export default function DirectMessageComponent({
@@ -33,7 +34,8 @@ export default function DirectMessageComponent({
   myself,
   openProfileModal,
   openFavoritesModal,
-  preview = false
+  preview = false,
+  imageSizeRatio
 }: MessageProps) {
   const canFav: boolean =
     myself != null && myself.id !== directMessage.sender?.participantId
@@ -138,8 +140,8 @@ export default function DirectMessageComponent({
             <Image
               className='cursor-pointer'
               src={directMessage.sender!.icon!.url}
-              width={directMessage.sender!.icon!.width}
-              height={directMessage.sender!.icon!.height}
+              width={directMessage.sender!.icon!.width * imageSizeRatio}
+              height={directMessage.sender!.icon!.height * imageSizeRatio}
               alt='キャラアイコン'
               onClick={handleProfileClick}
             />
@@ -148,7 +150,11 @@ export default function DirectMessageComponent({
             <div className='ml-2 flex-1 text-sm'>
               <div
                 className={`message ${messageClass}`}
-                style={{ minHeight: `${directMessage.sender!.icon!.height}px` }}
+                style={{
+                  minHeight: `${
+                    directMessage.sender!.icon!.height * imageSizeRatio
+                  }px`
+                }}
               >
                 <MessageText
                   rawText={directMessage.content.text}

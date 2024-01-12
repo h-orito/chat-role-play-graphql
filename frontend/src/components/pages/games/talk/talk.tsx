@@ -33,6 +33,7 @@ import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
 import PrimaryButton from '@/components/button/primary-button'
 import ParticipantSelect from '../participant/participant-select'
+import { useUserDisplaySettings } from '../user-settings'
 
 type Props = {
   game: Game
@@ -182,6 +183,8 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
     }
   }
 
+  const [userDisplaySettings] = useUserDisplaySettings()
+
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
 
   return (
@@ -238,6 +241,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
           game={game}
           myself={myself}
           scrollToPreview={scrollToPreview}
+          imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
         />
       )}
       {replyTarget && (
@@ -257,6 +261,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
                 openProfileModal={() => {}}
                 openFavoritesModal={() => {}}
                 handleReply={() => {}}
+                imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
               />
             </div>
           </div>
@@ -559,12 +564,14 @@ const TalkPreview = ({
   preview,
   game,
   myself,
-  scrollToPreview
+  scrollToPreview,
+  imageSizeRatio
 }: {
   preview: Message | null
   game: Game
   myself: GameParticipant
   scrollToPreview: () => void
+  imageSizeRatio: number
 }) => {
   useEffect(() => {
     scrollToPreview()
@@ -582,6 +589,7 @@ const TalkPreview = ({
             openProfileModal={() => {}}
             openFavoritesModal={() => {}}
             handleReply={() => {}}
+            imageSizeRatio={imageSizeRatio}
           />
         </div>
       </div>

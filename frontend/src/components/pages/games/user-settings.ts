@@ -12,6 +12,7 @@ export type UserPagingSettings = {
 
 export type UserDisplaySettings = {
   themeName: string
+  iconSizeRatio?: number
 }
 
 const defaultPagingSettings: UserPagingSettings = {
@@ -20,7 +21,8 @@ const defaultPagingSettings: UserPagingSettings = {
 }
 
 const defaultDisplaySettings: UserDisplaySettings = {
-  themeName: 'original'
+  themeName: 'original',
+  iconSizeRatio: 1
 }
 
 export const defaultUserSettings: UserSettings = {

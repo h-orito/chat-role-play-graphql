@@ -11,6 +11,7 @@ import Paging from './paging'
 import { forwardRef, useImperativeHandle, useRef } from 'react'
 import GamePeriodLinks from '../../game-period-links'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
+import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 
 type Props = {
   game: Game
@@ -71,6 +72,8 @@ const MessagesArea = forwardRef<MessagesAreaRefHandle, Props>(
       props.reply(message)
     }
 
+    const [userDisplaySettings] = useUserDisplaySettings()
+
     return (
       <div className='flex-1 overflow-y-auto' ref={messageAreaRef}>
         <GamePeriodLinksArea
@@ -92,6 +95,7 @@ const MessagesArea = forwardRef<MessagesAreaRefHandle, Props>(
               key={message.id}
               handleReply={handleReply}
               shouldDisplayReplyTo={true}
+              imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
             />
           ))}
           {!onlyFollowing && !searchable && (

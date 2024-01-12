@@ -18,7 +18,10 @@ import DirectSearchCondition from './direct-search-condition'
 import { ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import ParticipantGroupEdit from './participant-group-edit'
-import { useUserPagingSettings } from '../../../user-settings'
+import {
+  useUserDisplaySettings,
+  useUserPagingSettings
+} from '../../../user-settings'
 import DirectFooterMenu from './direct-footer-menu'
 import Portal from '@/components/modal/portal'
 
@@ -109,6 +112,8 @@ export default function DirectMessageArea(props: Props) {
     })
   }
 
+  const [userDisplaySettings] = useUserDisplaySettings()
+
   return (
     <DirectMessageModal
       {...props}
@@ -147,6 +152,7 @@ export default function DirectMessageArea(props: Props) {
                 key={message.id}
                 openProfileModal={openProfileModal}
                 openFavoritesModal={openFavoritesModal}
+                imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
               />
             ))}
           </div>

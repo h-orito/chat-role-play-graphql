@@ -16,6 +16,7 @@ type MessageProps = {
   openFavoritesModal: (messageId: string) => void
   handleReply: (message: Message) => void
   shouldDisplayReplyTo: boolean
+  imageSizeRatio: number
 }
 
 export default function MessageComponent(props: MessageProps) {

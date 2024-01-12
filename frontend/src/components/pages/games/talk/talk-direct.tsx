@@ -25,6 +25,7 @@ import SubmitButton from '@/components/button/submit-button'
 import DirectMessageComponent from '../article/message-area/direct-message/direct-message'
 import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
+import { useUserDisplaySettings } from '../user-settings'
 
 type Props = {
   game: Game
@@ -294,6 +295,8 @@ const DirectPreview = ({
     scrollToPreview()
   }, [])
 
+  const [userDisplaySettings] = useUserDisplaySettings()
+
   return (
     <div className='base-border my-4 border-t pt-2'>
       <p className='font-bold'>プレビュー</p>
@@ -304,6 +307,7 @@ const DirectPreview = ({
           game={game}
           openProfileModal={() => {}}
           openFavoritesModal={() => {}}
+          imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
         />
       </div>
     </div>

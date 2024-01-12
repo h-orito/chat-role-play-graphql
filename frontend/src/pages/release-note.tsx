@@ -27,6 +27,10 @@ export default function CreateGame() {
 
           <ReleaseContent label='機能追加' date='2024/01/12'>
             <li>変更: アイコンアップロードを複数枚選択できるよう変更</li>
+            <li>
+              追加:
+              アイコンを1.5倍/2倍の大きさで表示できるようユーザー設定を追加
+            </li>
           </ReleaseContent>
 
           <ReleaseContent label='機能追加' date='2024/01/11'>
@@ -214,9 +218,7 @@ export default function CreateGame() {
                   <li>
                     ユーザー設定
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
-                      <li>表示設定</li>
                       <li>ミュート</li>
-                      <li>画像の大きさ2倍</li>
                       <li>文字の大きさ2倍</li>
                     </ul>
                   </li>
