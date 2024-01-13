@@ -471,6 +471,7 @@ export type MessagesQuery = {
   offsetUnixTimeMilli?: InputMaybe<Scalars['Long']['input']>;
   paging?: InputMaybe<PageableQuery>;
   periodId?: InputMaybe<Scalars['ID']['input']>;
+  recipientIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   replyToMessageId?: InputMaybe<Scalars['ID']['input']>;
   senderIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   sinceAt?: InputMaybe<Scalars['DateTime']['input']>;

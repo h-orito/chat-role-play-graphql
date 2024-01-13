@@ -68,6 +68,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       senderIds: onlyFollowing
         ? [...myself!.followParticipantIds, myself!.id]
         : null,
+      recipientIds: null,
       periodId: searchable ? null : game.periods[game.periods.length - 1].id,
       paging: {
         pageSize: pagingSettings.pageSize,

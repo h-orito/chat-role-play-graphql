@@ -147,6 +147,7 @@ type MessagesQuery struct {
 	GamePeriodID        *uint32
 	Types               *[]MessageType
 	SenderIDs           *[]uint32
+	RecipientIDs        *[]uint32
 	ReplyToMessageID    *uint64
 	Keywords            *[]string
 	SinceAt             *time.Time

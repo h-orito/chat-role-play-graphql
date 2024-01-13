@@ -448,6 +448,7 @@ input MessagesQuery {
   periodId: ID
   types: [MessageType!]
   senderIds: [ID!]
+  recipientIds: [ID!]
   replyToMessageId: ID
   keywords: [String!]
   sinceAt: DateTime

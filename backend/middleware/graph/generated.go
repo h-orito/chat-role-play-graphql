@@ -3552,6 +3552,7 @@ input MessagesQuery {
   periodId: ID
   types: [MessageType!]
   senderIds: [ID!]
+  recipientIds: [ID!]
   replyToMessageId: ID
   keywords: [String!]
   sinceAt: DateTime
@@ -22490,7 +22491,7 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"ids", "periodId", "types", "senderIds", "replyToMessageId", "keywords", "sinceAt", "untilAt", "offsetUnixTimeMilli", "paging"}
+	fieldsInOrder := [...]string{"ids", "periodId", "types", "senderIds", "recipientIds", "replyToMessageId", "keywords", "sinceAt", "untilAt", "offsetUnixTimeMilli", "paging"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22533,6 +22534,15 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 				return it, err
 			}
 			it.SenderIds = data
+		case "recipientIds":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("recipientIds"))
+			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RecipientIds = data
 		case "replyToMessageId":
 			var err error
 

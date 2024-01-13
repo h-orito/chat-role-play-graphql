@@ -67,6 +67,11 @@ export default function SearchCondition({
       ? participants.filter((gp) => messageQuery.senderIds?.includes(gp.id))
       : []
   )
+  const [receivers, setReceivers] = useState<GameParticipant[]>(
+    messageQuery.recipientIds
+      ? participants.filter((gp) => messageQuery.recipientIds?.includes(gp.id))
+      : []
+  )
   const [keyword, setKeyword] = useState<string>(
     messageQuery.keywords ? messageQuery.keywords.join(' ') : ''
   )
@@ -83,6 +88,12 @@ export default function SearchCondition({
       setIsOpenSenderModal(!isOpenSenderModal)
     }
   }
+  const [isOpenReceiverModal, setIsOpenReceiverModal] = useState(false)
+  const toggleReceiverModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenReceiverModal(!isOpenReceiverModal)
+    }
+  }
 
   const handleSearch = (e: any) => {
     const keywords = keyword.split(' ').filter((k) => k.length !== 0)
@@ -95,6 +106,10 @@ export default function SearchCondition({
         : senders.length > 0 && senders.length !== participants.length
         ? senders.map((s) => s.id)
         : null,
+      recipientIds:
+        receivers.length > 0 && receivers.length !== participants.length
+          ? receivers.map((r) => r.id)
+          : null,
       keywords: keywords.length > 0 ? keywords : null,
       sinceAt,
       untilAt
@@ -145,6 +160,21 @@ export default function SearchCondition({
           </div>
         )}
         <div className='my-2'>
+          <label className='text-xs font-bold'>宛先</label>
+          {receivers.length === 0 ||
+          receivers.length === participants.length ? (
+            <p className='text-xs'>全員</p>
+          ) : (
+            <p className='text-xs'>{receivers.map((s) => s.name).join('、')}</p>
+          )}
+          <PrimaryButton
+            className='text-xs'
+            click={() => setIsOpenReceiverModal(true)}
+          >
+            選択
+          </PrimaryButton>
+        </div>
+        <div className='my-2'>
           <label className='text-xs font-bold'>キーワード</label>
           <div>
             <input
@@ -186,6 +216,15 @@ export default function SearchCondition({
               participants={participants}
               selects={senders}
               setSelects={setSenders}
+            />
+          </Modal>
+        )}
+        {isOpenReceiverModal && (
+          <Modal close={toggleReceiverModal}>
+            <ParticipantsCheckbox
+              participants={participants}
+              selects={receivers}
+              setSelects={setReceivers}
             />
           </Modal>
         )}

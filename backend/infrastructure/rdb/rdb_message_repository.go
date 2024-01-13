@@ -249,6 +249,9 @@ func setMessageDbQuery(db *gorm.DB, query model.MessagesQuery, myself *model.Gam
 	if query.SenderIDs != nil {
 		db = db.Where("sender_game_participant_id IN (?) or sender_game_participant_id is null", *query.SenderIDs)
 	}
+	if query.RecipientIDs != nil {
+		db = db.Where("receiver_game_participant_id IN (?)", *query.RecipientIDs)
+	}
 	if query.ReplyToMessageID != nil {
 		db = db.Where("reply_to_message_id = ?", *query.ReplyToMessageID)
 	}

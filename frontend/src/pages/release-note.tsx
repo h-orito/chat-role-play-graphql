@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能追加' date='2024/01/13'>
+            <li>追加: 発言検索条件に「宛先」を追加</li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2024/01/12'>
             <li>変更: アイコンアップロードを複数枚選択できるよう変更</li>
             <li>

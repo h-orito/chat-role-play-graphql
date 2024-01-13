@@ -369,6 +369,7 @@ type MessagesQuery struct {
 	PeriodID            *string        `json:"periodId,omitempty"`
 	Types               []MessageType  `json:"types,omitempty"`
 	SenderIds           []string       `json:"senderIds,omitempty"`
+	RecipientIds        []string       `json:"recipientIds,omitempty"`
 	ReplyToMessageID    *string        `json:"replyToMessageId,omitempty"`
 	Keywords            []string       `json:"keywords,omitempty"`
 	SinceAt             *time.Time     `json:"sinceAt,omitempty"`

@@ -337,6 +337,17 @@ func (r *queryResolver) MapToMessagesQuery(query gqlmodel.MessagesQuery) (*model
 		})
 		senderIDs = &ids
 	}
+	var recipientIDs *[]uint32
+	if query.RecipientIds != nil {
+		ids := array.Map(query.RecipientIds, func(id string) uint32 {
+			i, e := idToUint32(id)
+			if e != nil {
+				err = e
+			}
+			return i
+		})
+		recipientIDs = &ids
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -366,6 +377,7 @@ func (r *queryResolver) MapToMessagesQuery(query gqlmodel.MessagesQuery) (*model
 		GamePeriodID:        periodID,
 		Types:               types,
 		SenderIDs:           senderIDs,
+		RecipientIDs:        recipientIDs,
 		ReplyToMessageID:    replyToMessageID,
 		Keywords:            &query.Keywords,
 		SinceAt:             query.SinceAt,
