@@ -392,25 +392,23 @@ const IconDeleteArea = ({
         <br />
         発言済みのメッセージのアイコンは削除されません。
       </p>
-      <div className='flex'>
-        {icons.map((icon) => (
-          <div className='relative flex' key={icon.id}>
-            <Image
-              className='block w-full'
-              src={icon.url}
-              width={60}
-              height={60}
-              alt='プロフィール画像'
-            />
-            <button
-              className='absolute right-0 top-0'
-              onClick={(e: any) => handleDelete(e, icon.id)}
-            >
-              <TrashIcon className='h-4 w-4 bg-red-500 text-white' />
-            </button>
-          </div>
-        ))}
-      </div>
+      {icons.map((icon) => (
+        <div className='relative inline-block' key={icon.id}>
+          <Image
+            className=''
+            src={icon.url}
+            width={60}
+            height={60}
+            alt='プロフィール画像'
+          />
+          <button
+            className='absolute right-0 top-0'
+            onClick={(e: any) => handleDelete(e, icon.id)}
+          >
+            <TrashIcon className='h-4 w-4 bg-red-500 text-white' />
+          </button>
+        </div>
+      ))}
     </div>
   )
 }

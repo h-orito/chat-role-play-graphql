@@ -2,7 +2,7 @@ version: "3"
 
 services:
   mysql:
-    container_name: mysql
+    container_name: chat-role-play-mysql
     build:
       context: ./mysql
     ports:
