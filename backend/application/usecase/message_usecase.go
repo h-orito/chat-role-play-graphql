@@ -97,9 +97,15 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 		if err != nil {
 			return nil, nil, err
 		}
-		authorities, err = s.playerService.FindAuthorities(myself.PlayerID)
+		player, err := s.playerService.FindByUserName(user.UserName)
 		if err != nil {
 			return nil, nil, err
+		}
+		if player != nil {
+			authorities, err = s.playerService.FindAuthorities(player.ID)
+			if err != nil {
+				return nil, nil, err
+			}
 		}
 	}
 	// merge message types

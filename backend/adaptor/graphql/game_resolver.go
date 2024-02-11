@@ -562,6 +562,9 @@ func (r *queryResolver) myGameParticipant(ctx context.Context, gameID string) (*
 	if err != nil {
 		return nil, err
 	}
+	if p == nil {
+		return nil, nil
+	}
 	return MapToGameParticipant(*p), nil
 }
 

@@ -1,8 +1,9 @@
-import { Game, GameParticipant } from '@/lib/generated/graphql'
+import { Game, GameParticipant, Player } from '@/lib/generated/graphql'
 import {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react'
@@ -22,6 +23,7 @@ import { googleAdnsenseStyleGuard } from '@/components/adsense/google-adsense-gu
 type Props = {
   game: Game
   myself: GameParticipant | null
+  myPlayer: Player | null
   openProfileModal: (participantId: string) => void
   toggleSidebar: (e: any) => void
 }
@@ -32,7 +34,7 @@ export interface ArticleRefHandle {
 
 const Article = forwardRef<ArticleRefHandle, Props>(
   (props: Props, ref: any) => {
-    const { game, myself, openProfileModal, toggleSidebar } = props
+    const { game, myself, myPlayer, openProfileModal, toggleSidebar } = props
     const [tab, setTab] = useState('home')
     const [isOpenFavoritesModal, setIsOpenFavoritesModal] = useState(false)
     const toggleFavoritesModal = (e: any) => {
@@ -84,6 +86,12 @@ const Article = forwardRef<ArticleRefHandle, Props>(
       googleAdnsenseStyleGuard()
     }, [])
 
+    const shouldShowDM = useMemo(() => {
+      const isAdmin =
+        myPlayer && myPlayer?.authorityCodes.includes('AuthorityAdmin')
+      return !!myself || isAdmin || false
+    }, [myself, myPlayer])
+
     return (
       <article
         id='article'
@@ -92,6 +100,7 @@ const Article = forwardRef<ArticleRefHandle, Props>(
         <ArticleHeader tab={tab} />
         <ArticleMenu
           myself={myself}
+          myPlayer={myPlayer}
           tab={tab}
           setTab={handleTabChange}
           existsHomeUnread={existsHomeUnread}
@@ -138,7 +147,7 @@ const Article = forwardRef<ArticleRefHandle, Props>(
           setExistUnread={setExistSearchUnread}
           searchable
         />
-        {myself && (
+        {shouldShowDM && (
           <DirectMessagesArea
             className={`${tab === 'dm' ? '' : 'hidden'}`}
             game={game}
@@ -168,6 +177,7 @@ const Article = forwardRef<ArticleRefHandle, Props>(
         />
         <ArticleMenu
           myself={myself}
+          myPlayer={myPlayer}
           tab={tab}
           setTab={setTab}
           existsHomeUnread={existsHomeUnread}

@@ -28,7 +28,7 @@ const DirectFooterMenu = (props: Props) => {
 
   return (
     <>
-      <DirectTalkArea {...props} ref={directTalkAreaRef} />
+      {props.myself && <DirectTalkArea {...props} ref={directTalkAreaRef} />}
       <FooterMenu {...props} toggleDirectTalk={toggleDirectTalk} />
     </>
   )
@@ -96,7 +96,7 @@ const FooterMenu = (props: Props & { toggleDirectTalk: () => void }) => {
           <span className='my-auto ml-1 hidden text-xs md:block'>最下部へ</span>
         </button>
       </div>
-      {canTalk && (
+      {canTalk && !!props.myself && (
         <div className='flex flex-1 text-center'>
           <button
             className='sidebar-background flex w-full justify-center px-4 py-2'

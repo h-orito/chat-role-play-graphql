@@ -299,7 +299,7 @@ func findRdbGameParticipant(db *gorm.DB, query model.GameParticipantQuery) (_ *G
 	if query.IsExcludeGone != nil && *query.IsExcludeGone {
 		result = result.Where("is_gone = ?", false)
 	}
-	result = result.Find(&rdbGameParticipant)
+	result = result.First(&rdbGameParticipant)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
@@ -376,7 +376,7 @@ func findGameParticipantProfile(db *gorm.DB, gameParticipantID uint32) (profile 
 
 func findRdbGameParticipantProfile(db *gorm.DB, gameParticipantID uint32) (profile *GameParticipantProfile, err error) {
 	var rdb GameParticipantProfile
-	result := db.Model(&GameParticipantProfile{}).Where("game_participant_id = ?", gameParticipantID).Find(&rdb)
+	result := db.Model(&GameParticipantProfile{}).Where("game_participant_id = ?", gameParticipantID).First(&rdb)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}

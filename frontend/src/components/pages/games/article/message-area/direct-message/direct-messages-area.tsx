@@ -19,7 +19,7 @@ import DirectArticleModal from './direct-article-modal'
 type Props = {
   game: Game
   className?: string
-  myself: GameParticipant
+  myself: GameParticipant | null
   openProfileModal: (participantId: string) => void
 }
 
@@ -91,9 +91,9 @@ export default function DirectMessagesArea({
     refetchGroups()
   }, [])
 
-  const canCreate = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
-    game.status
-  )
+  const canCreate =
+    !!myself &&
+    ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(game.status)
 
   return (
     <div
@@ -122,7 +122,7 @@ export default function DirectMessagesArea({
         >
           <CreateParticipantGroup
             game={game}
-            myself={myself}
+            myself={myself!}
             groups={groups}
             refetchGroups={refetchGroups}
             close={toggleCreateModal}

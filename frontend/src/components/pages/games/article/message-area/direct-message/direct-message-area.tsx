@@ -28,7 +28,7 @@ import Portal from '@/components/modal/portal'
 type Props = {
   close: (e: any) => void
   game: Game
-  myself: GameParticipant
+  myself: GameParticipant | null
   group: GameParticipantGroup
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void

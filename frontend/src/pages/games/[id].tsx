@@ -161,6 +161,7 @@ const GamePage = ({ game }: Props) => {
           ref={articleRef}
           game={game}
           myself={myself}
+          myPlayer={myPlayer}
           openProfileModal={openProfileModal}
           toggleSidebar={toggleSidebar}
         />

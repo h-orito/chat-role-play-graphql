@@ -1,4 +1,4 @@
-import { GameParticipant } from '@/lib/generated/graphql'
+import { GameParticipant, Player } from '@/lib/generated/graphql'
 import {
   HomeIcon,
   UsersIcon,
@@ -6,9 +6,11 @@ import {
   Bars4Icon,
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
+import { useMemo } from 'react'
 
 type Props = {
   myself: GameParticipant | null
+  myPlayer: Player | null
   tab: string
   setTab: (tabName: string) => void
   existsHomeUnread: boolean
@@ -19,6 +21,7 @@ type Props = {
 
 export default function ArticleMenu({
   myself,
+  myPlayer,
   tab,
   setTab,
   existsHomeUnread,
@@ -29,6 +32,13 @@ export default function ArticleMenu({
   const wrapperClass = footer
     ? 'flex md:hidden border-t'
     : 'hidden md:flex border-b'
+
+  const shouldShowDM = useMemo(() => {
+    const isAdmin =
+      myPlayer && myPlayer?.authorityCodes.includes('AuthorityAdmin')
+    return !!myself || isAdmin || false
+  }, [myself, myPlayer])
+
   return (
     <div className={`${wrapperClass} base-border text-sm`}>
       <div className={`flex flex-1 text-center md:hidden`}>
@@ -59,7 +69,7 @@ export default function ArticleMenu({
         existsUnread={false}
         onClickTab={() => setTab('search')}
       />
-      {myself != null && (
+      {shouldShowDM && (
         <DirectMessageButton
           isActive={tab === 'dm'}
           isFooter={footer}
