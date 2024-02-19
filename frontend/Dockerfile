@@ -1,4 +1,4 @@
-FROM arm64v8/node:19.9-bullseye
+FROM arm64v8/node:21-bullseye
 
 WORKDIR /app
 
