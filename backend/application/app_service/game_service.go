@@ -151,11 +151,17 @@ func (g *gameService) ChangePeriodIfNeeded(ctx context.Context, gameID uint32) (
 		if game.Periods[len(game.Periods)-1].EndAt.Before(now) {
 			// 日付追加
 			count := game.Periods[len(game.Periods)-1].Count + 1
+			periodDuration := time.Duration(game.Settings.Time.PeriodIntervalSeconds) * time.Second
+			newEndAt := game.Periods[len(game.Periods)-1].EndAt.Add(periodDuration)
+			// 無限増殖防止
+			if newEndAt.Before(now) {
+				newEndAt = now.Add(periodDuration)
+			}
 			if err := g.gameRepository.RegisterGamePeriod(ctx, game.ID, model.GamePeriod{
 				Count:   count,
 				Name:    strings.Join([]string{*game.Settings.Time.PeriodPrefix, strconv.Itoa(int(count)), *game.Settings.Time.PeriodSuffix}, ""),
 				StartAt: now,
-				EndAt:   game.Periods[len(game.Periods)-1].EndAt.Add(time.Duration(game.Settings.Time.PeriodIntervalSeconds) * time.Second),
+				EndAt:   newEndAt,
 			}); err != nil {
 				return err
 			}
@@ -168,11 +174,19 @@ func (g *gameService) startGame(ctx context.Context, game model.Game) error {
 	if err := g.UpdateGameStatus(ctx, game.ID, model.GameStatusProgress); err != nil {
 		return err
 	}
+	now := time.Now()
+	periodDuration := time.Duration(game.Settings.Time.PeriodIntervalSeconds) * time.Second
+	newEndAt := game.Settings.Time.StartGameAt.Add(periodDuration)
+	// 無限増殖防止
+	if newEndAt.Before(now) {
+		newEndAt = now.Add(periodDuration)
+	}
+
 	if err := g.gameRepository.RegisterGamePeriod(ctx, game.ID, model.GamePeriod{
 		Count:   1,
 		Name:    strings.Join([]string{*game.Settings.Time.PeriodPrefix, "1", *game.Settings.Time.PeriodSuffix}, ""),
-		StartAt: time.Now(),
-		EndAt:   game.Settings.Time.StartGameAt.Add(time.Duration(game.Settings.Time.PeriodIntervalSeconds) * time.Second),
+		StartAt: now,
+		EndAt:   newEndAt,
 	}); err != nil {
 		return err
 	}
@@ -187,11 +201,18 @@ func (g *gameService) epilogueGame(ctx context.Context, game model.Game) error {
 		return err
 	}
 	maxCount := array.MaxOrNil(game.Periods, func(period model.GamePeriod) int { return int(period.Count) })
+	now := time.Now()
+	periodDuration := time.Duration(game.Settings.Time.PeriodIntervalSeconds) * time.Second
+	newEndAt := game.Settings.Time.EpilogueGameAt.Add(periodDuration)
+	// 無限増殖防止
+	if newEndAt.Before(now) {
+		newEndAt = now.Add(periodDuration)
+	}
 	if err := g.gameRepository.RegisterGamePeriod(ctx, game.ID, model.GamePeriod{
 		Count:   uint32(*maxCount) + 1,
 		Name:    "エピローグ",
-		StartAt: time.Now(),
-		EndAt:   game.Settings.Time.EpilogueGameAt.Add(time.Duration(game.Settings.Time.PeriodIntervalSeconds) * time.Second),
+		StartAt: now,
+		EndAt:   newEndAt,
 	}); err != nil {
 		return err
 	}
