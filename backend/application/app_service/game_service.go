@@ -191,7 +191,7 @@ func (g *gameService) epilogueGame(ctx context.Context, game model.Game) error {
 		Count:   uint32(*maxCount) + 1,
 		Name:    "エピローグ",
 		StartAt: time.Now(),
-		EndAt:   game.Settings.Time.StartGameAt.Add(time.Duration(game.Settings.Time.PeriodIntervalSeconds) * time.Second),
+		EndAt:   game.Settings.Time.EpilogueGameAt.Add(time.Duration(game.Settings.Time.PeriodIntervalSeconds) * time.Second),
 	}); err != nil {
 		return err
 	}

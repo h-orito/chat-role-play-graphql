@@ -25,6 +25,17 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='不具合修正' date='2024/01/13'>
+            <li>
+              修正:
+              時間切れでログアウト状態になっている際、ログイン状態のような挙動になっている不具合を修正
+            </li>
+            <li>
+              修正:
+              時間経過でエピローグに遷移したあと開催中に戻すと期間が無限増殖する不具合を修正
+            </li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能追加' date='2024/01/13'>
             <li>追加: 発言検索条件に「宛先」を追加</li>
           </ReleaseContent>
