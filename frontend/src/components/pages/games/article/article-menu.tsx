@@ -7,28 +7,30 @@ import {
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 import { useMemo } from 'react'
+import {
+  useMyPlayerValue,
+  useMyselfValue,
+  useSidebarOpen
+} from '../../games_new/game-hook'
 
 type Props = {
-  myself: GameParticipant | null
-  myPlayer: Player | null
   tab: string
   setTab: (tabName: string) => void
   existsHomeUnread: boolean
   existsFollowsUnread: boolean
-  toggleSidebar: (e: any) => void
   footer?: boolean
 }
 
 export default function ArticleMenu({
-  myself,
-  myPlayer,
   tab,
   setTab,
   existsHomeUnread,
   existsFollowsUnread,
-  toggleSidebar,
   footer = false
 }: Props) {
+  const myself = useMyselfValue()
+  const myPlayer = useMyPlayerValue()
+  const [, toggleSidebar] = useSidebarOpen()
   const wrapperClass = footer
     ? 'flex md:hidden border-t'
     : 'hidden md:flex border-b'

@@ -3,7 +3,6 @@ import {
   GameDirectMessagesQuery,
   GameDirectMessagesQueryVariables,
   DirectMessagesQuery,
-  Game,
   GameParticipant,
   GameParticipantGroup,
   DirectMessages,
@@ -24,11 +23,10 @@ import {
 } from '../../../user-settings'
 import DirectFooterMenu from './direct-footer-menu'
 import Portal from '@/components/modal/portal'
+import { useGameValue } from '@/components/pages/games_new/game-hook'
 
 type Props = {
   close: (e: any) => void
-  game: Game
-  myself: GameParticipant | null
   group: GameParticipantGroup
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
@@ -36,15 +34,8 @@ type Props = {
 }
 
 export default function DirectMessageArea(props: Props) {
-  const {
-    close,
-    game,
-    myself,
-    group,
-    openProfileModal,
-    openFavoritesModal,
-    refetchGroups
-  } = props
+  const { close, group, openProfileModal, openFavoritesModal } = props
+  const game = useGameValue()
   const [pagingSettings] = useUserPagingSettings()
   const defaultQuery: DirectMessagesQuery | null = {
     participantGroupId: group.id,
@@ -131,8 +122,6 @@ export default function DirectMessageArea(props: Props) {
           <DirectMessageGroupMembers {...props} canModify={canModify} />
           <div className='base-border flex border-b'>
             <DirectSearchCondition
-              game={game}
-              myself={myself}
               group={group}
               query={query!}
               search={search}
@@ -146,9 +135,7 @@ export default function DirectMessageArea(props: Props) {
           <div className='flex-1'>
             {directMessages.list.map((message: DirectMessage) => (
               <DirectMessageComponent
-                game={game}
                 directMessage={message}
-                myself={myself}
                 key={message.id}
                 openProfileModal={openProfileModal}
                 openFavoritesModal={openFavoritesModal}
@@ -177,16 +164,7 @@ const DirectMessageModal = (
     scrollToBottom: () => void
   } & Props
 ) => {
-  const {
-    close,
-    game,
-    myself,
-    group,
-    search,
-    canModify,
-    scrollToTop,
-    scrollToBottom
-  } = props
+  const { close, group, search, canModify, scrollToTop, scrollToBottom } = props
   return (
     <Portal target='#direct-message-area'>
       <div className='base-background absolute inset-x-0 inset-y-0 z-50 h-full w-full text-sm'>
@@ -201,8 +179,6 @@ const DirectMessageModal = (
             close: close
           })}
           <DirectFooterMenu
-            game={game}
-            myself={myself}
             group={group}
             search={search}
             canTalk={canModify}
@@ -220,7 +196,7 @@ const DirectMessageGroupMembers = (
     canModify: boolean
   } & Props
 ) => {
-  const { game, refetchGroups, group, canModify } = props
+  const { refetchGroups, group, canModify } = props
   const [isOpenModifyGroupModal, setIsOpenModifyGroupModal] = useState(false)
   const toggleModifyGroupModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -248,7 +224,6 @@ const DirectMessageGroupMembers = (
       {isOpenModifyGroupModal && (
         <Modal close={toggleModifyGroupModal} hideFooter>
           <ParticipantGroupEdit
-            game={game}
             group={group}
             close={toggleModifyGroupModal}
             refetchGroups={refetchGroups}

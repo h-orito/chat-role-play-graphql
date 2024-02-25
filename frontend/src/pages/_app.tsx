@@ -6,6 +6,7 @@ import GraphqlProvider from '@/components/graphql/graphql'
 import { CookiesProvider } from 'react-cookie'
 import RootLayout from '@/components/layout/layout'
 import { NextPage } from 'next'
+import { Provider as JotaiProvider } from 'jotai'
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -21,11 +22,13 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     <AuthProvider>
       <GraphqlProvider>
         <CookiesProvider defaultSetOptions={{ path: '/chat-role-play/' }}>
-          {getLayout(
-            <RootLayout>
-              <Component {...pageProps} />
-            </RootLayout>
-          )}
+          <JotaiProvider>
+            {getLayout(
+              <RootLayout>
+                <Component {...pageProps} />
+              </RootLayout>
+            )}
+          </JotaiProvider>
         </CookiesProvider>
       </GraphqlProvider>
     </AuthProvider>

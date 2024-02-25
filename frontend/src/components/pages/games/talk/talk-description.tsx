@@ -1,6 +1,4 @@
 import {
-  Game,
-  GameParticipant,
   Message,
   MessageType,
   NewMessage,
@@ -25,10 +23,9 @@ import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
 import DescriptionMessage from '@/components/pages/games/article/message-area/message-area/messages-area/message/description-message'
 import InputText from '@/components/form/input-text'
+import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
 
 type Props = {
-  game: Game
-  myself: GameParticipant
   handleCompleted: () => void
 }
 
@@ -43,7 +40,9 @@ export interface TalkDescriptionRefHandle {
 
 const TalkDescription = forwardRef<TalkDescriptionRefHandle, Props>(
   (props: Props, ref: any) => {
-    const { game, myself, handleCompleted } = props
+    const { handleCompleted } = props
+    const game = useGameValue()
+    const myself = useMyselfValue()!
     const { control, formState, handleSubmit, setValue, watch } =
       useForm<FormInput>({
         defaultValues: {
@@ -180,8 +179,6 @@ const TalkDescription = forwardRef<TalkDescriptionRefHandle, Props>(
           {preview && (
             <DescriptionPreview
               preview={preview}
-              game={game}
-              myself={myself}
               scrollToPreview={scrollToPreview}
             />
           )}
@@ -195,13 +192,9 @@ export default TalkDescription
 
 const DescriptionPreview = ({
   preview,
-  game,
-  myself,
   scrollToPreview
 }: {
   preview: Message | null
-  game: Game
-  myself: GameParticipant
   scrollToPreview: () => void
 }) => {
   useEffect(() => {
@@ -214,8 +207,6 @@ const DescriptionPreview = ({
       <div>
         <DescriptionMessage
           message={preview!}
-          game={game}
-          myself={myself}
           openProfileModal={() => {}}
           openFavoritesModal={() => {}}
         />

@@ -1,4 +1,3 @@
-import { Game, GameParticipant, Player } from '@/lib/generated/graphql'
 import {
   forwardRef,
   useEffect,
@@ -17,15 +16,15 @@ import ArticleMenu from './article-menu'
 import MessageFooterMenu, {
   MessageFooterMenuRefHandle
 } from './message-footer-menu'
-import { set } from 'react-hook-form'
 import { googleAdnsenseStyleGuard } from '@/components/adsense/google-adsense-guard'
+import {
+  useGameValue,
+  useMyPlayerValue,
+  useMyselfValue
+} from '../../games_new/game-hook'
 
 type Props = {
-  game: Game
-  myself: GameParticipant | null
-  myPlayer: Player | null
   openProfileModal: (participantId: string) => void
-  toggleSidebar: (e: any) => void
 }
 
 export interface ArticleRefHandle {
@@ -34,7 +33,7 @@ export interface ArticleRefHandle {
 
 const Article = forwardRef<ArticleRefHandle, Props>(
   (props: Props, ref: any) => {
-    const { game, myself, myPlayer, openProfileModal, toggleSidebar } = props
+    const { openProfileModal } = props
     const [tab, setTab] = useState('home')
     const [isOpenFavoritesModal, setIsOpenFavoritesModal] = useState(false)
     const toggleFavoritesModal = (e: any) => {
@@ -86,6 +85,9 @@ const Article = forwardRef<ArticleRefHandle, Props>(
       googleAdnsenseStyleGuard()
     }, [])
 
+    const game = useGameValue()
+    const myPlayer = useMyPlayerValue()
+    const myself = useMyselfValue()
     const shouldShowDM = useMemo(() => {
       const isAdmin =
         myPlayer && myPlayer?.authorityCodes.includes('AuthorityAdmin')
@@ -99,19 +101,14 @@ const Article = forwardRef<ArticleRefHandle, Props>(
       >
         <ArticleHeader tab={tab} />
         <ArticleMenu
-          myself={myself}
-          myPlayer={myPlayer}
           tab={tab}
           setTab={handleTabChange}
           existsHomeUnread={existsHomeUnread}
           existsFollowsUnread={existFollowsUnread}
-          toggleSidebar={toggleSidebar}
         />
         <MessageArea
           ref={homeRef}
           className={`${tab === 'home' ? '' : 'hidden'}`}
-          game={game}
-          myself={myself}
           reply={reply}
           openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
@@ -123,8 +120,6 @@ const Article = forwardRef<ArticleRefHandle, Props>(
           <MessageArea
             ref={followRef}
             className={`${tab === 'follow' ? '' : 'hidden'}`}
-            game={game}
-            myself={myself}
             reply={reply}
             openProfileModal={openProfileModal}
             openFavoritesModal={openFavoritesModal}
@@ -137,8 +132,6 @@ const Article = forwardRef<ArticleRefHandle, Props>(
         <MessageArea
           ref={searchRef}
           className={`${tab === 'search' ? '' : 'hidden'}`}
-          game={game}
-          myself={myself}
           reply={reply}
           openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
@@ -150,16 +143,12 @@ const Article = forwardRef<ArticleRefHandle, Props>(
         {shouldShowDM && (
           <DirectMessagesArea
             className={`${tab === 'dm' ? '' : 'hidden'}`}
-            game={game}
-            myself={myself}
             openProfileModal={openProfileModal}
           />
         )}
         {isOpenFavoritesModal && (
           <Modal header='ふぁぼした人' close={toggleFavoritesModal} hideFooter>
             <FavoriteParticipants
-              game={game}
-              myself={myself}
               messageId={favoriteMessageId}
               openProfileModal={openProfileModal}
               close={toggleFavoritesModal}
@@ -169,20 +158,15 @@ const Article = forwardRef<ArticleRefHandle, Props>(
         <MessageFooterMenu
           ref={messageFooterMenuRef}
           className={`${tab === 'dm' ? 'hidden' : ''}`}
-          game={game}
-          myself={myself}
           search={search}
           scrollToTop={scrollToTop}
           scrollToBottom={scrollToBottom}
         />
         <ArticleMenu
-          myself={myself}
-          myPlayer={myPlayer}
           tab={tab}
           setTab={setTab}
           existsHomeUnread={existsHomeUnread}
           existsFollowsUnread={existFollowsUnread}
-          toggleSidebar={toggleSidebar}
           footer
         />
       </article>

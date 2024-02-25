@@ -11,37 +11,17 @@ import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import ParticipantsCheckbox from '../../../participant/participants-checkbox'
+import { useGameValue } from '@/components/pages/games_new/game-hook'
 
 type Props = {
-  game: Game
-  myself: GameParticipant | null
   group: GameParticipantGroup
   query: DirectMessagesQuery
   search: (query: DirectMessagesQuery) => void
 }
 
-// const candidates = [
-//   {
-//     label: '通常',
-//     value: MessageType.TalkNormal
-//   },
-//   {
-//     label: '独り言',
-//     value: MessageType.Monologue
-//   }
-// ]
-
-export default function DirectSearchCondition({
-  game,
-  myself,
-  group,
-  query,
-  search
-}: Props) {
+export default function DirectSearchCondition({ group, query, search }: Props) {
+  const game = useGameValue()
   const [isOpen, setIsOpen] = useState(false)
-  const [types, setTypes] = useState<MessageType[]>(
-    query.types || [MessageType.TalkNormal]
-  )
   const [senders, setSenders] = useState<GameParticipant[]>(
     query.senderIds
       ? game.participants.filter((gp) => query.senderIds?.includes(gp.id))
@@ -69,7 +49,6 @@ export default function DirectSearchCondition({
     const newQuery: DirectMessagesQuery = {
       ...query,
       types: null,
-      // types.length > 0 && types.length !== candidates.length ? types : null,
       senderIds:
         senders.length > 0 && senders.length !== group.participants.length
           ? senders.map((s) => s.id)
@@ -97,16 +76,6 @@ export default function DirectSearchCondition({
         </button>
       </div>
       <div className={isOpen ? '' : 'hidden'}>
-        {/* <div className='my-2'>
-          <label className='text-xs font-bold'>種別</label>
-          <CheckGroup
-            className='mt-1 text-xs'
-            name='direct-search-say-type'
-            candidates={candidates}
-            selected={types}
-            setSelected={setTypes}
-          />
-        </div> */}
         <div className='my-2'>
           <label className='text-xs font-bold'>発言者</label>
           {senders.length === 0 ||

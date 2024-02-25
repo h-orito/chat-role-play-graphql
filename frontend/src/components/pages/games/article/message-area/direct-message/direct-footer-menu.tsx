@@ -1,7 +1,5 @@
 import {
   DirectMessagesQuery,
-  Game,
-  GameParticipant,
   GameParticipantGroup
 } from '@/lib/generated/graphql'
 import {
@@ -11,10 +9,9 @@ import {
 } from '@heroicons/react/24/outline'
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import TalkDirect from '@/components/pages/games/talk/talk-direct'
+import { useMyselfValue } from '@/components/pages/games_new/game-hook'
 
 type Props = {
-  game: Game
-  myself: GameParticipant | null
   group: GameParticipantGroup
   search: (query?: DirectMessagesQuery) => Promise<void>
   canTalk: boolean
@@ -25,10 +22,11 @@ type Props = {
 const DirectFooterMenu = (props: Props) => {
   const directTalkAreaRef = useRef({} as DirectTalkAreaRefHandle)
   const toggleDirectTalk = () => directTalkAreaRef.current.toggleDirectTalk()
+  const myself = useMyselfValue()
 
   return (
     <>
-      {props.myself && <DirectTalkArea {...props} ref={directTalkAreaRef} />}
+      {myself && <DirectTalkArea {...props} ref={directTalkAreaRef} />}
       <FooterMenu {...props} toggleDirectTalk={toggleDirectTalk} />
     </>
   )
@@ -42,7 +40,7 @@ interface DirectTalkAreaRefHandle {
 
 const DirectTalkArea = forwardRef<DirectTalkAreaRefHandle, Props>(
   (props: Props, ref: any) => {
-    const { game, myself, group, search } = props
+    const { group } = props
 
     useImperativeHandle(ref, () => ({
       toggleDirectTalk() {
@@ -62,8 +60,6 @@ const DirectTalkArea = forwardRef<DirectTalkAreaRefHandle, Props>(
       <div className='base-border w-full border-t text-sm'>
         <div className={isShow ? '' : 'hidden'}>
           <TalkDirect
-            game={game}
-            myself={myself!}
             gameParticipantGroup={group!}
             handleCompleted={handleCompleted}
           />
@@ -75,6 +71,7 @@ const DirectTalkArea = forwardRef<DirectTalkAreaRefHandle, Props>(
 
 const FooterMenu = (props: Props & { toggleDirectTalk: () => void }) => {
   const { canTalk, scrollToTop, scrollToBottom, toggleDirectTalk } = props
+  const myself = useMyselfValue()
 
   return (
     <div className='base-border flex w-full border-t text-sm'>
@@ -96,7 +93,7 @@ const FooterMenu = (props: Props & { toggleDirectTalk: () => void }) => {
           <span className='my-auto ml-1 hidden text-xs md:block'>最下部へ</span>
         </button>
       </div>
-      {canTalk && !!props.myself && (
+      {canTalk && !!myself && (
         <div className='flex flex-1 text-center'>
           <button
             className='sidebar-background flex w-full justify-center px-4 py-2'

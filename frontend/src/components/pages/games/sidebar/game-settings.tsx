@@ -1,12 +1,11 @@
 import { base64ToId } from '@/components/graphql/convert'
 import { iso2display } from '@/components/util/datetime/datetime'
-import { Game } from '@/lib/generated/graphql'
 import Link from 'next/link'
 import React from 'react'
+import { useGameValue } from '../../games_new/game-hook'
 
 type GameSettingsProps = {
   close: (e: any) => void
-  game: Game
 }
 
 type SettingItem = {
@@ -14,7 +13,8 @@ type SettingItem = {
   value: React.ReactNode
 }
 
-export default function GameSettings({ close, game }: GameSettingsProps) {
+export default function GameSettings({ close }: GameSettingsProps) {
+  const game = useGameValue()
   const settings = game.settings
   const items: Array<SettingItem> = []
   items.push({

@@ -1,6 +1,5 @@
 import PrimaryButton from '@/components/button/primary-button'
 import {
-  Game,
   GameParticipant,
   GameParticipantGroup,
   NewGameParticipantGroup,
@@ -11,22 +10,24 @@ import {
 import { useMutation } from '@apollo/client'
 import { useCallback, useState } from 'react'
 import ParticipantsCheckbox from '../../../participant/participants-checkbox'
+import {
+  useGameValue,
+  useMyselfValue
+} from '@/components/pages/games_new/game-hook'
 
 type Props = {
   close: (e: any) => void
-  game: Game
-  myself: GameParticipant
   groups: GameParticipantGroup[]
   refetchGroups: () => void
 }
 
 export default function CreateParticipantGroup({
   close,
-  game,
-  myself,
   groups,
   refetchGroups
 }: Props) {
+  const game = useGameValue()
+  const myself = useMyselfValue()!
   const [register] = useMutation<RegisterParticipantGroupMutation>(
     RegisterParticipantGroupDocument,
     {

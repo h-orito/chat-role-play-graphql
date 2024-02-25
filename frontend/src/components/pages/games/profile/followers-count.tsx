@@ -1,26 +1,17 @@
-import {
-  Game,
-  GameParticipant,
-  GameParticipantProfile
-} from '@/lib/generated/graphql'
+import { GameParticipantProfile } from '@/lib/generated/graphql'
 import { useState } from 'react'
 import ArticleModal from '@/components/modal/article-modal'
 import Profile from './profile'
 import Followers from './followers'
+import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
 
 type Props = {
-  game: Game
-  myself: GameParticipant | null
   profile: GameParticipantProfile
-  refetchMyself: () => void
 }
 
-export default function FollowersCount({
-  game,
-  myself,
-  profile,
-  refetchMyself
-}: Props) {
+export default function FollowersCount({ profile }: Props) {
+  const game = useGameValue()
+  const myself = useMyselfValue()
   const [isOpenFollowersModal, setIsOpenFollowersModal] = useState(false)
   const toggleFollowersModal = (e: any) => {
     setIsOpenFollowersModal(!isOpenFollowersModal)
@@ -72,10 +63,7 @@ export default function FollowersCount({
           hideFooter
         >
           <Profile
-            game={game}
-            myself={myself}
             participantId={profileParticipantId}
-            refetchMyself={refetchMyself}
             close={toggleProfileModal}
           />
         </ArticleModal>

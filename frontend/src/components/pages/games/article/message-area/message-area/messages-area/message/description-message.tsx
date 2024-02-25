@@ -1,21 +1,17 @@
-import { Game, GameParticipant, Message } from '@/lib/generated/graphql'
+import { Message } from '@/lib/generated/graphql'
 import MessageText from '../../../message-text/message-text'
 import { iso2display } from '@/components/util/datetime/datetime'
 import FavoriteButton from '@/components/pages/games/article/message-area/message-area/messages-area/message/favorite-button'
 
 type Props = {
-  game: Game
   message: Message
-  myself: GameParticipant | null
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   preview?: boolean
 }
 
 export default function DescriptionMessage({
-  game,
   message,
-  myself,
   openProfileModal,
   openFavoritesModal,
   preview = false
@@ -53,9 +49,7 @@ export default function DescriptionMessage({
         </div>
         <div className='flex justify-end pt-1'>
           <FavoriteButton
-            game={game}
             message={message}
-            myself={myself}
             openFavoritesModal={openFavoritesModal}
           />
         </div>

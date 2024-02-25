@@ -11,10 +11,12 @@ import CheckGroup from '@/components/form/check-group'
 import Modal from '@/components/modal/modal'
 import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import ParticipantsCheckbox from '../../../participant/participants-checkbox'
+import {
+  useGameValue,
+  useMyselfValue
+} from '@/components/pages/games_new/game-hook'
 
 type Props = {
-  game: Game
-  myself: GameParticipant | null
   messageQuery: MessagesQuery
   search: (query: MessagesQuery) => void
   onlyFollowing?: boolean
@@ -44,12 +46,12 @@ const candidates = [
 ]
 
 export default function SearchCondition({
-  game,
-  myself,
   messageQuery,
   search,
   onlyFollowing
 }: Props) {
+  const game = useGameValue()
+  const myself = useMyselfValue()
   const participants = game.participants.filter((p) => !p.isGone)
   const [isOpen, setIsOpen] = useState(false)
 

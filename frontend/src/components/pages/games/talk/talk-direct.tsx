@@ -1,8 +1,6 @@
 import Image from 'next/image'
 import {
   DirectMessage,
-  Game,
-  GameParticipant,
   GameParticipantGroup,
   GameParticipantIcon,
   IconsDocument,
@@ -26,10 +24,9 @@ import DirectMessageComponent from '../article/message-area/direct-message/direc
 import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
 import { useUserDisplaySettings } from '../user-settings'
+import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
 
 type Props = {
-  game: Game
-  myself: GameParticipant
   handleCompleted: () => void
   gameParticipantGroup: GameParticipantGroup
 }
@@ -40,7 +37,9 @@ interface FormInput {
 }
 
 const TalkDirect = (props: Props) => {
-  const { game, myself, handleCompleted, gameParticipantGroup } = props
+  const game = useGameValue()
+  const myself = useMyselfValue()!
+  const { handleCompleted, gameParticipantGroup } = props
 
   const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
   const [talkDirectDryRun] = useMutation<TalkDirectDryRunMutation>(
@@ -282,13 +281,9 @@ const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
 
 const DirectPreview = ({
   preview,
-  game,
-  myself,
   scrollToPreview
 }: {
   preview: DirectMessage
-  game: Game
-  myself: GameParticipant
   scrollToPreview: () => void
 }) => {
   useEffect(() => {
@@ -303,8 +298,6 @@ const DirectPreview = ({
       <div>
         <DirectMessageComponent
           directMessage={preview!}
-          myself={myself}
-          game={game}
           openProfileModal={() => {}}
           openFavoritesModal={() => {}}
           imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}

@@ -4,8 +4,6 @@ import InputImage from '@/components/form/input-image'
 import InputText from '@/components/form/input-text'
 import InputTextarea from '@/components/form/input-textarea'
 import {
-  Game,
-  GameParticipant,
   GameParticipantIcon,
   GameParticipantProfile,
   UpdateGameParticipantProfile,
@@ -18,12 +16,10 @@ import { useCallback, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Modal from '@/components/modal/modal'
 import TalkTextDecorators from '../talk/talk-text-decorators'
+import { useGameValue, useMyself } from '../../games_new/game-hook'
 
 type Props = {
   close: (e: any) => void
-  game: Game
-  myself: GameParticipant | null
-  refetchMyself: () => void
   profile: GameParticipantProfile
   icons: GameParticipantIcon[]
   refetchProfile: () => void
@@ -37,13 +33,12 @@ interface FormInput {
 
 export default function ProfileEdit({
   close,
-  game,
-  myself,
-  refetchMyself,
   profile,
   icons,
   refetchProfile
 }: Props) {
+  const game = useGameValue()
+  const [myself, refetchMyself] = useMyself(game.id)
   const { register, control, formState, handleSubmit, setValue } =
     useForm<FormInput>({
       defaultValues: {

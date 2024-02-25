@@ -4,8 +4,6 @@ import {
   FavoriteDirectDocument,
   FavoriteDirectMutation,
   FavoriteDirectMutationVariables,
-  Game,
-  GameParticipant,
   NewDirectMessageFavorite,
   UnfavoriteDirectDocument,
   UnfavoriteDirectMutation,
@@ -17,10 +15,12 @@ import { iso2display } from '@/components/util/datetime/datetime'
 import { useMutation } from '@apollo/client'
 import { useCallback, useState } from 'react'
 import MessageText from '../message-text/message-text'
+import {
+  useGameValue,
+  useMyselfValue
+} from '@/components/pages/games_new/game-hook'
 
 type MessageProps = {
-  game: Game
-  myself: GameParticipant | null
   directMessage: DirectMessage
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
@@ -29,14 +29,14 @@ type MessageProps = {
 }
 
 export default function DirectMessageComponent({
-  game,
   directMessage,
-  myself,
   openProfileModal,
   openFavoritesModal,
   preview = false,
   imageSizeRatio
 }: MessageProps) {
+  const game = useGameValue()
+  const myself = useMyselfValue()
   const canFav: boolean =
     myself != null && myself.id !== directMessage.sender?.participantId
   const alreadyFav: boolean =

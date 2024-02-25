@@ -28,16 +28,15 @@ import InputText from '@/components/form/input-text'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import SubmitButton from '@/components/button/submit-button'
 import { themeOptions } from '@/components/theme/theme'
+import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
 
 export default function UserSettingsComponent({
-  close,
-  game,
-  myself
+  close
 }: {
   close: (e: any) => void
-  game: Game
-  myself: GameParticipant | null
 }) {
+  const game = useGameValue()
+  const myself = useMyselfValue()
   return (
     <div className='text-center'>
       <div className='my-4 flex justify-center'>
@@ -51,7 +50,7 @@ export default function UserSettingsComponent({
         <>
           <hr />
           <div className='my-4 flex justify-center'>
-            <NotificationSettings game={game} myself={myself} />
+            <NotificationSettings />
           </div>
         </>
       )}
@@ -189,13 +188,8 @@ interface NotificationFormInput {
   keyword: string
 }
 
-const NotificationSettings = ({
-  game,
-  myself
-}: {
-  game: Game
-  myself: GameParticipant | null
-}) => {
+const NotificationSettings = () => {
+  const game = useGameValue()
   const { register, control, formState, handleSubmit, setValue, watch } =
     useForm<NotificationFormInput>({
       defaultValues: {

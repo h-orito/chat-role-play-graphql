@@ -17,9 +17,9 @@ import SubmitButton from '@/components/button/submit-button'
 import SecondaryButton from '@/components/button/scondary-button'
 import SystemMessage from '@/components/pages/games/article/message-area/message-area/messages-area/message/system-message'
 import TalkTextDecorators from './talk-text-decorators'
+import { useGameValue } from '../../games_new/game-hook'
 
 type Props = {
-  game: Game
   messageRegisteredCallback: () => void
 }
 
@@ -33,7 +33,8 @@ export interface TalkSystemRefHandle {
 
 const TalkSystem = forwardRef<TalkSystemRefHandle, Props>(
   (props: Props, ref: any) => {
-    const { game, messageRegisteredCallback } = props
+    const game = useGameValue()
+    const { messageRegisteredCallback } = props
     const { control, formState, handleSubmit, setValue, watch } =
       useForm<FormInput>({
         defaultValues: {

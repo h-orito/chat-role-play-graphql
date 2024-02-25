@@ -1,8 +1,6 @@
 import {
-  Game,
   GameMessageDocument,
   GameMessageQuery,
-  GameParticipant,
   Message,
   MessageRecipient,
   MessageRepliesDocument,
@@ -17,10 +15,12 @@ import { useEffect, useState } from 'react'
 import FavoriteButton from './favorite-button'
 import MessageComponent from './message'
 import MessageText from '../../../message-text/message-text'
+import {
+  useGameValue,
+  useMyselfValue
+} from '@/components/pages/games_new/game-hook'
 
 type MessageProps = {
-  game: Game
-  myself: GameParticipant | null
   message: Message
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
@@ -31,9 +31,7 @@ type MessageProps = {
 }
 
 export default function TalkMessage({
-  game,
   message,
-  myself,
   openProfileModal,
   openFavoritesModal,
   handleReply,
@@ -65,7 +63,6 @@ export default function TalkMessage({
       <div className='w-full px-4 py-2'>
         {shouldDisplayReplyTo && message.replyTo && (
           <ReplyToMessage
-            game={game}
             replyTo={message.replyTo}
             imageSizeRatio={imageSizeRatio}
           />
@@ -120,8 +117,6 @@ export default function TalkMessage({
             <div className='flex justify-end pt-1'>
               <div className='flex'>
                 <ReplyButton
-                  game={game}
-                  myself={myself}
                   message={message}
                   showReplies={showReplies}
                   setShowReplies={setShowReplies}
@@ -132,9 +127,7 @@ export default function TalkMessage({
               </div>
               <div className='ml-8 flex'>
                 <FavoriteButton
-                  game={game}
                   message={message}
-                  myself={myself}
                   openFavoritesModal={openFavoritesModal}
                 />
               </div>
@@ -145,8 +138,6 @@ export default function TalkMessage({
       {showReplies && (
         <Replies
           replies={replies}
-          game={game}
-          myself={myself}
           openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
           handleReply={handleReply}
@@ -158,8 +149,6 @@ export default function TalkMessage({
 }
 
 type ReplyButtonProps = {
-  game: Game
-  myself: GameParticipant | null
   message: Message
   showReplies: boolean
   setShowReplies: React.Dispatch<React.SetStateAction<boolean>>
@@ -168,8 +157,6 @@ type ReplyButtonProps = {
   handleReply: (message: Message) => void
 }
 const ReplyButton = ({
-  game,
-  myself,
   message,
   showReplies,
   setShowReplies,
@@ -177,6 +164,8 @@ const ReplyButton = ({
   setReplies,
   handleReply
 }: ReplyButtonProps) => {
+  const game = useGameValue()
+  const myself = useMyselfValue()
   const [fetchReplies] = useLazyQuery<MessageRepliesQuery>(
     MessageRepliesDocument
   )
@@ -224,8 +213,6 @@ const ReplyButton = ({
 
 type RepliesProps = {
   replies: Message[]
-  game: Game
-  myself: GameParticipant | null
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   handleReply: (message: Message) => void
@@ -234,8 +221,6 @@ type RepliesProps = {
 
 const Replies = ({
   replies,
-  game,
-  myself,
   openProfileModal,
   openFavoritesModal,
   handleReply,
@@ -245,9 +230,7 @@ const Replies = ({
     <div className='ml-8'>
       {replies.map((message: Message) => (
         <MessageComponent
-          game={game}
           message={message}
-          myself={myself}
           key={message.id}
           openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
@@ -261,14 +244,13 @@ const Replies = ({
 }
 
 const ReplyToMessage = ({
-  game,
   replyTo,
   imageSizeRatio
 }: {
-  game: Game
   replyTo: MessageRecipient
   imageSizeRatio: number
 }) => {
+  const game = useGameValue()
   const [message, setMessage] = useState<Message | null>(null)
   const senderName = game.participants.find(
     (p) => p.id === replyTo.participantId
@@ -320,8 +302,6 @@ const ReplyToMessage = ({
         <div className='-mx-4'>
           <TalkMessage
             message={message!}
-            game={game}
-            myself={null}
             openProfileModal={() => {}}
             openFavoritesModal={() => {}}
             handleReply={() => {}}

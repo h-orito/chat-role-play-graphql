@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import RadioGroup from '@/components/form/radio-group'
 import {
-  Game,
   GameParticipant,
   GameParticipantIcon,
   IconsDocument,
@@ -34,10 +33,9 @@ import TalkTextDecorators from './talk-text-decorators'
 import PrimaryButton from '@/components/button/primary-button'
 import ParticipantSelect from '../participant/participant-select'
 import { useUserDisplaySettings } from '../user-settings'
+import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
 
 type Props = {
-  game: Game
-  myself: GameParticipant
   handleCompleted: () => void
 }
 
@@ -52,7 +50,9 @@ export interface TalkRefHandle {
 }
 
 const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
-  const { game, myself, handleCompleted } = props
+  const { handleCompleted } = props
+  const game = useGameValue()
+  const myself = useMyselfValue()!
 
   const { control, formState, handleSubmit, setValue, watch } =
     useForm<FormInput>({
@@ -238,8 +238,6 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
       {preview && (
         <TalkPreview
           preview={preview}
-          game={game}
-          myself={myself}
           scrollToPreview={scrollToPreview}
           imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
         />
@@ -256,8 +254,6 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
             <div>
               <TalkMessage
                 message={replyTarget!}
-                game={game}
-                myself={myself}
                 openProfileModal={() => {}}
                 openFavoritesModal={() => {}}
                 handleReply={() => {}}
@@ -274,7 +270,6 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
 export default Talk
 
 type TalkTypeProps = {
-  game: Game
   talkType: MessageType
   setTalkType: (talkType: MessageType) => void
   preview?: Message | null
@@ -282,12 +277,12 @@ type TalkTypeProps = {
 }
 
 const TalkType = ({
-  game,
   talkType,
   setTalkType,
   preview,
   replyTarget
 }: TalkTypeProps) => {
+  const game = useGameValue()
   const talkTypeCandidates = [
     {
       label: '通常',
@@ -343,20 +338,14 @@ const TalkType = ({
 }
 
 type ReceiverProps = {
-  game: Game
-  myself: GameParticipant
   talkType: MessageType
   receiver: GameParticipant | null
   setReceiver: (receiver: GameParticipant | null) => void
 }
 
-const Receiver = ({
-  game,
-  myself,
-  talkType,
-  receiver,
-  setReceiver
-}: ReceiverProps) => {
+const Receiver = ({ talkType, receiver, setReceiver }: ReceiverProps) => {
+  const game = useGameValue()
+  const myself = useMyselfValue()!
   const [isOpenReceiverModal, setIsOpenReceiverModal] = useState(false)
   const toggleReceiverModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -562,14 +551,10 @@ const MessageContent = ({
 
 const TalkPreview = ({
   preview,
-  game,
-  myself,
   scrollToPreview,
   imageSizeRatio
 }: {
   preview: Message | null
-  game: Game
-  myself: GameParticipant
   scrollToPreview: () => void
   imageSizeRatio: number
 }) => {
@@ -584,8 +569,6 @@ const TalkPreview = ({
         <div>
           <TalkMessage
             message={preview!}
-            game={game}
-            myself={myself}
             openProfileModal={() => {}}
             openFavoritesModal={() => {}}
             handleReply={() => {}}

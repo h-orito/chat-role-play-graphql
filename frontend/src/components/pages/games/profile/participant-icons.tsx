@@ -1,29 +1,24 @@
 import Image from 'next/image'
-import {
-  Game,
-  GameParticipantIcon,
-  GameParticipant
-} from '@/lib/generated/graphql'
+import { GameParticipantIcon } from '@/lib/generated/graphql'
 import { useState } from 'react'
 import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import ParticipantIconEdit from './participant-icon-edit'
+import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
 
 type Props = {
-  game: Game
-  myself: GameParticipant | null
   icons: Array<GameParticipantIcon>
   canEdit: boolean
   refetchIcons: () => Promise<Array<GameParticipantIcon>>
 }
 
 export default function ParticipantIcons({
-  game,
-  myself,
   icons,
   canEdit,
   refetchIcons
 }: Props) {
+  const game = useGameValue()
+  const myself = useMyselfValue()
   const [isOpenIconEditModal, setIsOpenIconEditModal] = useState(false)
 
   const toggleIconEditModal = (e: any) => {
@@ -72,8 +67,6 @@ export default function ParticipantIcons({
       {isOpenIconEditModal && (
         <Modal header='アイコン管理' close={toggleIconEditModal} hideFooter>
           <ParticipantIconEdit
-            game={game}
-            myself={myself}
             icons={icons}
             refetchIcons={refetchIcons}
             close={toggleIconEditModal}

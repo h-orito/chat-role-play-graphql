@@ -19,10 +19,10 @@ import RadioGroup from '@/components/form/radio-group'
 import InputSelect from '@/components/form/input-select'
 import PrimaryButton from '@/components/button/primary-button'
 import CharaSelect from './chara-select'
+import { useGameValue } from '../../games_new/game-hook'
 
 type Props = {
   close: (e: any) => void
-  game: Game
 }
 
 interface FormInput {
@@ -30,7 +30,8 @@ interface FormInput {
   password: string
 }
 
-export default function Participate({ close, game }: Props) {
+export default function Participate({ close }: Props) {
+  const game = useGameValue()
   const router = useRouter()
   const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
     defaultValues: {
@@ -208,7 +209,6 @@ export default function Participate({ close, game }: Props) {
                   {isOpenCharaSelectModal && (
                     <Modal close={toggleCharaSelectModal} hideFooter>
                       <CharaSelect
-                        game={game}
                         charas={charachip?.charas || []}
                         setValue={(id: string) => {
                           setIsOpenCharaSelectModel(false)

@@ -4,8 +4,6 @@ import {
   DeleteParticipantIconDocument,
   DeleteParticipantIconMutation,
   DeleteParticipantIconMutationVariables,
-  Game,
-  GameParticipant,
   GameParticipantIcon,
   UpdateGameParticipantIcon,
   UpdateIconDocument,
@@ -45,19 +43,16 @@ import {
 } from '@dnd-kit/sortable'
 import PrimaryButton from '@/components/button/primary-button'
 import InputImages from '@/components/form/input-images'
+import { useGameValue } from '../../games_new/game-hook'
 
 type Props = {
   close: (e: any) => void
-  game: Game
-  myself: GameParticipant | null
   icons: Array<GameParticipantIcon>
   refetchIcons: () => Promise<Array<GameParticipantIcon>>
 }
 
 export default function ParticipantIconEdit({
   close,
-  game,
-  myself,
   icons: defaultIcons,
   refetchIcons
 }: Props) {
@@ -67,7 +62,6 @@ export default function ParticipantIconEdit({
   return (
     <div>
       <IconSortArea
-        game={game}
         icons={icons}
         setIcons={setIcons}
         refetchIcons={refetchIcons}
@@ -75,7 +69,6 @@ export default function ParticipantIconEdit({
         setSubmitting={setSubmitting}
       />
       <IconUploadArea
-        game={game}
         refetchIcons={refetchIcons}
         setIcons={setIcons}
         submitting={submitting}
@@ -83,7 +76,6 @@ export default function ParticipantIconEdit({
       />
       {icons.length > 0 && (
         <IconDeleteArea
-          game={game}
           icons={icons}
           setIcons={setIcons}
           refetchIcons={refetchIcons}
@@ -94,20 +86,19 @@ export default function ParticipantIconEdit({
 }
 
 const IconSortArea = ({
-  game,
   icons,
   setIcons,
   refetchIcons,
   submitting,
   setSubmitting
 }: {
-  game: Game
   icons: Array<GameParticipantIcon>
   setIcons: Dispatch<SetStateAction<GameParticipantIcon[]>>
   refetchIcons: () => Promise<Array<GameParticipantIcon>>
   submitting: boolean
   setSubmitting: Dispatch<SetStateAction<boolean>>
 }) => {
+  const game = useGameValue()
   // see https://iwaking.com/blog/sort-images-with-dnd-kit-react-typescript
   const [activeIcon, setActiveIcon] = useState<GameParticipantIcon>()
   const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor))
@@ -256,18 +247,17 @@ const Icon = forwardRef<HTMLDivElement, IconProps>(
 )
 
 const IconUploadArea = ({
-  game,
   refetchIcons,
   setIcons,
   submitting,
   setSubmitting
 }: {
-  game: Game
   refetchIcons: () => Promise<Array<GameParticipantIcon>>
   setIcons: Dispatch<SetStateAction<GameParticipantIcon[]>>
   submitting: boolean
   setSubmitting: Dispatch<SetStateAction<boolean>>
 }) => {
+  const game = useGameValue()
   // upload new icon --------------------------------------
   const [images, setImages] = useState<File[]>([])
   const canSubmit: boolean = images.length > 0 && !submitting
@@ -342,16 +332,15 @@ const IconUploadArea = ({
 }
 
 const IconDeleteArea = ({
-  game,
   icons,
   setIcons,
   refetchIcons
 }: {
-  game: Game
   icons: Array<GameParticipantIcon>
   setIcons: Dispatch<SetStateAction<GameParticipantIcon[]>>
   refetchIcons: () => Promise<Array<GameParticipantIcon>>
 }) => {
+  const game = useGameValue()
   const [deleteIcon] = useMutation<DeleteParticipantIconMutation>(
     DeleteParticipantIconDocument,
     {

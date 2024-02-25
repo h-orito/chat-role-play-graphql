@@ -32,7 +32,7 @@ const GraphqlProvider = ({ children }: { children: React.ReactNode }) => {
     }
     generateClient()
   }, [isLoading])
-  if (isLoading || !client) return <>isLoading...</>
+  if (isLoading || !client) return <>Loading...</>
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>
 }

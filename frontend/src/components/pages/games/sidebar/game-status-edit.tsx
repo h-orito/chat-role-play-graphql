@@ -28,26 +28,24 @@ import SubmitButton from '@/components/button/submit-button'
 import InputText from '@/components/form/input-text'
 import InputDateTime from '@/components/form/input-datetime'
 import DangerButton from '@/components/button/danger-button'
+import { useGameValue } from '../../games_new/game-hook'
 
-type Props = {
-  game: Game
-}
-
-export default function GameStatusEdit({ game }: Props) {
+export default function GameStatusEdit() {
+  const game = useGameValue()
   return (
     <div className='text-center'>
       <div className='my-4 flex justify-center'>
-        <UpdateGameStatusForm game={game} />
+        <UpdateGameStatusForm />
       </div>
       <hr />
       <div className='my-4 flex justify-center'>
-        <UpdateGamePeriodForm game={game} />
+        <UpdateGamePeriodForm />
       </div>
       {game.periods.length > 1 && (
         <>
           <hr />
           <div className='my-4 flex justify-center'>
-            <DeleteGamePeriodForm game={game} />
+            <DeleteGamePeriodForm />
           </div>
         </>
       )}
@@ -55,7 +53,8 @@ export default function GameStatusEdit({ game }: Props) {
   )
 }
 
-const UpdateGameStatusForm = ({ game }: Props) => {
+const UpdateGameStatusForm = () => {
+  const game = useGameValue()
   const [gameStatus, setGameStatus] = useState(game.status)
   const gameStatusOptions = Array.from(gameStatuses.entries()).map((gs) => ({
     label: gs[1],
@@ -105,22 +104,22 @@ interface UpdatePeriodFormInput {
   endAt: string
 }
 
-const UpdateGamePeriodForm = ({ game }: Props) => {
+const UpdateGamePeriodForm = () => {
   dayjs.extend(utc)
   dayjs.extend(timezone)
   dayjs.tz.setDefault('Asia/Tokyo')
 
-  const { control, formState, handleSubmit, setValue } =
-    useForm<UpdatePeriodFormInput>({
-      defaultValues: {
-        name: game.periods[game.periods.length - 1].name,
-        endAt: dayjs(game.periods[game.periods.length - 1].endAt).format(
-          'YYYY-MM-DDTHH:mm'
-        )
-      } as UpdatePeriodFormInput
-    })
+  const game = useGameValue()
+  const { control, handleSubmit, setValue } = useForm<UpdatePeriodFormInput>({
+    defaultValues: {
+      name: game.periods[game.periods.length - 1].name,
+      endAt: dayjs(game.periods[game.periods.length - 1].endAt).format(
+        'YYYY-MM-DDTHH:mm'
+      )
+    } as UpdatePeriodFormInput
+  })
 
-  const candidates = game.periods.map((p, index) => ({
+  const candidates = game.periods.map((p) => ({
     label: p.name,
     value: p.id
   }))
@@ -222,7 +221,8 @@ const UpdateGamePeriodForm = ({ game }: Props) => {
   )
 }
 
-const DeleteGamePeriodForm = ({ game }: Props) => {
+const DeleteGamePeriodForm = () => {
+  const game = useGameValue()
   const candidates = game.periods.map((p) => ({
     label: p.name,
     value: p.id

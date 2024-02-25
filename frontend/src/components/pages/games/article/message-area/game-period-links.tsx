@@ -1,12 +1,12 @@
-import { Game } from '@/lib/generated/graphql'
+import { useGameValue } from '@/components/pages/games_new/game-hook'
 
 type Props = {
-  game: Game
   periodId: string | undefined | null
   setQuery: (periodId: string) => void
 }
 
-export default function GamePeriodLinks({ game, periodId, setQuery }: Props) {
+export default function GamePeriodLinks({ periodId, setQuery }: Props) {
+  const game = useGameValue()
   return (
     <div className='base-border border-b p-2 text-center text-xs'>
       {game.periods.map((period) => {

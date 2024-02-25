@@ -1,16 +1,9 @@
-import {
-  Game,
-  GameParticipant,
-  Message,
-  MessageType
-} from '@/lib/generated/graphql'
+import { Message, MessageType } from '@/lib/generated/graphql'
 import TalkMessage from './talk-message'
 import SystemMessage from './system-message'
 import DescriptionMessage from './description-message'
 
 type MessageProps = {
-  game: Game
-  myself: GameParticipant | null
   message: Message
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void

@@ -1,9 +1,4 @@
-import {
-  Game,
-  GameParticipant,
-  Message,
-  MessagesQuery
-} from '@/lib/generated/graphql'
+import { Message, MessagesQuery } from '@/lib/generated/graphql'
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import {
   ArrowDownIcon,
@@ -15,11 +10,10 @@ import Talk, { TalkRefHandle } from '@/components/pages/games/talk/talk'
 import TalkDescription, {
   TalkDescriptionRefHandle
 } from '../talk/talk-description'
+import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
 
 type Props = {
   className?: string
-  game: Game
-  myself: GameParticipant | null
   search: (query?: MessagesQuery) => void
   scrollToTop: () => void
   scrollToBottom: () => void
@@ -31,6 +25,8 @@ export interface MessageFooterMenuRefHandle {
 
 const MessageFooterMenu = forwardRef<MessageFooterMenuRefHandle, Props>(
   (props: Props, ref: any) => {
+    const game = useGameValue()
+    const myself = useMyselfValue()
     const talkAreaRef = useRef({} as TalkAreaRefHandle)
 
     useImperativeHandle(ref, () => ({
@@ -44,9 +40,9 @@ const MessageFooterMenu = forwardRef<MessageFooterMenuRefHandle, Props>(
       talkAreaRef.current.toggleDescriptionTalk()
 
     const canTalk =
-      !!props.myself &&
+      !!myself &&
       ['Closed', 'Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
-        props.game.status
+        game.status
       )
 
     return (
@@ -73,7 +69,7 @@ interface TalkAreaRefHandle {
 
 const TalkArea = forwardRef<TalkAreaRefHandle, Props & { canTalk: boolean }>(
   (props: Props & { canTalk: boolean }, ref: any) => {
-    const { game, myself, search } = props
+    const { search } = props
 
     const [isShowNormalTalk, setIsShowNormalTalk] = useState(false)
     const [isShowDescriptionTalk, setIsShowDescriptionTalk] = useState(false)
@@ -120,16 +116,12 @@ const TalkArea = forwardRef<TalkAreaRefHandle, Props & { canTalk: boolean }>(
         <div className={isShowNormalTalk ? '' : 'hidden'}>
           <Talk
             {...props}
-            game={game}
-            myself={myself!}
             handleCompleted={handleTalkCompleted}
             ref={talkRef}
           />
         </div>
         <div className={isShowDescriptionTalk ? '' : 'hidden'}>
           <TalkDescription
-            game={game}
-            myself={myself!}
             handleCompleted={handleDescriptionCompleted}
             ref={descriptionTalkRef}
           />
@@ -155,7 +147,6 @@ const FooterMenu = (
   } = props
 
   const handleTalkClick = () => {
-    console.log('click')
     toggleNormalTalk()
   }
 

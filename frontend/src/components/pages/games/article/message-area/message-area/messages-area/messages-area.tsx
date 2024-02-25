@@ -1,6 +1,4 @@
 import {
-  Game,
-  GameParticipant,
   Message,
   Messages,
   MessagesQuery,
@@ -14,9 +12,7 @@ import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 
 type Props = {
-  game: Game
   className?: string
-  myself: GameParticipant | null
   reply: (message: Message) => void
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
@@ -127,7 +123,7 @@ const GamePeriodLinksArea = (
     search: (query?: MessagesQuery) => void
   }
 ) => {
-  const { game, messageQuery, search, searchable } = props
+  const { messageQuery, search, searchable } = props
 
   const setPeriodQuery = (periodId: string) => {
     const newQuery = {
@@ -146,7 +142,6 @@ const GamePeriodLinksArea = (
   if (searchable) return <></>
   return (
     <GamePeriodLinks
-      game={game}
       periodId={messageQuery.periodId}
       setQuery={setPeriodQuery}
     />

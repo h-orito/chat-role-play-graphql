@@ -1,8 +1,6 @@
 import {
-  Game,
   GameMessagesDocument,
   GameMessagesQuery,
-  GameParticipant,
   Message,
   Messages,
   MessagesLatestDocument,
@@ -22,11 +20,13 @@ import { useUserPagingSettings } from '@/components/pages/games/user-settings'
 import MessagesArea, {
   MessagesAreaRefHandle
 } from './messages-area/messages-area'
+import {
+  useGameValue,
+  useMyselfValue
+} from '@/components/pages/games_new/game-hook'
 
 type Props = {
-  game: Game
   className?: string
-  myself: GameParticipant | null
   reply: (message: Message) => void
   openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
@@ -47,15 +47,15 @@ export interface MessageAreaRefHandle {
 const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
   (props: Props, ref: any) => {
     const {
-      game,
       className,
-      myself,
       isViewing,
       existsUnread,
       setExistUnread,
       onlyFollowing = false,
       searchable = false
     } = props
+    const game = useGameValue()
+    const myself = useMyselfValue()
 
     const [fetchMessages] =
       useLazyQuery<GameMessagesQuery>(GameMessagesDocument)

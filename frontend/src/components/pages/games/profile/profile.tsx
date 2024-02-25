@@ -4,8 +4,6 @@ import {
   FollowDocument,
   FollowMutation,
   FollowMutationVariables,
-  Game,
-  GameParticipant,
   GameParticipantIcon,
   GameParticipantProfile,
   GameParticipantProfileDocument,
@@ -27,22 +25,20 @@ import FollowsCount from './follows-count'
 import FollowersCount from './followers-count'
 import ParticipantIcons from './participant-icons'
 import MessageText from '../article/message-area/message-text/message-text'
+import {
+  useGameValue,
+  useMyself,
+  useMyselfValue
+} from '../../games_new/game-hook'
 
 type Props = {
   close: (e: any) => void
-  game: Game
   participantId: string
-  myself: GameParticipant | null
-  refetchMyself: () => void
 }
 
-export default function Profile({
-  close,
-  game,
-  participantId,
-  myself,
-  refetchMyself
-}: Props) {
+export default function Profile({ close, participantId }: Props) {
+  const game = useGameValue()
+  const myself = useMyselfValue()
   const [profile, setProfile] = useState<GameParticipantProfile | null>(null)
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
 
@@ -98,18 +94,15 @@ export default function Profile({
           <div className='flex'>
             <ParticipantName profile={profile} />
             <FFButtons
-              game={game}
               participantId={participantId}
-              myself={myself}
               profile={profile}
-              refetchMyself={refetchMyself}
               refetchProfile={refetchProfile}
               close={close}
               canEdit={canEdit}
               icons={icons}
             />
           </div>
-          <PlayerName game={game} profile={profile} />
+          <PlayerName profile={profile} />
           {profile.introduction && (
             <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-xs text-gray-700'>
               <MessageText rawText={profile.introduction} />
@@ -117,36 +110,25 @@ export default function Profile({
           )}
           {isMyself && (
             <div>
-              <FollowsCount
-                game={game}
-                myself={myself}
-                profile={profile}
-                refetchMyself={refetchMyself}
-              />
+              <FollowsCount profile={profile} />
               &nbsp;&nbsp;
-              <FollowersCount
-                game={game}
-                myself={myself}
-                profile={profile}
-                refetchMyself={refetchMyself}
-              />
+              <FollowersCount profile={profile} />
             </div>
           )}
           <ParticipantIcons
-            game={game}
-            myself={myself}
             icons={icons}
             canEdit={canEdit}
             refetchIcons={refetchIcons}
           />
         </div>
       </div>
-      {canEdit && <LeaveButton game={game} />}
+      {canEdit && <LeaveButton />}
     </div>
   )
 }
 
-const LeaveButton = ({ game }: { game: Game }) => {
+const LeaveButton = () => {
+  const game = useGameValue()
   const [leave] = useMutation<LeaveMutation>(LeaveDocument, {
     onCompleted(e) {
       location.reload()
@@ -191,13 +173,8 @@ const ParticipantName = ({ profile }: { profile: GameParticipantProfile }) => {
   )
 }
 
-const PlayerName = ({
-  game,
-  profile
-}: {
-  game: Game
-  profile: GameParticipantProfile
-}) => {
+const PlayerName = ({ profile }: { profile: GameParticipantProfile }) => {
+  const game = useGameValue()
   const shouldShowPlayer =
     ['Epilogue', 'Finished', 'Cancelled'].includes(game.status) ||
     profile?.isPlayerOpen == true
@@ -219,16 +196,7 @@ const FFButtons = (
     icons: Array<GameParticipantIcon>
   }
 ) => {
-  const {
-    game,
-    participantId,
-    myself,
-    profile,
-    refetchMyself,
-    refetchProfile,
-    canEdit,
-    icons
-  } = props
+  const { participantId, profile, refetchProfile, canEdit, icons } = props
   const [isOpenEditModal, setIsOpenEditModal] = useState(false)
   const toggleEditModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -239,19 +207,13 @@ const FFButtons = (
   return (
     <div className='ml-auto'>
       <FollowButton
-        game={game}
         participantId={participantId}
-        myself={myself}
         profile={profile}
-        refetchMyself={refetchMyself}
         refetchProfile={refetchProfile}
       />
       <UnfollowButton
-        game={game}
         participantId={participantId}
-        myself={myself}
         profile={profile}
-        refetchMyself={refetchMyself}
         refetchProfile={refetchProfile}
       />
       {canEdit && (
@@ -262,9 +224,6 @@ const FFButtons = (
           {isOpenEditModal && (
             <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
               <ProfileEdit
-                game={game}
-                myself={myself}
-                refetchMyself={refetchMyself}
                 profile={profile}
                 icons={icons}
                 refetchProfile={refetchProfile}
@@ -278,22 +237,18 @@ const FFButtons = (
   )
 }
 type FollowButtonProps = {
-  game: Game
   participantId: string
-  myself: GameParticipant | null
   profile: GameParticipantProfile
-  refetchMyself: () => void
   refetchProfile: () => void
 }
 
 const FollowButton = ({
-  game,
   participantId,
-  myself,
   profile,
-  refetchMyself,
   refetchProfile
 }: FollowButtonProps) => {
+  const game = useGameValue()
+  const [myself, refetchMyself] = useMyself(game.id)
   const [follow] = useMutation<FollowMutation>(FollowDocument, {
     onCompleted(e) {
       refetchMyself()
@@ -326,22 +281,18 @@ const FollowButton = ({
 }
 
 type UnfollowButtonProps = {
-  game: Game
   participantId: string
-  myself: GameParticipant | null
   profile: GameParticipantProfile
-  refetchMyself: () => void
   refetchProfile: () => void
 }
 
 const UnfollowButton = ({
-  game,
   participantId,
-  myself,
   profile,
-  refetchMyself,
   refetchProfile
 }: UnfollowButtonProps) => {
+  const game = useGameValue()
+  const [myself, refetchMyself] = useMyself(game.id)
   const [unfollow] = useMutation<UnfollowMutation>(UnfollowDocument, {
     onCompleted(e) {
       refetchMyself()

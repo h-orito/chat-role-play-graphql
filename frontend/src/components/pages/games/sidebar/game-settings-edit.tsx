@@ -1,5 +1,4 @@
 import {
-  Game,
   UpdateGameSettingsMutation,
   UpdateGameSettingsDocument,
   UpdateGameSetting,
@@ -16,15 +15,14 @@ import { SubmitHandler } from 'react-hook-form'
 import GameEdit, {
   GameFormInput
 } from '@/components/pages/create-game/game-edit'
+import { useGameValue } from '../../games_new/game-hook'
 
-type Props = {
-  game: Game
-}
-
-export default function GameSettingsEdit({ game }: Props) {
+export default function GameSettingsEdit() {
   dayjs.extend(utc)
   dayjs.extend(timezone)
   dayjs.tz.setDefault('Asia/Tokyo')
+
+  const game = useGameValue()
 
   const defaultValues = {
     name: game.name,
