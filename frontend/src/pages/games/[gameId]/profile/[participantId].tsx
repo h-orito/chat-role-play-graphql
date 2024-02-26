@@ -198,12 +198,7 @@ const ThemeCSS = () => {
   }
 
   const css = convertThemeToCSS(theme)
-
-  return (
-    <style jsx global>
-      {css}
-    </style>
-  )
+  return <style jsx>{css}</style>
 }
 
 const LeaveButton = () => {

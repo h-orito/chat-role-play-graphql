@@ -118,10 +118,7 @@ const TalkDescription = forwardRef<TalkDescriptionRefHandle, Props>(
     }
 
     return (
-      <div
-        id='talk-description'
-        className='max-h-[30vh] overflow-y-auto px-4 py-2'
-      >
+      <div id='talk-description'>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className='my-2'>
             <p className='text-xs font-bold'>名前</p>
@@ -205,11 +202,7 @@ const DescriptionPreview = ({
     <div className='my-4 border-t border-gray-300 pt-2'>
       <p className='font-bold'>プレビュー</p>
       <div>
-        <DescriptionMessage
-          message={preview!}
-          openProfileModal={() => {}}
-          openFavoritesModal={() => {}}
-        />
+        <DescriptionMessage message={preview!} openFavoritesModal={() => {}} />
       </div>
     </div>
   )

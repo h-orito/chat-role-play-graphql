@@ -17,17 +17,17 @@ import {
 import SearchCondition from './search-condition'
 import { useLazyQuery } from '@apollo/client'
 import { useUserPagingSettings } from '@/components/pages/games/user-settings'
-import MessagesArea, {
-  MessagesAreaRefHandle
-} from './messages-area/messages-area'
+import MessagesArea from './messages-area/messages-area'
 import {
   useGameValue,
   useMyselfValue
 } from '@/components/pages/games/game-hook'
+import Talk, { TalkRefHandle } from '../../../talk/talk'
+import TalkDescription from '../../../talk/talk-description'
+import Panel, { PanelRefHandle } from '@/components/panel/panel'
 
 type Props = {
   className?: string
-  reply: (message: Message) => void
   openFavoritesModal: (messageId: string) => void
   isViewing: boolean
   existsUnread: boolean
@@ -90,21 +90,6 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     const [latestTime, setLatestTime] = useState<number>(0)
     const [messageQuery, setMessageQuery] = useState(defaultMessageQuery)
 
-    useImperativeHandle(ref, () => ({
-      async fetchLatest() {
-        return await search()
-      },
-      search(query: MessagesQuery = messageQuery) {
-        return search(query)
-      },
-      scrollToTop() {
-        messagesAreaRef.current.scrollToTop()
-      },
-      scrollToBottom() {
-        messagesAreaRef.current.scrollToBottom()
-      }
-    }))
-
     const search = async (query: MessagesQuery = messageQuery) => {
       setMessageQuery(query)
       const { data } = await fetchMessages({
@@ -166,20 +151,51 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         game.status
       )
 
-    const messagesAreaRef = useRef({} as MessagesAreaRefHandle)
+    const messageAreaRef = useRef<HTMLDivElement>(null)
+    const talkAreaRef = useRef({} as TalkAreaRefHandle)
+
+    useImperativeHandle(ref, () => ({
+      async fetchLatest() {
+        return await search()
+      },
+      search(query: MessagesQuery = messageQuery) {
+        return search(query)
+      },
+      scrollToTop() {
+        messageAreaRef?.current?.scroll({ top: 0, behavior: 'smooth' })
+      },
+      scrollToBottom() {
+        messageAreaRef?.current?.scroll({
+          top: messageAreaRef?.current?.scrollHeight,
+          behavior: 'smooth'
+        })
+      }
+    }))
+
+    const reply = (message: Message) => {
+      talkAreaRef.current.reply(message)
+    }
 
     return (
       <div
         className={`${className} mut-height-guard relative flex flex-1 flex-col overflow-y-auto`}
+        ref={messageAreaRef}
       >
         <SearchArea messageQuery={messageQuery} search={search} {...props} />
         <MessagesArea
-          ref={messagesAreaRef}
           messages={messages}
           messageQuery={messageQuery}
           canTalk={canTalk}
           search={search}
+          messageAreaRef={messageAreaRef}
+          reply={reply}
           {...props}
+        />
+        <TalkArea
+          ref={talkAreaRef}
+          {...props}
+          canTalk={canTalk}
+          search={search}
         />
       </div>
     )
@@ -200,5 +216,80 @@ const SearchArea = (
     <div className='flex'>
       <SearchCondition {...props} messageQuery={messageQuery} search={search} />
     </div>
+  )
+}
+
+interface TalkAreaRefHandle {
+  reply: (message: Message) => void
+}
+
+const TalkArea = forwardRef<
+  TalkAreaRefHandle,
+  { canTalk: boolean; search: (query?: MessagesQuery) => void }
+>(({ canTalk, search }, ref: any) => {
+  const [isShowDescriptionTalk, setIsShowDescriptionTalk] = useState(true)
+
+  const talkPanelRef = useRef({} as TalkAreaRefHandle)
+
+  useImperativeHandle(ref, () => ({
+    reply(message: Message) {
+      talkPanelRef.current.reply(message)
+    }
+  }))
+
+  if (!canTalk) return <></>
+
+  return (
+    <div className='base-border w-full border-t text-sm'>
+      <TalkPanel search={search} ref={talkPanelRef} />
+      <div className={isShowDescriptionTalk ? '' : 'hidden'}>
+        <DescriptionPanel search={search} />
+      </div>
+    </div>
+  )
+})
+
+const TalkPanel = forwardRef<
+  TalkAreaRefHandle,
+  { search: (query?: MessagesQuery) => void }
+>(({ search }, ref: any) => {
+  const talkRef = useRef({} as TalkRefHandle)
+  const panelRef = useRef({} as PanelRefHandle)
+  const panelWrapperRef = useRef<HTMLDivElement>(null)
+
+  useImperativeHandle(ref, () => ({
+    reply(message: Message) {
+      panelRef.current.open()
+      talkRef.current.replyTo(message)
+      panelWrapperRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }))
+
+  const handleTalkCompleted = () => {
+    search()
+  }
+
+  return (
+    <div ref={panelWrapperRef}>
+      <Panel header='発言' ref={panelRef}>
+        <Talk handleCompleted={handleTalkCompleted} ref={talkRef} />
+      </Panel>
+    </div>
+  )
+})
+
+const DescriptionPanel = ({
+  search
+}: {
+  search: (query?: MessagesQuery) => void
+}) => {
+  const handleDescriptionCompleted = () => {
+    search()
+  }
+
+  return (
+    <Panel header='ト書き'>
+      <TalkDescription handleCompleted={handleDescriptionCompleted} />
+    </Panel>
   )
 }

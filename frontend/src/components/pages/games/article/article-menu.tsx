@@ -1,4 +1,3 @@
-import { GameParticipant, Player } from '@/lib/generated/graphql'
 import {
   HomeIcon,
   UsersIcon,
@@ -61,12 +60,12 @@ export default function ArticleMenu({
           onClickTab={() => setTab('follow')}
         />
       )}
-      <SearchButton
+      {/* <SearchButton
         isActive={tab === 'search'}
         isFooter={footer}
         existsUnread={false}
         onClickTab={() => setTab('search')}
-      />
+      /> */}
       {shouldShowDM && (
         <DirectMessageButton
           isActive={tab === 'dm'}

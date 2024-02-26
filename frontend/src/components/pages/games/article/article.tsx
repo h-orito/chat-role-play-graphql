@@ -13,11 +13,9 @@ import MessageArea, {
 } from './message-area/message-area/message-area'
 import DirectMessagesArea from './message-area/direct-message/direct-messages-area'
 import ArticleMenu from './article-menu'
-import MessageFooterMenu, {
-  MessageFooterMenuRefHandle
-} from './message-footer-menu'
+import MessageFooterMenu from './message-footer-menu'
 import { googleAdnsenseStyleGuard } from '@/components/adsense/google-adsense-guard'
-import { useGameValue, useMyPlayerValue, useMyselfValue } from '../game-hook'
+import { useMyPlayerValue, useMyselfValue } from '../game-hook'
 
 type Props = {}
 
@@ -41,13 +39,9 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
 
   const [existsHomeUnread, setExistsHomeUnread] = useState(false)
   const [existFollowsUnread, setExistFollowsUnread] = useState(false)
-  const [existSearchUnread, setExistSearchUnread] = useState(false)
 
   const homeRef = useRef({} as MessageAreaRefHandle)
   const followRef = useRef({} as MessageAreaRefHandle)
-  const searchRef = useRef({} as MessageAreaRefHandle)
-  const messageFooterMenuRef = useRef({} as MessageFooterMenuRefHandle)
-  const reply = (message: any) => messageFooterMenuRef.current?.reply(message)
 
   const handleTabChange = (tab: string) => {
     setTab(tab)
@@ -66,7 +60,7 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
   }))
 
   const getCurrentMessageAreaRef = () => {
-    return tab === 'home' ? homeRef : tab === 'follow' ? followRef : searchRef
+    return tab === 'home' ? homeRef : followRef
   }
   const search = () => getCurrentMessageAreaRef().current.search()
   const scrollToTop = () => getCurrentMessageAreaRef().current.scrollToTop()
@@ -100,7 +94,6 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
       <MessageArea
         ref={homeRef}
         className={`${tab === 'home' ? '' : 'hidden'}`}
-        reply={reply}
         openFavoritesModal={openFavoritesModal}
         isViewing={tab === 'home'}
         existsUnread={existsHomeUnread}
@@ -110,7 +103,6 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
         <MessageArea
           ref={followRef}
           className={`${tab === 'follow' ? '' : 'hidden'}`}
-          reply={reply}
           openFavoritesModal={openFavoritesModal}
           isViewing={tab === 'follow'}
           existsUnread={existFollowsUnread}
@@ -118,16 +110,6 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
           onlyFollowing
         />
       )}
-      <MessageArea
-        ref={searchRef}
-        className={`${tab === 'search' ? '' : 'hidden'}`}
-        reply={reply}
-        openFavoritesModal={openFavoritesModal}
-        isViewing={tab === 'search'}
-        existsUnread={existSearchUnread}
-        setExistUnread={setExistSearchUnread}
-        searchable
-      />
       {shouldShowDM && (
         <DirectMessagesArea className={`${tab === 'dm' ? '' : 'hidden'}`} />
       )}
@@ -140,9 +122,7 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
         </Modal>
       )}
       <MessageFooterMenu
-        ref={messageFooterMenuRef}
         className={`${tab === 'dm' ? 'hidden' : ''}`}
-        search={search}
         scrollToTop={scrollToTop}
         scrollToBottom={scrollToBottom}
       />

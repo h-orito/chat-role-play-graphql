@@ -188,7 +188,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
 
   return (
-    <div className='max-h-[40vh] overflow-y-auto px-4 py-2'>
+    <div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TalkType
           {...props}
