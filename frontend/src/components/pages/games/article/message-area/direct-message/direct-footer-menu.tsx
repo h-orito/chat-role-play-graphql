@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import TalkDirect from '@/components/pages/games/talk/talk-direct'
-import { useMyselfValue } from '@/components/pages/games_new/game-hook'
+import { useMyselfValue } from '@/components/pages/games/game-hook'
 
 type Props = {
   group: GameParticipantGroup

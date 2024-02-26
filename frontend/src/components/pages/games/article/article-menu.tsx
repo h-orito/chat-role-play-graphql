@@ -7,11 +7,7 @@ import {
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 import { useMemo } from 'react'
-import {
-  useMyPlayerValue,
-  useMyselfValue,
-  useSidebarOpen
-} from '../../games_new/game-hook'
+import { useMyPlayerValue, useMyselfValue, useSidebarOpen } from '../game-hook'
 
 type Props = {
   tab: string

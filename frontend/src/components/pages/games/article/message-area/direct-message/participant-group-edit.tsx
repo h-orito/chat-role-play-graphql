@@ -1,6 +1,6 @@
 import SubmitButton from '@/components/button/submit-button'
 import InputText from '@/components/form/input-text'
-import { useGameValue } from '@/components/pages/games_new/game-hook'
+import { useGameValue } from '@/components/pages/games/game-hook'
 import {
   GameParticipantGroup,
   UpdateGameParticipantGroup,

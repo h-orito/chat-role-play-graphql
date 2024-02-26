@@ -4,7 +4,7 @@ import Modal from '@/components/modal/modal'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useCookies } from 'react-cookie'
-import { useGameValue } from '../games_new/game-hook'
+import { useGameValue } from './game-hook'
 
 const RatingWarningModal = () => {
   const game = useGameValue()

@@ -2,7 +2,7 @@ import { base64ToId } from '@/components/graphql/convert'
 import { iso2display } from '@/components/util/datetime/datetime'
 import Link from 'next/link'
 import React from 'react'
-import { useGameValue } from '../../games_new/game-hook'
+import { useGameValue } from '../game-hook'
 
 type GameSettingsProps = {
   close: (e: any) => void

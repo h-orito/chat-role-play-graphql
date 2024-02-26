@@ -17,7 +17,7 @@ import SubmitButton from '@/components/button/submit-button'
 import SecondaryButton from '@/components/button/scondary-button'
 import SystemMessage from '@/components/pages/games/article/message-area/message-area/messages-area/message/system-message'
 import TalkTextDecorators from './talk-text-decorators'
-import { useGameValue } from '../../games_new/game-hook'
+import { useGameValue } from '../game-hook'
 
 type Props = {
   messageRegisteredCallback: () => void

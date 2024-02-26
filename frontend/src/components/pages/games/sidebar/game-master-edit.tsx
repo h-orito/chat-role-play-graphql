@@ -16,7 +16,7 @@ import {
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { useGameValue } from '../../games_new/game-hook'
+import { useGameValue } from '../game-hook'
 
 type Props = {
   close: (e: any) => void

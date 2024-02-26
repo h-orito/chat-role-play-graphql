@@ -19,7 +19,7 @@ import RadioGroup from '@/components/form/radio-group'
 import InputSelect from '@/components/form/input-select'
 import PrimaryButton from '@/components/button/primary-button'
 import CharaSelect from './chara-select'
-import { useGameValue } from '../../games_new/game-hook'
+import { useGameValue } from '../game-hook'
 
 type Props = {
   close: (e: any) => void

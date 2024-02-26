@@ -10,10 +10,9 @@ import Participants from '../participant/participants'
 
 type Props = {
   participantId: string
-  openProfileModal: (participantId: string) => void
 }
 
-export default function Followers({ participantId, openProfileModal }: Props) {
+export default function Followers({ participantId }: Props) {
   const [followers, setFollowers] = useState<Array<GameParticipant>>([])
   const [fetchFollowers] = useLazyQuery<FollowersQuery>(FollowersDocument)
 
@@ -32,10 +31,7 @@ export default function Followers({ participantId, openProfileModal }: Props) {
 
   return (
     <div className='p-4'>
-      <Participants
-        participants={followers}
-        openProfileModal={openProfileModal}
-      />
+      <Participants participants={followers} />
     </div>
   )
 }

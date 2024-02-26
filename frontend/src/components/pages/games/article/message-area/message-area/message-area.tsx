@@ -23,12 +23,11 @@ import MessagesArea, {
 import {
   useGameValue,
   useMyselfValue
-} from '@/components/pages/games_new/game-hook'
+} from '@/components/pages/games/game-hook'
 
 type Props = {
   className?: string
   reply: (message: Message) => void
-  openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   isViewing: boolean
   existsUnread: boolean

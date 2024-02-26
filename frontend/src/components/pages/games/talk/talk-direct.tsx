@@ -24,7 +24,7 @@ import DirectMessageComponent from '../article/message-area/direct-message/direc
 import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
 import { useUserDisplaySettings } from '../user-settings'
-import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
+import { useGameValue, useMyselfValue } from '../game-hook'
 
 type Props = {
   handleCompleted: () => void
@@ -297,10 +297,10 @@ const DirectPreview = ({
       <p className='font-bold'>プレビュー</p>
       <div>
         <DirectMessageComponent
-          directMessage={preview!}
-          openProfileModal={() => {}}
+          directMessage={preview}
           openFavoritesModal={() => {}}
           imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
+          preview={true}
         />
       </div>
     </div>

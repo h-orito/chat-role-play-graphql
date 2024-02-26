@@ -28,7 +28,7 @@ import InputText from '@/components/form/input-text'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import SubmitButton from '@/components/button/submit-button'
 import { themeOptions } from '@/components/theme/theme'
-import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
+import { useGameValue, useMyselfValue } from '../game-hook'
 
 export default function UserSettingsComponent({
   close

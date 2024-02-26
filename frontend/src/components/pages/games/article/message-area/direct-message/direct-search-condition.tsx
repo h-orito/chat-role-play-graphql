@@ -11,7 +11,7 @@ import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import ParticipantsCheckbox from '../../../participant/participants-checkbox'
-import { useGameValue } from '@/components/pages/games_new/game-hook'
+import { useGameValue } from '@/components/pages/games/game-hook'
 
 type Props = {
   group: GameParticipantGroup

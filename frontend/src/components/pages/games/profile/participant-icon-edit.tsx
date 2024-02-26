@@ -43,7 +43,7 @@ import {
 } from '@dnd-kit/sortable'
 import PrimaryButton from '@/components/button/primary-button'
 import InputImages from '@/components/form/input-images'
-import { useGameValue } from '../../games_new/game-hook'
+import { useGameValue } from '../game-hook'
 
 type Props = {
   close: (e: any) => void

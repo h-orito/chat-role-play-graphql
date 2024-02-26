@@ -23,18 +23,17 @@ import {
 } from '../../../user-settings'
 import DirectFooterMenu from './direct-footer-menu'
 import Portal from '@/components/modal/portal'
-import { useGameValue } from '@/components/pages/games_new/game-hook'
+import { useGameValue } from '@/components/pages/games/game-hook'
 
 type Props = {
   close: (e: any) => void
   group: GameParticipantGroup
-  openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   refetchGroups: () => void
 }
 
 export default function DirectMessageArea(props: Props) {
-  const { close, group, openProfileModal, openFavoritesModal } = props
+  const { close, group, openFavoritesModal } = props
   const game = useGameValue()
   const [pagingSettings] = useUserPagingSettings()
   const defaultQuery: DirectMessagesQuery | null = {
@@ -114,42 +113,43 @@ export default function DirectMessageArea(props: Props) {
       scrollToTop={scrollToTop}
       scrollToBottom={scrollToBottom}
     >
-      <div className='flex h-full flex-1 flex-col overflow-y-auto'>
-        <div
-          className='flex-1 flex-col overflow-y-auto'
-          ref={directMessageAreaRef}
-        >
-          <DirectMessageGroupMembers {...props} canModify={canModify} />
-          <div className='base-border flex border-b'>
-            <DirectSearchCondition
-              group={group}
-              query={query!}
-              search={search}
+      <>
+        <div className='flex h-full flex-1 flex-col overflow-y-auto'>
+          <div
+            className='flex-1 flex-col overflow-y-auto'
+            ref={directMessageAreaRef}
+          >
+            <DirectMessageGroupMembers {...props} canModify={canModify} />
+            <div className='base-border flex border-b'>
+              <DirectSearchCondition
+                group={group}
+                query={query!}
+                search={search}
+              />
+            </div>
+            <Paging
+              messages={directMessages}
+              query={query!.paging as PageableQuery | undefined}
+              setPageableQuery={setPageableQuery}
+            />
+            <div className='flex-1'>
+              {directMessages.list.map((message: DirectMessage) => (
+                <DirectMessageComponent
+                  directMessage={message}
+                  key={message.id}
+                  openFavoritesModal={openFavoritesModal}
+                  imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
+                />
+              ))}
+            </div>
+            <Paging
+              messages={directMessages}
+              query={query!.paging as PageableQuery | undefined}
+              setPageableQuery={setPageableQuery}
             />
           </div>
-          <Paging
-            messages={directMessages}
-            query={query!.paging as PageableQuery | undefined}
-            setPageableQuery={setPageableQuery}
-          />
-          <div className='flex-1'>
-            {directMessages.list.map((message: DirectMessage) => (
-              <DirectMessageComponent
-                directMessage={message}
-                key={message.id}
-                openProfileModal={openProfileModal}
-                openFavoritesModal={openFavoritesModal}
-                imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
-              />
-            ))}
-          </div>
-          <Paging
-            messages={directMessages}
-            query={query!.paging as PageableQuery | undefined}
-            setPageableQuery={setPageableQuery}
-          />
         </div>
-      </div>
+      </>
     </DirectMessageModal>
   )
 }

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import ParticipantIconEdit from './participant-icon-edit'
-import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
+import { useGameValue, useMyselfValue } from '../game-hook'
 
 type Props = {
   icons: Array<GameParticipantIcon>

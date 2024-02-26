@@ -28,7 +28,7 @@ import SubmitButton from '@/components/button/submit-button'
 import InputText from '@/components/form/input-text'
 import InputDateTime from '@/components/form/input-datetime'
 import DangerButton from '@/components/button/danger-button'
-import { useGameValue } from '../../games_new/game-hook'
+import { useGameValue } from '../game-hook'
 
 export default function GameStatusEdit() {
   const game = useGameValue()

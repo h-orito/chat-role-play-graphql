@@ -25,7 +25,10 @@ import ArticleModal from '@/components/modal/article-modal'
 import Participants from '../participant/participants'
 import Link from 'next/link'
 import GameSettingsEdit from './game-settings-edit'
-import { convertToGameStatusName } from '@/components/graphql/convert'
+import {
+  base64ToId,
+  convertToGameStatusName
+} from '@/components/graphql/convert'
 import { iso2display } from '@/components/util/datetime/datetime'
 import TalkSystem, { TalkSystemRefHandle } from '../talk/talk-system'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
@@ -43,17 +46,13 @@ import {
   useMyself,
   useMyselfValue,
   useSidebarOpen
-} from '../../games_new/game-hook'
+} from '../game-hook'
 
 type SidebarProps = {
-  openProfileModal: (participantId: string) => void
   fetchHomeLatest: () => void
 }
 
-export default function Sidebar({
-  openProfileModal,
-  fetchHomeLatest
-}: SidebarProps) {
+export default function Sidebar({ fetchHomeLatest }: SidebarProps) {
   const { isAuthenticated } = useAuth0()
   const [isSidebarOpen, toggleSidebar] = useSidebarOpen()
   const game = useGameValue()
@@ -92,7 +91,7 @@ export default function Sidebar({
         <GameStatus />
         <div className='base-border border-t py-2'>
           <GameIntroButton />
-          <ParticipantsButton openProfileModal={openProfileModal} />
+          <ParticipantsButton />
           <GameSettingsButton />
           <UserSettingsButton />
         </div>
@@ -110,7 +109,7 @@ export default function Sidebar({
         )}
         {myself && (
           <div className='base-border border-t py-2'>
-            <ProfileButton openProfileModal={openProfileModal} />
+            <ProfileButton />
           </div>
         )}
         <DebugMenu />
@@ -272,11 +271,7 @@ type IntroCookie = {
   [gameId: string]: boolean
 }
 
-type ParticipantsProps = {
-  openProfileModal: (participantId: string) => void
-}
-
-const ParticipantsButton = ({ openProfileModal }: ParticipantsProps) => {
+const ParticipantsButton = () => {
   const game = useGameValue()
   const [isOpenParticipantsModal, setIsParticipantsModal] = useState(false)
   const toggleParticipantsModal = (e: any) => {
@@ -300,11 +295,7 @@ const ParticipantsButton = ({ openProfileModal }: ParticipantsProps) => {
           close={toggleParticipantsModal}
           hideFooter
         >
-          <Participants
-            className='p-4'
-            participants={game.participants}
-            openProfileModal={openProfileModal}
-          />
+          <Participants className='p-4' participants={game.participants} />
         </ArticleModal>
       )}
     </>
@@ -497,21 +488,19 @@ const SystemMessageButton = ({ fetchHomeLatest }: SystemMessageButtonProps) => {
   )
 }
 
-type ProfileButtonProps = {
-  openProfileModal: (participantId: string) => void
-}
-
-const ProfileButton = ({ openProfileModal }: ProfileButtonProps) => {
+const ProfileButton = () => {
+  const game = useGameValue()
   const myself = useMyselfValue()!
   return (
     <>
-      <button
+      <Link
+        href={`/games/${base64ToId(game.id)}/profile/${base64ToId(myself.id)}`}
+        target='_blank'
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
-        onClick={() => openProfileModal(myself.id)}
       >
         <UserCircleIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>{myself.name}</p>
-      </button>
+      </Link>
     </>
   )
 }

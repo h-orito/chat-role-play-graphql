@@ -33,7 +33,7 @@ import TalkTextDecorators from './talk-text-decorators'
 import PrimaryButton from '@/components/button/primary-button'
 import ParticipantSelect from '../participant/participant-select'
 import { useUserDisplaySettings } from '../user-settings'
-import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
+import { useGameValue, useMyselfValue } from '../game-hook'
 
 type Props = {
   handleCompleted: () => void
@@ -254,7 +254,6 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
             <div>
               <TalkMessage
                 message={replyTarget!}
-                openProfileModal={() => {}}
                 openFavoritesModal={() => {}}
                 handleReply={() => {}}
                 imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
@@ -569,10 +568,10 @@ const TalkPreview = ({
         <div>
           <TalkMessage
             message={preview!}
-            openProfileModal={() => {}}
             openFavoritesModal={() => {}}
             handleReply={() => {}}
             imageSizeRatio={imageSizeRatio}
+            preview={true}
           />
         </div>
       </div>

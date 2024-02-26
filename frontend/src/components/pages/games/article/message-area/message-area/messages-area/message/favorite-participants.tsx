@@ -6,18 +6,14 @@ import {
 import { useLazyQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import Participants from '../../../../../participant/participants'
-import { useGameValue } from '@/components/pages/games_new/game-hook'
+import { useGameValue } from '@/components/pages/games/game-hook'
 
 type Props = {
   close: (e: any) => void
   messageId: string
-  openProfileModal: (participantId: string) => void
 }
 
-export default function FavoriteParticipants({
-  messageId,
-  openProfileModal
-}: Props) {
+export default function FavoriteParticipants({ messageId }: Props) {
   const game = useGameValue()
   const [participants, setParticipants] = useState<GameParticipant[]>([])
   const [fetchFavoriteParticipants] = useLazyQuery<FavoriteParticipantsQuery>(
@@ -40,10 +36,5 @@ export default function FavoriteParticipants({
 
   if (participants == null) return <div>Loading...</div>
 
-  return (
-    <Participants
-      participants={participants}
-      openProfileModal={openProfileModal}
-    />
-  )
+  return <Participants participants={participants} />
 }

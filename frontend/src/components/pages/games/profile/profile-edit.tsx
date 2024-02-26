@@ -16,7 +16,7 @@ import { useCallback, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Modal from '@/components/modal/modal'
 import TalkTextDecorators from '../talk/talk-text-decorators'
-import { useGameValue, useMyself } from '../../games_new/game-hook'
+import { useGameValue, useMyself } from '../game-hook'
 
 type Props = {
   close: (e: any) => void

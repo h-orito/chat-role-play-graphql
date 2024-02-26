@@ -1,6 +1,6 @@
 import { Chara, Game } from '@/lib/generated/graphql'
 import Image from 'next/image'
-import { useGameValue } from '../../games_new/game-hook'
+import { useGameValue } from '../game-hook'
 
 type Props = {
   charas: Array<Chara>

@@ -1,7 +1,7 @@
 import {
   useGameValue,
   useMyselfValue
-} from '@/components/pages/games_new/game-hook'
+} from '@/components/pages/games/game-hook'
 import {
   DeleteMessageFavorite,
   FavoriteDocument,

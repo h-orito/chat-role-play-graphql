@@ -15,17 +15,13 @@ import DirectFavoriteParticipants from './direct-favorite-participants'
 import {
   useGameValue,
   useMyselfValue
-} from '@/components/pages/games_new/game-hook'
+} from '@/components/pages/games/game-hook'
 
 type Props = {
   className?: string
-  openProfileModal: (participantId: string) => void
 }
 
-export default function DirectMessagesArea({
-  className,
-  openProfileModal
-}: Props) {
+export default function DirectMessagesArea({ className }: Props) {
   const game = useGameValue()
   const myself = useMyselfValue()!
   const [fetchParticipantGroups] = useLazyQuery<ParticipantGroupsQuery>(
@@ -130,7 +126,6 @@ export default function DirectMessagesArea({
         <DirectMessageArea
           group={directMessageGroup!}
           close={toggleDirectMessageModal}
-          openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
           refetchGroups={refetchGroups}
         />
@@ -139,7 +134,6 @@ export default function DirectMessagesArea({
         <Modal header='ふぁぼした人' close={toggleFavoritesModal} hideFooter>
           <DirectFavoriteParticipants
             messageId={favoriteMessageId}
-            openProfileModal={openProfileModal}
             close={toggleFavoritesModal}
           />
         </Modal>

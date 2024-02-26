@@ -1,26 +1,28 @@
 import { GameParticipant } from '@/lib/generated/graphql'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useGameValue } from '../game-hook'
+import { base64ToId } from '@/components/graphql/convert'
 
 type Props = {
   className?: string
   participants: GameParticipant[]
-  openProfileModal: (participantId: string) => void
 }
 
-export default function Participants({
-  className,
-  participants,
-  openProfileModal
-}: Props) {
+export default function Participants({ className, participants }: Props) {
+  const game = useGameValue()
   const displayParticipants = participants.filter((p) => !p.isGone)
   return (
     <div className={`${className} grid grid-cols-1 gap-4 md:grid-cols-2`}>
       {displayParticipants.length === 0 && <p>まだ参加登録されていません。</p>}
       {displayParticipants.map((participant) => (
-        <button
+        <Link
+          href={`/games/${base64ToId(game.id)}/profile/${base64ToId(
+            participant.id
+          )}`}
+          target='_blank'
           key={participant.id}
           className='base-border flex rounded-md border p-4 hover:bg-gray-100'
-          onClick={() => openProfileModal(participant.id)}
         >
           <div>
             <Image
@@ -42,7 +44,7 @@ export default function Participants({
               <p className='text-left'>{participant.memo}</p>
             )}
           </div>
-        </button>
+        </Link>
       ))}
     </div>
   )

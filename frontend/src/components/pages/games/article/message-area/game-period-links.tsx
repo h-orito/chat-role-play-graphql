@@ -1,4 +1,4 @@
-import { useGameValue } from '@/components/pages/games_new/game-hook'
+import { useGameValue } from '@/components/pages/games/game-hook'
 
 type Props = {
   periodId: string | undefined | null

@@ -15,7 +15,7 @@ import { SubmitHandler } from 'react-hook-form'
 import GameEdit, {
   GameFormInput
 } from '@/components/pages/create-game/game-edit'
-import { useGameValue } from '../../games_new/game-hook'
+import { useGameValue } from '../game-hook'
 
 export default function GameSettingsEdit() {
   dayjs.extend(utc)

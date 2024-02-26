@@ -10,7 +10,7 @@ import Talk, { TalkRefHandle } from '@/components/pages/games/talk/talk'
 import TalkDescription, {
   TalkDescriptionRefHandle
 } from '../talk/talk-description'
-import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
+import { useGameValue, useMyselfValue } from '../game-hook'
 
 type Props = {
   className?: string

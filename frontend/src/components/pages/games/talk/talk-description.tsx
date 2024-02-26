@@ -23,7 +23,7 @@ import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
 import DescriptionMessage from '@/components/pages/games/article/message-area/message-area/messages-area/message/description-message'
 import InputText from '@/components/form/input-text'
-import { useGameValue, useMyselfValue } from '../../games_new/game-hook'
+import { useGameValue, useMyselfValue } from '../game-hook'
 
 type Props = {
   handleCompleted: () => void

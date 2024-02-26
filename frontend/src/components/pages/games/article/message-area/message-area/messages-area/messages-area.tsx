@@ -14,7 +14,6 @@ import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 type Props = {
   className?: string
   reply: (message: Message) => void
-  openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   isViewing: boolean
   existsUnread: boolean

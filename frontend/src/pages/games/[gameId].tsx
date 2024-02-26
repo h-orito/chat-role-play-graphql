@@ -1,11 +1,9 @@
 import Head from 'next/head'
 import { createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
-import ArticleModal from '@/components/modal/article-modal'
 import Article, {
   ArticleRefHandle
 } from '@/components/pages/games/article/article'
-import Profile from '@/components/pages/games/profile/profile'
 import Sidebar from '@/components/pages/games/sidebar/sidebar'
 import {
   Game,
@@ -24,7 +22,7 @@ import {
   useMyPlayer,
   useMyself,
   usePollingPeriod
-} from '@/components/pages/games_new/game-hook'
+} from '@/components/pages/games/game-hook'
 
 export const getServerSideProps = async (context: any) => {
   const { gameId } = context.params
@@ -54,16 +52,6 @@ const GamePage = ({ game }: Props) => {
   // 1分に1回ゲーム更新チェック
   usePollingPeriod(game)
 
-  const [isOpenProfileModal, setIsOpenProfileModal] = useState(false)
-  const toggleProfileModal = (e: any) => {
-    setIsOpenProfileModal(!isOpenProfileModal)
-  }
-  const [profileParticipantId, setProfileParticipantId] = useState<string>('')
-  const openProfileModal = async (participantId: string) => {
-    setProfileParticipantId(participantId)
-    setIsOpenProfileModal(true)
-  }
-
   const articleRef = useRef({} as ArticleRefHandle)
   const fetchHomeLatest = async () => {
     await articleRef.current.fetchHomeLatest()
@@ -75,25 +63,8 @@ const GamePage = ({ game }: Props) => {
         <Head>
           <title>{game.name}</title>
         </Head>
-        <Sidebar
-          openProfileModal={openProfileModal}
-          fetchHomeLatest={fetchHomeLatest}
-        />
-        <Article ref={articleRef} openProfileModal={openProfileModal} />
-        {isOpenProfileModal && (
-          <ArticleModal
-            header={
-              game.participants.find((p) => p.id === profileParticipantId)?.name
-            }
-            close={toggleProfileModal}
-            hideFooter
-          >
-            <Profile
-              participantId={profileParticipantId}
-              close={toggleProfileModal}
-            />
-          </ArticleModal>
-        )}
+        <Sidebar fetchHomeLatest={fetchHomeLatest} />
+        <Article ref={articleRef} />
         <RatingWarningModal />
       </main>
       <ThemeCSS />
