@@ -32,7 +32,10 @@ const Panel = forwardRef<PanelRefHandle, Props>((props: Props, ref: any) => {
     <>
       <div className='base-border m-4 rounded-md border'>
         <details open={isOpen} ref={detailsRef}>
-          <summary onClick={handleClick} className='cursor-pointer list-none'>
+          <summary
+            onClick={handleClick}
+            className='secondary-background cursor-pointer list-none rounded-t'
+          >
             <div className='base-border flex border-b px-3 py-2'>
               <div className='flex-1 text-lg'>{header}</div>
               {/* <button className='mr-auto text-xs'>固定</button> */}

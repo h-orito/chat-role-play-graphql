@@ -21,7 +21,7 @@ type Props = {
   className?: string
 }
 
-export default function DirectMessagesArea({ className }: Props) {
+export default function DirectMessageGroupsArea({ className }: Props) {
   const game = useGameValue()
   const myself = useMyselfValue()!
   const [fetchParticipantGroups] = useLazyQuery<ParticipantGroupsQuery>(

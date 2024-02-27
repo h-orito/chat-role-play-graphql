@@ -1,9 +1,7 @@
 import {
   DirectMessagesQuery,
-  Game,
   GameParticipant,
-  GameParticipantGroup,
-  MessageType
+  GameParticipantGroup
 } from '@/lib/generated/graphql'
 import { useState } from 'react'
 import Datetime from '@/components/form/datetime'
@@ -61,76 +59,78 @@ export default function DirectSearchCondition({ group, query, search }: Props) {
   }
 
   return (
-    <div className='w-full px-4 py-2'>
-      <div className='flex'>
-        <button
-          className='flex w-full justify-start'
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <p className='font-bold'>検索条件</p>
-          {isOpen ? (
-            <ChevronDownIcon className='ml-auto h-5 w-5' />
-          ) : (
-            <ChevronRightIcon className='ml-auto h-5 w-5' />
-          )}
-        </button>
-      </div>
-      <div className={isOpen ? '' : 'hidden'}>
-        <div className='my-2'>
-          <label className='text-xs font-bold'>発言者</label>
-          {senders.length === 0 ||
-          senders.length === group.participants.length ? (
-            <p>全員</p>
-          ) : (
-            <p>{senders.map((s) => s.name).join('、')}</p>
-          )}
-          <PrimaryButton click={() => setIsOpenSenderModal(true)}>
-            選択
-          </PrimaryButton>
+    <div className=' base-border flex border-b'>
+      <div className='w-full px-4 py-2'>
+        <div className='flex'>
+          <button
+            className='flex w-full justify-start'
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <p className='font-bold'>検索条件</p>
+            {isOpen ? (
+              <ChevronDownIcon className='ml-auto h-5 w-5' />
+            ) : (
+              <ChevronRightIcon className='ml-auto h-5 w-5' />
+            )}
+          </button>
         </div>
-        <div className='my-2'>
-          <label className='text-xs font-bold'>キーワード</label>
-          <input
-            className='base-border w-full rounded border px-2 py-1 text-xs'
-            value={keyword}
-            placeholder='スペース区切りでOR検索'
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-        </div>
-        <div className='my-2 flex gap-4'>
-          <div>
-            <label className='text-xs font-bold'>From</label>
-            <div>
-              <Datetime
-                className='text-xs'
-                value={sinceAt}
-                setValue={setSinceAt}
-              />
-            </div>
+        <div className={isOpen ? '' : 'hidden'}>
+          <div className='my-2'>
+            <label className='text-xs font-bold'>発言者</label>
+            {senders.length === 0 ||
+            senders.length === group.participants.length ? (
+              <p>全員</p>
+            ) : (
+              <p>{senders.map((s) => s.name).join('、')}</p>
+            )}
+            <PrimaryButton click={() => setIsOpenSenderModal(true)}>
+              選択
+            </PrimaryButton>
           </div>
-          <div>
-            <label className='text-xs font-bold'>To</label>
-            <div>
-              <Datetime
-                className='text-xs'
-                value={untilAt}
-                setValue={setUntilAt}
-              />
-            </div>
-          </div>
-        </div>
-        <div className='flex justify-end'>
-          <PrimaryButton click={handleSearch}>検索</PrimaryButton>{' '}
-        </div>
-        {isOpenSenderModal && (
-          <Modal close={toggleSenderModal}>
-            <ParticipantsCheckbox
-              participants={group.participants}
-              selects={senders}
-              setSelects={setSenders}
+          <div className='my-2'>
+            <label className='text-xs font-bold'>キーワード</label>
+            <input
+              className='base-border w-full rounded border px-2 py-1 text-xs'
+              value={keyword}
+              placeholder='スペース区切りでOR検索'
+              onChange={(e) => setKeyword(e.target.value)}
             />
-          </Modal>
-        )}
+          </div>
+          <div className='my-2 flex gap-4'>
+            <div>
+              <label className='text-xs font-bold'>From</label>
+              <div>
+                <Datetime
+                  className='text-xs'
+                  value={sinceAt}
+                  setValue={setSinceAt}
+                />
+              </div>
+            </div>
+            <div>
+              <label className='text-xs font-bold'>To</label>
+              <div>
+                <Datetime
+                  className='text-xs'
+                  value={untilAt}
+                  setValue={setUntilAt}
+                />
+              </div>
+            </div>
+          </div>
+          <div className='flex justify-end'>
+            <PrimaryButton click={handleSearch}>検索</PrimaryButton>{' '}
+          </div>
+          {isOpenSenderModal && (
+            <Modal close={toggleSenderModal}>
+              <ParticipantsCheckbox
+                participants={group.participants}
+                selects={senders}
+                setSelects={setSenders}
+              />
+            </Modal>
+          )}
+        </div>
       </div>
     </div>
   )

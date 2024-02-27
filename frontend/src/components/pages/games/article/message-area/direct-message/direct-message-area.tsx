@@ -24,6 +24,8 @@ import {
 import DirectFooterMenu from './direct-footer-menu'
 import Portal from '@/components/modal/portal'
 import { useGameValue } from '@/components/pages/games/game-hook'
+import Panel from '@/components/panel/panel'
+import TalkDirect from '../../../talk/talk-direct'
 
 type Props = {
   close: (e: any) => void
@@ -79,14 +81,6 @@ export default function DirectMessageArea(props: Props) {
 
   if (group == null) return <></>
 
-  const setPageableQuery = (q: PageableQuery) => {
-    const newQuery = {
-      ...query,
-      paging: q
-    } as DirectMessagesQuery
-    search(newQuery)
-  }
-
   const canModify = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
     game.status
   )
@@ -101,8 +95,6 @@ export default function DirectMessageArea(props: Props) {
       behavior: 'smooth'
     })
   }
-
-  const [userDisplaySettings] = useUserDisplaySettings()
 
   return (
     <DirectMessageModal
@@ -120,33 +112,18 @@ export default function DirectMessageArea(props: Props) {
             ref={directMessageAreaRef}
           >
             <DirectMessageGroupMembers {...props} canModify={canModify} />
-            <div className='base-border flex border-b'>
-              <DirectSearchCondition
-                group={group}
-                query={query!}
-                search={search}
-              />
-            </div>
-            <Paging
-              messages={directMessages}
-              query={query!.paging as PageableQuery | undefined}
-              setPageableQuery={setPageableQuery}
+            <DirectSearchCondition
+              group={group}
+              query={query!}
+              search={search}
             />
-            <div className='flex-1'>
-              {directMessages.list.map((message: DirectMessage) => (
-                <DirectMessageComponent
-                  directMessage={message}
-                  key={message.id}
-                  openFavoritesModal={openFavoritesModal}
-                  imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
-                />
-              ))}
-            </div>
-            <Paging
-              messages={directMessages}
-              query={query!.paging as PageableQuery | undefined}
-              setPageableQuery={setPageableQuery}
+            <DirectMessagesArea
+              directMessages={directMessages}
+              query={query}
+              openFavoritesModal={openFavoritesModal}
+              search={search}
             />
+            <DirectTalkArea search={search} group={group} />
           </div>
         </div>
       </>
@@ -231,5 +208,77 @@ const DirectMessageGroupMembers = (
         </Modal>
       )}
     </div>
+  )
+}
+
+type DirectMessagesAreaProps = {
+  directMessages: DirectMessages
+  query: DirectMessagesQuery
+  openFavoritesModal: (messageId: string) => void
+  search: (query?: DirectMessagesQuery) => Promise<void>
+}
+const DirectMessagesArea = (props: DirectMessagesAreaProps) => {
+  const { directMessages, query, openFavoritesModal, search } = props
+  const setPageableQuery = (q: PageableQuery) => {
+    const newQuery = {
+      ...query,
+      paging: q
+    } as DirectMessagesQuery
+    search(newQuery)
+  }
+  const [userDisplaySettings] = useUserDisplaySettings()
+
+  return (
+    <>
+      <Paging
+        messages={directMessages}
+        query={query!.paging as PageableQuery | undefined}
+        setPageableQuery={setPageableQuery}
+      />
+      <div className='flex-1'>
+        {directMessages.list.map((message: DirectMessage) => (
+          <DirectMessageComponent
+            directMessage={message}
+            key={message.id}
+            openFavoritesModal={openFavoritesModal}
+            imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
+          />
+        ))}
+      </div>
+      <Paging
+        messages={directMessages}
+        query={query!.paging as PageableQuery | undefined}
+        setPageableQuery={setPageableQuery}
+      />
+    </>
+  )
+}
+
+type DirectTalkAreaProps = {
+  group: GameParticipantGroup
+  search: (query?: DirectMessagesQuery) => Promise<void>
+}
+const DirectTalkArea = (props: DirectTalkAreaProps) => {
+  return (
+    <div className='base-border w-full border-t text-sm'>
+      <DirectTalkPanel {...props} />
+    </div>
+  )
+}
+
+const DirectTalkPanel = (props: DirectTalkAreaProps) => {
+  const { group, search } = props
+
+  const handleCompleted = () => {
+    search()
+  }
+
+  return (
+    <Panel header='ダイレクトメッセージ'>
+      <TalkDirect
+        gameParticipantGroup={group}
+        handleCompleted={handleCompleted}
+      />
+    </Panel>
   )
 }

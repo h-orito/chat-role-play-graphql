@@ -11,11 +11,11 @@ import FavoriteParticipants from './message-area/message-area/messages-area/mess
 import MessageArea, {
   MessageAreaRefHandle
 } from './message-area/message-area/message-area'
-import DirectMessagesArea from './message-area/direct-message/direct-messages-area'
 import ArticleMenu from './article-menu'
 import MessageFooterMenu from './message-footer-menu'
 import { googleAdnsenseStyleGuard } from '@/components/adsense/google-adsense-guard'
 import { useMyPlayerValue, useMyselfValue } from '../game-hook'
+import DirectMessageGroupsArea from './message-area/direct-message/direct-message-groups-area'
 
 type Props = {}
 
@@ -111,7 +111,9 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
         />
       )}
       {shouldShowDM && (
-        <DirectMessagesArea className={`${tab === 'dm' ? '' : 'hidden'}`} />
+        <DirectMessageGroupsArea
+          className={`${tab === 'dm' ? '' : 'hidden'}`}
+        />
       )}
       {isOpenFavoritesModal && (
         <Modal header='ふぁぼした人' close={toggleFavoritesModal} hideFooter>

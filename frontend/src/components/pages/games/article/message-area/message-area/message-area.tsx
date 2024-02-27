@@ -227,8 +227,6 @@ const TalkArea = forwardRef<
   TalkAreaRefHandle,
   { canTalk: boolean; search: (query?: MessagesQuery) => void }
 >(({ canTalk, search }, ref: any) => {
-  const [isShowDescriptionTalk, setIsShowDescriptionTalk] = useState(true)
-
   const talkPanelRef = useRef({} as TalkAreaRefHandle)
 
   useImperativeHandle(ref, () => ({
@@ -242,9 +240,7 @@ const TalkArea = forwardRef<
   return (
     <div className='base-border w-full border-t text-sm'>
       <TalkPanel search={search} ref={talkPanelRef} />
-      <div className={isShowDescriptionTalk ? '' : 'hidden'}>
-        <DescriptionPanel search={search} />
-      </div>
+      <DescriptionPanel search={search} />
     </div>
   )
 })

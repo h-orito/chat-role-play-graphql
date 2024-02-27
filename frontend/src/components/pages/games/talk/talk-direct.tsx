@@ -73,13 +73,12 @@ const TalkDirect = (props: Props) => {
     setIsConvertDisabled(false)
   }
 
-  const { control, formState, handleSubmit, setValue, watch } =
-    useForm<FormInput>({
-      defaultValues: {
-        name: myself.name,
-        talkMessage: ''
-      }
-    })
+  const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
+    defaultValues: {
+      name: myself.name,
+      talkMessage: ''
+    }
+  })
 
   const updateTalkMessage = (str: string) => setValue('talkMessage', str)
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting
@@ -139,7 +138,7 @@ const TalkDirect = (props: Props) => {
   const selectedIcon = icons.find((icon) => icon.id === iconId)
 
   return (
-    <div className='max-h-[40vh] overflow-y-auto px-4 py-2'>
+    <div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='mb-2'>
           <p>DM送信先: {gameParticipantGroup.name}</p>
