@@ -114,5 +114,8 @@ const sidebarOpenAtom = atom(false)
 export const useSidebarOpen = () => {
   const [isOpen, setIsOpen] = useAtom(sidebarOpenAtom)
   const toggle = () => setIsOpen(!isOpen)
+  useEffect(() => {
+    return setIsOpen(false)
+  }, [])
   return [isOpen, toggle] as const
 }

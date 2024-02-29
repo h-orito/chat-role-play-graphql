@@ -9,9 +9,10 @@ import {
   Game,
   GameDocument,
   GameQuery,
-  GameQueryVariables
+  GameQueryVariables,
+  MessagesQuery
 } from '@/lib/generated/graphql'
-import { ReactElement, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
@@ -23,6 +24,10 @@ import {
   useMyself,
   usePollingPeriod
 } from '@/components/pages/games/game-hook'
+import {
+  fromUrlQuery,
+  useMessagesQuery
+} from '@/components/pages/games/article/message-area/message-area/messages-query'
 
 export const getServerSideProps = async (context: any) => {
   const { gameId } = context.params
@@ -32,23 +37,29 @@ export const getServerSideProps = async (context: any) => {
     query: GameDocument,
     variables: { id: gameStringId } as GameQueryVariables
   })
+  const game = gamedata.game as Game
+  const messagesQuery = fromUrlQuery(context.query, game)
   return {
     props: {
-      gameId: gameStringId,
-      game: gamedata.game as Game
+      game: game,
+      messagesQuery
     }
   }
 }
 
 type Props = {
   game: Game
+  messagesQuery: MessagesQuery
 }
 
-const GamePage = ({ game }: Props) => {
+const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   useGame(game)
   useMyself(game.id)
   useMyPlayer()
-
+  // 検索用クエリ
+  const [, setInitialMessagesQuery] = useMessagesQuery()
+  setInitialMessagesQuery(initialMessagesQuery)
+  // useSetInitialMessagesQuery(initialMessagesQuery)
   // 1分に1回ゲーム更新チェック
   usePollingPeriod(game)
 

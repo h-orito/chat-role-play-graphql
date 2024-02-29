@@ -25,6 +25,18 @@ import {
 import Talk, { TalkRefHandle } from '../../../talk/talk'
 import TalkDescription from '../../../talk/talk-description'
 import Panel, { PanelRefHandle } from '@/components/panel/panel'
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  MagnifyingGlassIcon
+} from '@heroicons/react/24/outline'
+import Modal from '@/components/modal/modal'
+import MessageFilter from './message-filter'
+import {
+  emptyMessageQuery,
+  isFiltering,
+  useMessagesQuery
+} from './messages-query'
 
 type Props = {
   className?: string
@@ -39,8 +51,6 @@ type Props = {
 export interface MessageAreaRefHandle {
   fetchLatest: () => void
   search: (query?: MessagesQuery) => void
-  scrollToTop: () => void
-  scrollToBottom: () => void
 }
 
 const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
@@ -63,19 +73,6 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     )
 
     const [pagingSettings] = useUserPagingSettings()
-    const defaultMessageQuery: MessagesQuery = {
-      senderIds: onlyFollowing
-        ? [...myself!.followParticipantIds, myself!.id]
-        : null,
-      recipientIds: null,
-      periodId: searchable ? null : game.periods[game.periods.length - 1].id,
-      paging: {
-        pageSize: pagingSettings.pageSize,
-        pageNumber: 1,
-        isDesc: pagingSettings.isDesc,
-        isLatest: !pagingSettings.isDesc
-      }
-    }
     const defaultMessages: Messages = {
       list: [],
       allPageCount: 0,
@@ -88,7 +85,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
 
     const [messages, setMessages] = useState<Messages>(defaultMessages)
     const [latestTime, setLatestTime] = useState<number>(0)
-    const [messageQuery, setMessageQuery] = useState(defaultMessageQuery)
+    const [messageQuery, setMessageQuery] = useState(emptyMessageQuery)
 
     const search = async (query: MessagesQuery = messageQuery) => {
       setMessageQuery(query)
@@ -124,8 +121,18 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     }
 
     // 初回の取得
+    const [initialMessagesQuery] = useMessagesQuery()
     useEffect(() => {
-      if (!searchable) search()
+      const q = {
+        ...initialMessagesQuery,
+        paging: {
+          pageSize: pagingSettings.pageSize,
+          pageNumber: 1,
+          isDesc: pagingSettings.isDesc,
+          isLatest: !pagingSettings.isDesc
+        }
+      }
+      if (!searchable) search(q)
     }, [])
 
     // 30秒（検索タブは60秒）ごとに最新をチェックして更新されていれば取得
@@ -160,17 +167,18 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       },
       search(query: MessagesQuery = messageQuery) {
         return search(query)
-      },
-      scrollToTop() {
-        messageAreaRef?.current?.scroll({ top: 0, behavior: 'smooth' })
-      },
-      scrollToBottom() {
-        messageAreaRef?.current?.scroll({
-          top: messageAreaRef?.current?.scrollHeight,
-          behavior: 'smooth'
-        })
       }
     }))
+
+    const scrollToTop = () => {
+      messageAreaRef?.current?.scroll({ top: 0, behavior: 'smooth' })
+    }
+    const scrollToBottom = () => {
+      messageAreaRef?.current?.scroll({
+        top: messageAreaRef?.current?.scrollHeight,
+        behavior: 'smooth'
+      })
+    }
 
     const reply = (message: Message) => {
       talkAreaRef.current.reply(message)
@@ -179,22 +187,33 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     return (
       <div
         className={`${className} mut-height-guard relative flex flex-1 flex-col overflow-y-auto`}
-        ref={messageAreaRef}
       >
-        <SearchArea messageQuery={messageQuery} search={search} {...props} />
-        <MessagesArea
-          messages={messages}
+        <div
+          className={`flex flex-1 flex-col overflow-y-auto`}
+          ref={messageAreaRef}
+        >
+          <SearchArea messageQuery={messageQuery} search={search} {...props} />
+          <MessagesArea
+            messages={messages}
+            messageQuery={messageQuery}
+            canTalk={canTalk}
+            search={search}
+            messageAreaRef={messageAreaRef}
+            reply={reply}
+            {...props}
+          />
+          <TalkArea
+            ref={talkAreaRef}
+            {...props}
+            canTalk={canTalk}
+            search={search}
+          />
+        </div>
+        <FooterMenu
+          scrollToTop={scrollToTop}
+          scrollToBottom={scrollToBottom}
+          searchable={true}
           messageQuery={messageQuery}
-          canTalk={canTalk}
-          search={search}
-          messageAreaRef={messageAreaRef}
-          reply={reply}
-          {...props}
-        />
-        <TalkArea
-          ref={talkAreaRef}
-          {...props}
-          canTalk={canTalk}
           search={search}
         />
       </div>
@@ -287,5 +306,76 @@ const DescriptionPanel = ({
     <Panel header='ト書き'>
       <TalkDescription handleCompleted={handleDescriptionCompleted} />
     </Panel>
+  )
+}
+
+type FooterMenuProps = {
+  scrollToTop: () => void
+  scrollToBottom: () => void
+  searchable: boolean
+  messageQuery: MessagesQuery
+  search: (query: MessagesQuery) => void
+}
+
+const FooterMenu = (props: FooterMenuProps) => {
+  const { scrollToTop, scrollToBottom, searchable, messageQuery, search } =
+    props
+  const [isOpenFilterModal, setIsOpenFilterModal] = useState(false)
+  const toggleFilterModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenFilterModal(!isOpenFilterModal)
+    }
+  }
+  const filtering = isFiltering(messageQuery, useGameValue())
+
+  return (
+    <div className='base-border flex w-full border-t text-sm'>
+      <div className='flex flex-1 text-center'>
+        <button
+          className='sidebar-background flex w-full justify-center px-4 py-2'
+          onClick={scrollToTop}
+        >
+          <ArrowUpIcon className='h-5 w-5' />
+          <span className='my-auto ml-1 hidden text-xs md:block'>最上部へ</span>
+        </button>
+      </div>
+      <div className='flex flex-1 text-center'>
+        <button
+          className='sidebar-background flex w-full justify-center px-4 py-2'
+          onClick={scrollToBottom}
+        >
+          <ArrowDownIcon className='h-5 w-5' />
+          <span className='my-auto ml-1 hidden text-xs md:block'>最下部へ</span>
+        </button>
+      </div>
+      {searchable && (
+        <div className='flex flex-1 text-center'>
+          <button
+            className='sidebar-background flex w-full justify-center px-4 py-2'
+            onClick={() => setIsOpenFilterModal(true)}
+          >
+            <MagnifyingGlassIcon
+              className={`h-5 w-5 ${filtering ? 'base-link' : ''}`}
+            />
+            <span
+              className={`my-auto ml-1 hidden text-xs md:block ${
+                filtering ? 'base-link' : ''
+              }`}
+            >
+              抽出
+            </span>
+          </button>
+          {isOpenFilterModal && (
+            <Modal header='発言抽出' close={toggleFilterModal}>
+              <MessageFilter
+                close={toggleFilterModal}
+                messageQuery={messageQuery}
+                search={search}
+              />
+            </Modal>
+          )}
+        </div>
+      )}
+    </div>
   )
 }

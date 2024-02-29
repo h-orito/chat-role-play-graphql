@@ -12,7 +12,6 @@ import MessageArea, {
   MessageAreaRefHandle
 } from './message-area/message-area/message-area'
 import ArticleMenu from './article-menu'
-import MessageFooterMenu from './message-footer-menu'
 import { googleAdnsenseStyleGuard } from '@/components/adsense/google-adsense-guard'
 import { useMyPlayerValue, useMyselfValue } from '../game-hook'
 import DirectMessageGroupsArea from './message-area/direct-message/direct-message-groups-area'
@@ -59,14 +58,6 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
     }
   }))
 
-  const getCurrentMessageAreaRef = () => {
-    return tab === 'home' ? homeRef : followRef
-  }
-  const search = () => getCurrentMessageAreaRef().current.search()
-  const scrollToTop = () => getCurrentMessageAreaRef().current.scrollToTop()
-  const scrollToBottom = () =>
-    getCurrentMessageAreaRef().current.scrollToBottom()
-
   useEffect(() => {
     googleAdnsenseStyleGuard()
   }, [])
@@ -99,7 +90,7 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
         existsUnread={existsHomeUnread}
         setExistUnread={setExistsHomeUnread}
       />
-      {myself && (
+      {/* {myself && (
         <MessageArea
           ref={followRef}
           className={`${tab === 'follow' ? '' : 'hidden'}`}
@@ -109,7 +100,7 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
           setExistUnread={setExistFollowsUnread}
           onlyFollowing
         />
-      )}
+      )} */}
       {shouldShowDM && (
         <DirectMessageGroupsArea
           className={`${tab === 'dm' ? '' : 'hidden'}`}
@@ -123,11 +114,6 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
           />
         </Modal>
       )}
-      <MessageFooterMenu
-        className={`${tab === 'dm' ? 'hidden' : ''}`}
-        scrollToTop={scrollToTop}
-        scrollToBottom={scrollToBottom}
-      />
       <ArticleMenu
         tab={tab}
         setTab={setTab}
