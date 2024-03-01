@@ -6,7 +6,7 @@ import {
 } from '@/lib/generated/graphql'
 import MessageComponent from './message/message'
 import Paging from './paging'
-import GamePeriodLinks from '../../game-period-links'
+import GamePeriodLinks from './game-period-links'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { RefObject } from 'react'
@@ -17,7 +17,6 @@ type Props = {
   openFavoritesModal: (messageId: string) => void
   isViewing: boolean
   existsUnread: boolean
-  onlyFollowing?: boolean
   searchable?: boolean
   messageQuery: MessagesQuery
   messages: Messages
@@ -32,7 +31,6 @@ const MessagesArea = (props: Props, ref: any) => {
     messageQuery,
     searchable,
     search,
-    onlyFollowing,
     canTalk,
     messageAreaRef
   } = props
@@ -75,11 +73,9 @@ const MessagesArea = (props: Props, ref: any) => {
             imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
           />
         ))}
-        {!onlyFollowing && !searchable && (
-          <div className='p-4'>
-            <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
-          </div>
-        )}
+        <div className='p-4'>
+          <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
+        </div>
       </div>
       <Paging
         messages={messages}
@@ -115,7 +111,7 @@ const GamePeriodLinksArea = (
     search(newQuery)
   }
 
-  if (searchable) return <></>
+  if (!searchable) return <></>
   return (
     <GamePeriodLinks
       periodId={messageQuery.periodId}

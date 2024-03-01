@@ -37,17 +37,17 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
   }
 
   const [existsHomeUnread, setExistsHomeUnread] = useState(false)
-  const [existFollowsUnread, setExistFollowsUnread] = useState(false)
+  const [existsToMeUnread, setExistsToMeUnread] = useState(false)
 
   const homeRef = useRef({} as MessageAreaRefHandle)
-  const followRef = useRef({} as MessageAreaRefHandle)
+  const toMeRef = useRef({} as MessageAreaRefHandle)
 
   const handleTabChange = (tab: string) => {
     setTab(tab)
     if (tab === 'home') {
       homeRef.current.fetchLatest()
-    } else if (tab === 'follow') {
-      followRef.current.fetchLatest()
+    } else if (tab === 'tome') {
+      toMeRef.current.fetchLatest()
     } else {
     }
   }
@@ -80,7 +80,7 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
         tab={tab}
         setTab={handleTabChange}
         existsHomeUnread={existsHomeUnread}
-        existsFollowsUnread={existFollowsUnread}
+        existsToMeUnread={existsToMeUnread}
       />
       <MessageArea
         ref={homeRef}
@@ -90,17 +90,17 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
         existsUnread={existsHomeUnread}
         setExistUnread={setExistsHomeUnread}
       />
-      {/* {myself && (
+      {myself && (
         <MessageArea
-          ref={followRef}
-          className={`${tab === 'follow' ? '' : 'hidden'}`}
+          ref={toMeRef}
+          className={`${tab === 'tome' ? '' : 'hidden'}`}
           openFavoritesModal={openFavoritesModal}
-          isViewing={tab === 'follow'}
-          existsUnread={existFollowsUnread}
-          setExistUnread={setExistFollowsUnread}
-          onlyFollowing
+          isViewing={tab === 'tome'}
+          existsUnread={existsToMeUnread}
+          setExistUnread={setExistsToMeUnread}
+          onlyToMe={true}
         />
-      )} */}
+      )}
       {shouldShowDM && (
         <DirectMessageGroupsArea
           className={`${tab === 'dm' ? '' : 'hidden'}`}
@@ -118,7 +118,7 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
         tab={tab}
         setTab={setTab}
         existsHomeUnread={existsHomeUnread}
-        existsFollowsUnread={existFollowsUnread}
+        existsToMeUnread={existsToMeUnread}
         footer
       />
     </article>
@@ -132,10 +132,8 @@ const ArticleHeader = ({ tab }: HeaderProps) => {
   const tabName =
     tab === 'home'
       ? 'ホーム'
-      : tab === 'follow'
-      ? 'フォロー'
-      : tab === 'search'
-      ? '検索'
+      : tab === 'tome'
+      ? '自分宛'
       : 'ダイレクトメッセージ'
   return (
     <div className='sidebar-background base-border flex justify-center border-b px-4 py-2 font-bold md:hidden'>

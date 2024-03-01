@@ -5,6 +5,9 @@ import {
   ChangePeriodMutationVariables,
   Game,
   GameParticipant,
+  GameParticipantIcon,
+  IconsDocument,
+  IconsQuery,
   MyGameParticipantDocument,
   MyGameParticipantQuery,
   MyGameParticipantQueryVariables,
@@ -81,10 +84,11 @@ const periodChangeStatuses = [
   'Epilogue'
 ]
 export const usePollingPeriod = (game: Game) => {
-  const callback = () => async () => {
+  const [changePeriod] = useMutation<ChangePeriodMutation>(ChangePeriodDocument)
+
+  const callback = async () => {
     if (!periodChangeStatuses.includes(game.status)) return
-    const [changePeriod] =
-      useMutation<ChangePeriodMutation>(ChangePeriodDocument)
+
     await changePeriod({
       variables: {
         input: {
@@ -119,3 +123,24 @@ export const useSidebarOpen = () => {
   }, [])
   return [isOpen, toggle] as const
 }
+
+// icons
+const iconsAtom = atom<Array<GameParticipantIcon>>([])
+export const useIcons = (): void => {
+  const myself = useMyselfValue()
+  const setIconsAtom = useSetAtom(iconsAtom)
+  const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
+  const fetch = async () => {
+    if (!myself) return
+    const { data } = await fetchIcons({
+      variables: { participantId: myself.id }
+    })
+    if (data?.gameParticipantIcons == null) return
+    setIconsAtom(data.gameParticipantIcons)
+  }
+  useEffect(() => {
+    fetch()
+    return () => setIconsAtom([])
+  }, [myself])
+}
+export const useIconsValue = () => useAtomValue(iconsAtom)

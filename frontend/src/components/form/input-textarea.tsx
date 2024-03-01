@@ -20,6 +20,7 @@ type Props<
     Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'name'>,
     UseControllerProps<TFieldValues, TName>
   > & {
+    id?: string
     label?: string
     maxLength?: number
     textareaclassname?: string
@@ -32,6 +33,7 @@ const InputTextarea = <
   props: Props<TFieldValues, TName>
 ) => {
   const {
+    id,
     textareaclassname, // classNameにすると崩れてしまう 原因がわからないので一旦回避
     name,
     control,
@@ -72,7 +74,7 @@ const InputTextarea = <
         <label className='base-text block text-xs font-bold'>{label}</label>
       )}
       <TextareaAutosize
-        id={field.name}
+        id={id ?? field.name}
         className={`${textareaclassname} rounded border ${borderClass} w-full px-2 py-1 text-gray-700`}
         ref={field.ref}
         value={field.value}

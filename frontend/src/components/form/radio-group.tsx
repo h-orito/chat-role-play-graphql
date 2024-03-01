@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 type Props = {
   className?: string
   name: string
@@ -20,6 +22,10 @@ export default function RadioGroup({
   setSelected,
   disabled
 }: Props) {
+  const nameWithId = useMemo(() => {
+    const random = Math.random().toString(32).substring(2)
+    return `${name}_${random}`
+  }, [])
   return (
     <div className='flex'>
       {candidates.map((candidate, index) => {
@@ -35,17 +41,17 @@ export default function RadioGroup({
           <div className='' key={index}>
             <input
               type='radio'
-              name={name}
+              name={nameWithId}
               className='h-0 w-0 opacity-0'
               value={candidate.value}
-              id={`${name}_${index}`}
+              id={`${nameWithId}_${index}`}
               checked={selected === candidate.value}
               onChange={(e: any) => setSelected(e.target.value)}
               disabled={disabled}
             />
             <label
               className={`primary-border cursor-pointer border-y px-2 py-1 ${checkedClass} ${roundClass} ${className}`}
-              htmlFor={`${name}_${index}`}
+              htmlFor={`${nameWithId}_${index}`}
             >
               {candidate.label}
             </label>

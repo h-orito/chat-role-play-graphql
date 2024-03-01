@@ -20,6 +20,7 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useState
 } from 'react'
 import { Control, SubmitHandler, useForm } from 'react-hook-form'
@@ -33,7 +34,7 @@ import TalkTextDecorators from './talk-text-decorators'
 import PrimaryButton from '@/components/button/primary-button'
 import ParticipantSelect from '../participant/participant-select'
 import { useUserDisplaySettings } from '../user-settings'
-import { useGameValue, useMyselfValue } from '../game-hook'
+import { useGameValue, useIconsValue, useMyselfValue } from '../game-hook'
 
 type Props = {
   handleCompleted: () => void
@@ -70,14 +71,11 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
   const [replyTarget, setReplyTarget] = useState<Message | null>(null)
   // 送信相手
   const [receiver, setReceiver] = useState<GameParticipant | null>(null)
-  // アイコン候補
-  const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
   // 選択中のアイコン
   const [iconId, setIconId] = useState<string>('')
   // 装飾やランダム変換しない
   const [isConvertDisabled, setIsConvertDisabled] = useState(false)
 
-  const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
   const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument)
   const [talk] = useMutation<TalkMutation>(TalkDocument, {
     onCompleted() {
@@ -86,18 +84,11 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
     }
   })
 
+  // アイコン候補
+  const icons = useIconsValue()
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await fetchIcons({
-        variables: { participantId: myself.id }
-      })
-      if (data?.gameParticipantIcons == null) return
-      setIcons(data.gameParticipantIcons)
-      if (data.gameParticipantIcons.length <= 0) return
-      setIconId(data.gameParticipantIcons[0].id)
-    }
-    fetch()
-  }, [])
+    setIconId(icons.length <= 0 ? '' : icons[0].id)
+  }, [icons])
 
   const init = () => {
     setTalkType(MessageType.TalkNormal)
@@ -184,6 +175,10 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
   }
 
   const [userDisplaySettings] = useUserDisplaySettings()
+  const talkMessageId = useMemo(() => {
+    const random = Math.random().toString(32).substring(2)
+    return `talkMessage_${random}`
+  }, [])
 
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
 
@@ -208,7 +203,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
           <p className='text-xs font-bold'>発言装飾</p>
           <div className='flex'>
             <TalkTextDecorators
-              selector='#talkMessage'
+              selector={`#${talkMessageId}`}
               setMessage={updateTalkMessage}
             />
           </div>
@@ -216,6 +211,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
         <div className='flex'>
           <IconButton icons={icons} iconId={iconId} setIconId={setIconId} />
           <MessageContent
+            id={talkMessageId}
             talkType={talkType}
             control={control}
             disabled={preview != null}
@@ -493,6 +489,7 @@ const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
 }
 
 type MessageContentProps = {
+  id: string
   talkType: MessageType
   control: Control<FormInput, any>
   disabled: boolean
@@ -501,6 +498,7 @@ type MessageContentProps = {
 }
 
 const MessageContent = ({
+  id,
   talkType,
   control,
   disabled,
@@ -519,6 +517,7 @@ const MessageContent = ({
   return (
     <div className='ml-2 flex-1'>
       <InputTextarea
+        id={id}
         name='talkMessage'
         textareaclassname={messageClass}
         control={control}
@@ -536,11 +535,11 @@ const MessageContent = ({
       <div className='-mt-5'>
         <input
           type='checkbox'
-          id='convert-disabled'
+          id={`${id}_convert-disabled`}
           checked={isConvertDisabled}
           onChange={(e: any) => setIsConvertDisabled((prev) => !prev)}
         />
-        <label htmlFor='convert-disabled' className='ml-1 text-xs'>
+        <label htmlFor={`${id}_convert-disabled`} className='ml-1 text-xs'>
           装飾やランダム変換しない
         </label>
       </div>

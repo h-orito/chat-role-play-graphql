@@ -20,6 +20,7 @@ import RatingWarningModal from '@/components/pages/games/rating-warning-modal'
 import {
   useGame,
   useGameValue,
+  useIcons,
   useMyPlayer,
   useMyself,
   usePollingPeriod
@@ -56,6 +57,7 @@ const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   useGame(game)
   useMyself(game.id)
   useMyPlayer()
+  useIcons()
   // 検索用クエリ
   const [, setInitialMessagesQuery] = useMessagesQuery()
   setInitialMessagesQuery(initialMessagesQuery)

@@ -44,8 +44,7 @@ type Props = {
   isViewing: boolean
   existsUnread: boolean
   setExistUnread: (exist: boolean) => void
-  onlyFollowing?: boolean
-  searchable?: boolean
+  onlyToMe?: boolean
 }
 
 export interface MessageAreaRefHandle {
@@ -60,8 +59,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       isViewing,
       existsUnread,
       setExistUnread,
-      onlyFollowing = false,
-      searchable = false
+      onlyToMe = false
     } = props
     const game = useGameValue()
     const myself = useMyselfValue()
@@ -123,19 +121,26 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     // 初回の取得
     const [initialMessagesQuery] = useMessagesQuery()
     useEffect(() => {
-      const q = {
-        ...initialMessagesQuery,
-        paging: {
-          pageSize: pagingSettings.pageSize,
-          pageNumber: 1,
-          isDesc: pagingSettings.isDesc,
-          isLatest: !pagingSettings.isDesc
-        }
+      const paging = {
+        pageSize: pagingSettings.pageSize,
+        pageNumber: 1,
+        isDesc: pagingSettings.isDesc,
+        isLatest: !pagingSettings.isDesc
       }
-      if (!searchable) search(q)
+      const q = onlyToMe
+        ? {
+            ...emptyMessageQuery,
+            recipientIds: [myself!.id],
+            paging
+          }
+        : {
+            ...initialMessagesQuery,
+            paging
+          }
+      search(q)
     }, [])
 
-    // 30秒（検索タブは60秒）ごとに最新をチェックして更新されていれば取得
+    // 1分ごとに最新をチェックして更新されていれば取得
     const usePollingMessages = (callback: () => void) => {
       const ref = useRef<() => void>(callback)
       useEffect(() => {
@@ -146,7 +151,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         const fetch = () => {
           ref.current()
         }
-        const timer = setInterval(fetch, searchable ? 60000 : 30000)
+        const timer = setInterval(fetch, 60000)
         return () => clearInterval(timer)
       }, [])
     }
@@ -192,7 +197,6 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
           className={`flex flex-1 flex-col overflow-y-auto`}
           ref={messageAreaRef}
         >
-          <SearchArea messageQuery={messageQuery} search={search} {...props} />
           <MessagesArea
             messages={messages}
             messageQuery={messageQuery}
@@ -200,6 +204,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
             search={search}
             messageAreaRef={messageAreaRef}
             reply={reply}
+            searchable={!onlyToMe}
             {...props}
           />
           <TalkArea
@@ -212,7 +217,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         <FooterMenu
           scrollToTop={scrollToTop}
           scrollToBottom={scrollToBottom}
-          searchable={true}
+          searchable={!onlyToMe}
           messageQuery={messageQuery}
           search={search}
         />
@@ -222,21 +227,6 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
 )
 
 export default MessageArea
-
-const SearchArea = (
-  props: Props & {
-    messageQuery: MessagesQuery
-    search: (query?: MessagesQuery) => void
-  }
-) => {
-  const { messageQuery, search, searchable } = props
-  if (!searchable) return <></>
-  return (
-    <div className='flex'>
-      <SearchCondition {...props} messageQuery={messageQuery} search={search} />
-    </div>
-  )
-}
 
 interface TalkAreaRefHandle {
   reply: (message: Message) => void

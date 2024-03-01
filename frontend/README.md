@@ -45,3 +45,12 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ```
 npm run codegen
 ```
+
+## TODO
+
+- 発言欄の下部固定
+- 発言プレビューを発言欄の最後に移動
+- ダイレクトメッセージも同様に対応
+- アイコン 1 つ目をプロフィールアイコンにする
+- アイコンをトーク窓ごとに毎回取得させない
+- 検索条件の発言者にフォロー中を追加する
