@@ -1,6 +1,8 @@
 import {
+  DirectMessagesQuery,
   Game,
   GameParticipant,
+  GameParticipantGroup,
   MessageType,
   MessagesQuery
 } from '@/lib/generated/graphql'
@@ -116,6 +118,22 @@ export const isFiltering = (
     (messagesQuery.recipientIds &&
       messagesQuery.recipientIds.length > 0 &&
       messagesQuery.recipientIds.length !== participants.length) ||
+    (messagesQuery.keywords && messagesQuery.keywords.length > 0) ||
+    messagesQuery.sinceAt ||
+    messagesQuery.untilAt
+  )
+}
+
+export const isDirectMessagesQueryFiltering = (
+  messagesQuery: DirectMessagesQuery,
+  group: GameParticipantGroup
+): boolean => {
+  return (
+    (messagesQuery.types &&
+      messagesQuery.types.length !== messageTypeValues.length) ||
+    (messagesQuery.senderIds &&
+      messagesQuery.senderIds.length > 0 &&
+      messagesQuery.senderIds.length !== group.participants.length) ||
     (messagesQuery.keywords && messagesQuery.keywords.length > 0) ||
     messagesQuery.sinceAt ||
     messagesQuery.untilAt

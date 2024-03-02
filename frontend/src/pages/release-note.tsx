@@ -217,7 +217,6 @@ export default function CreateGame() {
                   <li>
                     発言まわり
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
-                      <li>宛先</li>
                       <li>PL発言（PL発言タイムライン）</li>
                       <li>カットイン</li>
                       <li>
@@ -236,8 +235,6 @@ export default function CreateGame() {
                   <li>
                     発言抽出
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
-                      <li>宛先</li>
-                      <li>自分宛発言</li>
                       <li>ふぁぼった発言</li>
                     </ul>
                   </li>
@@ -249,18 +246,11 @@ export default function CreateGame() {
                       <li>文字の大きさ2倍</li>
                     </ul>
                   </li>
-                  <li>開いているタブの保持</li>
                   <li>
                     プロフィール
                     <ul className='list-inside list-disc pl-8 text-left text-xs'>
                       <li>ひとことメモ</li>
                       <li>フォローフリーとか連れ出し歓迎とかのタグ機能</li>
-                    </ul>
-                  </li>
-                  <li>
-                    その他UI
-                    <ul className='list-inside list-disc pl-8 text-left text-xs'>
-                      <li>DMの発言を作る際返信のように参照できるようにする</li>
                     </ul>
                   </li>
                 </ul>

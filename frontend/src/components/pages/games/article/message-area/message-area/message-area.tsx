@@ -399,8 +399,6 @@ const SystemMessagePanel = ({
     'Epilogue'
   ].includes(game.status)
 
-  if (!isGameMaster || !canModify) return <></>
-
   const handleCompleted = () => {
     search()
   }
@@ -414,6 +412,8 @@ const SystemMessagePanel = ({
     setIsFixed((current) => !current)
     e.stopPropagation()
   }
+
+  if (!isGameMaster || !canModify) return <></>
 
   const PanelComponent = () => (
     <Panel header='GM発言' toggleFixed={toggleFixed} isFixed={isFixed}>

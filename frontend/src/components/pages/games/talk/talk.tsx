@@ -38,6 +38,7 @@ import {
   useUserDisplaySettingsValue
 } from '../game-hook'
 import Portal from '@/components/modal/portal'
+import IconSelectButton from './icon-select-button'
 
 type Props = {
   handleCompleted: () => void
@@ -212,7 +213,11 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
           </div>
         </div>
         <div className='flex'>
-          <IconButton icons={icons} iconId={iconId} setIconId={setIconId} />
+          <IconSelectButton
+            icons={icons}
+            iconId={iconId}
+            setIconId={setIconId}
+          />
           <MessageContent
             id={talkMessageId}
             talkType={talkType}
@@ -351,6 +356,7 @@ const Receiver = ({ talkType, receiver, setReceiver }: ReceiverProps) => {
   }
 
   if (talkType !== MessageType.Secret) return <></>
+
   return (
     <div className='mb-2'>
       <p className='mb-1 text-xs font-bold'>秘話送信先</p>
@@ -402,86 +408,6 @@ const SenderName = ({ control, disabled }: SenderNameProps) => {
         }}
         disabled={disabled}
       />
-    </div>
-  )
-}
-
-type IconButtonProps = {
-  icons: Array<GameParticipantIcon>
-  iconId: string
-  setIconId: (iconId: string) => void
-}
-
-const IconButton = ({ icons, iconId, setIconId }: IconButtonProps) => {
-  const [isOpenIconSelectModal, setIsOpenIconSelectModal] = useState(false)
-  const toggleIconSelectModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenIconSelectModal(!isOpenIconSelectModal)
-    }
-  }
-
-  if (icons.length <= 0) return <></>
-  const selectedIcon = icons.find((icon) => icon.id === iconId)
-  const imageSizeRatio = useUserDisplaySettingsValue().iconSizeRatio ?? 1
-
-  return (
-    <div>
-      <button
-        onClick={(e: any) => {
-          e.preventDefault()
-          setIsOpenIconSelectModal(true)
-        }}
-        disabled={icons.length <= 0}
-      >
-        <Image
-          src={
-            selectedIcon
-              ? selectedIcon.url
-              : '/chat-role-play/images/no-image-icon.png'
-          }
-          width={selectedIcon ? selectedIcon.width * imageSizeRatio : 60}
-          height={selectedIcon ? selectedIcon.height * imageSizeRatio : 60}
-          alt='キャラアイコン'
-        />
-      </button>
-      {isOpenIconSelectModal && (
-        <Modal close={toggleIconSelectModal} hideFooter>
-          <IconSelect
-            icons={icons}
-            setIconId={setIconId}
-            toggle={() => setIsOpenIconSelectModal(false)}
-          />
-        </Modal>
-      )}
-    </div>
-  )
-}
-
-type IconSelectProps = {
-  icons: Array<GameParticipantIcon>
-  setIconId: (iconId: string) => void
-  toggle: () => void
-}
-const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
-  const handleSelect = (e: any, iconId: string) => {
-    e.preventDefault()
-    setIconId(iconId)
-    toggle()
-  }
-  const imageSizeRatio = useUserDisplaySettingsValue().iconSizeRatio ?? 1
-
-  return (
-    <div>
-      {icons.map((icon) => (
-        <button onClick={(e: any) => handleSelect(e, icon.id)} key={icon.id}>
-          <Image
-            src={icon.url}
-            width={icon.width * imageSizeRatio}
-            height={icon.height * imageSizeRatio}
-            alt='キャラアイコン'
-          />
-        </button>
-      ))}
     </div>
   )
 }

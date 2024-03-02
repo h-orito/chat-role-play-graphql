@@ -20,9 +20,13 @@ import ParticipantGroupEdit from './participant-group-edit'
 import { useUserPagingSettings } from '../../../user-settings'
 import DirectFooterMenu from './direct-footer-menu'
 import Portal from '@/components/modal/portal'
-import { useGameValue } from '@/components/pages/games/game-hook'
+import {
+  useFixedBottom,
+  useGameValue
+} from '@/components/pages/games/game-hook'
 import Panel from '@/components/panel/panel'
 import TalkDirect from '../../../talk/talk-direct'
+import { base64ToId } from '@/components/graphql/convert'
 
 type Props = {
   close: (e: any) => void
@@ -35,7 +39,7 @@ export default function DirectMessageArea(props: Props) {
   const { close, group, openFavoritesModal } = props
   const game = useGameValue()
   const [pagingSettings] = useUserPagingSettings()
-  const defaultQuery: DirectMessagesQuery | null = {
+  const defaultQuery: DirectMessagesQuery = {
     participantGroupId: group.id,
     paging: {
       pageSize: pagingSettings.pageSize,
@@ -72,7 +76,6 @@ export default function DirectMessageArea(props: Props) {
   }
 
   useEffect(() => {
-    if (defaultQuery == null) return
     search(defaultQuery)
   }, [group])
 
@@ -93,14 +96,18 @@ export default function DirectMessageArea(props: Props) {
     })
   }
 
+  const talkAreaId = `talk-direct-${base64ToId(group.id)}`
+
   return (
     <DirectMessageModal
       {...props}
       search={search}
+      query={query}
       close={close}
       canModify={canModify}
       scrollToTop={scrollToTop}
       scrollToBottom={scrollToBottom}
+      talkAreaId={talkAreaId}
     >
       <>
         <div className='flex h-full flex-1 flex-col overflow-y-auto'>
@@ -119,8 +126,13 @@ export default function DirectMessageArea(props: Props) {
               query={query}
               openFavoritesModal={openFavoritesModal}
               search={search}
+              talkAreaId={talkAreaId}
             />
-            <DirectTalkArea search={search} group={group} />
+            <DirectTalkArea
+              search={search}
+              group={group}
+              talkAreaId={talkAreaId}
+            />
           </div>
         </div>
       </>
@@ -132,10 +144,12 @@ const DirectMessageModal = (
   props: {
     children: React.ReactNode
     search: (query?: DirectMessagesQuery) => Promise<void>
+    query: DirectMessagesQuery
     close: (e: any) => void
     canModify: boolean
     scrollToTop: () => void
     scrollToBottom: () => void
+    talkAreaId: string
   } & Props
 ) => {
   const { close, group, search, canModify, scrollToTop, scrollToBottom } = props
@@ -152,9 +166,11 @@ const DirectMessageModal = (
           {cloneElement(props.children as any, {
             close: close
           })}
+          <div id={`${props.talkAreaId}-fixed`}></div>
           <DirectFooterMenu
             group={group}
             search={search}
+            query={props.query}
             canTalk={canModify}
             scrollToTop={scrollToTop}
             scrollToBottom={scrollToBottom}
@@ -213,6 +229,7 @@ type DirectMessagesAreaProps = {
   query: DirectMessagesQuery
   openFavoritesModal: (messageId: string) => void
   search: (query?: DirectMessagesQuery) => Promise<void>
+  talkAreaId: string
 }
 const DirectMessagesArea = (props: DirectMessagesAreaProps) => {
   const { directMessages, query, openFavoritesModal, search } = props
@@ -232,6 +249,8 @@ const DirectMessagesArea = (props: DirectMessagesAreaProps) => {
         setPageableQuery={setPageableQuery}
       />
       <div className='flex-1'>
+        <div id={`${props.talkAreaId}-top`}></div>
+        <div id={`${props.talkAreaId}-top-preview`}></div>
         {directMessages.list.map((message: DirectMessage) => (
           <DirectMessageComponent
             directMessage={message}
@@ -239,6 +258,8 @@ const DirectMessagesArea = (props: DirectMessagesAreaProps) => {
             openFavoritesModal={openFavoritesModal}
           />
         ))}
+        <div id={`${props.talkAreaId}-bottom-preview`}></div>
+        <div id={`${props.talkAreaId}-bottom`}></div>
       </div>
       <Paging
         messages={directMessages}
@@ -252,10 +273,11 @@ const DirectMessagesArea = (props: DirectMessagesAreaProps) => {
 type DirectTalkAreaProps = {
   group: GameParticipantGroup
   search: (query?: DirectMessagesQuery) => Promise<void>
+  talkAreaId: string
 }
 const DirectTalkArea = (props: DirectTalkAreaProps) => {
   return (
-    <div className='base-border w-full border-t text-sm'>
+    <div id={props.talkAreaId} className='base-border w-full border-t text-sm'>
       <DirectTalkPanel {...props} />
     </div>
   )
@@ -268,12 +290,39 @@ const DirectTalkPanel = (props: DirectTalkAreaProps) => {
     search()
   }
 
-  return (
-    <Panel header='ダイレクトメッセージ'>
+  const [isFixed, setIsFixed] = useState(false)
+  const otherFixedCanceler = useFixedBottom()
+  const toggleFixed = (e: any) => {
+    if (!isFixed) {
+      otherFixedCanceler(() => setIsFixed(false))
+    }
+    setIsFixed((current) => !current)
+    e.stopPropagation()
+  }
+
+  const PanelComponent = () => (
+    <Panel
+      header='ダイレクトメッセージ'
+      toggleFixed={toggleFixed}
+      isFixed={isFixed}
+    >
       <TalkDirect
         gameParticipantGroup={group}
         handleCompleted={handleCompleted}
+        talkAreaId={props.talkAreaId}
       />
     </Panel>
   )
+
+  if (!isFixed) {
+    return <PanelComponent />
+  } else {
+    return (
+      <Portal target={`#${props.talkAreaId}-fixed`}>
+        <div className='-m-4 max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
+          <PanelComponent />
+        </div>
+      </Portal>
+    )
+  }
 }
