@@ -1,11 +1,4 @@
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Modal from '@/components/modal/modal'
 import FavoriteParticipants from './message-area/message-area/messages-area/message/favorite-participants'
 import MessageArea, {
@@ -16,13 +9,7 @@ import { googleAdnsenseStyleGuard } from '@/components/adsense/google-adsense-gu
 import { useMyPlayerValue, useMyselfValue } from '../game-hook'
 import DirectMessageGroupsArea from './message-area/direct-message/direct-message-groups-area'
 
-type Props = {}
-
-export interface ArticleRefHandle {
-  fetchHomeLatest: () => void
-}
-
-const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
+const Article = () => {
   const [tab, setTab] = useState('home')
   const [isOpenFavoritesModal, setIsOpenFavoritesModal] = useState(false)
   const toggleFavoritesModal = (e: any) => {
@@ -51,12 +38,6 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
     } else {
     }
   }
-
-  useImperativeHandle(ref, () => ({
-    async fetchHomeLatest() {
-      return homeRef.current.fetchLatest()
-    }
-  }))
 
   useEffect(() => {
     googleAdnsenseStyleGuard()
@@ -123,7 +104,7 @@ const Article = forwardRef<ArticleRefHandle, Props>((_: Props, ref: any) => {
       />
     </article>
   )
-})
+}
 
 export default Article
 

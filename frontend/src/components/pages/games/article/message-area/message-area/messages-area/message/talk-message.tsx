@@ -17,7 +17,8 @@ import MessageComponent from './message'
 import MessageText from '../../../message-text/message-text'
 import {
   useGameValue,
-  useMyselfValue
+  useMyselfValue,
+  useUserDisplaySettingsValue
 } from '@/components/pages/games/game-hook'
 import Link from 'next/link'
 import { base64ToId } from '@/components/graphql/convert'
@@ -29,7 +30,6 @@ type MessageProps = {
   handleReply: (message: Message) => void
   preview?: boolean
   shouldDisplayReplyTo?: boolean
-  imageSizeRatio: number
 }
 
 export default function TalkMessage({
@@ -37,8 +37,7 @@ export default function TalkMessage({
   openFavoritesModal,
   handleReply,
   preview = false,
-  shouldDisplayReplyTo = false,
-  imageSizeRatio
+  shouldDisplayReplyTo = false
 }: MessageProps) {
   const [showReplies, setShowReplies] = useState<boolean>(false)
   const [replies, setReplies] = useState<Message[]>([])
@@ -52,15 +51,13 @@ export default function TalkMessage({
       : message.content.type === 'Secret'
       ? 'talk-secret'
       : ''
+  const imageSizeRatio = useUserDisplaySettingsValue().iconSizeRatio ?? 1
 
   return (
     <div>
       <div className='w-full px-4 py-2'>
         {shouldDisplayReplyTo && message.replyTo && (
-          <ReplyToMessage
-            replyTo={message.replyTo}
-            imageSizeRatio={imageSizeRatio}
-          />
+          <ReplyToMessage replyTo={message.replyTo} />
         )}
         {message.sender && (
           <div className='flex text-xs'>
@@ -120,7 +117,6 @@ export default function TalkMessage({
           replies={replies}
           openFavoritesModal={openFavoritesModal}
           handleReply={handleReply}
-          imageSizeRatio={imageSizeRatio}
         />
       )}
     </div>
@@ -270,14 +266,12 @@ type RepliesProps = {
   replies: Message[]
   openFavoritesModal: (messageId: string) => void
   handleReply: (message: Message) => void
-  imageSizeRatio: number
 }
 
 const Replies = ({
   replies,
   openFavoritesModal,
-  handleReply,
-  imageSizeRatio
+  handleReply
 }: RepliesProps) => {
   return (
     <div className='ml-8'>
@@ -288,20 +282,13 @@ const Replies = ({
           openFavoritesModal={openFavoritesModal}
           handleReply={handleReply}
           shouldDisplayReplyTo={false}
-          imageSizeRatio={imageSizeRatio}
         />
       ))}
     </div>
   )
 }
 
-const ReplyToMessage = ({
-  replyTo,
-  imageSizeRatio
-}: {
-  replyTo: MessageRecipient
-  imageSizeRatio: number
-}) => {
+const ReplyToMessage = ({ replyTo }: { replyTo: MessageRecipient }) => {
   const game = useGameValue()
   const [message, setMessage] = useState<Message | null>(null)
   const senderName = game.participants.find(
@@ -356,7 +343,6 @@ const ReplyToMessage = ({
             message={message!}
             openFavoritesModal={() => {}}
             handleReply={() => {}}
-            imageSizeRatio={imageSizeRatio}
           />
         </div>
       )}

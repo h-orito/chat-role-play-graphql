@@ -8,7 +8,6 @@ import MessageComponent from './message/message'
 import Paging from './paging'
 import GamePeriodLinks from './game-period-links'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
-import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { RefObject } from 'react'
 
 type Props = {
@@ -23,17 +22,11 @@ type Props = {
   canTalk: boolean
   search: (query?: MessagesQuery) => void
   messageAreaRef: RefObject<HTMLDivElement>
+  talkAreaId: string
 }
 
 const MessagesArea = (props: Props, ref: any) => {
-  const {
-    messages,
-    messageQuery,
-    searchable,
-    search,
-    canTalk,
-    messageAreaRef
-  } = props
+  const { messages, messageQuery, search, canTalk, messageAreaRef } = props
   const setPageableQuery = (q: PageableQuery) => {
     const newQuery = {
       ...messageQuery,
@@ -46,8 +39,6 @@ const MessagesArea = (props: Props, ref: any) => {
     if (!canTalk) return
     props.reply(message)
   }
-
-  const [userDisplaySettings] = useUserDisplaySettings()
 
   return (
     <div className='flex-1'>
@@ -63,6 +54,8 @@ const MessagesArea = (props: Props, ref: any) => {
         messageAreaRef={messageAreaRef}
       />
       <div className='relative flex-1'>
+        <div id={`${props.talkAreaId}-top`}></div>
+        <div id={`${props.talkAreaId}-top-preview`}></div>
         {messages.list.map((message: Message) => (
           <MessageComponent
             {...props}
@@ -70,12 +63,13 @@ const MessagesArea = (props: Props, ref: any) => {
             key={message.id}
             handleReply={handleReply}
             shouldDisplayReplyTo={true}
-            imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
           />
         ))}
+        <div id={`${props.talkAreaId}-bottom-preview`}></div>
         <div className='p-4'>
           <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
         </div>
+        <div id={`${props.talkAreaId}-bottom`}></div>
       </div>
       <Paging
         messages={messages}

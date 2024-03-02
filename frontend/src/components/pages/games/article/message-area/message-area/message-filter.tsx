@@ -172,6 +172,7 @@ type FilterSenderProps = {
 
 const FilterSender = (props: FilterSenderProps) => {
   const { participants, senders, setSenders } = props
+  const myself = useMyselfValue()
   const [isOpenSenderModal, setIsOpenSenderModal] = useState(false)
   const toggleSenderModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -224,6 +225,34 @@ const FilterSender = (props: FilterSenderProps) => {
               >
                 反転
               </button>
+              {myself && (
+                <>
+                  &nbsp;/&nbsp;
+                  <button
+                    className='base-link text-xs'
+                    onClick={() =>
+                      setSenders([
+                        participants.find((p) => p.id === myself.id)!
+                      ])
+                    }
+                  >
+                    自分
+                  </button>
+                  &nbsp;/&nbsp;
+                  <button
+                    className='base-link text-xs'
+                    onClick={() =>
+                      setSenders(
+                        participants.filter((p) =>
+                          myself.followParticipantIds.includes(p.id)
+                        )
+                      )
+                    }
+                  >
+                    フォロー中
+                  </button>
+                </>
+              )}
             </div>
           </ParticipantsCheckbox>
         </Modal>

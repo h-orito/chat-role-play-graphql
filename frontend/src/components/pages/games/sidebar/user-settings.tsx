@@ -12,8 +12,6 @@ import PrimaryButton from '@/components/button/primary-button'
 import RadioGroup from '@/components/form/radio-group'
 import { useRouter } from 'next/router'
 import {
-  Game,
-  GameParticipant,
   GameParticipantSetting,
   GameParticipantSettingDocument,
   GameParticipantSettingQuery,
@@ -35,7 +33,6 @@ export default function UserSettingsComponent({
 }: {
   close: (e: any) => void
 }) {
-  const game = useGameValue()
   const myself = useMyselfValue()
   return (
     <div className='text-center'>

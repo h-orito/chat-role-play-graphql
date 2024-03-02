@@ -14,12 +14,13 @@ import {
   useRef,
   useState
 } from 'react'
-import SearchCondition from './search-condition'
 import { useLazyQuery } from '@apollo/client'
 import { useUserPagingSettings } from '@/components/pages/games/user-settings'
 import MessagesArea from './messages-area/messages-area'
 import {
+  useFixedBottom,
   useGameValue,
+  useMyPlayerValue,
   useMyselfValue
 } from '@/components/pages/games/game-hook'
 import Talk, { TalkRefHandle } from '../../../talk/talk'
@@ -37,6 +38,8 @@ import {
   isFiltering,
   useMessagesQuery
 } from './messages-query'
+import TalkSystem from '../../../talk/talk-system'
+import Portal from '@/components/modal/portal'
 
 type Props = {
   className?: string
@@ -189,6 +192,8 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       talkAreaRef.current.reply(message)
     }
 
+    const talkAreaId = `talk-area-${onlyToMe ? 'tome' : 'home'}`
+
     return (
       <div
         className={`${className} mut-height-guard relative flex flex-1 flex-col overflow-y-auto`}
@@ -205,6 +210,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
             messageAreaRef={messageAreaRef}
             reply={reply}
             searchable={!onlyToMe}
+            talkAreaId={talkAreaId}
             {...props}
           />
           <TalkArea
@@ -212,8 +218,10 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
             {...props}
             canTalk={canTalk}
             search={search}
+            talkAreaId={talkAreaId}
           />
         </div>
+        <div id={`${talkAreaId}-fixed`}></div>
         <FooterMenu
           scrollToTop={scrollToTop}
           scrollToBottom={scrollToBottom}
@@ -228,75 +236,202 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
 
 export default MessageArea
 
+type TalkAreaProps = {
+  canTalk: boolean
+  search: (query?: MessagesQuery) => void
+  talkAreaId: string
+}
+
 interface TalkAreaRefHandle {
   reply: (message: Message) => void
 }
 
-const TalkArea = forwardRef<
-  TalkAreaRefHandle,
-  { canTalk: boolean; search: (query?: MessagesQuery) => void }
->(({ canTalk, search }, ref: any) => {
-  const talkPanelRef = useRef({} as TalkAreaRefHandle)
+const TalkArea = forwardRef<TalkAreaRefHandle, TalkAreaProps>(
+  (props: TalkAreaProps, ref: any) => {
+    const { canTalk, search, talkAreaId } = props
+    const talkPanelRef = useRef({} as TalkAreaRefHandle)
 
-  useImperativeHandle(ref, () => ({
-    reply(message: Message) {
-      talkPanelRef.current.reply(message)
-    }
-  }))
+    useImperativeHandle(ref, () => ({
+      reply(message: Message) {
+        talkPanelRef.current.reply(message)
+      }
+    }))
 
-  if (!canTalk) return <></>
+    if (!canTalk) return <></>
 
-  return (
-    <div className='base-border w-full border-t text-sm'>
-      <TalkPanel search={search} ref={talkPanelRef} />
-      <DescriptionPanel search={search} />
-    </div>
-  )
-})
-
-const TalkPanel = forwardRef<
-  TalkAreaRefHandle,
-  { search: (query?: MessagesQuery) => void }
->(({ search }, ref: any) => {
-  const talkRef = useRef({} as TalkRefHandle)
-  const panelRef = useRef({} as PanelRefHandle)
-  const panelWrapperRef = useRef<HTMLDivElement>(null)
-
-  useImperativeHandle(ref, () => ({
-    reply(message: Message) {
-      panelRef.current.open()
-      talkRef.current.replyTo(message)
-      panelWrapperRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }
-  }))
-
-  const handleTalkCompleted = () => {
-    search()
+    return (
+      <div id={talkAreaId} className='base-border w-full border-t text-sm'>
+        <TalkPanel search={search} talkAreaId={talkAreaId} ref={talkPanelRef} />
+        <DescriptionPanel talkAreaId={talkAreaId} search={search} />
+        <SystemMessagePanel talkAreaId={talkAreaId} search={search} />
+      </div>
+    )
   }
+)
 
-  return (
-    <div ref={panelWrapperRef}>
-      <Panel header='発言' ref={panelRef}>
-        <Talk handleCompleted={handleTalkCompleted} ref={talkRef} />
-      </Panel>
-    </div>
-  )
-})
+type TalkPanelProps = {
+  search: (query?: MessagesQuery) => void
+  talkAreaId: string
+}
+
+const TalkPanel = forwardRef<TalkAreaRefHandle, TalkPanelProps>(
+  (props: TalkPanelProps, ref: any) => {
+    const { search, talkAreaId } = props
+    const talkRef = useRef({} as TalkRefHandle)
+    const panelRef = useRef({} as PanelRefHandle)
+    const panelWrapperRef = useRef<HTMLDivElement>(null)
+
+    useImperativeHandle(ref, () => ({
+      reply(message: Message) {
+        panelRef.current.open()
+        talkRef.current.replyTo(message)
+        panelWrapperRef.current?.scrollIntoView({ behavior: 'smooth' })
+      }
+    }))
+
+    const handleTalkCompleted = () => {
+      search()
+    }
+
+    const [isFixed, setIsFixed] = useState(false)
+    const otherFixedCanceler = useFixedBottom()
+    const toggleFixed = (e: any) => {
+      if (!isFixed) {
+        otherFixedCanceler(() => setIsFixed(false))
+      }
+      setIsFixed((current) => !current)
+      e.stopPropagation()
+    }
+
+    const PanelComponent = () => (
+      <div ref={panelWrapperRef}>
+        <Panel
+          header='発言'
+          ref={panelRef}
+          toggleFixed={toggleFixed}
+          isFixed={isFixed}
+        >
+          <Talk
+            handleCompleted={handleTalkCompleted}
+            talkAreaId={talkAreaId}
+            ref={talkRef}
+          />
+        </Panel>
+      </div>
+    )
+
+    if (!isFixed) {
+      return <PanelComponent />
+    } else {
+      return (
+        <Portal target={`#${talkAreaId}-fixed`}>
+          <div className='-m-4 max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
+            <PanelComponent />
+          </div>
+        </Portal>
+      )
+    }
+  }
+)
 
 const DescriptionPanel = ({
-  search
+  search,
+  talkAreaId
 }: {
   search: (query?: MessagesQuery) => void
+  talkAreaId: string
 }) => {
   const handleDescriptionCompleted = () => {
     search()
   }
 
-  return (
-    <Panel header='ト書き'>
-      <TalkDescription handleCompleted={handleDescriptionCompleted} />
+  const [isFixed, setIsFixed] = useState(false)
+  const otherFixedCanceler = useFixedBottom()
+  const toggleFixed = (e: any) => {
+    if (!isFixed) {
+      otherFixedCanceler(() => setIsFixed(false))
+    }
+    setIsFixed((current) => !current)
+    e.stopPropagation()
+  }
+
+  const PanelComponent = () => (
+    <Panel header='ト書き' toggleFixed={toggleFixed} isFixed={isFixed}>
+      <TalkDescription
+        handleCompleted={handleDescriptionCompleted}
+        talkAreaId={talkAreaId}
+      />
     </Panel>
   )
+
+  if (!isFixed) {
+    return <PanelComponent />
+  } else {
+    return (
+      <Portal target={`#${talkAreaId}-fixed`}>
+        <div className='-m-4 max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
+          <PanelComponent />
+        </div>
+      </Portal>
+    )
+  }
+}
+
+const SystemMessagePanel = ({
+  search,
+  talkAreaId
+}: {
+  search: (query?: MessagesQuery) => void
+  talkAreaId: string
+}) => {
+  const game = useGameValue()
+  const myPlayer = useMyPlayerValue()
+
+  const isGameMaster =
+    myPlayer?.authorityCodes.includes('AuthorityAdmin') ||
+    game.gameMasters.some((gm) => gm.player.id === myPlayer?.id)
+
+  const canModify = [
+    'Closed',
+    'Opening',
+    'Recruiting',
+    'Progress',
+    'Epilogue'
+  ].includes(game.status)
+
+  if (!isGameMaster || !canModify) return <></>
+
+  const handleCompleted = () => {
+    search()
+  }
+
+  const [isFixed, setIsFixed] = useState(false)
+  const otherFixedCanceler = useFixedBottom()
+  const toggleFixed = (e: any) => {
+    if (!isFixed) {
+      otherFixedCanceler(() => setIsFixed(false))
+    }
+    setIsFixed((current) => !current)
+    e.stopPropagation()
+  }
+
+  const PanelComponent = () => (
+    <Panel header='GM発言' toggleFixed={toggleFixed} isFixed={isFixed}>
+      <TalkSystem handleCompleted={handleCompleted} talkAreaId={talkAreaId} />
+    </Panel>
+  )
+
+  if (!isFixed) {
+    return <PanelComponent />
+  } else {
+    return (
+      <Portal target={`#${talkAreaId}-fixed`}>
+        <div className='-m-4 max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
+          <PanelComponent />
+        </div>
+      </Portal>
+    )
+  }
 }
 
 type FooterMenuProps = {

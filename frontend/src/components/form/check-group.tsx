@@ -20,14 +20,12 @@ export default function CheckGroup({
   selected,
   setSelected
 }: Props) {
-  const [items, setItems] = useState(
-    candidates.map((candidate) => {
-      return {
-        ...candidate,
-        checked: selected.includes(candidate.value)
-      }
-    })
-  )
+  const items = candidates.map((candidate) => {
+    return {
+      ...candidate,
+      checked: selected.includes(candidate.value)
+    }
+  })
 
   const handleChange = (e: any) => {
     const newItems = items.map((item) => {
@@ -36,8 +34,9 @@ export default function CheckGroup({
       }
       return item
     })
-    setItems(newItems)
-    setSelected(items.filter((item) => item.checked).map((item) => item.value))
+    setSelected(
+      newItems.filter((item) => item.checked).map((item) => item.value)
+    )
   }
 
   return (

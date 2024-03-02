@@ -17,7 +17,8 @@ import { useCallback, useState } from 'react'
 import MessageText from '../message-text/message-text'
 import {
   useGameValue,
-  useMyselfValue
+  useMyselfValue,
+  useUserDisplaySettingsValue
 } from '@/components/pages/games/game-hook'
 import Link from 'next/link'
 import { base64ToId } from '@/components/graphql/convert'
@@ -26,14 +27,12 @@ type MessageProps = {
   directMessage: DirectMessage
   openFavoritesModal: (messageId: string) => void
   preview?: boolean
-  imageSizeRatio: number
 }
 
 export default function DirectMessageComponent({
   directMessage,
   openFavoritesModal,
-  preview = false,
-  imageSizeRatio
+  preview = false
 }: MessageProps) {
   const game = useGameValue()
   const myself = useMyselfValue()
@@ -112,6 +111,8 @@ export default function DirectMessageComponent({
       : directMessage.content.type === 'Description'
       ? 'description'
       : ''
+
+  const imageSizeRatio = useUserDisplaySettingsValue().iconSizeRatio ?? 1
 
   return (
     <div>

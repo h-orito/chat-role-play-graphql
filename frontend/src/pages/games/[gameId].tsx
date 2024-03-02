@@ -1,9 +1,7 @@
 import Head from 'next/head'
 import { createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
-import Article, {
-  ArticleRefHandle
-} from '@/components/pages/games/article/article'
+import Article from '@/components/pages/games/article/article'
 import Sidebar from '@/components/pages/games/sidebar/sidebar'
 import {
   Game,
@@ -23,7 +21,8 @@ import {
   useIcons,
   useMyPlayer,
   useMyself,
-  usePollingPeriod
+  usePollingPeriod,
+  useUserDisplaySettingsAtom
 } from '@/components/pages/games/game-hook'
 import {
   fromUrlQuery,
@@ -58,6 +57,7 @@ const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   useMyself(game.id)
   useMyPlayer()
   useIcons()
+  useUserDisplaySettingsAtom()
   // 検索用クエリ
   const [, setInitialMessagesQuery] = useMessagesQuery()
   setInitialMessagesQuery(initialMessagesQuery)
@@ -65,19 +65,14 @@ const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   // 1分に1回ゲーム更新チェック
   usePollingPeriod(game)
 
-  const articleRef = useRef({} as ArticleRefHandle)
-  const fetchHomeLatest = async () => {
-    await articleRef.current.fetchHomeLatest()
-  }
-
   return (
     <>
       <main className='flex w-full'>
         <Head>
           <title>{game.name}</title>
         </Head>
-        <Sidebar fetchHomeLatest={fetchHomeLatest} />
-        <Article ref={articleRef} />
+        <Sidebar />
+        <Article />
         <RatingWarningModal />
       </main>
       <ThemeCSS />

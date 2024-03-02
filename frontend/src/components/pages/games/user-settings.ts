@@ -20,7 +20,7 @@ const defaultPagingSettings: UserPagingSettings = {
   isDesc: true
 }
 
-const defaultDisplaySettings: UserDisplaySettings = {
+export const defaultDisplaySettings: UserDisplaySettings = {
   themeName: 'original',
   iconSizeRatio: 1
 }

@@ -1,10 +1,7 @@
 import {
   DebugMessagesDocument,
   DebugMessagesMutation,
-  Game,
-  GameLabel,
-  GameParticipant,
-  Player
+  GameLabel
 } from '@/lib/generated/graphql'
 import {
   UsersIcon,
@@ -12,7 +9,6 @@ import {
   WrenchIcon,
   UserCircleIcon,
   UserPlusIcon,
-  PencilSquareIcon,
   HomeIcon,
   LockClosedIcon
 } from '@heroicons/react/24/outline'
@@ -30,7 +26,6 @@ import {
   convertToGameStatusName
 } from '@/components/graphql/convert'
 import { iso2display } from '@/components/util/datetime/datetime'
-import TalkSystem, { TalkSystemRefHandle } from '../talk/talk-system'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import GameMasterEdit from './game-master-edit'
 import GameStatusEdit from './game-status-edit'
@@ -43,20 +38,15 @@ import MessageText from '@/components/pages/games/article/message-area/message-t
 import {
   useGameValue,
   useMyPlayer,
-  useMyself,
   useMyselfValue,
   useSidebarOpen
 } from '../game-hook'
 
-type SidebarProps = {
-  fetchHomeLatest: () => void
-}
-
-export default function Sidebar({ fetchHomeLatest }: SidebarProps) {
+export default function Sidebar() {
   const { isAuthenticated } = useAuth0()
   const [isSidebarOpen, toggleSidebar] = useSidebarOpen()
   const game = useGameValue()
-  const [myself] = useMyself(game.id)
+  const myself = useMyselfValue()
   const myPlayer = useMyPlayer()
 
   const isGameMaster =
@@ -104,7 +94,6 @@ export default function Sidebar({ fetchHomeLatest }: SidebarProps) {
                 <GameMasterEditButton />
               </>
             )}
-            <SystemMessageButton fetchHomeLatest={fetchHomeLatest} />
           </div>
         )}
         {myself && (
@@ -438,50 +427,6 @@ const GameMasterEditButton = () => {
       {isOpenModal && (
         <Modal close={toggleModal} header='ゲームマスター追加削除'>
           <GameMasterEdit close={toggleModal} />
-        </Modal>
-      )}
-    </>
-  )
-}
-
-type SystemMessageButtonProps = {
-  fetchHomeLatest: () => void
-}
-
-const SystemMessageButton = ({ fetchHomeLatest }: SystemMessageButtonProps) => {
-  const [isOpenModal, setIsOpenModal] = useState(false)
-  const talkRef = useRef({} as TalkSystemRefHandle)
-  const toggleModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      const shouldWarning = talkRef.current && talkRef.current.shouldWarnClose()
-      if (
-        shouldWarning &&
-        !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
-      )
-        return
-      setIsOpenModal(!isOpenModal)
-    }
-  }
-  const messageRegisteredCallback = () => {
-    setIsOpenModal(false)
-    fetchHomeLatest()
-  }
-
-  return (
-    <>
-      <button
-        className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
-        onClick={() => setIsOpenModal(true)}
-      >
-        <PencilSquareIcon className='mr-1 h-5 w-5' />
-        <p className='flex-1 self-center text-left'>GM発言</p>
-      </button>
-      {isOpenModal && (
-        <Modal close={toggleModal} hideFooter>
-          <TalkSystem
-            ref={talkRef}
-            messageRegisteredCallback={messageRegisteredCallback}
-          />
         </Modal>
       )}
     </>

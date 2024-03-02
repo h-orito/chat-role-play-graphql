@@ -289,8 +289,6 @@ const DirectPreview = ({
     scrollToPreview()
   }, [])
 
-  const [userDisplaySettings] = useUserDisplaySettings()
-
   return (
     <div className='base-border my-4 border-t pt-2'>
       <p className='font-bold'>プレビュー</p>
@@ -298,7 +296,6 @@ const DirectPreview = ({
         <DirectMessageComponent
           directMessage={preview}
           openFavoritesModal={() => {}}
-          imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
           preview={true}
         />
       </div>

@@ -18,6 +18,7 @@ import {
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useRef } from 'react'
+import { defaultDisplaySettings, useUserDisplaySettings } from './user-settings'
 
 // game
 const gameAtom = atom<Game | null>(null)
@@ -144,3 +145,29 @@ export const useIcons = (): void => {
   }, [myself])
 }
 export const useIconsValue = () => useAtomValue(iconsAtom)
+
+// display settings
+const displaySettingsAtom = atom(defaultDisplaySettings)
+export const useUserDisplaySettingsAtom = () => {
+  const [displaySettings, setDisplaySettings] = useUserDisplaySettings()
+  const setAtom = useSetAtom(displaySettingsAtom)
+  useEffect(() => {
+    setAtom(displaySettings)
+  }, [displaySettings])
+}
+export const useUserDisplaySettingsValue = () =>
+  useAtomValue(displaySettingsAtom)
+
+// 発言欄の下部固定
+// 1つ固定したら他の固定は解除する
+// 解除するための関数を保存しておく
+const fixedBottomAtom = atom({ fn: () => {} })
+export const useFixedBottom = () => {
+  const [cancelFunction, setCancelFunction] = useAtom(fixedBottomAtom)
+
+  const canceler = (func: () => void) => {
+    cancelFunction.fn()
+    setCancelFunction({ fn: func })
+  }
+  return canceler
+}
