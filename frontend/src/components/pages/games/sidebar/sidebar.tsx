@@ -1,10 +1,7 @@
 import {
   DebugMessagesDocument,
   DebugMessagesMutation,
-  Game,
-  GameLabel,
-  GameParticipant,
-  Player
+  GameLabel
 } from '@/lib/generated/graphql'
 import {
   UsersIcon,
@@ -12,7 +9,6 @@ import {
   WrenchIcon,
   UserCircleIcon,
   UserPlusIcon,
-  PencilSquareIcon,
   HomeIcon,
   LockClosedIcon
 } from '@heroicons/react/24/outline'
@@ -25,9 +21,11 @@ import ArticleModal from '@/components/modal/article-modal'
 import Participants from '../participant/participants'
 import Link from 'next/link'
 import GameSettingsEdit from './game-settings-edit'
-import { convertToGameStatusName } from '@/components/graphql/convert'
+import {
+  base64ToId,
+  convertToGameStatusName
+} from '@/components/graphql/convert'
 import { iso2display } from '@/components/util/datetime/datetime'
-import TalkSystem, { TalkSystemRefHandle } from '../talk/talk-system'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import GameMasterEdit from './game-master-edit'
 import GameStatusEdit from './game-status-edit'
@@ -37,27 +35,19 @@ import UserSettingsComponent from './user-settings'
 import { useCookies } from 'react-cookie'
 import Image from 'next/image'
 import MessageText from '@/components/pages/games/article/message-area/message-text/message-text'
+import {
+  useGameValue,
+  useMyPlayer,
+  useMyselfValue,
+  useSidebarOpen
+} from '../game-hook'
 
-type SidebarProps = {
-  isSidebarOpen: boolean
-  toggleSidebar: (e: any) => void
-  game: Game
-  myself: GameParticipant | null
-  myPlayer: Player | null
-  openProfileModal: (participantId: string) => void
-  fetchHomeLatest: () => void
-}
-
-export default function Sidebar({
-  isSidebarOpen,
-  toggleSidebar,
-  game,
-  myself,
-  myPlayer,
-  openProfileModal,
-  fetchHomeLatest
-}: SidebarProps) {
+export default function Sidebar() {
   const { isAuthenticated } = useAuth0()
+  const [isSidebarOpen, toggleSidebar] = useSidebarOpen()
+  const game = useGameValue()
+  const myself = useMyselfValue()
+  const myPlayer = useMyPlayer()
 
   const isGameMaster =
     myPlayer?.authorityCodes.includes('AuthorityAdmin') ||
@@ -87,41 +77,34 @@ export default function Sidebar({
         className={`${displayClass} sidebar-background mut-height-guard base-border h-screen w-64 flex-col border-r py-4 md:flex`}
       >
         <h1 className='mb-2 px-4 text-xl font-bold'>{game.name}</h1>
-        <GameLabels game={game} />
-        <GameStatus game={game} />
+        <GameLabels />
+        <GameStatus />
         <div className='base-border border-t py-2'>
-          <GameIntroButton game={game} />
-          <ParticipantsButton game={game} openProfileModal={openProfileModal} />
-          <GameSettingsButton game={game} />
-          <UserSettingsButton game={game} myself={myself} />
+          <GameIntroButton />
+          <ParticipantsButton />
+          <GameSettingsButton />
+          <UserSettingsButton />
         </div>
         {isGameMaster && (
           <div className='base-border border-t py-2'>
-            <GameSettingsEditButton game={game} />
+            <GameSettingsEditButton />
             {canModify && (
               <>
-                <GameStatusEditButton game={game} />
-                <GameMasterEditButton game={game} />
+                <GameStatusEditButton />
+                <GameMasterEditButton />
               </>
             )}
-            <SystemMessageButton
-              game={game}
-              fetchHomeLatest={fetchHomeLatest}
-            />
           </div>
         )}
         {myself && (
           <div className='base-border border-t py-2'>
-            <ProfileButton
-              myself={myself}
-              openProfileModal={openProfileModal}
-            />
+            <ProfileButton />
           </div>
         )}
-        <DebugMenu game={game} />
+        <DebugMenu />
         {canParticipate && (
           <div className='base-border border-t py-2'>
-            <ParticipateButton game={game} />
+            <ParticipateButton />
           </div>
         )}
         <div className='base-border border-t py-2'>
@@ -143,11 +126,8 @@ export default function Sidebar({
   )
 }
 
-type StatusProps = {
-  game: Game
-}
-
-const GameStatus = ({ game }: StatusProps) => {
+const GameStatus = () => {
+  const game = useGameValue()
   const statusName = convertToGameStatusName(game.status)
   const time = game.settings.time
   let statusDescription: string | undefined
@@ -185,7 +165,8 @@ const GameStatus = ({ game }: StatusProps) => {
   )
 }
 
-const GameIntroButton = ({ game }: { game: Game }) => {
+const GameIntroButton = () => {
+  const game = useGameValue()
   const [getCookie, setCookie] = useCookies()
   const introCookie: IntroCookie = getCookie['intro'] || {}
   const alreadyConfiemed = !!introCookie && introCookie[game.id] === true
@@ -211,7 +192,6 @@ const GameIntroButton = ({ game }: { game: Game }) => {
       </div>
       {showModal && (
         <GameIntroModal
-          game={game}
           setCookie={setCookie}
           introCookie={introCookie}
           setShowModal={setShowModal}
@@ -222,16 +202,15 @@ const GameIntroButton = ({ game }: { game: Game }) => {
 }
 
 const GameIntroModal = ({
-  game,
   introCookie,
   setCookie,
   setShowModal
 }: {
-  game: Game
   introCookie: IntroCookie
   setCookie: any
   setShowModal: Dispatch<SetStateAction<boolean>>
 }) => {
+  const game = useGameValue()
   const handleClose = () => {
     introCookie[game.id] = true
     setCookie('intro', introCookie, {
@@ -281,12 +260,8 @@ type IntroCookie = {
   [gameId: string]: boolean
 }
 
-type ParticipantsProps = {
-  game: Game
-  openProfileModal: (participantId: string) => void
-}
-
-const ParticipantsButton = ({ game, openProfileModal }: ParticipantsProps) => {
+const ParticipantsButton = () => {
+  const game = useGameValue()
   const [isOpenParticipantsModal, setIsParticipantsModal] = useState(false)
   const toggleParticipantsModal = (e: any) => {
     setIsParticipantsModal(!isOpenParticipantsModal)
@@ -309,22 +284,14 @@ const ParticipantsButton = ({ game, openProfileModal }: ParticipantsProps) => {
           close={toggleParticipantsModal}
           hideFooter
         >
-          <Participants
-            className='p-4'
-            participants={game.participants}
-            openProfileModal={openProfileModal}
-          />
+          <Participants className='p-4' participants={game.participants} />
         </ArticleModal>
       )}
     </>
   )
 }
 
-type GameSettingsButtonProps = {
-  game: Game
-}
-
-const GameSettingsButton = ({ game }: GameSettingsButtonProps) => {
+const GameSettingsButton = () => {
   const [isOpenGameSettingsModal, setIsOpenGameSettingsModal] = useState(false)
   const toggleGameSettingsModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -345,19 +312,14 @@ const GameSettingsButton = ({ game }: GameSettingsButtonProps) => {
       </div>
       {isOpenGameSettingsModal && (
         <Modal header='ゲーム設定' close={toggleGameSettingsModal}>
-          <GameSettings game={game} close={toggleGameSettingsModal} />
+          <GameSettings close={toggleGameSettingsModal} />
         </Modal>
       )}
     </>
   )
 }
 
-type UserSettingsButtonProps = {
-  game: Game
-  myself: GameParticipant | null
-}
-
-const UserSettingsButton = ({ game, myself }: UserSettingsButtonProps) => {
+const UserSettingsButton = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const toggleModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -377,11 +339,7 @@ const UserSettingsButton = ({ game, myself }: UserSettingsButtonProps) => {
       </div>
       {isOpenModal && (
         <Modal close={toggleModal} hideFooter>
-          <UserSettingsComponent
-            close={toggleModal}
-            game={game}
-            myself={myself}
-          />
+          <UserSettingsComponent close={toggleModal} />
         </Modal>
       )}
     </>
@@ -399,11 +357,7 @@ const TopPageButton = () => (
   </div>
 )
 
-type GameSettingsEditButtonProps = {
-  game: Game
-}
-
-const GameSettingsEditButton = ({ game }: GameSettingsEditButtonProps) => {
+const GameSettingsEditButton = () => {
   const [isOpenGameSettingsEditModal, setIsOpenGameSettingsEditModal] =
     useState(false)
   const toggleGameSettingsEditModal = (e: any) => {
@@ -422,18 +376,14 @@ const GameSettingsEditButton = ({ game }: GameSettingsEditButtonProps) => {
       </button>
       {isOpenGameSettingsEditModal && (
         <Modal close={toggleGameSettingsEditModal} hideOnClickOutside={false}>
-          <GameSettingsEdit game={game} />
+          <GameSettingsEdit />
         </Modal>
       )}
     </>
   )
 }
 
-type GameStatusEditButtonProps = {
-  game: Game
-}
-
-const GameStatusEditButton = ({ game }: GameStatusEditButtonProps) => {
+const GameStatusEditButton = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const toggleModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -451,18 +401,14 @@ const GameStatusEditButton = ({ game }: GameStatusEditButtonProps) => {
       </button>
       {isOpenModal && (
         <Modal close={toggleModal}>
-          <GameStatusEdit game={game} />
+          <GameStatusEdit />
         </Modal>
       )}
     </>
   )
 }
 
-type GameMasterEditButtonProps = {
-  game: Game
-}
-
-const GameMasterEditButton = ({ game }: GameMasterEditButtonProps) => {
+const GameMasterEditButton = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const toggleModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -480,86 +426,31 @@ const GameMasterEditButton = ({ game }: GameMasterEditButtonProps) => {
       </button>
       {isOpenModal && (
         <Modal close={toggleModal} header='ゲームマスター追加削除'>
-          <GameMasterEdit game={game} close={toggleModal} />
+          <GameMasterEdit close={toggleModal} />
         </Modal>
       )}
     </>
   )
 }
 
-type SystemMessageButtonProps = {
-  game: Game
-  fetchHomeLatest: () => void
-}
-
-const SystemMessageButton = ({
-  game,
-  fetchHomeLatest
-}: SystemMessageButtonProps) => {
-  const [isOpenModal, setIsOpenModal] = useState(false)
-  const talkRef = useRef({} as TalkSystemRefHandle)
-  const toggleModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      const shouldWarning = talkRef.current && talkRef.current.shouldWarnClose()
-      if (
-        shouldWarning &&
-        !window.confirm('発言内容が失われますが、閉じてよろしいですか？')
-      )
-        return
-      setIsOpenModal(!isOpenModal)
-    }
-  }
-  const messageRegisteredCallback = () => {
-    setIsOpenModal(false)
-    fetchHomeLatest()
-  }
-
+const ProfileButton = () => {
+  const game = useGameValue()
+  const myself = useMyselfValue()!
   return (
     <>
-      <button
+      <Link
+        href={`/games/${base64ToId(game.id)}/profile/${base64ToId(myself.id)}`}
+        target='_blank'
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
-        onClick={() => setIsOpenModal(true)}
-      >
-        <PencilSquareIcon className='mr-1 h-5 w-5' />
-        <p className='flex-1 self-center text-left'>GM発言</p>
-      </button>
-      {isOpenModal && (
-        <Modal close={toggleModal} hideFooter>
-          <TalkSystem
-            ref={talkRef}
-            game={game}
-            messageRegisteredCallback={messageRegisteredCallback}
-          />
-        </Modal>
-      )}
-    </>
-  )
-}
-
-type ProfileButtonProps = {
-  myself: GameParticipant
-  openProfileModal: (participantId: string) => void
-}
-
-const ProfileButton = ({ myself, openProfileModal }: ProfileButtonProps) => {
-  return (
-    <>
-      <button
-        className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
-        onClick={() => openProfileModal(myself.id)}
       >
         <UserCircleIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>{myself.name}</p>
-      </button>
+      </Link>
     </>
   )
 }
 
-type ParticipateButtonProps = {
-  game: Game
-}
-
-const ParticipateButton = ({ game }: ParticipateButtonProps) => {
+const ParticipateButton = () => {
   const [isOpenParticipateModal, setIsOpenParticipateModal] = useState(false)
   const toggleParticipateModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -577,14 +468,15 @@ const ParticipateButton = ({ game }: ParticipateButtonProps) => {
       </button>
       {isOpenParticipateModal && (
         <Modal header='参加登録' close={toggleParticipateModal} hideFooter>
-          <Participate game={game} close={toggleParticipateModal} />
+          <Participate close={toggleParticipateModal} />
         </Modal>
       )}
     </>
   )
 }
 
-const GameLabels = ({ game }: { game: Game }) => {
+const GameLabels = () => {
+  const game = useGameValue()
   return (
     <div className='mb-2 flex px-4'>
       {game.labels.map((l: GameLabel, idx: number) => (
@@ -608,7 +500,8 @@ const Label = ({ label }: { label: GameLabel }) => {
   )
 }
 
-const DebugMenu = ({ game }: { game: Game }) => {
+const DebugMenu = () => {
+  const game = useGameValue()
   const [registerMessage] = useMutation<DebugMessagesMutation>(
     DebugMessagesDocument
   )

@@ -12,8 +12,6 @@ import PrimaryButton from '@/components/button/primary-button'
 import RadioGroup from '@/components/form/radio-group'
 import { useRouter } from 'next/router'
 import {
-  Game,
-  GameParticipant,
   GameParticipantSetting,
   GameParticipantSettingDocument,
   GameParticipantSettingQuery,
@@ -28,16 +26,14 @@ import InputText from '@/components/form/input-text'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import SubmitButton from '@/components/button/submit-button'
 import { themeOptions } from '@/components/theme/theme'
+import { useGameValue, useMyselfValue } from '../game-hook'
 
 export default function UserSettingsComponent({
-  close,
-  game,
-  myself
+  close
 }: {
   close: (e: any) => void
-  game: Game
-  myself: GameParticipant | null
 }) {
+  const myself = useMyselfValue()
   return (
     <div className='text-center'>
       <div className='my-4 flex justify-center'>
@@ -51,7 +47,7 @@ export default function UserSettingsComponent({
         <>
           <hr />
           <div className='my-4 flex justify-center'>
-            <NotificationSettings game={game} myself={myself} />
+            <NotificationSettings />
           </div>
         </>
       )}
@@ -189,13 +185,8 @@ interface NotificationFormInput {
   keyword: string
 }
 
-const NotificationSettings = ({
-  game,
-  myself
-}: {
-  game: Game
-  myself: GameParticipant | null
-}) => {
+const NotificationSettings = () => {
+  const game = useGameValue()
   const { register, control, formState, handleSubmit, setValue, watch } =
     useForm<NotificationFormInput>({
       defaultValues: {

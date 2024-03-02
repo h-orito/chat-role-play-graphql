@@ -1,11 +1,8 @@
 import Image from 'next/image'
 import RadioGroup from '@/components/form/radio-group'
 import {
-  Game,
   GameParticipant,
   GameParticipantIcon,
-  IconsDocument,
-  IconsQuery,
   Message,
   MessageType,
   NewMessage,
@@ -15,7 +12,7 @@ import {
   TalkMutation,
   TalkMutationVariables
 } from '@/lib/generated/graphql'
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import React, {
   forwardRef,
   useCallback,
@@ -33,12 +30,19 @@ import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
 import PrimaryButton from '@/components/button/primary-button'
 import ParticipantSelect from '../participant/participant-select'
-import { useUserDisplaySettings } from '../user-settings'
+import { useUserPagingSettings } from '../user-settings'
+import {
+  useGameValue,
+  useIconsValue,
+  useMyselfValue,
+  useUserDisplaySettingsValue
+} from '../game-hook'
+import Portal from '@/components/modal/portal'
+import IconSelectButton from './icon-select-button'
 
 type Props = {
-  game: Game
-  myself: GameParticipant
   handleCompleted: () => void
+  talkAreaId: string
 }
 
 interface FormInput {
@@ -47,21 +51,19 @@ interface FormInput {
 }
 
 export interface TalkRefHandle {
-  shouldWarnClose(): boolean
   replyTo(message: Message): void
 }
 
 const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
-  const { game, myself, handleCompleted } = props
+  const game = useGameValue()
+  const myself = useMyselfValue()!
 
-  const { control, formState, handleSubmit, setValue, watch } =
-    useForm<FormInput>({
-      defaultValues: {
-        name: myself.name,
-        talkMessage: ''
-      }
-    })
-  const talkMessage = watch('talkMessage')
+  const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
+    defaultValues: {
+      name: myself.name,
+      talkMessage: ''
+    }
+  })
   const updateTalkMessage = (str: string) => setValue('talkMessage', str)
 
   // 発言種別
@@ -70,38 +72,21 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
   const [replyTarget, setReplyTarget] = useState<Message | null>(null)
   // 送信相手
   const [receiver, setReceiver] = useState<GameParticipant | null>(null)
-  // アイコン候補
-  const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
   // 選択中のアイコン
   const [iconId, setIconId] = useState<string>('')
   // 装飾やランダム変換しない
   const [isConvertDisabled, setIsConvertDisabled] = useState(false)
 
-  const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
-  const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument)
-  const [talk] = useMutation<TalkMutation>(TalkDocument, {
-    onCompleted() {
-      init()
-      handleCompleted()
-    }
-  })
-
+  // アイコン候補
+  const icons = useIconsValue()
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await fetchIcons({
-        variables: { participantId: myself.id }
-      })
-      if (data?.gameParticipantIcons == null) return
-      setIcons(data.gameParticipantIcons)
-      if (data.gameParticipantIcons.length <= 0) return
-      setIconId(data.gameParticipantIcons[0].id)
-    }
-    fetch()
-  }, [])
+    setIconId(icons.length <= 0 ? '' : icons[0].id)
+  }, [icons])
 
   const init = () => {
     setTalkType(MessageType.TalkNormal)
     setPreview(null)
+    setDryRunMessage(null)
     setReplyTarget(null)
     setReceiver(null)
     setValue('name', myself.name)
@@ -110,22 +95,34 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
     setIsConvertDisabled(false)
   }
 
+  const handleTalkCompleted = () => {
+    init()
+    props.handleCompleted()
+  }
+
+  const handlePreviewCanceled = () => {
+    setPreview(null)
+    setDryRunMessage(null)
+    document.querySelector(`#${props.talkAreaId}`)!.scrollIntoView({
+      behavior: 'smooth'
+    })
+  }
+
   const canSubmit: boolean =
     formState.isValid &&
     !formState.isSubmitting &&
     (talkType !== MessageType.Secret ||
       (receiver != null && receiver.id !== myself.id))
 
-  const [preview, setPreview] = useState<Message | null>(null)
-  const onSubmit: SubmitHandler<FormInput> = useCallback(
-    async (data) => {
+  const createNewMessage = useCallback(
+    (data: FormInput): NewMessage => {
       // 返信元またはこの発言が秘話の場合は返信扱いにしない
       const replyToMessageId =
         talkType === MessageType.Secret ||
         replyTarget?.content.type === MessageType.Secret
           ? null
           : replyTarget?.id
-      const mes = {
+      return {
         gameId: game.id,
         type: talkType,
         iconId: iconId,
@@ -135,30 +132,38 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
         text: data.talkMessage.trim(),
         isConvertDisabled: isConvertDisabled
       } as NewMessage
-
-      if (preview != null) {
-        talk({
-          variables: {
-            input: mes
-          } as TalkMutationVariables
-        })
-      } else {
-        const { data } = await talkDryRun({
-          variables: {
-            input: mes
-          } as TalkMutationVariables
-        })
-        if (data?.registerMessageDryRun == null) return
-        setPreview(data.registerMessageDryRun.message as Message)
-      }
     },
-    [talk, replyTarget, talkType, receiver, iconId, formState]
+    [
+      game.id,
+      replyTarget,
+      talkType,
+      receiver,
+      iconId,
+      isConvertDisabled,
+      formState
+    ]
+  )
+
+  // 発言プレビュー
+  const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument)
+  const [dryRunMessage, setDryRunMessage] = useState<NewMessage | null>(null)
+  const [preview, setPreview] = useState<Message | null>(null)
+  const onSubmitPreview: SubmitHandler<FormInput> = useCallback(
+    async (data) => {
+      const mes = createNewMessage(data)
+      const { data: previewData } = await talkDryRun({
+        variables: {
+          input: mes
+        } as TalkMutationVariables
+      })
+      if (previewData?.registerMessageDryRun == null) return
+      setPreview(previewData.registerMessageDryRun.message as Message)
+      setDryRunMessage(mes)
+    },
+    [createNewMessage, talkDryRun]
   )
 
   useImperativeHandle(ref, () => ({
-    shouldWarnClose() {
-      return 0 < talkMessage.length
-    },
     replyTo(message: Message) {
       setReplyTarget(message)
       setReceiver(
@@ -170,12 +175,6 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
     }
   }))
 
-  const scrollToPreview = () => {
-    document.querySelector('#talk-preview')!.scrollIntoView({
-      behavior: 'smooth'
-    })
-  }
-
   const cancelReply = (e: any) => {
     setReplyTarget(null)
     if (talkType !== MessageType.Secret) {
@@ -183,13 +182,13 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
     }
   }
 
-  const [userDisplaySettings] = useUserDisplaySettings()
+  const talkMessageId = `${props.talkAreaId}-talk-message`
 
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
 
   return (
-    <div className='max-h-[40vh] overflow-y-auto px-4 py-2'>
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <div>
+      <form onSubmit={handleSubmit(onSubmitPreview)}>
         <TalkType
           {...props}
           talkType={talkType}
@@ -208,14 +207,19 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
           <p className='text-xs font-bold'>発言装飾</p>
           <div className='flex'>
             <TalkTextDecorators
-              selector='#talkMessage'
+              selector={`#${talkMessageId}`}
               setMessage={updateTalkMessage}
             />
           </div>
         </div>
         <div className='flex'>
-          <IconButton icons={icons} iconId={iconId} setIconId={setIconId} />
+          <IconSelectButton
+            icons={icons}
+            iconId={iconId}
+            setIconId={setIconId}
+          />
           <MessageContent
+            id={talkMessageId}
             talkType={talkType}
             control={control}
             disabled={preview != null}
@@ -223,27 +227,19 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
             setIsConvertDisabled={setIsConvertDisabled}
           />
         </div>
-        <div id='talk-preview' className='mt-4 flex justify-end'>
-          <SubmitButton
-            label={preview ? 'プレビュー内容で送信' : 'プレビュー'}
-            disabled={!canSubmit}
-          />
-          {preview && (
-            <SecondaryButton className='ml-2' click={() => setPreview(null)}>
-              キャンセル
-            </SecondaryButton>
-          )}
+        <div className='mt-4 flex justify-end'>
+          <SubmitButton label='プレビュー' disabled={!canSubmit} />
         </div>
+        {preview && (
+          <TalkPreview
+            preview={preview}
+            dryRunMessage={dryRunMessage}
+            talkAreaId={props.talkAreaId}
+            handleCompleted={handleTalkCompleted}
+            handleCanceled={handlePreviewCanceled}
+          />
+        )}
       </form>
-      {preview && (
-        <TalkPreview
-          preview={preview}
-          game={game}
-          myself={myself}
-          scrollToPreview={scrollToPreview}
-          imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
-        />
-      )}
       {replyTarget && (
         <div className='mb-4'>
           <div className='flex'>
@@ -256,12 +252,8 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
             <div>
               <TalkMessage
                 message={replyTarget!}
-                game={game}
-                myself={myself}
-                openProfileModal={() => {}}
                 openFavoritesModal={() => {}}
                 handleReply={() => {}}
-                imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
               />
             </div>
           </div>
@@ -274,7 +266,6 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
 export default Talk
 
 type TalkTypeProps = {
-  game: Game
   talkType: MessageType
   setTalkType: (talkType: MessageType) => void
   preview?: Message | null
@@ -282,12 +273,12 @@ type TalkTypeProps = {
 }
 
 const TalkType = ({
-  game,
   talkType,
   setTalkType,
   preview,
   replyTarget
 }: TalkTypeProps) => {
+  const game = useGameValue()
   const talkTypeCandidates = [
     {
       label: '通常',
@@ -343,20 +334,14 @@ const TalkType = ({
 }
 
 type ReceiverProps = {
-  game: Game
-  myself: GameParticipant
   talkType: MessageType
   receiver: GameParticipant | null
   setReceiver: (receiver: GameParticipant | null) => void
 }
 
-const Receiver = ({
-  game,
-  myself,
-  talkType,
-  receiver,
-  setReceiver
-}: ReceiverProps) => {
+const Receiver = ({ talkType, receiver, setReceiver }: ReceiverProps) => {
+  const game = useGameValue()
+  const myself = useMyselfValue()!
   const [isOpenReceiverModal, setIsOpenReceiverModal] = useState(false)
   const toggleReceiverModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -371,6 +356,7 @@ const Receiver = ({
   }
 
   if (talkType !== MessageType.Secret) return <></>
+
   return (
     <div className='mb-2'>
       <p className='mb-1 text-xs font-bold'>秘話送信先</p>
@@ -426,85 +412,8 @@ const SenderName = ({ control, disabled }: SenderNameProps) => {
   )
 }
 
-type IconButtonProps = {
-  icons: Array<GameParticipantIcon>
-  iconId: string
-  setIconId: (iconId: string) => void
-}
-
-const IconButton = ({ icons, iconId, setIconId }: IconButtonProps) => {
-  const [isOpenIconSelectModal, setIsOpenIconSelectModal] = useState(false)
-  const toggleIconSelectModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenIconSelectModal(!isOpenIconSelectModal)
-    }
-  }
-
-  if (icons.length <= 0) return <></>
-  const selectedIcon = icons.find((icon) => icon.id === iconId)
-
-  return (
-    <div>
-      <button
-        onClick={(e: any) => {
-          e.preventDefault()
-          setIsOpenIconSelectModal(true)
-        }}
-        disabled={icons.length <= 0}
-      >
-        <Image
-          src={
-            selectedIcon
-              ? selectedIcon.url
-              : '/chat-role-play/images/no-image-icon.png'
-          }
-          width={selectedIcon ? selectedIcon.width : 60}
-          height={selectedIcon ? selectedIcon.height : 60}
-          alt='キャラアイコン'
-        />
-      </button>
-      {isOpenIconSelectModal && (
-        <Modal close={toggleIconSelectModal} hideFooter>
-          <IconSelect
-            icons={icons}
-            setIconId={setIconId}
-            toggle={() => setIsOpenIconSelectModal(false)}
-          />
-        </Modal>
-      )}
-    </div>
-  )
-}
-
-type IconSelectProps = {
-  icons: Array<GameParticipantIcon>
-  setIconId: (iconId: string) => void
-  toggle: () => void
-}
-const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
-  const handleSelect = (e: any, iconId: string) => {
-    e.preventDefault()
-    setIconId(iconId)
-    toggle()
-  }
-
-  return (
-    <div>
-      {icons.map((icon) => (
-        <button onClick={(e: any) => handleSelect(e, icon.id)} key={icon.id}>
-          <Image
-            src={icon.url}
-            width={icon.width}
-            height={icon.height}
-            alt='キャラアイコン'
-          />
-        </button>
-      ))}
-    </div>
-  )
-}
-
 type MessageContentProps = {
+  id: string
   talkType: MessageType
   control: Control<FormInput, any>
   disabled: boolean
@@ -513,6 +422,7 @@ type MessageContentProps = {
 }
 
 const MessageContent = ({
+  id,
   talkType,
   control,
   disabled,
@@ -531,6 +441,7 @@ const MessageContent = ({
   return (
     <div className='ml-2 flex-1'>
       <InputTextarea
+        id={id}
         name='talkMessage'
         textareaclassname={messageClass}
         control={control}
@@ -548,11 +459,11 @@ const MessageContent = ({
       <div className='-mt-5'>
         <input
           type='checkbox'
-          id='convert-disabled'
+          id={`${id}_convert-disabled`}
           checked={isConvertDisabled}
           onChange={(e: any) => setIsConvertDisabled((prev) => !prev)}
         />
-        <label htmlFor='convert-disabled' className='ml-1 text-xs'>
+        <label htmlFor={`${id}_convert-disabled`} className='ml-1 text-xs'>
           装飾やランダム変換しない
         </label>
       </div>
@@ -562,37 +473,68 @@ const MessageContent = ({
 
 const TalkPreview = ({
   preview,
-  game,
-  myself,
-  scrollToPreview,
-  imageSizeRatio
+  dryRunMessage,
+  talkAreaId,
+  handleCompleted,
+  handleCanceled
 }: {
   preview: Message | null
-  game: Game
-  myself: GameParticipant
-  scrollToPreview: () => void
-  imageSizeRatio: number
+  dryRunMessage: NewMessage | null
+  talkAreaId: string
+  handleCompleted: () => void
+  handleCanceled: () => void
 }) => {
+  const [userPagingSettings] = useUserPagingSettings()
+  const previewAreaId = `${talkAreaId}-${
+    userPagingSettings.isDesc ? 'top' : 'bottom'
+  }-preview`
   useEffect(() => {
-    scrollToPreview()
+    if (userPagingSettings.isDesc) {
+      document.querySelector(`#${talkAreaId}-top`)!.scrollIntoView({
+        behavior: 'smooth'
+      })
+    } else {
+      document.querySelector(`#${talkAreaId}-bottom`)!.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end'
+      })
+    }
   }, [])
 
+  const [talk] = useMutation<TalkMutation>(TalkDocument, {
+    onCompleted() {
+      handleCompleted()
+    }
+  })
+  const doTalk = async () => {
+    talk({
+      variables: {
+        input: dryRunMessage!
+      } as TalkMutationVariables
+    })
+  }
+
   return (
-    <div className='my-4'>
-      <p className='text-xs font-bold'>プレビュー</p>
-      <div className='base-border border pt-2'>
-        <div>
+    <Portal target={`#${previewAreaId}`}>
+      <div className='primary-border m-4 rounded-md border p-2'>
+        <p className='text-xs'>
+          以下の内容で発言してよろしいですか？（まだ発言されていません）
+        </p>
+        <div className='mt-2'>
           <TalkMessage
             message={preview!}
-            game={game}
-            myself={myself}
-            openProfileModal={() => {}}
             openFavoritesModal={() => {}}
             handleReply={() => {}}
-            imageSizeRatio={imageSizeRatio}
+            preview={true}
           />
         </div>
+        <div className='mt-4 flex justify-end'>
+          <PrimaryButton click={doTalk}>発言する</PrimaryButton>
+          <SecondaryButton className='ml-2' click={() => handleCanceled()}>
+            キャンセル
+          </SecondaryButton>
+        </div>
       </div>
-    </div>
+    </Portal>
   )
 }

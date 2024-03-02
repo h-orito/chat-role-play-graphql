@@ -1,7 +1,7 @@
 import SubmitButton from '@/components/button/submit-button'
 import InputText from '@/components/form/input-text'
+import { useGameValue } from '@/components/pages/games/game-hook'
 import {
-  Game,
   GameParticipantGroup,
   UpdateGameParticipantGroup,
   UpdateParticipantGroupDocument,
@@ -14,7 +14,6 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 
 type Props = {
   close: (e: any) => void
-  game: Game
   group: GameParticipantGroup
   refetchGroups: () => void
 }
@@ -25,10 +24,10 @@ interface FormInput {
 
 export default function ParticipantGroupEdit({
   close,
-  game,
   group,
   refetchGroups
 }: Props) {
+  const game = useGameValue()
   const { control, formState, handleSubmit } = useForm<FormInput>({
     defaultValues: {
       name: group.name

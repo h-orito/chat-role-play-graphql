@@ -1,8 +1,6 @@
 import Image from 'next/image'
 import {
   DirectMessage,
-  Game,
-  GameParticipant,
   GameParticipantGroup,
   GameParticipantIcon,
   IconsDocument,
@@ -13,7 +11,10 @@ import {
   TalkDirectDryRunDocument,
   TalkDirectDryRunMutation,
   TalkDirectMutation,
-  TalkDirectMutationVariables
+  TalkDirectMutationVariables,
+  TalkDocument,
+  TalkMutation,
+  TalkMutationVariables
 } from '@/lib/generated/graphql'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useCallback, useEffect, useState } from 'react'
@@ -25,13 +26,21 @@ import SubmitButton from '@/components/button/submit-button'
 import DirectMessageComponent from '../article/message-area/direct-message/direct-message'
 import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
-import { useUserDisplaySettings } from '../user-settings'
+import {
+  useGameValue,
+  useIconsValue,
+  useMyselfValue,
+  useUserDisplaySettingsValue
+} from '../game-hook'
+import PrimaryButton from '@/components/button/primary-button'
+import Portal from '@/components/modal/portal'
+import { useUserPagingSettings } from '../user-settings'
+import IconSelectButton from './icon-select-button'
 
 type Props = {
-  game: Game
-  myself: GameParticipant
   handleCompleted: () => void
   gameParticipantGroup: GameParticipantGroup
+  talkAreaId: string
 }
 
 interface FormInput {
@@ -40,31 +49,28 @@ interface FormInput {
 }
 
 const TalkDirect = (props: Props) => {
-  const { game, myself, handleCompleted, gameParticipantGroup } = props
+  const game = useGameValue()
+  const myself = useMyselfValue()!
+  const { handleCompleted, gameParticipantGroup, talkAreaId } = props
 
-  const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
-  const [talkDirectDryRun] = useMutation<TalkDirectDryRunMutation>(
-    TalkDirectDryRunDocument
-  )
-  const [talkDirect] = useMutation<TalkDirectMutation>(TalkDirectDocument, {
-    onCompleted() {
-      init()
-      handleCompleted()
+  const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
+    defaultValues: {
+      name: myself.name,
+      talkMessage: ''
     }
   })
 
+  const updateTalkMessage = (str: string) => setValue('talkMessage', str)
+
+  // 選択中のアイコン
+  const [iconId, setIconId] = useState<string>('')
+  // 装飾やランダム変換しない
+  const [isConvertDisabled, setIsConvertDisabled] = useState(false)
+  // アイコン候補
+  const icons = useIconsValue()
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await fetchIcons({
-        variables: { participantId: myself.id }
-      })
-      if (data?.gameParticipantIcons == null) return
-      setIcons(data.gameParticipantIcons)
-      if (data.gameParticipantIcons.length <= 0) return
-      setIconId(data.gameParticipantIcons[0].id)
-    }
-    fetch()
-  }, [])
+    setIconId(icons.length <= 0 ? '' : icons[0].id)
+  }, [icons])
 
   const init = () => {
     setPreview(null)
@@ -74,32 +80,25 @@ const TalkDirect = (props: Props) => {
     setIsConvertDisabled(false)
   }
 
-  const { control, formState, handleSubmit, setValue, watch } =
-    useForm<FormInput>({
-      defaultValues: {
-        name: myself.name,
-        talkMessage: ''
-      }
-    })
-
-  const updateTalkMessage = (str: string) => setValue('talkMessage', str)
-  const canSubmit: boolean = formState.isValid && !formState.isSubmitting
-  const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
-  const [iconId, setIconId] = useState<string>(
-    icons.length > 0 ? icons[0].id : ''
-  )
-  const [isOpenIconSelectModal, setIsOpenIconSelectModal] = useState(false)
-  const toggleIconSelectModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenIconSelectModal(!isOpenIconSelectModal)
-    }
+  const handleTalkCompleted = () => {
+    init()
+    handleCompleted()
   }
-  const [isConvertDisabled, setIsConvertDisabled] = useState(false)
 
-  const [preview, setPreview] = useState<DirectMessage | null>(null)
-  const onSubmit: SubmitHandler<FormInput> = useCallback(
-    async (data) => {
-      const dm = {
+  const handlePreviewCanceled = () => {
+    setPreview(null)
+    setDryRunMessage(null)
+    document.querySelector(`#${talkAreaId}`)!.scrollIntoView({
+      behavior: 'smooth'
+    })
+  }
+
+  const canSubmit: boolean = formState.isValid && !formState.isSubmitting
+
+  // 発言プレビュー
+  const createNewDirectMessage = useCallback(
+    (data: FormInput): NewDirectMessage => {
+      return {
         gameId: game.id,
         gameParticipantGroupId: gameParticipantGroup.id,
         type: MessageType.TalkNormal,
@@ -108,40 +107,38 @@ const TalkDirect = (props: Props) => {
         text: data.talkMessage,
         isConvertDisabled: isConvertDisabled
       } as NewDirectMessage
-
-      if (preview != null) {
-        talkDirect({
-          variables: {
-            input: dm
-          } as TalkDirectMutationVariables
-        })
-      } else {
-        const { data } = await talkDirectDryRun({
-          variables: {
-            input: dm
-          } as TalkDirectMutationVariables
-        })
-        if (data?.registerDirectMessageDryRun == null) return
-        setPreview(
-          data.registerDirectMessageDryRun.directMessage as DirectMessage
-        )
-      }
     },
-    [talkDirect, iconId, formState]
+    [game.id, gameParticipantGroup.id, iconId, isConvertDisabled, formState]
+  )
+  const [dryRunMessage, setDryRunMessage] = useState<NewDirectMessage | null>(
+    null
+  )
+  const [preview, setPreview] = useState<DirectMessage | null>(null)
+  const [talkDirectDryRun] = useMutation<TalkDirectDryRunMutation>(
+    TalkDirectDryRunDocument
+  )
+  const onSubmitPreview: SubmitHandler<FormInput> = useCallback(
+    async (data) => {
+      const dm = createNewDirectMessage(data)
+      const { data: previewData } = await talkDirectDryRun({
+        variables: {
+          input: dm
+        } as TalkDirectMutationVariables
+      })
+      if (previewData?.registerDirectMessageDryRun == null) return
+      setPreview(
+        previewData.registerDirectMessageDryRun.directMessage as DirectMessage
+      )
+      setDryRunMessage(dm)
+    },
+    [createNewDirectMessage, talkDirectDryRun]
   )
 
-  const scrollToPreview = () => {
-    document.querySelector('#dm-preview')!.scrollIntoView({
-      behavior: 'smooth'
-    })
-  }
-
   if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
-  const selectedIcon = icons.find((icon) => icon.id === iconId)
 
   return (
-    <div className='max-h-[40vh] overflow-y-auto px-4 py-2'>
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <div>
+      <form onSubmit={handleSubmit(onSubmitPreview)}>
         <div className='mb-2'>
           <p>DM送信先: {gameParticipantGroup.name}</p>
         </div>
@@ -170,26 +167,11 @@ const TalkDirect = (props: Props) => {
           </div>
         </div>
         <div className='flex'>
-          <div>
-            <button
-              onClick={(e: any) => {
-                e.preventDefault()
-                setIsOpenIconSelectModal(true)
-              }}
-              disabled={icons.length <= 0}
-            >
-              <Image
-                src={
-                  selectedIcon
-                    ? selectedIcon.url
-                    : '/chat-role-play/images/no-image-icon.png'
-                }
-                width={selectedIcon ? selectedIcon.width : 60}
-                height={selectedIcon ? selectedIcon.height : 60}
-                alt='キャラアイコン'
-              />
-            </button>
-          </div>
+          <IconSelectButton
+            icons={icons}
+            iconId={iconId}
+            setIconId={setIconId}
+          />
           <div className='ml-2 flex-1'>
             <InputTextarea
               name='talkMessage'
@@ -219,32 +201,17 @@ const TalkDirect = (props: Props) => {
           </div>
         </div>
         <div id='dm-preview' className='mt-4 flex justify-end'>
-          <SubmitButton
-            label={preview ? 'プレビュー内容で送信' : 'プレビュー'}
-            disabled={!canSubmit}
-          />
-          {preview && (
-            <SecondaryButton className='ml-2' click={() => setPreview(null)}>
-              キャンセル
-            </SecondaryButton>
-          )}
+          <SubmitButton label='プレビュー' disabled={!canSubmit} />
         </div>
       </form>
       {preview && (
         <DirectPreview
-          {...props}
           preview={preview}
-          scrollToPreview={scrollToPreview}
+          dryRunMessage={dryRunMessage}
+          talkAreaId={props.talkAreaId}
+          handleCompleted={handleTalkCompleted}
+          handleCanceled={handlePreviewCanceled}
         />
-      )}
-      {isOpenIconSelectModal && (
-        <Modal close={toggleIconSelectModal} hideFooter>
-          <IconSelect
-            icons={icons}
-            setIconId={setIconId}
-            toggle={() => setIsOpenIconSelectModal(false)}
-          />
-        </Modal>
       )}
     </div>
   )
@@ -252,64 +219,69 @@ const TalkDirect = (props: Props) => {
 
 export default TalkDirect
 
-type IconSelectProps = {
-  icons: Array<GameParticipantIcon>
-  setIconId: (iconId: string) => void
-  toggle: () => void
-}
-const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
-  const handleSelect = (e: any, iconId: string) => {
-    e.preventDefault()
-    setIconId(iconId)
-    toggle()
+const DirectPreview = ({
+  preview,
+  dryRunMessage,
+  talkAreaId,
+  handleCompleted,
+  handleCanceled
+}: {
+  preview: DirectMessage | null
+  dryRunMessage: NewDirectMessage | null
+  talkAreaId: string
+  handleCompleted: () => void
+  handleCanceled: () => void
+}) => {
+  const [userPagingSettings] = useUserPagingSettings()
+  const previewAreaId = `${talkAreaId}-${
+    userPagingSettings.isDesc ? 'top' : 'bottom'
+  }-preview`
+  useEffect(() => {
+    if (userPagingSettings.isDesc) {
+      document.querySelector(`#${talkAreaId}-top`)!.scrollIntoView({
+        behavior: 'smooth'
+      })
+    } else {
+      document.querySelector(`#${talkAreaId}-bottom`)!.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end'
+      })
+    }
+  }, [])
+
+  const [talkDirect] = useMutation<TalkDirectMutation>(TalkDirectDocument, {
+    onCompleted() {
+      handleCompleted()
+    }
+  })
+  const doTalk = async () => {
+    talkDirect({
+      variables: {
+        input: dryRunMessage!
+      } as TalkDirectMutationVariables
+    })
   }
 
   return (
-    <div>
-      {icons.map((icon) => (
-        <button onClick={(e: any) => handleSelect(e, icon.id)} key={icon.id}>
-          <Image
-            src={icon.url}
-            width={icon.width}
-            height={icon.height}
-            alt='キャラアイコン'
+    <Portal target={`#${previewAreaId}`}>
+      <div className='primary-border m-4 rounded-md border p-2'>
+        <p className='text-xs'>
+          以下の内容で発言してよろしいですか？（まだ発言されていません）
+        </p>
+        <div className='mt-2'>
+          <DirectMessageComponent
+            directMessage={preview!}
+            openFavoritesModal={() => {}}
+            preview={true}
           />
-        </button>
-      ))}
-    </div>
-  )
-}
-
-const DirectPreview = ({
-  preview,
-  game,
-  myself,
-  scrollToPreview
-}: {
-  preview: DirectMessage
-  game: Game
-  myself: GameParticipant
-  scrollToPreview: () => void
-}) => {
-  useEffect(() => {
-    scrollToPreview()
-  }, [])
-
-  const [userDisplaySettings] = useUserDisplaySettings()
-
-  return (
-    <div className='base-border my-4 border-t pt-2'>
-      <p className='font-bold'>プレビュー</p>
-      <div>
-        <DirectMessageComponent
-          directMessage={preview!}
-          myself={myself}
-          game={game}
-          openProfileModal={() => {}}
-          openFavoritesModal={() => {}}
-          imageSizeRatio={userDisplaySettings.iconSizeRatio ?? 1}
-        />
+        </div>
+        <div className='mt-4 flex justify-end'>
+          <PrimaryButton click={doTalk}>発言する</PrimaryButton>
+          <SecondaryButton className='ml-2' click={() => handleCanceled()}>
+            キャンセル
+          </SecondaryButton>
+        </div>
       </div>
-    </div>
+    </Portal>
   )
 }

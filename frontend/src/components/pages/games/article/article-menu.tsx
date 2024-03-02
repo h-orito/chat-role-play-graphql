@@ -1,34 +1,30 @@
-import { GameParticipant, Player } from '@/lib/generated/graphql'
 import {
   HomeIcon,
-  UsersIcon,
   EnvelopeIcon,
   Bars4Icon,
-  MagnifyingGlassIcon
+  BellIcon
 } from '@heroicons/react/24/outline'
 import { useMemo } from 'react'
+import { useMyPlayerValue, useMyselfValue, useSidebarOpen } from '../game-hook'
 
 type Props = {
-  myself: GameParticipant | null
-  myPlayer: Player | null
   tab: string
   setTab: (tabName: string) => void
   existsHomeUnread: boolean
-  existsFollowsUnread: boolean
-  toggleSidebar: (e: any) => void
+  existsToMeUnread: boolean
   footer?: boolean
 }
 
 export default function ArticleMenu({
-  myself,
-  myPlayer,
   tab,
   setTab,
   existsHomeUnread,
-  existsFollowsUnread,
-  toggleSidebar,
+  existsToMeUnread,
   footer = false
 }: Props) {
+  const myself = useMyselfValue()
+  const myPlayer = useMyPlayerValue()
+  const [, toggleSidebar] = useSidebarOpen()
   const wrapperClass = footer
     ? 'flex md:hidden border-t'
     : 'hidden md:flex border-b'
@@ -56,19 +52,13 @@ export default function ArticleMenu({
         onClickTab={() => setTab('home')}
       />
       {myself != null && (
-        <FollowsButton
-          isActive={tab === 'follow'}
+        <ToMeButton
+          isActive={tab === 'tome'}
           isFooter={footer}
-          existsUnread={existsFollowsUnread}
-          onClickTab={() => setTab('follow')}
+          existsUnread={existsToMeUnread}
+          onClickTab={() => setTab('tome')}
         />
       )}
-      <SearchButton
-        isActive={tab === 'search'}
-        isFooter={footer}
-        existsUnread={false}
-        onClickTab={() => setTab('search')}
-      />
       {shouldShowDM && (
         <DirectMessageButton
           isActive={tab === 'dm'}
@@ -125,28 +115,15 @@ const HomeButton = (props: ButtonProps) => {
   )
 }
 
-const FollowsButton = (props: ButtonProps) => {
+const ToMeButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
-      <UsersIcon
+      <BellIcon
         className={`mr-1 h-5 w-5 ${
           props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
-      <span className='hidden md:block'>フォロー中</span>
-    </MenuButton>
-  )
-}
-
-const SearchButton = (props: ButtonProps) => {
-  return (
-    <MenuButton {...props}>
-      <MagnifyingGlassIcon
-        className={`mr-1 h-5 w-5 ${
-          props.isActive && props.isFooter ? 'base-link' : ''
-        }`}
-      />
-      <span className='hidden md:block'>検索</span>
+      <span className='hidden md:block'>自分宛</span>
     </MenuButton>
   )
 }

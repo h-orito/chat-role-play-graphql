@@ -1,12 +1,13 @@
 import PrimaryButton from '@/components/button/primary-button'
 import SecondaryButton from '@/components/button/scondary-button'
 import Modal from '@/components/modal/modal'
-import { Game } from '@/lib/generated/graphql'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useCookies } from 'react-cookie'
+import { useGameValue } from './game-hook'
 
-const RatingWarningModal = ({ game }: { game: Game }) => {
+const RatingWarningModal = () => {
+  const game = useGameValue()
   const [getCookie, setCookie] = useCookies()
   const rating = game.labels.find((l) =>
     ['R15', 'R18', 'R18G'].includes(l.name)

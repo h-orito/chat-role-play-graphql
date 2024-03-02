@@ -4,8 +4,6 @@ import {
   FavoriteDirectDocument,
   FavoriteDirectMutation,
   FavoriteDirectMutationVariables,
-  Game,
-  GameParticipant,
   NewDirectMessageFavorite,
   UnfavoriteDirectDocument,
   UnfavoriteDirectMutation,
@@ -17,26 +15,27 @@ import { iso2display } from '@/components/util/datetime/datetime'
 import { useMutation } from '@apollo/client'
 import { useCallback, useState } from 'react'
 import MessageText from '../message-text/message-text'
+import {
+  useGameValue,
+  useMyselfValue,
+  useUserDisplaySettingsValue
+} from '@/components/pages/games/game-hook'
+import Link from 'next/link'
+import { base64ToId } from '@/components/graphql/convert'
 
 type MessageProps = {
-  game: Game
-  myself: GameParticipant | null
   directMessage: DirectMessage
-  openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   preview?: boolean
-  imageSizeRatio: number
 }
 
 export default function DirectMessageComponent({
-  game,
   directMessage,
-  myself,
-  openProfileModal,
   openFavoritesModal,
-  preview = false,
-  imageSizeRatio
+  preview = false
 }: MessageProps) {
+  const game = useGameValue()
+  const myself = useMyselfValue()
   const canFav: boolean =
     myself != null && myself.id !== directMessage.sender?.participantId
   const alreadyFav: boolean =
@@ -104,12 +103,6 @@ export default function DirectMessageComponent({
     }
   }, [isFav, favorite, unfavorite])
 
-  const handleProfileClick = (e: any) => {
-    e.preventDefault()
-    if (preview) return
-    openProfileModal(directMessage.sender!.participantId)
-  }
-
   const messageClass =
     directMessage.content.type === 'TalkNormal'
       ? 'talk-normal'
@@ -119,17 +112,14 @@ export default function DirectMessageComponent({
       ? 'description'
       : ''
 
+  const imageSizeRatio = useUserDisplaySettingsValue().iconSizeRatio ?? 1
+
   return (
     <div>
       <div className='w-full px-4 py-2'>
         {directMessage.sender && (
           <div className='flex pb-1'>
-            <button onClick={handleProfileClick}>
-              <p className='primary-hover-text text-xs'>
-                ENo.{directMessage.sender.entryNumber}&nbsp;
-                {directMessage.sender.name}
-              </p>
-            </button>
+            <SenderName directMessage={directMessage} preview={preview} />
             <p className='secondary-text ml-auto self-end text-xs'>
               {iso2display(directMessage.time.sendAt)}
             </p>
@@ -137,51 +127,109 @@ export default function DirectMessageComponent({
         )}
         <div className='flex'>
           <div>
-            <Image
-              className='cursor-pointer'
-              src={directMessage.sender!.icon!.url}
-              width={directMessage.sender!.icon!.width * imageSizeRatio}
-              height={directMessage.sender!.icon!.height * imageSizeRatio}
-              alt='キャラアイコン'
-              onClick={handleProfileClick}
+            <SenderIcon
+              directMessage={directMessage}
+              preview={preview}
+              imageSizeRatio={imageSizeRatio}
             />
           </div>
-          {!preview && (
-            <div className='ml-2 flex-1 text-sm'>
-              <div
-                className={`message ${messageClass}`}
-                style={{
-                  minHeight: `${
-                    directMessage.sender!.icon!.height * imageSizeRatio
-                  }px`
-                }}
-              >
-                <MessageText
-                  rawText={directMessage.content.text}
-                  isConvertDisabled={directMessage.content.isConvertDisabled}
-                />
-              </div>
-              <div className='flex justify-end pt-1'>
-                <div className='flex'>
-                  <button onClick={() => handleFav()} disabled={!canFav}>
-                    <StarIcon className={`y-4 h-4 ${starClass}`} />
+          <div className='ml-2 flex-1 text-sm'>
+            <div
+              className={`message ${messageClass}`}
+              style={{
+                minHeight: `${
+                  directMessage.sender!.icon!.height * imageSizeRatio
+                }px`
+              }}
+            >
+              <MessageText
+                rawText={directMessage.content.text}
+                isConvertDisabled={directMessage.content.isConvertDisabled}
+              />
+            </div>
+            <div className='flex justify-end pt-1'>
+              <div className='flex'>
+                <button onClick={() => handleFav()} disabled={!canFav}>
+                  <StarIcon className={`y-4 h-4 ${starClass}`} />
+                </button>
+                {favCount > 0 && (
+                  <button
+                    className='pr-2 hover:font-bold'
+                    onClick={() => openFavoritesModal(directMessage.id)}
+                  >
+                    <p className='secondary-text ml-1 self-center'>
+                      {favCount}
+                    </p>
                   </button>
-                  {favCount > 0 && (
-                    <button
-                      className='pr-2 hover:font-bold'
-                      onClick={() => openFavoritesModal(directMessage.id)}
-                    >
-                      <p className='secondary-text ml-1 self-center'>
-                        {favCount}
-                      </p>
-                    </button>
-                  )}
-                </div>
+                )}
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
+  )
+}
+
+const SenderName = ({
+  directMessage,
+  preview
+}: {
+  directMessage: DirectMessage
+  preview: boolean
+}) => {
+  const game = useGameValue()
+  const NameComponent = () => (
+    <p className='primary-hover-text text-xs'>
+      ENo.{directMessage.sender.entryNumber}&nbsp;
+      {directMessage.sender.name}
+    </p>
+  )
+  if (preview) {
+    return <NameComponent />
+  }
+  return (
+    <Link
+      href={`/games/${base64ToId(game.id)}/profile/${base64ToId(
+        directMessage.sender!.participantId
+      )}`}
+      target='_blank'
+    >
+      <NameComponent />
+    </Link>
+  )
+}
+
+const SenderIcon = ({
+  directMessage,
+  preview,
+  imageSizeRatio
+}: {
+  directMessage: DirectMessage
+  preview: boolean
+  imageSizeRatio: number
+}) => {
+  const game = useGameValue()
+  const IconComponent = () => (
+    <Image
+      src={directMessage.sender!.icon!.url}
+      width={directMessage.sender!.icon!.width * imageSizeRatio}
+      height={directMessage.sender!.icon!.height * imageSizeRatio}
+      alt='キャラアイコン'
+    />
+  )
+
+  if (preview) {
+    return <IconComponent />
+  }
+  return (
+    <Link
+      href={`/games/${base64ToId(game.id)}/profile/${base64ToId(
+        directMessage.sender!.participantId
+      )}`}
+      target='_blank'
+    >
+      <IconComponent />
+    </Link>
   )
 }

@@ -45,3 +45,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ```
 npm run codegen
 ```
+
+## TODO
+
+- スレッドを追えるようにする
+- 右寄せ左寄せ
+- アイコン 1 つ目をプロフィールアイコンにする

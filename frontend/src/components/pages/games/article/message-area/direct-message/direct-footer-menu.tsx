@@ -1,80 +1,36 @@
+import Modal from '@/components/modal/modal'
 import {
   DirectMessagesQuery,
-  Game,
-  GameParticipant,
   GameParticipantGroup
 } from '@/lib/generated/graphql'
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  EnvelopeIcon
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
-import TalkDirect from '@/components/pages/games/talk/talk-direct'
+import { useState } from 'react'
+import MessageFilter from '../message-area/message-filter'
+import { isDirectMessagesQueryFiltering } from '../message-area/messages-query'
+import DirectMessageFilter from './direct-message-filter'
 
 type Props = {
-  game: Game
-  myself: GameParticipant | null
   group: GameParticipantGroup
   search: (query?: DirectMessagesQuery) => Promise<void>
+  query: DirectMessagesQuery
   canTalk: boolean
   scrollToTop: () => void
   scrollToBottom: () => void
 }
 
 const DirectFooterMenu = (props: Props) => {
-  const directTalkAreaRef = useRef({} as DirectTalkAreaRefHandle)
-  const toggleDirectTalk = () => directTalkAreaRef.current.toggleDirectTalk()
-
-  return (
-    <>
-      {props.myself && <DirectTalkArea {...props} ref={directTalkAreaRef} />}
-      <FooterMenu {...props} toggleDirectTalk={toggleDirectTalk} />
-    </>
-  )
-}
-
-export default DirectFooterMenu
-
-interface DirectTalkAreaRefHandle {
-  toggleDirectTalk: () => void
-}
-
-const DirectTalkArea = forwardRef<DirectTalkAreaRefHandle, Props>(
-  (props: Props, ref: any) => {
-    const { game, myself, group, search } = props
-
-    useImperativeHandle(ref, () => ({
-      toggleDirectTalk() {
-        toggleOpen()
-      }
-    }))
-    const toggleOpen = () => {
-      setIsShow((current) => !current)
+  const { group, query, search, scrollToTop, scrollToBottom } = props
+  const [isOpenFilterModal, setIsOpenFilterModal] = useState(false)
+  const toggleFilterModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenFilterModal(!isOpenFilterModal)
     }
-    const [isShow, setIsShow] = useState(false)
-    const handleCompleted = () => {
-      setIsShow(false)
-      props.search()
-    }
-
-    return (
-      <div className='base-border w-full border-t text-sm'>
-        <div className={isShow ? '' : 'hidden'}>
-          <TalkDirect
-            game={game}
-            myself={myself!}
-            gameParticipantGroup={group!}
-            handleCompleted={handleCompleted}
-          />
-        </div>
-      </div>
-    )
   }
-)
-
-const FooterMenu = (props: Props & { toggleDirectTalk: () => void }) => {
-  const { canTalk, scrollToTop, scrollToBottom, toggleDirectTalk } = props
+  const filtering = isDirectMessagesQueryFiltering(query, group)
 
   return (
     <div className='base-border flex w-full border-t text-sm'>
@@ -96,17 +52,35 @@ const FooterMenu = (props: Props & { toggleDirectTalk: () => void }) => {
           <span className='my-auto ml-1 hidden text-xs md:block'>最下部へ</span>
         </button>
       </div>
-      {canTalk && !!props.myself && (
-        <div className='flex flex-1 text-center'>
-          <button
-            className='sidebar-background flex w-full justify-center px-4 py-2'
-            onClick={toggleDirectTalk}
+      <div className='flex flex-1 text-center'>
+        <button
+          className='sidebar-background flex w-full justify-center px-4 py-2'
+          onClick={() => setIsOpenFilterModal(true)}
+        >
+          <MagnifyingGlassIcon
+            className={`h-5 w-5 ${filtering ? 'base-link' : ''}`}
+          />
+          <span
+            className={`my-auto ml-1 hidden text-xs md:block ${
+              filtering ? 'base-link' : ''
+            }`}
           >
-            <EnvelopeIcon className='h-5 w-5' />
-            <span className='my-auto ml-1 hidden text-xs md:block'>発言</span>
-          </button>
-        </div>
-      )}
+            抽出
+          </span>
+        </button>
+        {isOpenFilterModal && (
+          <Modal header='発言抽出' close={toggleFilterModal}>
+            <DirectMessageFilter
+              close={toggleFilterModal}
+              group={group}
+              messageQuery={query}
+              search={search}
+            />
+          </Modal>
+        )}
+      </div>
     </div>
   )
 }
+
+export default DirectFooterMenu

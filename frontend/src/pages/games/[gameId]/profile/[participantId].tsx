@@ -1,13 +1,18 @@
-import PrimaryButton from '@/components/button/primary-button'
-import Modal from '@/components/modal/modal'
+import Head from 'next/head'
+import { createInnerClient } from '@/components/graphql/client'
+import { idToBase64 } from '@/components/graphql/convert'
 import {
   FollowDocument,
   FollowMutation,
   FollowMutationVariables,
+  Game,
+  GameDocument,
   GameParticipantIcon,
   GameParticipantProfile,
   GameParticipantProfileDocument,
   GameParticipantProfileQuery,
+  GameQuery,
+  GameQueryVariables,
   IconsDocument,
   IconsQuery,
   LeaveDocument,
@@ -17,55 +22,73 @@ import {
   UnfollowMutation,
   UnfollowMutationVariables
 } from '@/lib/generated/graphql'
-import { useCallback, useEffect, useState } from 'react'
-import ProfileEdit from './profile-edit'
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { ReactElement, useCallback, useState } from 'react'
+import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
+import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
+import Layout from '@/components/layout/layout'
+import {
+  useGame,
+  useGameValue,
+  useMyself,
+  useMyselfValue
+} from '@/components/pages/games/game-hook'
 import DangerButton from '@/components/button/danger-button'
-import FollowsCount from './follows-count'
-import FollowersCount from './followers-count'
-import ParticipantIcons from './participant-icons'
-import MessageText from '../article/message-area/message-text/message-text'
-import { useGameValue, useMyself, useMyselfValue } from '../game-hook'
+import PrimaryButton from '@/components/button/primary-button'
+import Modal from '@/components/modal/modal'
+import MessageText from '@/components/pages/games/article/message-area/message-text/message-text'
+import FollowersCount from '@/components/pages/games/profile/followers-count'
+import FollowsCount from '@/components/pages/games/profile/follows-count'
+import ParticipantIcons from '@/components/pages/games/profile/participant-icons'
+import ProfileEdit from '@/components/pages/games/profile/profile-edit'
+import { useLazyQuery, useMutation } from '@apollo/client'
 
-type Props = {
-  close: (e: any) => void
-  participantId: string
+export const getServerSideProps = async (context: any) => {
+  const { gameId, participantId } = context.params
+  const client = createInnerClient()
+  // game
+  const gameStringId = idToBase64(gameId, 'Game')
+  const { data: gamedata } = await client.query<GameQuery>({
+    query: GameDocument,
+    variables: { id: gameStringId } as GameQueryVariables
+  })
+  // profile
+  const participantStringId = idToBase64(participantId, 'GameParticipant')
+  const { data: profiledata } = await client.query<GameParticipantProfileQuery>(
+    {
+      query: GameParticipantProfileDocument,
+      variables: { participantId: participantStringId }
+    }
+  )
+  // icons
+  const { data: icondata } = await client.query<IconsQuery>({
+    query: IconsDocument,
+    variables: { participantId: participantStringId }
+  })
+
+  return {
+    props: {
+      game: gamedata.game as Game,
+      profile: profiledata.gameParticipantProfile as GameParticipantProfile,
+      icons: icondata.gameParticipantIcons as Array<GameParticipantIcon>
+    }
+  }
 }
 
-export default function Profile({ close, participantId }: Props) {
-  const game = useGameValue()
-  const myself = useMyselfValue()
-  const [profile, setProfile] = useState<GameParticipantProfile | null>(null)
-  const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
+type Props = {
+  game: Game
+  profile: GameParticipantProfile
+  icons: Array<GameParticipantIcon>
+}
 
-  const [fetchProfile] = useLazyQuery<GameParticipantProfileQuery>(
-    GameParticipantProfileDocument
-  )
-  const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
-
-  const refetchProfile = async () => {
-    const { data } = await fetchProfile({
-      variables: { participantId }
-    })
-    if (data?.gameParticipantProfile == null) return
-    setProfile(data.gameParticipantProfile)
-  }
-
-  const refetchIcons = async (): Promise<Array<GameParticipantIcon>> => {
-    const { data } = await fetchIcons({
-      variables: { participantId }
-    })
-    if (data?.gameParticipantIcons == null) return []
-    setIcons(data.gameParticipantIcons as Array<GameParticipantIcon>)
-    return data.gameParticipantIcons as Array<GameParticipantIcon>
-  }
-
-  useEffect(() => {
-    refetchProfile()
-    refetchIcons()
-  }, [participantId])
-
-  if (profile == null) return <div>Loading...</div>
+const GameParticipantProfilePage = ({
+  game,
+  profile: initialProfile,
+  icons: initialIcons
+}: Props) => {
+  useGame(game)
+  const [myself] = useMyself(game.id)
+  const [profile, setProfile] = useState<GameParticipantProfile>(initialProfile)
+  const [icons, setIcons] = useState<Array<GameParticipantIcon>>(initialIcons)
 
   const isMyself = myself?.id === profile.participantId
   const canEdit =
@@ -74,53 +97,108 @@ export default function Profile({ close, participantId }: Props) {
       game.status
     )
 
-  return (
-    <div className='p-4'>
-      <div className='md:flex'>
-        {profile.profileImageUrl && (
-          <div className='mb-4 flex justify-center md:mr-4 md:block'>
-            <img
-              src={profile.profileImageUrl}
-              width={400}
-              alt='プロフィール画像'
-            />
-          </div>
-        )}
-        <div className='md:flex-1'>
-          <div className='flex'>
-            <ParticipantName profile={profile} />
-            <FFButtons
-              participantId={participantId}
-              profile={profile}
-              refetchProfile={refetchProfile}
-              close={close}
-              canEdit={canEdit}
-              icons={icons}
-            />
-          </div>
-          <PlayerName profile={profile} />
-          {profile.introduction && (
-            <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-sm text-gray-700'>
-              <MessageText rawText={profile.introduction} />
-            </p>
-          )}
-          {isMyself && (
-            <div>
-              <FollowsCount profile={profile} />
-              &nbsp;&nbsp;
-              <FollowersCount profile={profile} />
-            </div>
-          )}
-          <ParticipantIcons
-            icons={icons}
-            canEdit={canEdit}
-            refetchIcons={refetchIcons}
-          />
-        </div>
-      </div>
-      {canEdit && <LeaveButton />}
-    </div>
+  const [fetchProfile] = useLazyQuery<GameParticipantProfileQuery>(
+    GameParticipantProfileDocument
   )
+  const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
+
+  const refetchProfile = async () => {
+    const { data } = await fetchProfile({
+      variables: { participantId: profile.participantId }
+    })
+    if (data?.gameParticipantProfile == null) return
+    setProfile(data.gameParticipantProfile)
+  }
+
+  const refetchIcons = async (): Promise<Array<GameParticipantIcon>> => {
+    const { data } = await fetchIcons({
+      variables: { participantId: profile.participantId }
+    })
+    if (data?.gameParticipantIcons == null) return []
+    setIcons(data.gameParticipantIcons as Array<GameParticipantIcon>)
+    return data.gameParticipantIcons as Array<GameParticipantIcon>
+  }
+
+  return (
+    <>
+      <main className='w-full'>
+        <Head>
+          <title>
+            {game.name} | ENo{profile.entryNumber}.&nbsp;{profile.name}
+          </title>
+        </Head>
+        <div className='p-4'>
+          <div className='md:flex'>
+            {profile.profileImageUrl && (
+              <div className='mb-4 flex justify-center md:mr-4 md:block'>
+                <img
+                  src={profile.profileImageUrl}
+                  width={400}
+                  alt='プロフィール画像'
+                />
+              </div>
+            )}
+            <div className='md:flex-1'>
+              <div className='flex'>
+                <ParticipantName profile={profile} />
+                <FFButtons
+                  profile={profile}
+                  refetchProfile={refetchProfile}
+                  canEdit={canEdit}
+                  icons={icons}
+                />
+              </div>
+              <PlayerName profile={profile} />
+              {profile.introduction && (
+                <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-gray-700'>
+                  <MessageText rawText={profile.introduction} />
+                </p>
+              )}
+              {isMyself && (
+                <div>
+                  <FollowsCount profile={profile} />
+                  &nbsp;&nbsp;
+                  <FollowersCount profile={profile} />
+                </div>
+              )}
+              <ParticipantIcons
+                icons={icons}
+                canEdit={canEdit}
+                refetchIcons={refetchIcons}
+              />
+            </div>
+          </div>
+          {canEdit && <LeaveButton />}
+        </div>
+      </main>
+      <ThemeCSS />
+    </>
+  )
+}
+
+GameParticipantProfilePage.getLayout = (page: ReactElement) => {
+  return <Layout>{page}</Layout>
+}
+
+export default GameParticipantProfilePage
+
+const ThemeCSS = () => {
+  const game = useGameValue()
+  const [displaySettings] = useUserDisplaySettings()
+  const themeName = displaySettings.themeName
+  let theme: Theme
+  if (themeName === 'original') {
+    if (game.settings.rule.theme != null && game.settings.rule.theme !== '') {
+      theme = JSON.parse(game.settings.rule.theme)
+    } else {
+      theme = themeMap.get('light')!
+    }
+  } else {
+    theme = themeMap.get(themeName)!
+  }
+
+  const css = convertThemeToCSS(theme)
+  return <style jsx>{css}</style>
 }
 
 const LeaveButton = () => {
@@ -184,15 +262,19 @@ const PlayerName = ({ profile }: { profile: GameParticipantProfile }) => {
   )
 }
 
-const FFButtons = (
-  props: Props & {
-    refetchProfile: () => void
-    profile: GameParticipantProfile
-    canEdit: boolean
-    icons: Array<GameParticipantIcon>
-  }
-) => {
-  const { participantId, profile, refetchProfile, canEdit, icons } = props
+type FFButtonsProps = {
+  refetchProfile: () => void
+  profile: GameParticipantProfile
+  canEdit: boolean
+  icons: Array<GameParticipantIcon>
+}
+
+const FFButtons = ({
+  refetchProfile,
+  profile,
+  canEdit,
+  icons
+}: FFButtonsProps) => {
   const [isOpenEditModal, setIsOpenEditModal] = useState(false)
   const toggleEditModal = (e: any) => {
     if (e.target === e.currentTarget) {
@@ -203,12 +285,12 @@ const FFButtons = (
   return (
     <div className='ml-auto'>
       <FollowButton
-        participantId={participantId}
+        participantId={profile.participantId}
         profile={profile}
         refetchProfile={refetchProfile}
       />
       <UnfollowButton
-        participantId={participantId}
+        participantId={profile.participantId}
         profile={profile}
         refetchProfile={refetchProfile}
       />
@@ -232,6 +314,7 @@ const FFButtons = (
     </div>
   )
 }
+
 type FollowButtonProps = {
   participantId: string
   profile: GameParticipantProfile

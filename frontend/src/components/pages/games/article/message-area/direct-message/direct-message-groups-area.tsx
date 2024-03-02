@@ -1,6 +1,4 @@
 import {
-  Game,
-  GameParticipant,
   GameParticipantGroup,
   GameParticipantGroupsQuery,
   ParticipantGroupsDocument,
@@ -14,21 +12,18 @@ import ArticleModal from '@/components/modal/article-modal'
 import DirectMessageArea from './direct-message-area'
 import Modal from '@/components/modal/modal'
 import DirectFavoriteParticipants from './direct-favorite-participants'
-import DirectArticleModal from './direct-article-modal'
+import {
+  useGameValue,
+  useMyselfValue
+} from '@/components/pages/games/game-hook'
 
 type Props = {
-  game: Game
   className?: string
-  myself: GameParticipant | null
-  openProfileModal: (participantId: string) => void
 }
 
-export default function DirectMessagesArea({
-  game,
-  className,
-  myself,
-  openProfileModal
-}: Props) {
+export default function DirectMessageGroupsArea({ className }: Props) {
+  const game = useGameValue()
+  const myself = useMyselfValue()!
   const [fetchParticipantGroups] = useLazyQuery<ParticipantGroupsQuery>(
     ParticipantGroupsDocument
   )
@@ -121,8 +116,6 @@ export default function DirectMessagesArea({
           hideFooter
         >
           <CreateParticipantGroup
-            game={game}
-            myself={myself!}
             groups={groups}
             refetchGroups={refetchGroups}
             close={toggleCreateModal}
@@ -131,11 +124,8 @@ export default function DirectMessagesArea({
       )}
       {isOpenDirectMessageModal && (
         <DirectMessageArea
-          game={game}
-          myself={myself}
           group={directMessageGroup!}
           close={toggleDirectMessageModal}
-          openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
           refetchGroups={refetchGroups}
         />
@@ -143,10 +133,7 @@ export default function DirectMessagesArea({
       {isOpenFavoritesModal && (
         <Modal header='ふぁぼした人' close={toggleFavoritesModal} hideFooter>
           <DirectFavoriteParticipants
-            game={game}
-            myself={myself}
             messageId={favoriteMessageId}
-            openProfileModal={openProfileModal}
             close={toggleFavoritesModal}
           />
         </Modal>

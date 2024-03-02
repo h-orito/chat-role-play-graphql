@@ -1,10 +1,12 @@
 import {
+  useGameValue,
+  useMyselfValue
+} from '@/components/pages/games/game-hook'
+import {
   DeleteMessageFavorite,
   FavoriteDocument,
   FavoriteMutation,
   FavoriteMutationVariables,
-  Game,
-  GameParticipant,
   Message,
   NewMessageFavorite,
   UnfavoriteDocument,
@@ -16,18 +18,13 @@ import { StarIcon } from '@heroicons/react/24/outline'
 import { useCallback, useState } from 'react'
 
 type Props = {
-  game: Game
   message: Message
-  myself: GameParticipant | null
   openFavoritesModal: (messageId: string) => void
 }
 
-export default function FavoriteButton({
-  game,
-  message,
-  myself,
-  openFavoritesModal
-}: Props) {
+export default function FavoriteButton({ message, openFavoritesModal }: Props) {
+  const game = useGameValue()
+  const myself = useMyselfValue()
   const canFav: boolean =
     myself != null && myself.id !== message.sender?.participantId
   const alreadyFav: boolean =

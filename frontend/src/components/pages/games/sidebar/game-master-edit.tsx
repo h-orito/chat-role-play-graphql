@@ -5,7 +5,6 @@ import {
   DeleteGameMasterDocument,
   DeleteGameMasterMutation,
   DeleteGameMasterMutationVariables,
-  Game,
   NewGameMaster,
   Player,
   QPlayersDocument,
@@ -17,13 +16,14 @@ import {
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { useGameValue } from '../game-hook'
 
 type Props = {
-  game: Game
   close: (e: any) => void
 }
 
-export default function GameMasterEdit({ game }: Props) {
+export default function GameMasterEdit({ close }: Props) {
+  const game = useGameValue()
   const router = useRouter()
   const [deleteGameMaster] = useMutation<DeleteGameMasterMutation>(
     DeleteGameMasterDocument

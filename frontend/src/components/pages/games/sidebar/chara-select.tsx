@@ -1,13 +1,14 @@
 import { Chara, Game } from '@/lib/generated/graphql'
 import Image from 'next/image'
+import { useGameValue } from '../game-hook'
 
 type Props = {
-  game: Game
   charas: Array<Chara>
   setValue: (value: string) => void
 }
 
-export default function CharaSelect({ game, charas, setValue }: Props) {
+export default function CharaSelect({ charas, setValue }: Props) {
+  const game = useGameValue()
   const handleClick = (e: any, id: string) => {
     e.preventDefault()
     setValue(id)

@@ -8,10 +8,10 @@ export default function RootLayout({
   const themeCSS = getThemeCSS('light')
   return (
     <>
-      <div>{children}</div>
       <style jsx global>{`
         ${themeCSS}
       `}</style>
+      <div>{children}</div>
     </>
   )
 }

@@ -1,8 +1,6 @@
 import {
-  Game,
   GameMessageDocument,
   GameMessageQuery,
-  GameParticipant,
   Message,
   MessageRecipient,
   MessageRepliesDocument,
@@ -17,39 +15,32 @@ import { useEffect, useState } from 'react'
 import FavoriteButton from './favorite-button'
 import MessageComponent from './message'
 import MessageText from '../../../message-text/message-text'
+import {
+  useGameValue,
+  useMyselfValue,
+  useUserDisplaySettingsValue
+} from '@/components/pages/games/game-hook'
+import Link from 'next/link'
+import { base64ToId } from '@/components/graphql/convert'
+import { SenderName } from './sender-name'
 
 type MessageProps = {
-  game: Game
-  myself: GameParticipant | null
   message: Message
-  openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   handleReply: (message: Message) => void
   preview?: boolean
   shouldDisplayReplyTo?: boolean
-  imageSizeRatio: number
 }
 
 export default function TalkMessage({
-  game,
   message,
-  myself,
-  openProfileModal,
   openFavoritesModal,
   handleReply,
   preview = false,
-  shouldDisplayReplyTo = false,
-  imageSizeRatio
+  shouldDisplayReplyTo = false
 }: MessageProps) {
   const [showReplies, setShowReplies] = useState<boolean>(false)
   const [replies, setReplies] = useState<Message[]>([])
-
-  const handleProfileClick = (e: any) => {
-    e.preventDefault()
-    if (preview) return
-    openProfileModal(message.sender!.participantId)
-  }
-
   const messageClass =
     message.content.type === 'TalkNormal'
       ? 'talk-normal'
@@ -60,35 +51,20 @@ export default function TalkMessage({
       : message.content.type === 'Secret'
       ? 'talk-secret'
       : ''
+  const imageSizeRatio = useUserDisplaySettingsValue().iconSizeRatio ?? 1
+
   return (
     <div>
       <div className='w-full px-4 py-2'>
         {shouldDisplayReplyTo && message.replyTo && (
-          <ReplyToMessage
-            game={game}
-            replyTo={message.replyTo}
-            imageSizeRatio={imageSizeRatio}
-          />
+          <ReplyToMessage replyTo={message.replyTo} />
         )}
         {message.sender && (
           <div className='flex text-xs'>
             <p className='secondary-text'>#{message.content.number}</p>
             &nbsp;
-            <button onClick={handleProfileClick}>
-              <p className='primary-hover-text'>
-                ENo.{message.sender.entryNumber}&nbsp;
-                {message.sender.name}
-              </p>
-            </button>
-            {message.receiver && (
-              <>
-                &nbsp;→&nbsp;
-                <p className='primary-hover-text'>
-                  ENo.{message.receiver.entryNumber}&nbsp;
-                  {message.receiver.name}
-                </p>
-              </>
-            )}
+            <SenderName message={message} preview={preview} />
+            <ReceiverName message={message} preview={preview} />
             <p className='secondary-text ml-auto'>
               {iso2display(message.time.sendAt)}
             </p>
@@ -96,13 +72,10 @@ export default function TalkMessage({
         )}
         <div className='flex'>
           <div>
-            <Image
-              className='cursor-pointer'
-              src={message.sender!.icon!.url}
-              width={message.sender!.icon!.width * imageSizeRatio}
-              height={message.sender!.icon!.height * imageSizeRatio}
-              alt='キャラアイコン'
-              onClick={handleProfileClick}
+            <SenderIcon
+              message={message}
+              preview={preview}
+              imageSizeRatio={imageSizeRatio}
             />
           </div>
           <div className='ml-2 flex-1 text-sm'>
@@ -120,21 +93,18 @@ export default function TalkMessage({
             <div className='flex justify-end pt-1'>
               <div className='flex'>
                 <ReplyButton
-                  game={game}
-                  myself={myself}
                   message={message}
                   showReplies={showReplies}
                   setShowReplies={setShowReplies}
                   replies={replies}
                   setReplies={setReplies}
                   handleReply={handleReply}
+                  preview={preview}
                 />
               </div>
               <div className='ml-8 flex'>
                 <FavoriteButton
-                  game={game}
                   message={message}
-                  myself={myself}
                   openFavoritesModal={openFavoritesModal}
                 />
               </div>
@@ -145,38 +115,107 @@ export default function TalkMessage({
       {showReplies && (
         <Replies
           replies={replies}
-          game={game}
-          myself={myself}
-          openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
           handleReply={handleReply}
-          imageSizeRatio={imageSizeRatio}
         />
       )}
     </div>
   )
 }
 
+const ReceiverName = ({
+  message,
+  preview
+}: {
+  message: Message
+  preview: boolean
+}) => {
+  if (!message.receiver || message.content.type !== 'Secret') return <></>
+
+  const game = useGameValue()
+  const NameComponent = () => (
+    <p className='primary-hover-text'>
+      ENo.{message.receiver!.entryNumber}&nbsp;
+      {message.receiver!.name}
+    </p>
+  )
+  if (preview) {
+    return (
+      <>
+        &nbsp;→&nbsp;
+        <NameComponent />
+      </>
+    )
+  }
+  return (
+    <>
+      &nbsp;→&nbsp;
+      <Link
+        href={`/games/${base64ToId(game.id)}/profile/${base64ToId(
+          message.receiver!.participantId
+        )}`}
+        target='_blank'
+      >
+        <NameComponent />
+      </Link>
+    </>
+  )
+}
+
+const SenderIcon = ({
+  message,
+  preview,
+  imageSizeRatio
+}: {
+  message: Message
+  preview: boolean
+  imageSizeRatio: number
+}) => {
+  const game = useGameValue()
+  const IconComponent = () => (
+    <Image
+      src={message.sender!.icon!.url}
+      width={message.sender!.icon!.width * imageSizeRatio}
+      height={message.sender!.icon!.height * imageSizeRatio}
+      alt='キャラアイコン'
+    />
+  )
+
+  if (preview) {
+    return <IconComponent />
+  }
+  return (
+    <Link
+      href={`/games/${base64ToId(game.id)}/profile/${base64ToId(
+        message.sender!.participantId
+      )}`}
+      target='_blank'
+    >
+      <IconComponent />
+    </Link>
+  )
+}
+
 type ReplyButtonProps = {
-  game: Game
-  myself: GameParticipant | null
   message: Message
   showReplies: boolean
   setShowReplies: React.Dispatch<React.SetStateAction<boolean>>
   replies: Message[]
   setReplies: React.Dispatch<React.SetStateAction<Message[]>>
   handleReply: (message: Message) => void
+  preview: boolean
 }
 const ReplyButton = ({
-  game,
-  myself,
   message,
   showReplies,
   setShowReplies,
   replies,
   setReplies,
-  handleReply
+  handleReply,
+  preview
 }: ReplyButtonProps) => {
+  const game = useGameValue()
+  const myself = useMyselfValue()
   const [fetchReplies] = useLazyQuery<MessageRepliesQuery>(
     MessageRepliesDocument
   )
@@ -196,6 +235,7 @@ const ReplyButton = ({
 
   const isDisabled =
     myself == null ||
+    preview ||
     (message.content.type === MessageType.Secret &&
       message.sender?.participantId === myself.id)
 
@@ -224,51 +264,32 @@ const ReplyButton = ({
 
 type RepliesProps = {
   replies: Message[]
-  game: Game
-  myself: GameParticipant | null
-  openProfileModal: (participantId: string) => void
   openFavoritesModal: (messageId: string) => void
   handleReply: (message: Message) => void
-  imageSizeRatio: number
 }
 
 const Replies = ({
   replies,
-  game,
-  myself,
-  openProfileModal,
   openFavoritesModal,
-  handleReply,
-  imageSizeRatio
+  handleReply
 }: RepliesProps) => {
   return (
     <div className='ml-8'>
       {replies.map((message: Message) => (
         <MessageComponent
-          game={game}
           message={message}
-          myself={myself}
           key={message.id}
-          openProfileModal={openProfileModal}
           openFavoritesModal={openFavoritesModal}
           handleReply={handleReply}
           shouldDisplayReplyTo={false}
-          imageSizeRatio={imageSizeRatio}
         />
       ))}
     </div>
   )
 }
 
-const ReplyToMessage = ({
-  game,
-  replyTo,
-  imageSizeRatio
-}: {
-  game: Game
-  replyTo: MessageRecipient
-  imageSizeRatio: number
-}) => {
+const ReplyToMessage = ({ replyTo }: { replyTo: MessageRecipient }) => {
+  const game = useGameValue()
   const [message, setMessage] = useState<Message | null>(null)
   const senderName = game.participants.find(
     (p) => p.id === replyTo.participantId
@@ -320,12 +341,8 @@ const ReplyToMessage = ({
         <div className='-mx-4'>
           <TalkMessage
             message={message!}
-            game={game}
-            myself={null}
-            openProfileModal={() => {}}
             openFavoritesModal={() => {}}
             handleReply={() => {}}
-            imageSizeRatio={imageSizeRatio}
           />
         </div>
       )}
