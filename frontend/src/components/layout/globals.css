@@ -23,4 +23,9 @@
     background-color: #dfdfc9;
     border-color: #dfdfc9;
   }
+
+  details > summary.list-none::-webkit-details-marker,
+  details > summary.list-none::marker {
+    display: none;
+  }
 }
