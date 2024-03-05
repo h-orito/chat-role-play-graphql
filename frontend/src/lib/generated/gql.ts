@@ -66,6 +66,7 @@ const documents = {
     "query Player($id: ID!) {\n  player(id: $id) {\n    id\n    name\n    profile {\n      introduction\n    }\n  }\n}": types.PlayerDocument,
     "query QPlayers($query: PlayersQuery!) {\n  players(query: $query) {\n    id\n    name\n  }\n}": types.QPlayersDocument,
     "query QCharachips($query: CharachipsQuery!) {\n  charachips(query: $query) {\n    id\n    name\n    designer {\n      name\n    }\n  }\n}": types.QCharachipsDocument,
+    "query ThreadMessages($gameId: ID!, $messageId: ID!) {\n  threadMessages(gameId: $gameId, messageId: $messageId) {\n    id\n    content {\n      type\n      text\n      number\n      isConvertDisabled\n    }\n    time {\n      sendAt\n      sendUnixTimeMilli\n    }\n    sender {\n      participantId\n      name\n      icon {\n        url\n        width\n        height\n      }\n    }\n    receiver {\n      participantId\n      name\n      entryNumber\n    }\n    replyTo {\n      messageId\n      participantId\n    }\n    reactions {\n      replyCount\n      favoriteCount\n      favoriteParticipantIds\n    }\n  }\n}": types.ThreadMessagesDocument,
 };
 
 /**
@@ -294,6 +295,10 @@ export function graphql(source: "query QPlayers($query: PlayersQuery!) {\n  play
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "query QCharachips($query: CharachipsQuery!) {\n  charachips(query: $query) {\n    id\n    name\n    designer {\n      name\n    }\n  }\n}"): (typeof documents)["query QCharachips($query: CharachipsQuery!) {\n  charachips(query: $query) {\n    id\n    name\n    designer {\n      name\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query ThreadMessages($gameId: ID!, $messageId: ID!) {\n  threadMessages(gameId: $gameId, messageId: $messageId) {\n    id\n    content {\n      type\n      text\n      number\n      isConvertDisabled\n    }\n    time {\n      sendAt\n      sendUnixTimeMilli\n    }\n    sender {\n      participantId\n      name\n      icon {\n        url\n        width\n        height\n      }\n    }\n    receiver {\n      participantId\n      name\n      entryNumber\n    }\n    replyTo {\n      messageId\n      participantId\n    }\n    reactions {\n      replyCount\n      favoriteCount\n      favoriteParticipantIds\n    }\n  }\n}"): (typeof documents)["query ThreadMessages($gameId: ID!, $messageId: ID!) {\n  threadMessages(gameId: $gameId, messageId: $messageId) {\n    id\n    content {\n      type\n      text\n      number\n      isConvertDisabled\n    }\n    time {\n      sendAt\n      sendUnixTimeMilli\n    }\n    sender {\n      participantId\n      name\n      icon {\n        url\n        width\n        height\n      }\n    }\n    receiver {\n      participantId\n      name\n      entryNumber\n    }\n    replyTo {\n      messageId\n      participantId\n    }\n    reactions {\n      replyCount\n      favoriteCount\n      favoriteParticipantIds\n    }\n  }\n}"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

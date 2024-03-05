@@ -31,9 +31,9 @@ const Article = () => {
 
   const handleTabChange = (tab: string) => {
     setTab(tab)
-    if (tab === 'home') {
+    if (tab === 'home' && existsHomeUnread) {
       homeRef.current.fetchLatest()
-    } else if (tab === 'tome') {
+    } else if (tab === 'tome' && existsToMeUnread) {
       toMeRef.current.fetchLatest()
     } else {
     }

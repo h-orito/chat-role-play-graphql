@@ -10,10 +10,16 @@ import {
   DirectMessage
 } from '@/lib/generated/graphql'
 import { useLazyQuery } from '@apollo/client'
-import { cloneElement, useEffect, useRef, useState } from 'react'
+import {
+  cloneElement,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import Paging from '../message-area/messages-area/paging'
 import DirectMessageComponent from './direct-message'
-import DirectSearchCondition from './direct-search-condition'
 import { ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import ParticipantGroupEdit from './participant-group-edit'
@@ -63,17 +69,20 @@ export default function DirectMessageArea(props: Props) {
     GameDirectMessagesDocument
   )
 
-  const search = async (q: DirectMessagesQuery = query) => {
-    setQuery(q)
-    const { data } = await fetchDirectMessages({
-      variables: {
-        gameId: game.id,
-        query: q
-      } as GameDirectMessagesQueryVariables
-    })
-    if (data?.directMessages == null) return
-    setDirectMessages(data.directMessages as DirectMessages)
-  }
+  const search = useCallback(
+    async (q: DirectMessagesQuery = query) => {
+      setQuery(q)
+      const { data } = await fetchDirectMessages({
+        variables: {
+          gameId: game.id,
+          query: q
+        } as GameDirectMessagesQueryVariables
+      })
+      if (data?.directMessages == null) return
+      setDirectMessages(data.directMessages as DirectMessages)
+    },
+    [game.id, query]
+  )
 
   useEffect(() => {
     search(defaultQuery)
@@ -116,11 +125,6 @@ export default function DirectMessageArea(props: Props) {
             ref={directMessageAreaRef}
           >
             <DirectMessageGroupMembers {...props} canModify={canModify} />
-            <DirectSearchCondition
-              group={group}
-              query={query!}
-              search={search}
-            />
             <DirectMessagesArea
               directMessages={directMessages}
               query={query}
@@ -241,12 +245,17 @@ const DirectMessagesArea = (props: DirectMessagesAreaProps) => {
     search(newQuery)
   }
 
+  const scrollToTop = () => {
+    document.getElementById(`${props.talkAreaId}-top`)?.scrollIntoView()
+  }
+
   return (
     <>
       <Paging
         messages={directMessages}
         query={query!.paging as PageableQuery | undefined}
         setPageableQuery={setPageableQuery}
+        scrollToTop={scrollToTop}
       />
       <div className='flex-1'>
         <div id={`${props.talkAreaId}-top`}></div>
@@ -265,6 +274,7 @@ const DirectMessagesArea = (props: DirectMessagesAreaProps) => {
         messages={directMessages}
         query={query!.paging as PageableQuery | undefined}
         setPageableQuery={setPageableQuery}
+        scrollToTop={scrollToTop}
       />
     </>
   )
@@ -275,13 +285,13 @@ type DirectTalkAreaProps = {
   search: (query?: DirectMessagesQuery) => Promise<void>
   talkAreaId: string
 }
-const DirectTalkArea = (props: DirectTalkAreaProps) => {
+const DirectTalkArea = memo((props: DirectTalkAreaProps) => {
   return (
     <div id={props.talkAreaId} className='base-border w-full border-t text-sm'>
       <DirectTalkPanel {...props} />
     </div>
   )
-}
+})
 
 const DirectTalkPanel = (props: DirectTalkAreaProps) => {
   const { group, search } = props

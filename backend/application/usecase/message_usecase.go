@@ -16,6 +16,7 @@ type MessageUsecase interface {
 	FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, user *model.User) (uint64, error)
 	FindMessage(gameID uint32, ID uint64) (*model.Message, error)
 	FindMessageReplies(gameID uint32, messageID uint64, user *model.User) ([]model.Message, error)
+	FindThreadMessages(gameID uint32, messageID uint64, user *model.User) ([]model.Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error)
 	RegisterMessage(ctx context.Context, gameID uint32, user model.User, message model.Message) error
 	RegisterMessageDryRun(ctx context.Context, gameID uint32, user model.User, message model.Message) (*model.Message, error)
@@ -207,6 +208,19 @@ func (s *messageUsecase) FindMessageReplies(gameID uint32, messageID uint64, use
 		myself = m
 	}
 	return s.messageService.FindMessageReplies(gameID, messageID, myself)
+}
+
+// FindThreadMessages implements MessageService.
+func (s *messageUsecase) FindThreadMessages(gameID uint32, messageID uint64, user *model.User) ([]model.Message, error) {
+	var myself *model.GameParticipant = nil
+	if user != nil {
+		m, err := s.findMyGameParticipant(gameID, *user)
+		if err != nil {
+			return nil, err
+		}
+		myself = m
+	}
+	return s.messageService.FindThreadMessages(gameID, messageID, myself)
 }
 
 // FindMessageFavoriteGameParticipants implements MessageService.

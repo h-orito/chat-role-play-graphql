@@ -1,6 +1,7 @@
 import {
   DebugMessagesDocument,
   DebugMessagesMutation,
+  Game,
   GameLabel
 } from '@/lib/generated/graphql'
 import {
@@ -12,11 +13,10 @@ import {
   HomeIcon,
   LockClosedIcon
 } from '@heroicons/react/24/outline'
-import { Dispatch, SetStateAction, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useMemo, useRef, useState } from 'react'
 import GameSettings from './game-settings'
 import Modal from '@/components/modal/modal'
 import Participate from './participate'
-import { useAuth0 } from '@auth0/auth0-react'
 import ArticleModal from '@/components/modal/article-modal'
 import Participants from '../participant/participants'
 import Link from 'next/link'
@@ -36,6 +36,9 @@ import { useCookies } from 'react-cookie'
 import Image from 'next/image'
 import MessageText from '@/components/pages/games/article/message-area/message-text/message-text'
 import {
+  isGameMaster as _isGameMaster,
+  canParticipate as _canParticipate,
+  canModifyGameSetting,
   useGameValue,
   useMyPlayer,
   useMyselfValue,
@@ -43,29 +46,14 @@ import {
 } from '../game-hook'
 
 export default function Sidebar() {
-  const { isAuthenticated } = useAuth0()
   const [isSidebarOpen, toggleSidebar] = useSidebarOpen()
   const game = useGameValue()
   const myself = useMyselfValue()
   const myPlayer = useMyPlayer()
 
-  const isGameMaster =
-    myPlayer?.authorityCodes.includes('AuthorityAdmin') ||
-    game.gameMasters.some((gm) => gm.player.id === myPlayer?.id)
-
-  const canParticipate =
-    isAuthenticated &&
-    !myself &&
-    ((['Closed', 'Opening'].includes(game.status) && isGameMaster) ||
-      ['Recruiting', 'Progress'].includes(game.status))
-
-  const canModify = [
-    'Closed',
-    'Opening',
-    'Recruiting',
-    'Progress',
-    'Epilogue'
-  ].includes(game.status)
+  const isGameMaster = _isGameMaster(myPlayer, game)
+  const canParticipate = _canParticipate(game, myPlayer, myself, isGameMaster)
+  const canModify = canModifyGameSetting(game, myPlayer)
 
   const displayClass = isSidebarOpen
     ? 'fixed z-30 bg-white md:static flex'
@@ -85,15 +73,11 @@ export default function Sidebar() {
           <GameSettingsButton />
           <UserSettingsButton />
         </div>
-        {isGameMaster && (
+        {canModify && (
           <div className='base-border border-t py-2'>
             <GameSettingsEditButton />
-            {canModify && (
-              <>
-                <GameStatusEditButton />
-                <GameMasterEditButton />
-              </>
-            )}
+            <GameStatusEditButton />
+            <GameMasterEditButton />
           </div>
         )}
         {myself && (
@@ -130,30 +114,26 @@ const GameStatus = () => {
   const game = useGameValue()
   const statusName = convertToGameStatusName(game.status)
   const time = game.settings.time
-  let statusDescription: string | undefined
-  switch (game.status) {
-    case 'Closed':
-      statusDescription = `公開開始: ${iso2display(time.openAt)}`
-      break
-    case 'Opening':
-      statusDescription = `登録開始: ${iso2display(time.startParticipateAt)}`
-      break
-    case 'Recruiting':
-      statusDescription = `ゲーム開始: ${iso2display(time.startGameAt)}`
-      break
-    case 'Progress':
-      const epilogueAt = time.epilogueGameAt
-      const periodEndAt = game.periods[game.periods.length - 1].endAt
-      if (epilogueAt < periodEndAt) {
-        statusDescription = `エピローグ開始: ${iso2display(epilogueAt)}`
-      } else {
-        statusDescription = `次回更新: ${iso2display(periodEndAt)}`
-      }
-      break
-    case 'Epilogue':
-      statusDescription = `ゲーム終了: ${iso2display(time.finishGameAt)}`
-      break
-  }
+  const statusDescription = useMemo(() => {
+    switch (game.status) {
+      case 'Closed':
+        return `公開開始: ${iso2display(time.openAt)}`
+      case 'Opening':
+        return `登録開始: ${iso2display(time.startParticipateAt)}`
+      case 'Recruiting':
+        return `ゲーム開始: ${iso2display(time.startGameAt)}`
+      case 'Progress':
+        const epilogueAt = time.epilogueGameAt
+        const periodEndAt = game.periods[game.periods.length - 1].endAt
+        if (epilogueAt < periodEndAt) {
+          return `エピローグ開始: ${iso2display(epilogueAt)}`
+        } else {
+          return `次回更新: ${iso2display(periodEndAt)}`
+        }
+      case 'Epilogue':
+        return `ゲーム終了: ${iso2display(time.finishGameAt)}`
+    }
+  }, [game.status, game.settings.time, game.periods])
 
   return (
     <div className='mb-4 px-4 text-xs'>
@@ -233,7 +213,7 @@ const GameIntroModal = ({
       hideOnClickOutside={true}
     >
       <div className='text-center'>
-        {hasImage != null && (
+        {hasImage && (
           <div
             className='relative flex h-96 justify-center'
             style={{ maxWidth: '80vw' }}

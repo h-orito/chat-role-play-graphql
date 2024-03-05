@@ -355,6 +355,11 @@ func (r *queryResolver) MessageReplies(ctx context.Context, gameID string, messa
 	return r.messageReplies(ctx, gameID, messageID)
 }
 
+// ThreadMessages is the resolver for the threadMessages field.
+func (r *queryResolver) ThreadMessages(ctx context.Context, gameID string, messageID string) ([]*gqlmodel.Message, error) {
+	return r.threadMessages(ctx, gameID, messageID)
+}
+
 // MessageFavoriteGameParticipants is the resolver for the messageFavoriteGameParticipants field.
 func (r *queryResolver) MessageFavoriteGameParticipants(ctx context.Context, gameID string, messageID string) ([]*gqlmodel.GameParticipant, error) {
 	return r.messageFavoriteGameParticipants(ctx, gameID, messageID)

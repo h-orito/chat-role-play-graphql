@@ -1,8 +1,6 @@
-import Image from 'next/image'
 import RadioGroup from '@/components/form/radio-group'
 import {
   GameParticipant,
-  GameParticipantIcon,
   Message,
   MessageType,
   NewMessage,
@@ -31,12 +29,7 @@ import TalkTextDecorators from './talk-text-decorators'
 import PrimaryButton from '@/components/button/primary-button'
 import ParticipantSelect from '../participant/participant-select'
 import { useUserPagingSettings } from '../user-settings'
-import {
-  useGameValue,
-  useIconsValue,
-  useMyselfValue,
-  useUserDisplaySettingsValue
-} from '../game-hook'
+import { useGameValue, useIconsValue, useMyselfValue } from '../game-hook'
 import Portal from '@/components/modal/portal'
 import IconSelectButton from './icon-select-button'
 
@@ -190,14 +183,12 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
     <div>
       <form onSubmit={handleSubmit(onSubmitPreview)}>
         <TalkType
-          {...props}
           talkType={talkType}
           setTalkType={setTalkType}
           preview={preview}
           replyTarget={replyTarget}
         />
         <Receiver
-          {...props}
           talkType={talkType}
           receiver={receiver}
           setReceiver={setReceiver}

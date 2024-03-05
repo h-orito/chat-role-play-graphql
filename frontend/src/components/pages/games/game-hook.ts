@@ -31,6 +31,51 @@ export const useGame = (game: Game): Game => {
   return game
 }
 export const useGameValue = () => useAtomValue(gameAtom)!
+// 発言可能なゲームステータス
+export const talkableGameStatuses = [
+  'Closed',
+  'Opening',
+  'Recruiting',
+  'Progress',
+  'Epilogue'
+]
+export const isGameMaster = (myPlayer: Player | null, game: Game) => {
+  return (
+    isAdmin(myPlayer) ||
+    game.gameMasters.some((gm) => gm.player.id === myPlayer?.id)
+  )
+}
+// プレイヤーとして参加可能なゲームステータス
+const playerParticipatableGameStatuses = ['Recruiting', 'Progress']
+// GMが参加可能なゲームステータス
+const gameMasterParticipatableGameStatuses = ['Closed', 'Opening']
+// ゲーム設定変更可能なゲームステータス
+const gameSettingModifiableGameStatuses = [
+  'Closed',
+  'Opening',
+  'Recruiting',
+  'Progress',
+  'Epilogue'
+]
+// 参加可能か
+export const canParticipate = (
+  game: Game,
+  player: Player | null,
+  myself: GameParticipant | null,
+  isGameMaster: boolean
+) => {
+  if (!player || !!myself) return false
+  if (!isGameMaster)
+    return playerParticipatableGameStatuses.includes(game.status)
+  return gameMasterParticipatableGameStatuses.includes(game.status)
+}
+// ゲーム設定変更可能か
+export const canModifyGameSetting = (game: Game, myPlayer: Player | null) => {
+  return (
+    isGameMaster(myPlayer, game) &&
+    gameSettingModifiableGameStatuses.includes(game.status)
+  )
+}
 
 // myself
 const myselfAtom = atom<GameParticipant | null>(null)
@@ -75,6 +120,9 @@ export const useMyPlayer = (): Player | null => {
   return myPlayer
 }
 export const useMyPlayerValue = () => useAtomValue(myPlayerAtom)
+const isAdmin = (myPlayer: Player | null) => {
+  return myPlayer && myPlayer.authorityCodes.includes('AuthorityAdmin')
+}
 
 // ゲーム更新チェック
 const periodChangeStatuses = [

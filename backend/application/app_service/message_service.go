@@ -11,6 +11,7 @@ type MessageService interface {
 	FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error)
 	FindMessage(gameID uint32, ID uint64) (*model.Message, error)
 	FindMessageReplies(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error)
+	FindThreadMessages(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error)
 	RegisterMessage(ctx context.Context, game model.Game, message model.Message) error
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error
@@ -65,6 +66,11 @@ func (s *messageService) FindMessage(gameID uint32, ID uint64) (*model.Message, 
 // FindMessageReplies implements MessageService.
 func (s *messageService) FindMessageReplies(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
 	return s.messageRepository.FindMessageReplies(gameID, messageID, myself)
+}
+
+// FindThreadMessages implements MessageService.
+func (s *messageService) FindThreadMessages(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
+	return s.messageRepository.FindThreadMessages(gameID, messageID, myself)
 }
 
 // FindMessageFavoriteGameParticipants implements MessageService.

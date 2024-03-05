@@ -380,6 +380,7 @@ type Query {
   messagesLatestUnixTimeMilli(gameId: ID!, query: MessagesQuery!): Long!
   message(gameId: ID!, messageId: ID!): Message
   messageReplies(gameId: ID!, messageId: ID!): [Message!]!
+  threadMessages(gameId: ID!, messageId: ID!): [Message!]!
   messageFavoriteGameParticipants(
     gameId: ID!
     messageId: ID!

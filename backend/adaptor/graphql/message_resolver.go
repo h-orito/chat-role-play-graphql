@@ -422,6 +422,25 @@ func (r *queryResolver) messageReplies(ctx context.Context, gameID string, messa
 	}), nil
 }
 
+func (r *queryResolver) threadMessages(ctx context.Context, gameID string, messageID string) ([]*gqlmodel.Message, error) {
+	gID, err := idToUint32(gameID)
+	if err != nil {
+		return nil, err
+	}
+	mID, err := idToUint64(messageID)
+	if err != nil {
+		return nil, err
+	}
+	user := auth.GetUser(ctx)
+	messages, err := r.messageUsecase.FindThreadMessages(gID, mID, user)
+	if err != nil {
+		return nil, err
+	}
+	return array.Map(messages, func(m model.Message) *gqlmodel.Message {
+		return MapToMessage(&m)
+	}), nil
+}
+
 func (r *queryResolver) messageFavoriteGameParticipants(ctx context.Context, gameID string, messageID string) ([]*gqlmodel.GameParticipant, error) {
 	gID, err := idToUint32(gameID)
 	if err != nil {

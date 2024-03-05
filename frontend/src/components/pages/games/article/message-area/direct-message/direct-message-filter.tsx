@@ -56,7 +56,11 @@ export default function DirectMessageFilter(props: Props) {
           : null,
       keywords: keywords.length > 0 ? keywords : null,
       sinceAt,
-      untilAt
+      untilAt,
+      paging: {
+        ...messageQuery.paging!,
+        pageNumber: 1
+      }
     }
     search(newQuery)
     close(e)

@@ -43,6 +43,27 @@ func (repo *MessageRepository) FindMessageReplies(gameID uint32, messageID uint6
 	return messages.List, nil
 }
 
+func (repo *MessageRepository) FindThreadMessages(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
+	messages := []model.Message{}
+	mesID := messageID
+	for {
+		message, err := findMessage(repo.db.Connection, gameID, mesID)
+		if err != nil {
+			return nil, err
+		}
+		if message == nil {
+			break
+		}
+		messages = append(messages, *message)
+		if message.ReplyTo == nil {
+			break
+		}
+		mesID = message.ReplyTo.MessageID
+	}
+
+	return messages, nil
+}
+
 func (repo *MessageRepository) FindMessageFavoriteGameParticipants(
 	gameID uint32,
 	messageID uint64,

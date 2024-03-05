@@ -9,15 +9,20 @@ import {
 } from '@/lib/generated/graphql'
 import {
   forwardRef,
+  memo,
+  useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react'
 import { useLazyQuery } from '@apollo/client'
-import { useUserPagingSettings } from '@/components/pages/games/user-settings'
-import MessagesArea from './messages-area/messages-area'
+import MessagesArea, {
+  MessagesAreaRefHandle
+} from './messages-area/messages-area'
 import {
+  talkableGameStatuses,
   useFixedBottom,
   useGameValue,
   useMyPlayerValue,
@@ -40,6 +45,7 @@ import {
 } from './messages-query'
 import TalkSystem from '../../../talk/talk-system'
 import Portal from '@/components/modal/portal'
+import { useUserPagingSettings } from '../../../user-settings'
 
 type Props = {
   className?: string
@@ -67,62 +73,32 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     const game = useGameValue()
     const myself = useMyselfValue()
 
-    const [fetchMessages] =
-      useLazyQuery<GameMessagesQuery>(GameMessagesDocument)
-    const [fetchMessagesLatest] = useLazyQuery<MessagesLatestQuery>(
-      MessagesLatestDocument
-    )
-
-    const [pagingSettings] = useUserPagingSettings()
-    const defaultMessages: Messages = {
-      list: [],
-      allPageCount: 0,
-      hasPrePage: false,
-      hasNextPage: false,
-      isDesc: pagingSettings.isDesc,
-      isLatest: !pagingSettings.isDesc,
-      latestUnixTimeMilli: 0
-    }
-
-    const [messages, setMessages] = useState<Messages>(defaultMessages)
-    const [latestTime, setLatestTime] = useState<number>(0)
     const [messageQuery, setMessageQuery] = useState(emptyMessageQuery)
 
-    const search = async (query: MessagesQuery = messageQuery) => {
-      setMessageQuery(query)
-      const { data } = await fetchMessages({
-        variables: {
-          gameId: game.id,
-          query: query
-        } as MessagesQuery
-      })
-      if (data?.messages == null) return
-      setMessages(data.messages as Messages)
-      setLatestTime(data.messages.latestUnixTimeMilli as number)
-      setExistUnread(false)
-    }
-
-    const fetchLatestTime = async () => {
-      if (!isViewing && existsUnread) return
-      const { data } = await fetchMessagesLatest({
-        variables: {
-          gameId: game.id,
-          query: {
-            ...messageQuery,
-            offsetUnixTimeMilli: latestTime
-          }
-        } as MessagesQuery
-      })
-      if (data?.messagesLatestUnixTimeMilli == null) return
-      const latest = data.messagesLatestUnixTimeMilli as number
-      if (latestTime < latest) {
-        if (isViewing) search()
-        else setExistUnread(true)
-      }
-    }
+    const [fetchMessages] =
+      useLazyQuery<GameMessagesQuery>(GameMessagesDocument)
+    const search = useCallback(
+      async (query: MessagesQuery = messageQuery) => {
+        setMessageQuery(query)
+        const { data } = await fetchMessages({
+          variables: {
+            gameId: game.id,
+            query: query
+          } as MessagesQuery
+        })
+        if (data?.messages == null) return
+        messagesAreaRef.current?.setMessages(data.messages as Messages)
+        messagesAreaRef.current?.setLatestTime(
+          data.messages.latestUnixTimeMilli as number
+        )
+        setExistUnread(false)
+      },
+      [game.id, messageQuery]
+    )
 
     // 初回の取得
     const [initialMessagesQuery] = useMessagesQuery()
+    const [pagingSettings] = useUserPagingSettings()
     useEffect(() => {
       const paging = {
         pageSize: pagingSettings.pageSize,
@@ -143,30 +119,11 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       search(q)
     }, [])
 
-    // 1分ごとに最新をチェックして更新されていれば取得
-    const usePollingMessages = (callback: () => void) => {
-      const ref = useRef<() => void>(callback)
-      useEffect(() => {
-        ref.current = callback
-      }, [callback])
+    const canTalk = useMemo(() => {
+      return !!myself && talkableGameStatuses.includes(game.status)
+    }, [myself, game.status])
 
-      useEffect(() => {
-        const fetch = () => {
-          ref.current()
-        }
-        const timer = setInterval(fetch, 60000)
-        return () => clearInterval(timer)
-      }, [])
-    }
-    usePollingMessages(() => fetchLatestTime())
-
-    const canTalk =
-      !!myself &&
-      ['Closed', 'Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
-        game.status
-      )
-
-    const messageAreaRef = useRef<HTMLDivElement>(null)
+    const messagesAreaRef = useRef({} as MessagesAreaRefHandle)
     const talkAreaRef = useRef({} as TalkAreaRefHandle)
 
     useImperativeHandle(ref, () => ({
@@ -178,44 +135,58 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       }
     }))
 
-    const scrollToTop = () => {
-      messageAreaRef?.current?.scroll({ top: 0, behavior: 'smooth' })
-    }
-    const scrollToBottom = () => {
-      messageAreaRef?.current?.scroll({
-        top: messageAreaRef?.current?.scrollHeight,
-        behavior: 'smooth'
-      })
-    }
-
     const reply = (message: Message) => {
       talkAreaRef.current.reply(message)
     }
 
-    const talkAreaId = `talk-area-${onlyToMe ? 'tome' : 'home'}`
+    const messageAreaId = useMemo(
+      () => `message-area-${onlyToMe ? 'tome' : 'home'}`,
+      [onlyToMe]
+    )
+    const talkAreaId = useMemo(
+      () => `talk-area-${onlyToMe ? 'tome' : 'home'}`,
+      [onlyToMe]
+    )
+
+    const scrollToTop = () => {
+      document.getElementById(messageAreaId)!.scroll({
+        top: 0,
+        behavior: 'smooth'
+      })
+    }
+
+    const scrollToBottom = useCallback(() => {
+      const messageAreaElement = document.getElementById(messageAreaId)!
+      messageAreaElement.scroll({
+        top: messageAreaElement.scrollHeight,
+        behavior: 'smooth'
+      })
+    }, [messageAreaId])
 
     return (
       <div
         className={`${className} mut-height-guard relative flex flex-1 flex-col overflow-y-auto`}
       >
         <div
+          id={messageAreaId}
           className={`flex flex-1 flex-col overflow-y-auto`}
-          ref={messageAreaRef}
         >
           <MessagesArea
-            messages={messages}
+            ref={messagesAreaRef}
             messageQuery={messageQuery}
+            openFavoritesModal={props.openFavoritesModal}
             canTalk={canTalk}
             search={search}
-            messageAreaRef={messageAreaRef}
             reply={reply}
             searchable={!onlyToMe}
             talkAreaId={talkAreaId}
-            {...props}
+            scrollToTop={scrollToTop}
+            isViewing={isViewing}
+            existsUnread={existsUnread}
+            setExistsUnread={setExistUnread}
           />
           <TalkArea
             ref={talkAreaRef}
-            {...props}
             canTalk={canTalk}
             search={search}
             talkAreaId={talkAreaId}
@@ -246,27 +217,33 @@ interface TalkAreaRefHandle {
   reply: (message: Message) => void
 }
 
-const TalkArea = forwardRef<TalkAreaRefHandle, TalkAreaProps>(
-  (props: TalkAreaProps, ref: any) => {
-    const { canTalk, search, talkAreaId } = props
-    const talkPanelRef = useRef({} as TalkAreaRefHandle)
+const TalkArea = memo(
+  forwardRef<TalkAreaRefHandle, TalkAreaProps>(
+    (props: TalkAreaProps, ref: any) => {
+      const { canTalk, search, talkAreaId } = props
+      const talkPanelRef = useRef({} as TalkAreaRefHandle)
 
-    useImperativeHandle(ref, () => ({
-      reply(message: Message) {
-        talkPanelRef.current.reply(message)
-      }
-    }))
+      useImperativeHandle(ref, () => ({
+        reply(message: Message) {
+          talkPanelRef.current.reply(message)
+        }
+      }))
 
-    if (!canTalk) return <></>
+      if (!canTalk) return <></>
 
-    return (
-      <div id={talkAreaId} className='base-border w-full border-t text-sm'>
-        <TalkPanel search={search} talkAreaId={talkAreaId} ref={talkPanelRef} />
-        <DescriptionPanel talkAreaId={talkAreaId} search={search} />
-        <SystemMessagePanel talkAreaId={talkAreaId} search={search} />
-      </div>
-    )
-  }
+      return (
+        <div id={talkAreaId} className='base-border w-full border-t text-sm'>
+          <TalkPanel
+            search={search}
+            talkAreaId={talkAreaId}
+            ref={talkPanelRef}
+          />
+          <DescriptionPanel talkAreaId={talkAreaId} search={search} />
+          <SystemMessagePanel talkAreaId={talkAreaId} search={search} />
+        </div>
+      )
+    }
+  )
 )
 
 type TalkPanelProps = {

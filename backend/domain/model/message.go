@@ -217,6 +217,7 @@ type MessageRepository interface {
 	FindMessagesLatestUnixTimeMilli(gameID uint32, query MessagesQuery, myself *GameParticipant) (uint64, error)
 	FindMessage(gameID uint32, ID uint64) (*Message, error)
 	FindMessageReplies(gameID uint32, messageID uint64, myself *GameParticipant) ([]Message, error)
+	FindThreadMessages(gameID uint32, messageID uint64, myself *GameParticipant) ([]Message, error)
 	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (GameParticipants, error)
 	RegisterMessage(ctx context.Context, gameID uint32, message Message) error
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error

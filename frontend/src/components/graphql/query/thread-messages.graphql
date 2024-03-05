@@ -1,0 +1,38 @@
+query ThreadMessages($gameId: ID!, $messageId: ID!) {
+  threadMessages(gameId: $gameId, messageId: $messageId) {
+    id
+    content {
+      type
+      text
+      number
+      isConvertDisabled
+    }
+    time {
+      sendAt
+      sendUnixTimeMilli
+    }
+    sender {
+      participantId
+      name
+      icon {
+        url
+        width
+        height
+      }
+    }
+    receiver {
+      participantId
+      name
+      entryNumber
+    }
+    replyTo {
+      messageId
+      participantId
+    }
+    reactions {
+      replyCount
+      favoriteCount
+      favoriteParticipantIds
+    }
+  }
+}

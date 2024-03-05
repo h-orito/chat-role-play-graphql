@@ -79,7 +79,11 @@ export default function MessageFilter(props: Props) {
           : null,
       keywords: keywords.length > 0 ? keywords : null,
       sinceAt,
-      untilAt
+      untilAt,
+      paging: {
+        ...messageQuery.paging!,
+        pageNumber: 1
+      }
     }
     search(query)
     close(e)
