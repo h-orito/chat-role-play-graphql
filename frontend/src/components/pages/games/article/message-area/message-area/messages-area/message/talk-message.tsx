@@ -26,7 +26,6 @@ import { SenderName } from './sender-name'
 
 type MessageProps = {
   message: Message
-  openFavoritesModal: (messageId: string) => void
   handleReply: (message: Message) => void
   preview?: boolean
   shouldDisplayReplyTo?: boolean
@@ -34,7 +33,6 @@ type MessageProps = {
 
 export default function TalkMessage({
   message,
-  openFavoritesModal,
   handleReply,
   preview = false,
   shouldDisplayReplyTo = false
@@ -57,7 +55,7 @@ export default function TalkMessage({
     <div>
       <div className='w-full px-4 py-2'>
         {shouldDisplayReplyTo && message.replyTo && (
-          <ReplyToMessage replyTo={message.replyTo} />
+          <ReplyToMessage message={message} />
         )}
         {message.sender && (
           <div className='flex text-xs'>
@@ -103,22 +101,13 @@ export default function TalkMessage({
                 />
               </div>
               <div className='ml-8 flex'>
-                <FavoriteButton
-                  message={message}
-                  openFavoritesModal={openFavoritesModal}
-                />
+                <FavoriteButton message={message} />
               </div>
             </div>
           </div>
         </div>
       </div>
-      {showReplies && (
-        <Replies
-          replies={replies}
-          openFavoritesModal={openFavoritesModal}
-          handleReply={handleReply}
-        />
-      )}
+      {showReplies && <Replies replies={replies} handleReply={handleReply} />}
     </div>
   )
 }
@@ -264,22 +253,16 @@ const ReplyButton = ({
 
 type RepliesProps = {
   replies: Message[]
-  openFavoritesModal: (messageId: string) => void
   handleReply: (message: Message) => void
 }
 
-const Replies = ({
-  replies,
-  openFavoritesModal,
-  handleReply
-}: RepliesProps) => {
+const Replies = ({ replies, handleReply }: RepliesProps) => {
   return (
     <div className='ml-8'>
       {replies.map((message: Message) => (
         <MessageComponent
           message={message}
           key={message.id}
-          openFavoritesModal={openFavoritesModal}
           handleReply={handleReply}
           shouldDisplayReplyTo={false}
         />
@@ -288,11 +271,11 @@ const Replies = ({
   )
 }
 
-const ReplyToMessage = ({ replyTo }: { replyTo: MessageRecipient }) => {
+const ReplyToMessage = ({ message }: { message: Message }) => {
   const game = useGameValue()
-  const [message, setMessage] = useState<Message | null>(null)
+  const [replyToMessage, setReplyToMessage] = useState<Message | null>(null)
   const senderName = game.participants.find(
-    (p) => p.id === replyTo.participantId
+    (p) => p.id === message.replyTo!.participantId
   )?.name
 
   const [fetchMessage] = useLazyQuery<GameMessageQuery>(GameMessageDocument)
@@ -301,19 +284,16 @@ const ReplyToMessage = ({ replyTo }: { replyTo: MessageRecipient }) => {
       const { data } = await fetchMessage({
         variables: {
           gameId: game.id,
-          messageId: replyTo.messageId
+          messageId: message.replyTo!.messageId
         }
       })
       if (data?.message == null) return
-      setMessage(data.message as Message)
+      setReplyToMessage(data.message as Message)
     }
     fetch()
   }, [])
 
-  const [showReplyToMessage, setShowReplyToMessage] = useState(false)
-  const toggleShow = () => setShowReplyToMessage(!showReplyToMessage)
-
-  if (!message) {
+  if (!replyToMessage) {
     return (
       <div className='flex text-xs text-gray-500'>
         <p>返信先を読み込み中...</p>
@@ -322,30 +302,27 @@ const ReplyToMessage = ({ replyTo }: { replyTo: MessageRecipient }) => {
   }
 
   const text =
-    message.content.text.length > 20
-      ? `${message.content.text.slice(0, 20)}...`
-      : message.content.text
+    replyToMessage.content.text.length > 20
+      ? `${replyToMessage.content.text.slice(0, 20)}...`
+      : replyToMessage.content.text
 
   return (
     <>
       <div className='flex text-xs text-gray-500'>
-        <button onClick={() => toggleShow()}>
+        <Link
+          href={`/games/${base64ToId(game.id)}/thread/${base64ToId(
+            message.id
+          )}`}
+          target='_blank'
+        >
           <p>
-            →&nbsp;#{message.content.number}&nbsp;
-            {message.sender ? message.sender.name : senderName}&nbsp;
+            →&nbsp;#{replyToMessage.content.number}&nbsp;
+            {replyToMessage.sender ? replyToMessage.sender.name : senderName}
+            &nbsp;
             {text}
           </p>
-        </button>
+        </Link>
       </div>
-      {showReplyToMessage && (
-        <div className='-mx-4'>
-          <TalkMessage
-            message={message!}
-            openFavoritesModal={() => {}}
-            handleReply={() => {}}
-          />
-        </div>
-      )}
     </>
   )
 }

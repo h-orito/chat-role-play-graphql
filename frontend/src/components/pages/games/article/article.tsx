@@ -11,18 +11,6 @@ import DirectMessageGroupsArea from './message-area/direct-message/direct-messag
 
 const Article = () => {
   const [tab, setTab] = useState('home')
-  const [isOpenFavoritesModal, setIsOpenFavoritesModal] = useState(false)
-  const toggleFavoritesModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenFavoritesModal(!isOpenFavoritesModal)
-    }
-  }
-  const [favoriteMessageId, setFavoriteMessageId] = useState<string>('')
-  const openFavoritesModal = async (messageId: string) => {
-    setFavoriteMessageId(messageId)
-    setIsOpenFavoritesModal(true)
-  }
-
   const [existsHomeUnread, setExistsHomeUnread] = useState(false)
   const [existsToMeUnread, setExistsToMeUnread] = useState(false)
 
@@ -66,7 +54,6 @@ const Article = () => {
       <MessageArea
         ref={homeRef}
         className={`${tab === 'home' ? '' : 'hidden'}`}
-        openFavoritesModal={openFavoritesModal}
         isViewing={tab === 'home'}
         existsUnread={existsHomeUnread}
         setExistUnread={setExistsHomeUnread}
@@ -75,7 +62,6 @@ const Article = () => {
         <MessageArea
           ref={toMeRef}
           className={`${tab === 'tome' ? '' : 'hidden'}`}
-          openFavoritesModal={openFavoritesModal}
           isViewing={tab === 'tome'}
           existsUnread={existsToMeUnread}
           setExistUnread={setExistsToMeUnread}
@@ -86,14 +72,6 @@ const Article = () => {
         <DirectMessageGroupsArea
           className={`${tab === 'dm' ? '' : 'hidden'}`}
         />
-      )}
-      {isOpenFavoritesModal && (
-        <Modal header='ふぁぼした人' close={toggleFavoritesModal} hideFooter>
-          <FavoriteParticipants
-            messageId={favoriteMessageId}
-            close={toggleFavoritesModal}
-          />
-        </Modal>
       )}
       <ArticleMenu
         tab={tab}

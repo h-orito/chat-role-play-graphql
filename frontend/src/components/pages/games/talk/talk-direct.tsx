@@ -269,11 +269,7 @@ const DirectPreview = ({
           以下の内容で発言してよろしいですか？（まだ発言されていません）
         </p>
         <div className='mt-2'>
-          <DirectMessageComponent
-            directMessage={preview!}
-            openFavoritesModal={() => {}}
-            preview={true}
-          />
+          <DirectMessageComponent directMessage={preview!} preview={true} />
         </div>
         <div className='mt-4 flex justify-end'>
           <PrimaryButton click={doTalk}>発言する</PrimaryButton>

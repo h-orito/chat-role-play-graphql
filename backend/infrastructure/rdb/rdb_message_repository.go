@@ -44,23 +44,61 @@ func (repo *MessageRepository) FindMessageReplies(gameID uint32, messageID uint6
 }
 
 func (repo *MessageRepository) FindThreadMessages(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
-	messages := []model.Message{}
-	mesID := messageID
+	// スレッド対象のメッセージを取得
+	firstMessage, err := findMessage(repo.db.Connection, gameID, messageID)
+	if err != nil {
+		return nil, err
+	}
+	if firstMessage == nil {
+		return nil, nil
+	}
+	messages := []model.Message{*firstMessage}
+	// リプライ元を辿る
+	message := firstMessage
 	for {
-		message, err := findMessage(repo.db.Connection, gameID, mesID)
-		if err != nil {
-			return nil, err
-		}
-		if message == nil {
-			break
-		}
-		messages = append(messages, *message)
 		if message.ReplyTo == nil {
 			break
 		}
-		mesID = message.ReplyTo.MessageID
+		mes, err := findMessage(repo.db.Connection, gameID, message.ReplyTo.MessageID)
+		if err != nil {
+			return nil, err
+		}
+		if mes == nil {
+			break
+		}
+		// 先頭に追加
+		messages = append([]model.Message{*mes}, messages...)
+		message = mes
 	}
+	// リプライ先を辿って追加する
+	return repo.findAllRepliesRecursively(repo.db.Connection, messages, gameID, *firstMessage, myself)
+}
 
+func (repo *MessageRepository) findAllRepliesRecursively(
+	db *gorm.DB,
+	messages []model.Message,
+	gameID uint32,
+	message model.Message,
+	myself *model.GameParticipant,
+) ([]model.Message, error) {
+	if message.Reactions.ReplyCount == 0 {
+		return messages, nil
+	}
+	replies, err := findMessages(repo.db.Connection, gameID, model.MessagesQuery{
+		ReplyToMessageID: &message.ID,
+	}, myself)
+	if err != nil {
+		return nil, err
+	}
+	for _, reply := range replies.List {
+		// 末尾に追加
+		messages = append(messages, reply)
+		// 再帰的にリプライ先を辿る
+		messages, err = repo.findAllRepliesRecursively(db, messages, gameID, reply, myself)
+		if err != nil {
+			return nil, err
+		}
+	}
 	return messages, nil
 }
 

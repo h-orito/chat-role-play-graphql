@@ -45,18 +45,6 @@ export default function DirectMessageGroupsArea({ className }: Props) {
     setIsDirectMessageModal(!isOpenDirectMessageModal)
   }
 
-  const [isOpenFavoritesModal, setIsOpenFavoritesModal] = useState(false)
-  const toggleFavoritesModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenFavoritesModal(!isOpenFavoritesModal)
-    }
-  }
-  const [favoriteMessageId, setFavoriteMessageId] = useState<string>('')
-  const openFavoritesModal = async (messageId: string) => {
-    setFavoriteMessageId(messageId)
-    setIsOpenFavoritesModal(true)
-  }
-
   const refetchGroups = async () => {
     const { data } = await fetchParticipantGroups({
       variables: {
@@ -126,17 +114,8 @@ export default function DirectMessageGroupsArea({ className }: Props) {
         <DirectMessageArea
           group={directMessageGroup!}
           close={toggleDirectMessageModal}
-          openFavoritesModal={openFavoritesModal}
           refetchGroups={refetchGroups}
         />
-      )}
-      {isOpenFavoritesModal && (
-        <Modal header='ふぁぼした人' close={toggleFavoritesModal} hideFooter>
-          <DirectFavoriteParticipants
-            messageId={favoriteMessageId}
-            close={toggleFavoritesModal}
-          />
-        </Modal>
       )}
     </div>
   )

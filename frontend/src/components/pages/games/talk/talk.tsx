@@ -241,11 +241,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
           </div>
           <div className='base-border border pt-2'>
             <div>
-              <TalkMessage
-                message={replyTarget!}
-                openFavoritesModal={() => {}}
-                handleReply={() => {}}
-              />
+              <TalkMessage message={replyTarget!} handleReply={() => {}} />
             </div>
           </div>
         </div>
@@ -514,7 +510,6 @@ const TalkPreview = ({
         <div className='mt-2'>
           <TalkMessage
             message={preview!}
-            openFavoritesModal={() => {}}
             handleReply={() => {}}
             preview={true}
           />

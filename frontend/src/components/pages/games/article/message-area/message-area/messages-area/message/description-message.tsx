@@ -6,13 +6,11 @@ import { SenderName } from './sender-name'
 
 type Props = {
   message: Message
-  openFavoritesModal: (messageId: string) => void
   preview?: boolean
 }
 
 export default function DescriptionMessage({
   message,
-  openFavoritesModal,
   preview = false
 }: Props) {
   return (
@@ -37,10 +35,7 @@ export default function DescriptionMessage({
           </div>
         </div>
         <div className='flex justify-end pt-1'>
-          <FavoriteButton
-            message={message}
-            openFavoritesModal={openFavoritesModal}
-          />
+          <FavoriteButton message={message} />
         </div>
       </div>
     </div>

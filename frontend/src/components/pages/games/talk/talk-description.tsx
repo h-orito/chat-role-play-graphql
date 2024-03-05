@@ -213,10 +213,7 @@ const DescriptionPreview = (props: PreviewProps) => {
           以下の内容で発言してよろしいですか？（まだ発言されていません）
         </p>
         <div className='mt-2'>
-          <DescriptionMessage
-            message={props.preview!}
-            openFavoritesModal={() => {}}
-          />
+          <DescriptionMessage message={props.preview!} />
         </div>
         <div className='mt-4 flex justify-end'>
           <PrimaryButton click={doTalk}>発言する</PrimaryButton>

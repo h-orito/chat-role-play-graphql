@@ -37,12 +37,11 @@ import { base64ToId } from '@/components/graphql/convert'
 type Props = {
   close: (e: any) => void
   group: GameParticipantGroup
-  openFavoritesModal: (messageId: string) => void
   refetchGroups: () => void
 }
 
 export default function DirectMessageArea(props: Props) {
-  const { close, group, openFavoritesModal } = props
+  const { close, group } = props
   const game = useGameValue()
   const [pagingSettings] = useUserPagingSettings()
   const defaultQuery: DirectMessagesQuery = {
@@ -128,7 +127,6 @@ export default function DirectMessageArea(props: Props) {
             <DirectMessagesArea
               directMessages={directMessages}
               query={query}
-              openFavoritesModal={openFavoritesModal}
               search={search}
               talkAreaId={talkAreaId}
             />
@@ -231,12 +229,11 @@ const DirectMessageGroupMembers = (
 type DirectMessagesAreaProps = {
   directMessages: DirectMessages
   query: DirectMessagesQuery
-  openFavoritesModal: (messageId: string) => void
   search: (query?: DirectMessagesQuery) => Promise<void>
   talkAreaId: string
 }
 const DirectMessagesArea = (props: DirectMessagesAreaProps) => {
-  const { directMessages, query, openFavoritesModal, search } = props
+  const { directMessages, query, search } = props
   const setPageableQuery = (q: PageableQuery) => {
     const newQuery = {
       ...query,
@@ -261,11 +258,7 @@ const DirectMessagesArea = (props: DirectMessagesAreaProps) => {
         <div id={`${props.talkAreaId}-top`}></div>
         <div id={`${props.talkAreaId}-top-preview`}></div>
         {directMessages.list.map((message: DirectMessage) => (
-          <DirectMessageComponent
-            directMessage={message}
-            key={message.id}
-            openFavoritesModal={openFavoritesModal}
-          />
+          <DirectMessageComponent directMessage={message} key={message.id} />
         ))}
         <div id={`${props.talkAreaId}-bottom-preview`}></div>
         <div id={`${props.talkAreaId}-bottom`}></div>

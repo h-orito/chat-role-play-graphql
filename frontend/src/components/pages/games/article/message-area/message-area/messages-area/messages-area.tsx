@@ -23,7 +23,6 @@ import { useGameValue } from '@/components/pages/games/game-hook'
 type Props = {
   className?: string
   reply: (message: Message) => void
-  openFavoritesModal: (messageId: string) => void
   searchable?: boolean
   messageQuery: MessagesQuery
   canTalk: boolean

@@ -5,10 +5,10 @@ import {
 } from '@/components/pages/games/game-hook'
 import {
   DeleteMessageFavorite,
+  DirectMessage,
   FavoriteDocument,
   FavoriteMutation,
   FavoriteMutationVariables,
-  Message,
   NewMessageFavorite,
   UnfavoriteDocument,
   UnfavoriteMutation,
@@ -17,13 +17,13 @@ import {
 import { useMutation } from '@apollo/client'
 import { StarIcon } from '@heroicons/react/24/outline'
 import { useCallback, useState } from 'react'
-import FavoriteParticipants from './favorite-participants'
+import DirectFavoriteParticipants from './direct-favorite-participants'
 
 type Props = {
-  message: Message
+  message: DirectMessage
 }
 
-export default function FavoriteButton({ message }: Props) {
+export default function DirectFavoriteButton({ message }: Props) {
   const game = useGameValue()
   const myself = useMyselfValue()
   const canFav: boolean =
@@ -34,7 +34,7 @@ export default function FavoriteButton({ message }: Props) {
 
   const [isFav, setIsFav] = useState<boolean>(alreadyFav)
   const [favCount, setFavCount] = useState<number>(
-    message.reactions.favoriteCount
+    message.reactions.favoriteCounts
   )
 
   const [favorite] = useMutation<FavoriteMutation>(FavoriteDocument, {
@@ -104,7 +104,7 @@ export default function FavoriteButton({ message }: Props) {
       )}
       {isOpenFavoritesModal && (
         <Modal header='ふぁぼした人' close={toggleFavoritesModal} hideFooter>
-          <FavoriteParticipants
+          <DirectFavoriteParticipants
             messageId={message.id}
             close={toggleFavoritesModal}
           />

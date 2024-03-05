@@ -38,7 +38,7 @@ const Panel = forwardRef<PanelRefHandle, Props>((props: Props, ref: any) => {
 
   return (
     <>
-      <div className='base-border m-4 rounded-md border'>
+      <div className='base-border rounded-md border'>
         <details open={isOpen} ref={detailsRef}>
           <summary
             onClick={handleClick}

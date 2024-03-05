@@ -5,7 +5,6 @@ import DescriptionMessage from './description-message'
 
 type MessageProps = {
   message: Message
-  openFavoritesModal: (messageId: string) => void
   handleReply: (message: Message) => void
   shouldDisplayReplyTo: boolean
 }

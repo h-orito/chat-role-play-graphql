@@ -22,16 +22,15 @@ import {
 } from '@/components/pages/games/game-hook'
 import Link from 'next/link'
 import { base64ToId } from '@/components/graphql/convert'
+import DirectFavoriteButton from './direct-favorite-button'
 
 type MessageProps = {
   directMessage: DirectMessage
-  openFavoritesModal: (messageId: string) => void
   preview?: boolean
 }
 
 export default function DirectMessageComponent({
   directMessage,
-  openFavoritesModal,
   preview = false
 }: MessageProps) {
   const game = useGameValue()
@@ -149,19 +148,7 @@ export default function DirectMessageComponent({
             </div>
             <div className='flex justify-end pt-1'>
               <div className='flex'>
-                <button onClick={() => handleFav()} disabled={!canFav}>
-                  <StarIcon className={`y-4 h-4 ${starClass}`} />
-                </button>
-                {favCount > 0 && (
-                  <button
-                    className='pr-2 hover:font-bold'
-                    onClick={() => openFavoritesModal(directMessage.id)}
-                  >
-                    <p className='secondary-text ml-1 self-center'>
-                      {favCount}
-                    </p>
-                  </button>
-                )}
+                <DirectFavoriteButton message={directMessage} />
               </div>
             </div>
           </div>
