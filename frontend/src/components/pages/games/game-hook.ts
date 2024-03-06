@@ -80,6 +80,15 @@ export const canModifyGameSetting = (game: Game, myPlayer: Player | null) => {
 // myself
 const myselfAtom = atom<GameParticipant | null>(null)
 
+export const useMyselfInit = (gameId: string): GameParticipant | null => {
+  const [myself, refetchMyself] = useMyself(gameId)
+  const setMyselfAtom = useSetAtom(myselfAtom)
+  useEffect(() => {
+    refetchMyself()
+    return () => setMyselfAtom(null)
+  }, [])
+  return myself
+}
 export const useMyself = (
   gameId: string
 ): [myself: GameParticipant | null, refetchMyself: () => void] => {
@@ -93,10 +102,6 @@ export const useMyself = (
     })
     setMyselfAtom((data?.myGameParticipant as GameParticipant) ?? null)
   }
-  useEffect(() => {
-    fetch()
-    return () => setMyselfAtom(null)
-  }, [])
   return [myself, fetch]
 }
 

@@ -589,7 +589,19 @@ func (g *gameUsecase) RegisterGameParticipantIcon(ctx context.Context, gameID ui
 		if myself == nil {
 			return nil, fmt.Errorf("you are not participating in this game")
 		}
-		return g.gameService.RegisterGameParticipantIcon(ctx, myself.ID, icon)
+		icon, err := g.gameService.RegisterGameParticipantIcon(ctx, myself.ID, icon)
+		if err != nil {
+			return nil, err
+		}
+		// プロフィール画像が未設定の場合は登録した画像をプロフィール画像に設定する
+		if myself.ProfileIconID == nil {
+			if err := g.gameService.UpdateParticipant(ctx, myself.ID, myself.Name, myself.Memo, &icon.ID); err != nil {
+				return nil, err
+			}
+		}
+
+		return icon, nil
+
 	})
 	if err != nil {
 		return nil, err

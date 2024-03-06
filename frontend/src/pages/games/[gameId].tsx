@@ -10,7 +10,7 @@ import {
   GameQueryVariables,
   MessagesQuery
 } from '@/lib/generated/graphql'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
@@ -20,7 +20,7 @@ import {
   useGameValue,
   useIcons,
   useMyPlayer,
-  useMyself,
+  useMyselfInit,
   usePollingPeriod,
   useUserDisplaySettingsAtom
 } from '@/components/pages/games/game-hook'
@@ -54,7 +54,7 @@ type Props = {
 
 const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   useGame(game)
-  useMyself(game.id)
+  useMyselfInit(game.id)
   useMyPlayer()
   useIcons()
   useUserDisplaySettingsAtom()

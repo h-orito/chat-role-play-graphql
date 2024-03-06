@@ -4,7 +4,7 @@ import { useState } from 'react'
 import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import ParticipantIconEdit from './participant-icon-edit'
-import { useGameValue, useMyselfValue } from '../game-hook'
+import { useMyselfValue } from '../game-hook'
 
 type Props = {
   icons: Array<GameParticipantIcon>
@@ -17,7 +17,6 @@ export default function ParticipantIcons({
   canEdit,
   refetchIcons
 }: Props) {
-  const game = useGameValue()
   const myself = useMyselfValue()
   const [isOpenIconEditModal, setIsOpenIconEditModal] = useState(false)
 

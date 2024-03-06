@@ -27,6 +27,10 @@ export default function CreateGame() {
 
           <ReleaseContent label='UI改修/機能拡張' date='2024/03/05'>
             <li>UI変更: 会話ツリー閲覧機能を追加</li>
+            <li>
+              仕様変更:
+              最初のアイコンアップロードを自動的にプロフィールアイコンとして登録するよう変更
+            </li>
           </ReleaseContent>
 
           <ReleaseContent label='UI改修/機能拡張' date='2024/02/29'>

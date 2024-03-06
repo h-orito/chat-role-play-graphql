@@ -22,7 +22,7 @@ import {
   UnfollowMutation,
   UnfollowMutationVariables
 } from '@/lib/generated/graphql'
-import { ReactElement, useCallback, useState } from 'react'
+import { ReactElement, memo, useCallback, useState } from 'react'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
@@ -30,7 +30,7 @@ import {
   useGame,
   useGameValue,
   useMyself,
-  useMyselfValue
+  useMyselfInit
 } from '@/components/pages/games/game-hook'
 import DangerButton from '@/components/button/danger-button'
 import PrimaryButton from '@/components/button/primary-button'
@@ -86,7 +86,7 @@ const GameParticipantProfilePage = ({
   icons: initialIcons
 }: Props) => {
   useGame(game)
-  const [myself] = useMyself(game.id)
+  const myself = useMyselfInit(game.id)
   const [profile, setProfile] = useState<GameParticipantProfile>(initialProfile)
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>(initialIcons)
 
@@ -102,13 +102,13 @@ const GameParticipantProfilePage = ({
   )
   const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
 
-  const refetchProfile = async () => {
+  const refetchProfile = useCallback(async () => {
     const { data } = await fetchProfile({
       variables: { participantId: profile.participantId }
     })
     if (data?.gameParticipantProfile == null) return
     setProfile(data.gameParticipantProfile)
-  }
+  }, [profile.participantId, fetchProfile])
 
   const refetchIcons = async (): Promise<Array<GameParticipantIcon>> => {
     const { data } = await fetchIcons({
@@ -275,13 +275,6 @@ const FFButtons = ({
   canEdit,
   icons
 }: FFButtonsProps) => {
-  const [isOpenEditModal, setIsOpenEditModal] = useState(false)
-  const toggleEditModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenEditModal(!isOpenEditModal)
-    }
-  }
-
   return (
     <div className='ml-auto'>
       <FollowButton
@@ -294,24 +287,48 @@ const FFButtons = ({
         profile={profile}
         refetchProfile={refetchProfile}
       />
-      {canEdit && (
-        <>
-          <PrimaryButton click={() => setIsOpenEditModal(true)}>
-            プロフィール編集
-          </PrimaryButton>
-          {isOpenEditModal && (
-            <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
-              <ProfileEdit
-                profile={profile}
-                icons={icons}
-                refetchProfile={refetchProfile}
-                close={toggleEditModal}
-              />
-            </Modal>
-          )}
-        </>
-      )}
+      <ProfileEditButton
+        canEdit={canEdit}
+        profile={profile}
+        icons={icons}
+        refetchProfile={refetchProfile}
+      />
     </div>
+  )
+}
+
+type ProfileEditButtonProps = {
+  canEdit: boolean
+  profile: GameParticipantProfile
+  icons: Array<GameParticipantIcon>
+  refetchProfile: () => void
+}
+const ProfileEditButton = (props: ProfileEditButtonProps) => {
+  const { canEdit, profile, icons, refetchProfile } = props
+  const [isOpenEditModal, setIsOpenEditModal] = useState(false)
+  const toggleEditModal = (e: any) => {
+    if (e.target === e.currentTarget) {
+      setIsOpenEditModal(!isOpenEditModal)
+    }
+  }
+
+  if (!canEdit) return <></>
+  return (
+    <>
+      <PrimaryButton click={() => setIsOpenEditModal(true)}>
+        プロフィール編集
+      </PrimaryButton>
+      {isOpenEditModal && (
+        <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
+          <ProfileEdit
+            profile={profile}
+            icons={icons}
+            refetchProfile={refetchProfile}
+            close={toggleEditModal}
+          />
+        </Modal>
+      )}
+    </>
   )
 }
 
