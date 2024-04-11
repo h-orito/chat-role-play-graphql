@@ -65,9 +65,11 @@ export const canParticipate = (
   isGameMaster: boolean
 ) => {
   if (!player || !!myself) return false
-  if (!isGameMaster)
-    return playerParticipatableGameStatuses.includes(game.status)
-  return gameMasterParticipatableGameStatuses.includes(game.status)
+  return (
+    (isGameMaster &&
+      gameMasterParticipatableGameStatuses.includes(game.status)) ||
+    playerParticipatableGameStatuses.includes(game.status)
+  )
 }
 // ゲーム設定変更可能か
 export const canModifyGameSetting = (game: Game, myPlayer: Player | null) => {
