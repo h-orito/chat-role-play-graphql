@@ -151,7 +151,7 @@ func replaceDice(s string) string {
 	var sum int
 	var diceResults []string
 	for i := 0; i < diceNum; i++ {
-		num := rand.Int31n(int32(diceSize-1)) + 1
+		num := rand.Int31n(int32(diceSize)) + 1
 		sum += int(num)
 		diceResults = append(diceResults, strconv.Itoa(int(num)))
 	}
