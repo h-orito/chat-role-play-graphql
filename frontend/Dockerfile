@@ -31,6 +31,9 @@ RUN pnpm build
 ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+ENV HOME=/home/nextjs
+RUN mkdir -p /home/nextjs/.cache \
+    && chown -R nextjs:nodejs /home/nextjs
 # permission denied対策
 RUN chown nextjs:nodejs /app/.next/cache
 
@@ -39,6 +42,5 @@ USER nextjs
 EXPOSE 3000
 ENV PORT 3000
 ENV HOST 0.0.0.0
-ENV NODE_TLS_REJECT_UNAUTHORIZED 0
 
 CMD ["pnpm", "start"]
