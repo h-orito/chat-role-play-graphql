@@ -15,7 +15,7 @@ export const GoogleAdsense = ({
   style = { display: 'block' },
   format,
   responsive = 'false'
-}: GoogleAdsenseProps): JSX.Element => {
+}: GoogleAdsenseProps) => {
   const { asPath } = useRouter()
 
   useEffect(() => {

@@ -1,11 +1,14 @@
-FROM arm64v8/node:21-bullseye
+FROM arm64v8/node:24-bookworm
+
+# pnpm をインストール
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY src src
 COPY tsconfig.json tsconfig.json
-COPY package*.json ./
+COPY package.json pnpm-lock.yaml ./
 COPY next.config.js next.config.js
 COPY tailwind.config.js tailwind.config.js
 COPY postcss.config.js postcss.config.js
@@ -22,8 +25,8 @@ ENV NEXT_PUBLIC_GRAPHQL_ENDPOINT=${GRAPHQL_ENDPOINT}
 ARG GRAPHQL_INNER_ENDPOINT
 ENV NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT=${GRAPHQL_INNER_ENDPOINT}
 
-RUN npm ci
-RUN npm run build
+RUN pnpm install --frozen-lockfile
+RUN pnpm build
 
 ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
@@ -38,4 +41,4 @@ ENV PORT 3000
 ENV HOST 0.0.0.0
 ENV NODE_TLS_REJECT_UNAUTHORIZED 0
 
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]

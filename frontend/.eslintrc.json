@@ -13,7 +13,10 @@
     "prettier",
     "plugin:tailwindcss/recommended"
   ],
+  "rules": {
+    "react/display-name": "off"
+  },
   "ignorePatterns": [
     "*.config.js"
-  ],
+  ]
 }
