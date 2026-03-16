@@ -5,11 +5,17 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 
+type GetAccessTokenFn = (
+  isAuthenticated: boolean,
+  getAccessTokenSilently: () => Promise<string>,
+  loginWithRedirect: () => Promise<void>
+) => Promise<string | null | undefined>
+
 export const createClient = async (
   isAuthenticated: boolean,
-  getAccessTokenSilently: any,
-  loginWithRedirect: any,
-  getAccessToken: any
+  getAccessTokenSilently: () => Promise<string>,
+  loginWithRedirect: () => Promise<void>,
+  getAccessToken: GetAccessTokenFn
 ) => {
   const authLink = setContext(async (_, { headers }) => {
     const accessToken = await getAccessToken(

@@ -1,3 +1,4 @@
+import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import { createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
@@ -29,8 +30,10 @@ import {
   useMessagesQuery
 } from '@/components/pages/games/article/message-area/message-area/messages-query'
 
-export const getServerSideProps = async (context: any) => {
-  const { gameId } = context.params
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const gameId = Number(context.params!.gameId)
   const client = createInnerClient()
   const gameStringId = idToBase64(gameId, 'Game')
   const { data: gamedata } = await client.query<GameQuery>({

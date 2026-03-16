@@ -1,29 +1,29 @@
 import Select, { SingleValue } from 'react-select'
 
-type Props = {
+type Option<T extends string> = {
+  label: string
+  value: T
+}
+
+type Props<T extends string> = {
   className?: string
   label?: string
-  candidates: Array<Option>
-  selected: any
-  setSelected: (value: any) => void
+  candidates: Array<Option<T>>
+  selected: T | undefined
+  setSelected: (value: T) => void
   disabled?: boolean
 }
 
-type Option = {
-  label: string
-  value: any
-}
-
-export default function InputSelect({
+export default function InputSelect<T extends string>({
   className,
   label,
   candidates,
   selected,
   setSelected,
   disabled
-}: Props) {
-  const handleChange = (value: SingleValue<Option>) => {
-    setSelected(value?.value)
+}: Props<T>) {
+  const handleChange = (value: SingleValue<Option<T>>) => {
+    if (value) setSelected(value.value)
   }
 
   const defaultOptions = candidates.filter((c) => selected === c.value)

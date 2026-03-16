@@ -128,47 +128,52 @@ type ThreadMessagesAreaProps = {
 const ThreadMessagesArea = forwardRef<
   ThreadMessagesAreaRefHandle,
   ThreadMessagesAreaProps
->((props: ThreadMessagesAreaProps, ref: any) => {
-  const [messages, _setMessages] = useState<Array<Message>>(
-    props.threadMessages
-  )
+>(
+  (
+    props: ThreadMessagesAreaProps,
+    ref: React.ForwardedRef<ThreadMessagesAreaRefHandle>
+  ) => {
+    const [messages, _setMessages] = useState<Array<Message>>(
+      props.threadMessages
+    )
 
-  const handleReply = (message: Message) => {
-    if (!props.canTalk) return
-    props.reply(message)
-  }
-
-  const [userPagingSettings] = useUserPagingSettings()
-  useEffect(() => {
-    if (userPagingSettings.isDesc) {
-      _setMessages(messages.reverse())
+    const handleReply = (message: Message) => {
+      if (!props.canTalk) return
+      props.reply(message)
     }
-  }, [])
 
-  useImperativeHandle(ref, () => ({
-    setMessages(messages: Array<Message>) {
-      _setMessages(messages)
-    }
-  }))
+    const [userPagingSettings] = useUserPagingSettings()
+    useEffect(() => {
+      if (userPagingSettings.isDesc) {
+        _setMessages(messages.reverse())
+      }
+    }, [])
 
-  return (
-    <div className='relative flex-1'>
-      <div id='talk-area-top'></div>
-      <div id='talk-area-top-preview'></div>
-      {messages.map((message: Message) => (
-        <MessageComponent
-          {...props}
-          message={message}
-          key={message.id}
-          handleReply={handleReply}
-          shouldDisplayReplyTo={true}
-        />
-      ))}
-      <div id='talk-area-bottom-preview'></div>
-      <div className='p-4'>
-        <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
+    useImperativeHandle(ref, () => ({
+      setMessages(messages: Array<Message>) {
+        _setMessages(messages)
+      }
+    }))
+
+    return (
+      <div className='relative flex-1'>
+        <div id='talk-area-top'></div>
+        <div id='talk-area-top-preview'></div>
+        {messages.map((message: Message) => (
+          <MessageComponent
+            {...props}
+            message={message}
+            key={message.id}
+            handleReply={handleReply}
+            shouldDisplayReplyTo={true}
+          />
+        ))}
+        <div id='talk-area-bottom-preview'></div>
+        <div className='p-4'>
+          <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
+        </div>
+        <div id='talk-area-bottom'></div>
       </div>
-      <div id='talk-area-bottom'></div>
-    </div>
-  )
-})
+    )
+  }
+)

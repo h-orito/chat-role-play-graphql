@@ -1,5 +1,5 @@
 import PrimaryButton from '@/components/button/primary-button'
-import SecondaryButton from '@/components/button/scondary-button'
+import SecondaryButton from '@/components/button/secondary-button'
 import Modal from '@/components/modal/modal'
 import { useRouter } from 'next/router'
 import { useState } from 'react'

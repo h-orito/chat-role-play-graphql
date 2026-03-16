@@ -1,10 +1,10 @@
 import Image from 'next/image'
 import { GameParticipantIcon } from '@/lib/generated/graphql'
-import { useState } from 'react'
 import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import ParticipantIconEdit from './participant-icon-edit'
 import { useMyselfValue } from '../game-hook'
+import { useModal } from '@/components/hooks/use-modal'
 
 type Props = {
   icons: Array<GameParticipantIcon>
@@ -18,13 +18,7 @@ export default function ParticipantIcons({
   refetchIcons
 }: Props) {
   const myself = useMyselfValue()
-  const [isOpenIconEditModal, setIsOpenIconEditModal] = useState(false)
-
-  const toggleIconEditModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenIconEditModal(!isOpenIconEditModal)
-    }
-  }
+  const iconEditModal = useModal()
 
   const canIconEdit = canEdit && myself!.chara == null
 
@@ -56,19 +50,16 @@ export default function ParticipantIcons({
           ))}
       </div>
       {canIconEdit && (
-        <PrimaryButton
-          className='mt-2'
-          click={() => setIsOpenIconEditModal(true)}
-        >
+        <PrimaryButton className='mt-2' click={iconEditModal.open}>
           アイコン管理
         </PrimaryButton>
       )}
-      {isOpenIconEditModal && (
-        <Modal header='アイコン管理' close={toggleIconEditModal} hideFooter>
+      {iconEditModal.isOpen && (
+        <Modal header='アイコン管理' close={iconEditModal.close} hideFooter>
           <ParticipantIconEdit
             icons={icons}
             refetchIcons={refetchIcons}
-            close={toggleIconEditModal}
+            close={iconEditModal.close}
           />
         </Modal>
       )}

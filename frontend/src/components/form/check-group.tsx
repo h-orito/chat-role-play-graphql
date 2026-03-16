@@ -1,25 +1,18 @@
-import { useState } from 'react'
-
-type Props = {
+type Props<T extends string> = {
   className?: string
   name: string
-  candidates: Array<Option>
-  selected: any[]
-  setSelected: (value: any[]) => void
+  candidates: Array<{ label: string; value: T }>
+  selected: T[]
+  setSelected: (value: T[]) => void
 }
 
-type Option = {
-  label: string
-  value: any
-}
-
-export default function CheckGroup({
+export default function CheckGroup<T extends string>({
   className,
   name,
   candidates,
   selected,
   setSelected
-}: Props) {
+}: Props<T>) {
   const items = candidates.map((candidate) => {
     return {
       ...candidate,
@@ -27,7 +20,7 @@ export default function CheckGroup({
     }
   })
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newItems = items.map((item) => {
       if (item.value === e.target.value) {
         item.checked = !item.checked

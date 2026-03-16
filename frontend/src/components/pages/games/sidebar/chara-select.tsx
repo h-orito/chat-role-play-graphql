@@ -9,7 +9,7 @@ type Props = {
 
 export default function CharaSelect({ charas, setValue }: Props) {
   const game = useGameValue()
-  const handleClick = (e: any, id: string) => {
+  const handleClick = (e: React.MouseEvent, id: string) => {
     e.preventDefault()
     setValue(id)
   }
@@ -27,7 +27,7 @@ export default function CharaSelect({ charas, setValue }: Props) {
           <button
             key={chara.id}
             className={`base-border rounded-md border p-2 hover:bg-gray-100`}
-            onClick={(e: any) => handleClick(e, chara.id)}
+            onClick={(e: React.MouseEvent) => handleClick(e, chara.id)}
           >
             <div className='flex justify-center'>
               <Image

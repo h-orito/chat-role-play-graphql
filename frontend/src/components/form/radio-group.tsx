@@ -1,31 +1,24 @@
-import { useMemo } from 'react'
+import { useId } from 'react'
 
-type Props = {
+type Props<T extends string> = {
   className?: string
   name: string
-  candidates: Array<Option>
-  selected: any
-  setSelected: (value: any) => void
+  candidates: Array<{ label: string; value: T }>
+  selected: T
+  setSelected: (value: T) => void
   disabled?: boolean
 }
 
-type Option = {
-  label: string
-  value: any
-}
-
-export default function RadioGroup({
+export default function RadioGroup<T extends string>({
   className,
   name,
   candidates,
   selected,
   setSelected,
   disabled
-}: Props) {
-  const nameWithId = useMemo(() => {
-    const random = Math.random().toString(32).substring(2)
-    return `${name}_${random}`
-  }, [])
+}: Props<T>) {
+  const id = useId()
+  const nameWithId = `${name}_${id}`
   return (
     <div className='flex'>
       {candidates.map((candidate, index) => {
@@ -46,7 +39,9 @@ export default function RadioGroup({
               value={candidate.value}
               id={`${nameWithId}_${index}`}
               checked={selected === candidate.value}
-              onChange={(e: any) => setSelected(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSelected(e.target.value as T)
+              }
               disabled={disabled}
             />
             <label

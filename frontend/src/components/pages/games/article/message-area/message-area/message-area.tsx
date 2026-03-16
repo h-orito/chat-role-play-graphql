@@ -42,7 +42,7 @@ export interface MessageAreaRefHandle {
 }
 
 const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
-  (props: Props, ref: any) => {
+  (props: Props, ref: React.ForwardedRef<MessageAreaRefHandle>) => {
     const {
       className,
       isViewing,

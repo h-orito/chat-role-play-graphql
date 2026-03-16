@@ -1,4 +1,5 @@
 import { Message } from '@/lib/generated/graphql'
+import { memo } from 'react'
 import MessageText from '../../../message-text/message-text'
 import { iso2display } from '@/components/util/datetime/datetime'
 import FavoriteButton from '@/components/pages/games/article/message-area/message-area/messages-area/message/favorite-button'
@@ -9,7 +10,7 @@ type Props = {
   preview?: boolean
 }
 
-export default function DescriptionMessage({
+export default memo(function DescriptionMessage({
   message,
   preview = false
 }: Props) {
@@ -40,4 +41,4 @@ export default function DescriptionMessage({
       </div>
     </div>
   )
-}
+})

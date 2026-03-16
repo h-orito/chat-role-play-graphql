@@ -11,7 +11,7 @@ import Image from 'next/image'
 import { ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline'
 import { iso2display } from '@/components/util/datetime/datetime'
 import { useLazyQuery } from '@apollo/client'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import FavoriteButton from './favorite-button'
 import MessageComponent from './message'
 import MessageText from '../../../message-text/message-text'
@@ -31,7 +31,7 @@ type MessageProps = {
   shouldDisplayReplyTo?: boolean
 }
 
-export default function TalkMessage({
+export default memo(function TalkMessage({
   message,
   handleReply,
   preview = false,
@@ -110,7 +110,7 @@ export default function TalkMessage({
       {showReplies && <Replies replies={replies} handleReply={handleReply} />}
     </div>
   )
-}
+})
 
 const ReceiverName = ({
   message,

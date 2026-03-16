@@ -7,6 +7,7 @@ import {
   GameParticipantGroup
 } from '@/lib/generated/graphql'
 import React, { useState } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
 import { useMyselfValue } from '../../../game-hook'
 import ParticipantsCheckbox from '../../../participant/participants-checkbox'
 import dayjs from 'dayjs'
@@ -16,7 +17,7 @@ type Props = {
   group: GameParticipantGroup
   messageQuery: DirectMessagesQuery
   search: (query: DirectMessagesQuery) => void
-  close: (e: any) => void
+  close: () => void
 }
 
 export default function DirectMessageFilter(props: Props) {
@@ -38,7 +39,7 @@ export default function DirectMessageFilter(props: Props) {
     messageQuery.untilAt ? dayjs(messageQuery.untilAt).toDate() : null
   )
 
-  const handleReset = (e: any) => {
+  const handleReset = () => {
     if (!window.confirm('検索条件をリセットしてよろしいですか？')) return
     setSenders([])
     setKeyword('')
@@ -46,7 +47,7 @@ export default function DirectMessageFilter(props: Props) {
     setUntilAt(null)
   }
 
-  const handleSearch = (e: any) => {
+  const handleSearch = () => {
     const keywords = keyword.split(' ').filter((k) => k.length !== 0)
     const newQuery: DirectMessagesQuery = {
       ...messageQuery,
@@ -63,7 +64,7 @@ export default function DirectMessageFilter(props: Props) {
       }
     }
     search(newQuery)
-    close(e)
+    close()
   }
 
   return (
@@ -99,12 +100,7 @@ type FilterSenderProps = {
 const FilterSender = (props: FilterSenderProps) => {
   const { participants, senders, setSenders } = props
   const myself = useMyselfValue()
-  const [isOpenSenderModal, setIsOpenSenderModal] = useState(false)
-  const toggleSenderModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenSenderModal(!isOpenSenderModal)
-    }
-  }
+  const senderModal = useModal()
   return (
     <div className='my-6'>
       <label className='text-sm font-bold'>発言者</label>
@@ -115,14 +111,11 @@ const FilterSender = (props: FilterSenderProps) => {
           <p className='text-xs'>{senders.map((s) => s.name).join('、')}</p>
         )}
       </div>
-      <PrimaryButton
-        className='text-xs'
-        click={() => setIsOpenSenderModal(true)}
-      >
+      <PrimaryButton className='text-xs' click={senderModal.open}>
         選択
       </PrimaryButton>
-      {isOpenSenderModal && (
-        <Modal close={toggleSenderModal}>
+      {senderModal.isOpen && (
+        <Modal close={senderModal.close}>
           <ParticipantsCheckbox
             participants={participants}
             selects={senders}

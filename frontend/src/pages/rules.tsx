@@ -3,21 +3,11 @@ import Policy from '@/components/pages/index/policy'
 import Term from '@/components/pages/index/term'
 import PageHeader from '@/components/pages/page-header'
 import Head from 'next/head'
-import { useState } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
 
 export default function Rules() {
-  const [isOpenTermModal, setIsOpenTermModal] = useState(false)
-  const toggleTermModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenTermModal(!isOpenTermModal)
-    }
-  }
-  const [isOpenPolicyModal, setIsOpenPolicyModal] = useState(false)
-  const togglePolicyModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenPolicyModal(!isOpenPolicyModal)
-    }
-  }
+  const termModal = useModal()
+  const policyModal = useModal()
 
   return (
     <main className='w-full lg:flex lg:justify-center'>
@@ -35,7 +25,7 @@ export default function Rules() {
               <li>
                 <a
                   className='cursor-pointer text-blue-500'
-                  onClick={() => setIsOpenTermModal(true)}
+                  onClick={termModal.open}
                 >
                   利用規約
                 </a>
@@ -43,21 +33,21 @@ export default function Rules() {
               <li>
                 <a
                   className='cursor-pointer text-blue-500'
-                  onClick={() => setIsOpenPolicyModal(true)}
+                  onClick={policyModal.open}
                 >
                   プライバシーポリシー
                 </a>
               </li>
             </ul>
-            {isOpenTermModal && (
-              <Modal header='利用規約' close={toggleTermModal} hideFooter>
+            {termModal.isOpen && (
+              <Modal header='利用規約' close={termModal.close} hideFooter>
                 <Term />
               </Modal>
             )}
-            {isOpenPolicyModal && (
+            {policyModal.isOpen && (
               <Modal
                 header='プライバシーポリシー'
-                close={togglePolicyModal}
+                close={policyModal.close}
                 hideFooter
               >
                 <Policy />

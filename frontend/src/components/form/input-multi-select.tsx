@@ -1,27 +1,26 @@
-import { Dispatch, SetStateAction } from 'react'
 import Select, { MultiValue } from 'react-select'
 
-type Props = {
+type Option<T extends string> = {
+  label: string
+  value: T
+}
+
+type Props<T extends string> = {
   label?: string
-  candidates: Array<Option>
-  selected: any[]
-  setSelected: Dispatch<SetStateAction<any[]>>
+  candidates: Array<Option<T>>
+  selected: T[]
+  setSelected: (value: T[]) => void
   disabled?: boolean
 }
 
-type Option = {
-  label: string
-  value: any
-}
-
-export default function InputMultiSelect({
+export default function InputMultiSelect<T extends string>({
   label,
   candidates,
   selected,
   setSelected,
   disabled
-}: Props) {
-  const handleChange = (newValue: MultiValue<Option>) => {
+}: Props<T>) {
+  const handleChange = (newValue: MultiValue<Option<T>>) => {
     setSelected(newValue.map((v) => v.value))
   }
 

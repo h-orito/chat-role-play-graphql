@@ -1,9 +1,11 @@
+import { memo } from 'react'
+
 type Props = {
   rawText: string
   isConvertDisabled?: boolean
 }
 
-export default function MessageText({
+export default memo(function MessageText({
   rawText,
   isConvertDisabled = false
 }: Props) {
@@ -17,7 +19,7 @@ export default function MessageText({
   })
 
   return <span dangerouslySetInnerHTML={{ __html: converted }}></span>
-}
+})
 
 interface ReplaceTarget {
   regex: RegExp

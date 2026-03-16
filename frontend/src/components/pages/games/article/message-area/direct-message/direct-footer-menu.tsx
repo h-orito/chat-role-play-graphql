@@ -8,8 +8,8 @@ import {
   ArrowUpIcon,
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
-import { useState } from 'react'
 import MessageFilter from '../message-area/message-filter'
+import { useModal } from '@/components/hooks/use-modal'
 import { isDirectMessagesQueryFiltering } from '../message-area/messages-query'
 import DirectMessageFilter from './direct-message-filter'
 
@@ -24,12 +24,7 @@ type Props = {
 
 const DirectFooterMenu = (props: Props) => {
   const { group, query, search, scrollToTop, scrollToBottom } = props
-  const [isOpenFilterModal, setIsOpenFilterModal] = useState(false)
-  const toggleFilterModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenFilterModal(!isOpenFilterModal)
-    }
-  }
+  const filterModal = useModal()
   const filtering = isDirectMessagesQueryFiltering(query, group)
 
   return (
@@ -55,7 +50,7 @@ const DirectFooterMenu = (props: Props) => {
       <div className='flex flex-1 text-center'>
         <button
           className='sidebar-background flex w-full justify-center px-4 py-2'
-          onClick={() => setIsOpenFilterModal(true)}
+          onClick={filterModal.open}
         >
           <MagnifyingGlassIcon
             className={`h-5 w-5 ${filtering ? 'base-link' : ''}`}
@@ -68,10 +63,10 @@ const DirectFooterMenu = (props: Props) => {
             抽出
           </span>
         </button>
-        {isOpenFilterModal && (
-          <Modal header='発言抽出' close={toggleFilterModal}>
+        {filterModal.isOpen && (
+          <Modal header='発言抽出' close={filterModal.close}>
             <DirectMessageFilter
-              close={toggleFilterModal}
+              close={filterModal.close}
               group={group}
               messageQuery={query}
               search={search}

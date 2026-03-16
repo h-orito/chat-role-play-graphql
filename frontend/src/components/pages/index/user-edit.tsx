@@ -12,7 +12,7 @@ import { useCallback } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
   myPlayer: Player | null
   refetchMyPlayer: () => void
 }
@@ -36,7 +36,7 @@ export default function UserEdit({ close, myPlayer, refetchMyPlayer }: Props) {
     {
       onCompleted(e) {
         refetchMyPlayer()
-        close(e)
+        close()
       },
       onError(error) {
         console.error(error)

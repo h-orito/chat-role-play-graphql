@@ -1,3 +1,4 @@
+import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import { createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
@@ -24,8 +25,11 @@ import {
 } from '@/components/pages/games/game-hook'
 import ThreadMessageArea from '@/components/pages/games/thread/thread-message-area'
 
-export const getServerSideProps = async (context: any) => {
-  const { gameId, messageId } = context.params
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const gameId = Number(context.params!.gameId)
+  const messageId = Number(context.params!.messageId)
   const client = createInnerClient()
   // game
   const gameStringId = idToBase64(gameId, 'Game')

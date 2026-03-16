@@ -1,3 +1,4 @@
+import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import { createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
@@ -23,6 +24,7 @@ import {
   UnfollowMutationVariables
 } from '@/lib/generated/graphql'
 import { ReactElement, memo, useCallback, useState } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
@@ -42,8 +44,11 @@ import ParticipantIcons from '@/components/pages/games/profile/participant-icons
 import ProfileEdit from '@/components/pages/games/profile/profile-edit'
 import { useLazyQuery, useMutation } from '@apollo/client'
 
-export const getServerSideProps = async (context: any) => {
-  const { gameId, participantId } = context.params
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const gameId = Number(context.params!.gameId)
+  const participantId = Number(context.params!.participantId)
   const client = createInnerClient()
   // game
   const gameStringId = idToBase64(gameId, 'Game')
@@ -305,26 +310,19 @@ type ProfileEditButtonProps = {
 }
 const ProfileEditButton = (props: ProfileEditButtonProps) => {
   const { canEdit, profile, icons, refetchProfile } = props
-  const [isOpenEditModal, setIsOpenEditModal] = useState(false)
-  const toggleEditModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenEditModal(!isOpenEditModal)
-    }
-  }
+  const editModal = useModal()
 
   if (!canEdit) return <></>
   return (
     <>
-      <PrimaryButton click={() => setIsOpenEditModal(true)}>
-        プロフィール編集
-      </PrimaryButton>
-      {isOpenEditModal && (
-        <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
+      <PrimaryButton click={editModal.open}>プロフィール編集</PrimaryButton>
+      {editModal.isOpen && (
+        <Modal header='プロフィール編集' close={editModal.close} hideFooter>
           <ProfileEdit
             profile={profile}
             icons={icons}
             refetchProfile={refetchProfile}
-            close={toggleEditModal}
+            close={editModal.close}
           />
         </Modal>
       )}

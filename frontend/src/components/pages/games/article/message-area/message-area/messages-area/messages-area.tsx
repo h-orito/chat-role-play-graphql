@@ -40,7 +40,7 @@ export interface MessagesAreaRefHandle {
 }
 
 const MessagesArea = forwardRef<MessagesAreaRefHandle, Props>(
-  (props: Props, ref: any) => {
+  (props: Props, ref: React.ForwardedRef<MessagesAreaRefHandle>) => {
     const game = useGameValue()
     const {
       messageQuery,

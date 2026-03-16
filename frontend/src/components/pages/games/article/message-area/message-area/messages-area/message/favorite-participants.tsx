@@ -9,7 +9,7 @@ import Participants from '../../../../../participant/participants'
 import { useGameValue } from '@/components/pages/games/game-hook'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
   messageId: string
 }
 

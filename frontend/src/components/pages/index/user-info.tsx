@@ -3,6 +3,7 @@ import useAuth from '@/components/auth/use-auth'
 import PrimaryButton from '@/components/button/primary-button'
 import Modal from '@/components/modal/modal'
 import { useEffect, useState } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
 import UserEdit from './user-edit'
 import { useLazyQuery } from '@apollo/client'
 import {
@@ -14,12 +15,7 @@ import {
 export default function UserInfo() {
   const authState: AuthState = useAuth()
 
-  const [isOpenUserMofifyModal, setIsOpenUserMofifyModal] = useState(false)
-  const toggleUserMofifyModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenUserMofifyModal(!isOpenUserMofifyModal)
-    }
-  }
+  const userModifyModal = useModal()
 
   const [myPlayer, setMyPlayer] = useState<Player | null>(null)
   const [fetchMyPlayer] = useLazyQuery<MyPlayerQuery>(MyPlayerDocument)
@@ -40,7 +36,7 @@ export default function UserInfo() {
           <p>{myPlayer?.name} さん</p>
           <div className='flex justify-center gap-2'>
             <div className='flex flex-1 justify-end'>
-              <PrimaryButton click={() => setIsOpenUserMofifyModal(true)}>
+              <PrimaryButton click={userModifyModal.open}>
                 ユーザー編集
               </PrimaryButton>
             </div>
@@ -48,14 +44,14 @@ export default function UserInfo() {
               <LogoutButton />
             </div>
           </div>
-          {isOpenUserMofifyModal && (
+          {userModifyModal.isOpen && (
             <Modal
               header='ユーザー編集'
-              close={toggleUserMofifyModal}
+              close={userModifyModal.close}
               hideFooter
             >
               <UserEdit
-                close={toggleUserMofifyModal}
+                close={userModifyModal.close}
                 myPlayer={myPlayer}
                 refetchMyPlayer={refetchMyPlayer}
               />

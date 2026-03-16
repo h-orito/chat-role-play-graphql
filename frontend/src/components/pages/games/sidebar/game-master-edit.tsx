@@ -19,7 +19,7 @@ import { useState } from 'react'
 import { useGameValue } from '../game-hook'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
 }
 
 export default function GameMasterEdit({ close }: Props) {

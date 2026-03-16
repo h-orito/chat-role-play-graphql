@@ -1,4 +1,5 @@
 import { Message, MessageType } from '@/lib/generated/graphql'
+import { memo } from 'react'
 import TalkMessage from './talk-message'
 import SystemMessage from './system-message'
 import DescriptionMessage from './description-message'
@@ -9,7 +10,7 @@ type MessageProps = {
   shouldDisplayReplyTo: boolean
 }
 
-export default function MessageComponent(props: MessageProps) {
+const MessageComponent = memo(function MessageComponent(props: MessageProps) {
   const type = props.message.content.type
   const isSystem = type.indexOf('System') !== -1
   const isDescription = type === MessageType.Description
@@ -24,4 +25,6 @@ export default function MessageComponent(props: MessageProps) {
       )}
     </div>
   )
-}
+})
+
+export default MessageComponent

@@ -31,8 +31,7 @@ export default function InputImage({
   const [previewImageUrl, setPreviewImageUrl] = useState(defaultImageUrl)
   const inputRef = useRef<HTMLInputElement>(null!)
 
-  const onProfileButtonClick = (e: any) => {
-    e.preventDefault()
+  const onProfileButtonClick = () => {
     inputRef.current.click()
   }
 
@@ -59,8 +58,7 @@ export default function InputImage({
     setPreviewImageUrl(URL.createObjectURL(file))
   }
 
-  const handleCancel = (e: any) => {
-    e.preventDefault()
+  const handleCancel = () => {
     setErrorMessage('')
     setImages([])
     setPreviewImageUrl('')
@@ -90,7 +88,7 @@ export default function InputImage({
         画像を選択
       </PrimaryButton>
       {previewImageUrl != null && (
-        <DangerButton className='ml-2' click={(e: any) => handleCancel(e)}>
+        <DangerButton className='ml-2' click={() => handleCancel()}>
           削除
         </DangerButton>
       )}

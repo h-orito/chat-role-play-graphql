@@ -18,6 +18,7 @@ import {
   UnfollowMutationVariables
 } from '@/lib/generated/graphql'
 import { useCallback, useEffect, useState } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
 import ProfileEdit from './profile-edit'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import DangerButton from '@/components/button/danger-button'
@@ -28,7 +29,7 @@ import MessageText from '../article/message-area/message-text/message-text'
 import { useGameValue, useMyself, useMyselfValue } from '../game-hook'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
   participantId: string
 }
 
@@ -193,12 +194,7 @@ const FFButtons = (
   }
 ) => {
   const { participantId, profile, refetchProfile, canEdit, icons } = props
-  const [isOpenEditModal, setIsOpenEditModal] = useState(false)
-  const toggleEditModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenEditModal(!isOpenEditModal)
-    }
-  }
+  const editModal = useModal()
 
   return (
     <div className='ml-auto'>
@@ -214,16 +210,14 @@ const FFButtons = (
       />
       {canEdit && (
         <>
-          <PrimaryButton click={() => setIsOpenEditModal(true)}>
-            プロフィール編集
-          </PrimaryButton>
-          {isOpenEditModal && (
-            <Modal header='プロフィール編集' close={toggleEditModal} hideFooter>
+          <PrimaryButton click={editModal.open}>プロフィール編集</PrimaryButton>
+          {editModal.isOpen && (
+            <Modal header='プロフィール編集' close={editModal.close} hideFooter>
               <ProfileEdit
                 profile={profile}
                 icons={icons}
                 refetchProfile={refetchProfile}
-                close={toggleEditModal}
+                close={editModal.close}
               />
             </Modal>
           )}

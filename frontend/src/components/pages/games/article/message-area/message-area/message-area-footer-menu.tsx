@@ -5,8 +5,8 @@ import {
   ArrowDownIcon,
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
-import { useState } from 'react'
 import { useGameValue } from '../../../game-hook'
+import { useModal } from '@/components/hooks/use-modal'
 import MessageFilter from './message-filter'
 import { isFiltering } from './messages-query'
 
@@ -21,12 +21,7 @@ type FooterMenuProps = {
 const MessageAreaFooterMenu = (props: FooterMenuProps) => {
   const { scrollToTop, scrollToBottom, searchable, messageQuery, search } =
     props
-  const [isOpenFilterModal, setIsOpenFilterModal] = useState(false)
-  const toggleFilterModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenFilterModal(!isOpenFilterModal)
-    }
-  }
+  const filterModal = useModal()
   const filtering = searchable && isFiltering(messageQuery!, useGameValue())
 
   return (
@@ -53,7 +48,7 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
         <div className='flex flex-1 text-center'>
           <button
             className='sidebar-background flex w-full justify-center px-4 py-2'
-            onClick={() => setIsOpenFilterModal(true)}
+            onClick={filterModal.open}
           >
             <MagnifyingGlassIcon
               className={`h-5 w-5 ${filtering ? 'base-link' : ''}`}
@@ -66,10 +61,10 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
               抽出
             </span>
           </button>
-          {isOpenFilterModal && (
-            <Modal header='発言抽出' close={toggleFilterModal}>
+          {filterModal.isOpen && (
+            <Modal header='発言抽出' close={filterModal.close}>
               <MessageFilter
-                close={toggleFilterModal}
+                close={filterModal.close}
                 messageQuery={messageQuery!}
                 search={search!}
               />

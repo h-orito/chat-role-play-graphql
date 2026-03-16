@@ -46,7 +46,7 @@ import InputImages from '@/components/form/input-images'
 import { useGameValue } from '../game-hook'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
   icons: Array<GameParticipantIcon>
   refetchIcons: () => Promise<Array<GameParticipantIcon>>
 }
@@ -276,7 +276,7 @@ const IconUploadArea = ({
   })
 
   const onSubmit = useCallback(
-    (e: any) => {
+    (e: React.FormEvent) => {
       e.preventDefault()
       setSubmitting(true)
       uploadIcons({
@@ -356,7 +356,7 @@ const IconDeleteArea = ({
   )
 
   const handleDelete = useCallback(
-    (e: any, iconId: string) => {
+    (e: React.MouseEvent, iconId: string) => {
       e.preventDefault()
       if (window.confirm('アイコンを削除しますか？') === false) return
       deleteIcon({
@@ -392,7 +392,7 @@ const IconDeleteArea = ({
           />
           <button
             className='absolute right-0 top-0'
-            onClick={(e: any) => handleDelete(e, icon.id)}
+            onClick={(e: React.MouseEvent) => handleDelete(e, icon.id)}
           >
             <TrashIcon className='h-4 w-4 bg-red-500 text-white' />
           </button>

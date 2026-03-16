@@ -5,14 +5,14 @@ type Props = {
   children: React.ReactNode
   isOpen?: boolean
   isFixed?: boolean
-  toggleFixed?: (e: any) => void
+  toggleFixed?: (e: React.MouseEvent) => void
 }
 
 export interface PanelRefHandle {
   open: () => void
 }
 
-const Panel = forwardRef<PanelRefHandle, Props>((props: Props, ref: any) => {
+const Panel = forwardRef<PanelRefHandle, Props>((props: Props, ref) => {
   const {
     header,
     children,
@@ -31,7 +31,7 @@ const Panel = forwardRef<PanelRefHandle, Props>((props: Props, ref: any) => {
   }))
 
   // こうしないとdetails要素のopen属性が変更されない
-  const handleClick = (e: any) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
     setIsOpen(!isOpen)
   }

@@ -18,6 +18,8 @@ import {
   useRef,
   useState
 } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
+import { useFixedPanel } from '@/components/hooks/use-fixed-panel'
 import Paging from '../message-area/messages-area/paging'
 import DirectMessageComponent from './direct-message'
 import { ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline'
@@ -26,16 +28,13 @@ import ParticipantGroupEdit from './participant-group-edit'
 import { useUserPagingSettings } from '../../../user-settings'
 import DirectFooterMenu from './direct-footer-menu'
 import Portal from '@/components/modal/portal'
-import {
-  useFixedBottom,
-  useGameValue
-} from '@/components/pages/games/game-hook'
+import { useGameValue } from '@/components/pages/games/game-hook'
 import Panel from '@/components/panel/panel'
 import TalkDirect from '../../../talk/talk-direct'
 import { base64ToId } from '@/components/graphql/convert'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
   group: GameParticipantGroup
   refetchGroups: () => void
 }
@@ -147,7 +146,7 @@ const DirectMessageModal = (
     children: React.ReactNode
     search: (query?: DirectMessagesQuery) => Promise<void>
     query: DirectMessagesQuery
-    close: (e: any) => void
+    close: () => void
     canModify: boolean
     scrollToTop: () => void
     scrollToBottom: () => void
@@ -189,15 +188,7 @@ const DirectMessageGroupMembers = (
   } & Props
 ) => {
   const { refetchGroups, group, canModify } = props
-  const [isOpenModifyGroupModal, setIsOpenModifyGroupModal] = useState(false)
-  const toggleModifyGroupModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenModifyGroupModal(!isOpenModifyGroupModal)
-    }
-  }
-  const openModifyGroupModal = (group: GameParticipantGroup) => {
-    setIsOpenModifyGroupModal(true)
-  }
+  const modifyGroupModal = useModal()
 
   return (
     <div className='base-border flex border-b px-4 py-2'>
@@ -208,16 +199,16 @@ const DirectMessageGroupMembers = (
       {canModify && (
         <button
           className='primary-hover-background ml-auto pl-4'
-          onClick={() => openModifyGroupModal(group)}
+          onClick={modifyGroupModal.open}
         >
           <PencilIcon className='mr-1 h-4 w-4' />
         </button>
       )}
-      {isOpenModifyGroupModal && (
-        <Modal close={toggleModifyGroupModal} hideFooter>
+      {modifyGroupModal.isOpen && (
+        <Modal close={modifyGroupModal.close} hideFooter>
           <ParticipantGroupEdit
             group={group}
-            close={toggleModifyGroupModal}
+            close={modifyGroupModal.close}
             refetchGroups={refetchGroups}
           />
         </Modal>
@@ -288,19 +279,10 @@ const DirectTalkArea = memo((props: DirectTalkAreaProps) => {
 
 const DirectTalkPanel = (props: DirectTalkAreaProps) => {
   const { group, search } = props
+  const { isFixed, toggleFixed } = useFixedPanel()
 
   const handleCompleted = () => {
     search()
-  }
-
-  const [isFixed, setIsFixed] = useState(false)
-  const otherFixedCanceler = useFixedBottom()
-  const toggleFixed = (e: any) => {
-    if (!isFixed) {
-      otherFixedCanceler(() => setIsFixed(false))
-    }
-    setIsFixed((current) => !current)
-    e.stopPropagation()
   }
 
   const PanelComponent = () => (

@@ -13,7 +13,7 @@ import Image from 'next/image'
 import { StarIcon } from '@heroicons/react/24/outline'
 import { iso2display } from '@/components/util/datetime/datetime'
 import { useMutation } from '@apollo/client'
-import { useCallback, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import MessageText from '../message-text/message-text'
 import {
   useGameValue,
@@ -29,7 +29,7 @@ type MessageProps = {
   preview?: boolean
 }
 
-export default function DirectMessageComponent({
+export default memo(function DirectMessageComponent({
   directMessage,
   preview = false
 }: MessageProps) {
@@ -156,7 +156,7 @@ export default function DirectMessageComponent({
       </div>
     </div>
   )
-}
+})
 
 const SenderName = ({
   directMessage,

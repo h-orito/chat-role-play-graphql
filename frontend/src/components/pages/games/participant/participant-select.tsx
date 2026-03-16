@@ -11,7 +11,7 @@ export default function ParticipantSelect({
   handleSelect
 }: Props) {
   const displayParticipants = participants.filter((p) => !p.isGone)
-  const handleClick = (e: any, id: string) => {
+  const handleClick = (e: React.MouseEvent, id: string) => {
     e.preventDefault()
     handleSelect(id)
   }

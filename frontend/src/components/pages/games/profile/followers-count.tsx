@@ -1,17 +1,14 @@
 import { GameParticipantProfile } from '@/lib/generated/graphql'
-import { useState } from 'react'
 import Followers from './followers'
 import Modal from '@/components/modal/modal'
+import { useModal } from '@/components/hooks/use-modal'
 
 type Props = {
   profile: GameParticipantProfile
 }
 
 export default function FollowersCount({ profile }: Props) {
-  const [isOpenFollowersModal, setIsOpenFollowersModal] = useState(false)
-  const toggleFollowersModal = (e: any) => {
-    setIsOpenFollowersModal(!isOpenFollowersModal)
-  }
+  const followersModal = useModal()
 
   if (profile.followersCount <= 0) {
     return (
@@ -22,16 +19,13 @@ export default function FollowersCount({ profile }: Props) {
   }
   return (
     <>
-      <button
-        className='primary-hover-text'
-        onClick={() => setIsOpenFollowersModal(true)}
-      >
+      <button className='primary-hover-text' onClick={followersModal.open}>
         フォロワー: <span className='font-bold'>{profile.followersCount}</span>
       </button>
-      {isOpenFollowersModal && (
+      {followersModal.isOpen && (
         <Modal
           header={`${profile.name} のフォロワー一覧`}
-          close={toggleFollowersModal}
+          close={followersModal.close}
           hideFooter
         >
           <Followers participantId={profile.participantId} />

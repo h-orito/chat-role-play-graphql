@@ -1,9 +1,4 @@
-import {
-  DebugMessagesDocument,
-  DebugMessagesMutation,
-  Game,
-  GameLabel
-} from '@/lib/generated/graphql'
+import { GameLabel } from '@/lib/generated/graphql'
 import {
   UsersIcon,
   InformationCircleIcon,
@@ -13,7 +8,8 @@ import {
   HomeIcon,
   LockClosedIcon
 } from '@heroicons/react/24/outline'
-import { Dispatch, SetStateAction, useMemo, useRef, useState } from 'react'
+import { useMemo } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
 import GameSettings from './game-settings'
 import Modal from '@/components/modal/modal'
 import Participate from './participate'
@@ -29,12 +25,9 @@ import { iso2display } from '@/components/util/datetime/datetime'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import GameMasterEdit from './game-master-edit'
 import GameStatusEdit from './game-status-edit'
-import { useMutation } from '@apollo/client'
-import { useRouter } from 'next/router'
 import UserSettingsComponent from './user-settings'
-import { useCookies } from 'react-cookie'
-import Image from 'next/image'
-import MessageText from '@/components/pages/games/article/message-area/message-text/message-text'
+import { GameIntroButton } from './game-intro-modal'
+import { DebugMenu } from './debug-menu'
 import {
   isGameMaster as _isGameMaster,
   canParticipate as _canParticipate,
@@ -145,125 +138,23 @@ const GameStatus = () => {
   )
 }
 
-const GameIntroButton = () => {
-  const game = useGameValue()
-  const [getCookie, setCookie] = useCookies()
-  const introCookie: IntroCookie = getCookie['intro'] || {}
-  const alreadyConfiemed = !!introCookie && introCookie[game.id] === true
-  const background = game.settings.background
-  const hasIntro =
-    (background.introduction != null && background.introduction !== '') ||
-    (background.catchImageUrl != null && background.catchImageUrl !== '')
-  const shouldShowModal = hasIntro && !alreadyConfiemed
-  const [showModal, setShowModal] = useState(shouldShowModal)
-
-  if (!hasIntro) return <></>
-
-  return (
-    <>
-      <div>
-        <button
-          className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
-          onClick={() => setShowModal(true)}
-        >
-          <UsersIcon className='mr-1 h-5 w-5' />
-          <p className='flex-1 self-center text-left'>ゲーム紹介</p>
-        </button>
-      </div>
-      {showModal && (
-        <GameIntroModal
-          setCookie={setCookie}
-          introCookie={introCookie}
-          setShowModal={setShowModal}
-        />
-      )}
-    </>
-  )
-}
-
-const GameIntroModal = ({
-  introCookie,
-  setCookie,
-  setShowModal
-}: {
-  introCookie: IntroCookie
-  setCookie: any
-  setShowModal: Dispatch<SetStateAction<boolean>>
-}) => {
-  const game = useGameValue()
-  const handleClose = () => {
-    introCookie[game.id] = true
-    setCookie('intro', introCookie, {
-      path: '/chat-role-play',
-      maxAge: 60 * 60 * 24 * 365
-    })
-    setShowModal(false)
-  }
-
-  const background = game.settings.background
-  const hasIntro =
-    background.introduction != null && background.introduction !== ''
-  const hasImage =
-    background.catchImageUrl != null && background.catchImageUrl !== ''
-
-  return (
-    <Modal
-      header={game.name}
-      close={() => handleClose()}
-      hideOnClickOutside={true}
-    >
-      <div className='text-center'>
-        {hasImage && (
-          <div
-            className='relative flex h-96 justify-center'
-            style={{ maxWidth: '80vw' }}
-          >
-            <Image
-              src={background.catchImageUrl!}
-              fill
-              style={{ objectFit: 'contain' }}
-              alt='ゲーム紹介画像'
-            />
-          </div>
-        )}
-        {hasIntro && (
-          <p className='my-2 whitespace-pre-wrap break-words rounded-md bg-gray-100 p-4 text-xs text-gray-700'>
-            <MessageText rawText={background.introduction!} />
-          </p>
-        )}
-      </div>
-    </Modal>
-  )
-}
-
-type IntroCookie = {
-  [gameId: string]: boolean
-}
-
 const ParticipantsButton = () => {
   const game = useGameValue()
-  const [isOpenParticipantsModal, setIsParticipantsModal] = useState(false)
-  const toggleParticipantsModal = (e: any) => {
-    setIsParticipantsModal(!isOpenParticipantsModal)
-  }
+  const modal = useModal()
 
   return (
     <>
       <div>
         <button
           className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
-          onClick={() => setIsParticipantsModal(true)}
+          onClick={modal.open}
         >
           <UsersIcon className='mr-1 h-5 w-5' />
           <p className='flex-1 self-center text-left'>参加者</p>
         </button>
       </div>
-      {isOpenParticipantsModal && (
-        <ArticleModal
-          header='参加者一覧'
-          close={toggleParticipantsModal}
-          hideFooter
-        >
+      {modal.isOpen && (
+        <ArticleModal header='参加者一覧' close={modal.close} hideFooter>
           <Participants className='p-4' participants={game.participants} />
         </ArticleModal>
       )}
@@ -272,27 +163,22 @@ const ParticipantsButton = () => {
 }
 
 const GameSettingsButton = () => {
-  const [isOpenGameSettingsModal, setIsOpenGameSettingsModal] = useState(false)
-  const toggleGameSettingsModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenGameSettingsModal(!isOpenGameSettingsModal)
-    }
-  }
+  const modal = useModal()
 
   return (
     <>
       <div>
         <button
           className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
-          onClick={() => setIsOpenGameSettingsModal(true)}
+          onClick={modal.open}
         >
           <InformationCircleIcon className='mr-1 h-5 w-5' />
           <p className='flex-1 self-center text-left'>ゲーム設定</p>
         </button>
       </div>
-      {isOpenGameSettingsModal && (
-        <Modal header='ゲーム設定' close={toggleGameSettingsModal}>
-          <GameSettings close={toggleGameSettingsModal} />
+      {modal.isOpen && (
+        <Modal header='ゲーム設定' close={modal.close}>
+          <GameSettings close={modal.close} />
         </Modal>
       )}
     </>
@@ -300,26 +186,21 @@ const GameSettingsButton = () => {
 }
 
 const UserSettingsButton = () => {
-  const [isOpenModal, setIsOpenModal] = useState(false)
-  const toggleModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenModal(!isOpenModal)
-    }
-  }
+  const modal = useModal()
   return (
     <>
       <div>
         <button
           className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
-          onClick={() => setIsOpenModal(true)}
+          onClick={modal.open}
         >
           <WrenchIcon className='mr-1 h-5 w-5' />
           <p className='flex-1 self-center text-left'>ユーザー設定</p>
         </button>
       </div>
-      {isOpenModal && (
-        <Modal close={toggleModal} hideFooter>
-          <UserSettingsComponent close={toggleModal} />
+      {modal.isOpen && (
+        <Modal close={modal.close} hideFooter>
+          <UserSettingsComponent close={modal.close} />
         </Modal>
       )}
     </>
@@ -338,24 +219,18 @@ const TopPageButton = () => (
 )
 
 const GameSettingsEditButton = () => {
-  const [isOpenGameSettingsEditModal, setIsOpenGameSettingsEditModal] =
-    useState(false)
-  const toggleGameSettingsEditModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenGameSettingsEditModal(!isOpenGameSettingsEditModal)
-    }
-  }
+  const modal = useModal()
   return (
     <>
       <button
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
-        onClick={() => setIsOpenGameSettingsEditModal(true)}
+        onClick={modal.open}
       >
         <LockClosedIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>ゲーム設定変更</p>
       </button>
-      {isOpenGameSettingsEditModal && (
-        <Modal close={toggleGameSettingsEditModal} hideOnClickOutside={false}>
+      {modal.isOpen && (
+        <Modal close={modal.close} hideOnClickOutside={false}>
           <GameSettingsEdit />
         </Modal>
       )}
@@ -364,23 +239,18 @@ const GameSettingsEditButton = () => {
 }
 
 const GameStatusEditButton = () => {
-  const [isOpenModal, setIsOpenModal] = useState(false)
-  const toggleModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenModal(!isOpenModal)
-    }
-  }
+  const modal = useModal()
   return (
     <>
       <button
         className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
-        onClick={() => setIsOpenModal(true)}
+        onClick={modal.open}
       >
         <LockClosedIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>ステータス・期間変更</p>
       </button>
-      {isOpenModal && (
-        <Modal close={toggleModal}>
+      {modal.isOpen && (
+        <Modal close={modal.close}>
           <GameStatusEdit />
         </Modal>
       )}
@@ -389,24 +259,19 @@ const GameStatusEditButton = () => {
 }
 
 const GameMasterEditButton = () => {
-  const [isOpenModal, setIsOpenModal] = useState(false)
-  const toggleModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenModal(!isOpenModal)
-    }
-  }
+  const modal = useModal()
   return (
     <>
       <button
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
-        onClick={() => setIsOpenModal(true)}
+        onClick={modal.open}
       >
         <LockClosedIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>GM追加削除</p>
       </button>
-      {isOpenModal && (
-        <Modal close={toggleModal} header='ゲームマスター追加削除'>
-          <GameMasterEdit close={toggleModal} />
+      {modal.isOpen && (
+        <Modal close={modal.close} header='ゲームマスター追加削除'>
+          <GameMasterEdit close={modal.close} />
         </Modal>
       )}
     </>
@@ -431,24 +296,19 @@ const ProfileButton = () => {
 }
 
 const ParticipateButton = () => {
-  const [isOpenParticipateModal, setIsOpenParticipateModal] = useState(false)
-  const toggleParticipateModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenParticipateModal(!isOpenParticipateModal)
-    }
-  }
+  const modal = useModal()
   return (
     <>
       <button
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
-        onClick={() => setIsOpenParticipateModal(true)}
+        onClick={modal.open}
       >
         <UserPlusIcon className='mr-1 h-5 w-5' />
         <p className='flex-1 self-center text-left'>参加登録</p>
       </button>
-      {isOpenParticipateModal && (
-        <Modal header='参加登録' close={toggleParticipateModal} hideFooter>
-          <Participate close={toggleParticipateModal} />
+      {modal.isOpen && (
+        <Modal header='参加登録' close={modal.close} hideFooter>
+          <Participate close={modal.close} />
         </Modal>
       )}
     </>
@@ -477,36 +337,5 @@ const Label = ({ label }: { label: GameLabel }) => {
     <span className={`mr-1 rounded-md px-2 text-xs text-white ${colorClass}`}>
       {label.name}
     </span>
-  )
-}
-
-const DebugMenu = () => {
-  const game = useGameValue()
-  const [registerMessage] = useMutation<DebugMessagesMutation>(
-    DebugMessagesDocument
-  )
-  const router = useRouter()
-  const registerDebugMessages = async () => {
-    await registerMessage({
-      variables: {
-        input: {
-          gameId: game.id
-        }
-      }
-    })
-    router.reload()
-  }
-
-  if (process.env.NEXT_PUBLIC_ENV !== 'local') return <></>
-  return (
-    <div className='base-border border-t py-2'>
-      <button
-        className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
-        onClick={() => registerDebugMessages()}
-      >
-        <UserPlusIcon className='mr-1 h-5 w-5' />
-        <p className='flex-1 self-center text-left'>100回発言</p>
-      </button>
-    </div>
   )
 }

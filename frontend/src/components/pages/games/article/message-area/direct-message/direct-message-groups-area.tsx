@@ -5,6 +5,7 @@ import {
   ParticipantGroupsQuery
 } from '@/lib/generated/graphql'
 import { useEffect, useState } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
 import { useLazyQuery } from '@apollo/client'
 import PrimaryButton from '@/components/button/primary-button'
 import CreateParticipantGroup from './create-participant-group'
@@ -29,20 +30,14 @@ export default function DirectMessageGroupsArea({ className }: Props) {
   )
   const [groups, setGroups] = useState<GameParticipantGroup[]>([])
 
-  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
-  const toggleCreateModal = (e: any) => {
-    setIsOpenCreateModal(!isOpenCreateModal)
-  }
+  const createModal = useModal()
 
   const [directMessageGroup, setDirectMessageGroup] =
     useState<GameParticipantGroup | null>(null)
-  const [isOpenDirectMessageModal, setIsDirectMessageModal] = useState(false)
-  const toggleDirectMessageModal = (group: GameParticipantGroup) => {
-    setIsDirectMessageModal(!isOpenDirectMessageModal)
-  }
+  const directMessageModal = useModal()
   const openDirectMessageModal = (group: GameParticipantGroup) => {
     setDirectMessageGroup(group)
-    setIsDirectMessageModal(!isOpenDirectMessageModal)
+    directMessageModal.open()
   }
 
   const refetchGroups = async () => {
@@ -85,9 +80,7 @@ export default function DirectMessageGroupsArea({ className }: Props) {
     >
       {canCreate && (
         <div className='flex p-4'>
-          <PrimaryButton click={() => setIsOpenCreateModal(true)}>
-            グループ作成
-          </PrimaryButton>
+          <PrimaryButton click={createModal.open}>グループ作成</PrimaryButton>
         </div>
       )}
       {groups.map((group: GameParticipantGroup) => (
@@ -97,23 +90,23 @@ export default function DirectMessageGroupsArea({ className }: Props) {
           </button>
         </div>
       ))}
-      {isOpenCreateModal && (
+      {createModal.isOpen && (
         <ArticleModal
           header='新規ダイレクトメッセージグループ'
-          close={toggleCreateModal}
+          close={createModal.close}
           hideFooter
         >
           <CreateParticipantGroup
             groups={groups}
             refetchGroups={refetchGroups}
-            close={toggleCreateModal}
+            close={createModal.close}
           />
         </ArticleModal>
       )}
-      {isOpenDirectMessageModal && (
+      {directMessageModal.isOpen && (
         <DirectMessageArea
           group={directMessageGroup!}
-          close={toggleDirectMessageModal}
+          close={directMessageModal.close}
           refetchGroups={refetchGroups}
         />
       )}

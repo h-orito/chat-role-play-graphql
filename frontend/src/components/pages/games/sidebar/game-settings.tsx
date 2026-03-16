@@ -5,7 +5,7 @@ import React from 'react'
 import { useGameValue } from '../game-hook'
 
 type GameSettingsProps = {
-  close: (e: any) => void
+  close: () => void
 }
 
 type SettingItem = {
