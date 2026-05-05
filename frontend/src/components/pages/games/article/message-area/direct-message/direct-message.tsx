@@ -166,14 +166,14 @@ const SenderName = ({
   preview: boolean
 }) => {
   const game = useGameValue()
-  const NameComponent = () => (
+  const name = (
     <p className='primary-hover-text text-xs'>
       ENo.{directMessage.sender.entryNumber}&nbsp;
       {directMessage.sender.name}
     </p>
   )
   if (preview) {
-    return <NameComponent />
+    return name
   }
   return (
     <Link
@@ -182,7 +182,7 @@ const SenderName = ({
       )}`}
       target='_blank'
     >
-      <NameComponent />
+      {name}
     </Link>
   )
 }
@@ -197,7 +197,7 @@ const SenderIcon = ({
   imageSizeRatio: number
 }) => {
   const game = useGameValue()
-  const IconComponent = () => (
+  const icon = (
     <Image
       src={directMessage.sender!.icon!.url}
       width={directMessage.sender!.icon!.width * imageSizeRatio}
@@ -207,7 +207,7 @@ const SenderIcon = ({
   )
 
   if (preview) {
-    return <IconComponent />
+    return icon
   }
   return (
     <Link
@@ -216,7 +216,7 @@ const SenderIcon = ({
       )}`}
       target='_blank'
     >
-      <IconComponent />
+      {icon}
     </Link>
   )
 }

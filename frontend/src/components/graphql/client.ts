@@ -1,5 +1,6 @@
 import {
   ApolloClient,
+  HttpLink,
   InMemoryCache,
   NormalizedCacheObject
 } from '@apollo/client'
@@ -56,7 +57,7 @@ export const createInnerClient = () => {
   if (innerClient) return innerClient
   innerClient = new ApolloClient({
     ssrMode: true,
-    uri: process.env.NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT,
+    link: new HttpLink({ uri: process.env.NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT }),
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {

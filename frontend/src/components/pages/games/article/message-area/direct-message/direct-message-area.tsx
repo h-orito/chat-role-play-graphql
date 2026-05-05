@@ -285,7 +285,7 @@ const DirectTalkPanel = (props: DirectTalkAreaProps) => {
     search()
   }
 
-  const PanelComponent = () => (
+  const panel = (
     <Panel
       header='ダイレクトメッセージ'
       toggleFixed={toggleFixed}
@@ -300,12 +300,12 @@ const DirectTalkPanel = (props: DirectTalkAreaProps) => {
   )
 
   if (!isFixed) {
-    return <PanelComponent />
+    return panel
   } else {
     return (
       <Portal target={`#${props.talkAreaId}-fixed`}>
         <div className='-m-4 max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
-          <PanelComponent />
+          {panel}
         </div>
       </Portal>
     )

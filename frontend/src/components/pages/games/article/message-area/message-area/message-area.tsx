@@ -11,13 +11,10 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
-  useRef,
   useState
 } from 'react'
 import { useLazyQuery } from '@apollo/client'
-import MessagesArea, {
-  MessagesAreaRefHandle
-} from './messages-area/messages-area'
+import MessagesArea from './messages-area/messages-area'
 import {
   talkableGameStatuses,
   useGameValue,
@@ -25,7 +22,7 @@ import {
 } from '@/components/pages/games/game-hook'
 import { emptyMessageQuery, useMessagesQuery } from './messages-query'
 import { useUserPagingSettings } from '../../../user-settings'
-import TalkArea, { TalkAreaRefHandle } from './talk-area'
+import TalkArea from './talk-area'
 import MessageAreaFooterMenu from './message-area-footer-menu'
 
 type Props = {
@@ -55,6 +52,18 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
 
     const [messageQuery, setMessageQuery] = useState(emptyMessageQuery)
 
+    // messages state をここで管理（MessagesArea に props で渡す）
+    const [messages, setMessages] = useState<Messages>({
+      list: [],
+      allPageCount: 0,
+      hasPrePage: false,
+      hasNextPage: false,
+      isDesc: true,
+      isLatest: false,
+      latestUnixTimeMilli: 0
+    })
+    const [latestTime, setLatestTime] = useState<number>(0)
+
     const [fetchMessages] =
       useLazyQuery<GameMessagesQuery>(GameMessagesDocument)
     const search = useCallback(
@@ -67,13 +76,11 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
           } as MessagesQuery
         })
         if (data?.messages == null) return
-        messagesAreaRef.current?.setMessages(data.messages as Messages)
-        messagesAreaRef.current?.setLatestTime(
-          data.messages.latestUnixTimeMilli as number
-        )
+        setMessages(data.messages as Messages)
+        setLatestTime(data.messages.latestUnixTimeMilli as number)
         setExistUnread(false)
       },
-      [game.id, messageQuery]
+      [game.id, messageQuery, fetchMessages, setExistUnread]
     )
 
     // 初回の取得
@@ -103,9 +110,6 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
       return !!myself && talkableGameStatuses.includes(game.status)
     }, [myself, game.status])
 
-    const messagesAreaRef = useRef({} as MessagesAreaRefHandle)
-    const talkAreaRef = useRef({} as TalkAreaRefHandle)
-
     useImperativeHandle(ref, () => ({
       async fetchLatest() {
         return await search()
@@ -114,10 +118,6 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
         return search(query)
       }
     }))
-
-    const reply = (message: Message) => {
-      talkAreaRef.current.reply(message)
-    }
 
     const messageAreaId = useMemo(
       () => `message-area-${onlyToMe ? 'tome' : 'home'}`,
@@ -152,11 +152,11 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
           className={`flex flex-1 flex-col overflow-y-auto`}
         >
           <MessagesArea
-            ref={messagesAreaRef}
+            messages={messages}
+            latestTime={latestTime}
             messageQuery={messageQuery}
             canTalk={canTalk}
             search={search}
-            reply={reply}
             searchable={!onlyToMe}
             talkAreaId={talkAreaId}
             scrollToTop={scrollToTop}
@@ -164,12 +164,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
             existsUnread={existsUnread}
             setExistsUnread={setExistUnread}
           />
-          <TalkArea
-            ref={talkAreaRef}
-            canTalk={canTalk}
-            search={search}
-            talkAreaId={talkAreaId}
-          />
+          <TalkArea canTalk={canTalk} search={search} talkAreaId={talkAreaId} />
         </div>
         <div id={`${talkAreaId}-fixed`}></div>
         <MessageAreaFooterMenu

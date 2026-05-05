@@ -1,45 +1,41 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { useState } from 'react'
 
 type Props = {
   header: string
   children: React.ReactNode
   isOpen?: boolean
+  onToggle?: () => void
   isFixed?: boolean
   toggleFixed?: (e: React.MouseEvent) => void
 }
 
-export interface PanelRefHandle {
-  open: () => void
-}
-
-const Panel = forwardRef<PanelRefHandle, Props>((props: Props, ref) => {
+const Panel = (props: Props) => {
   const {
     header,
     children,
-    isOpen: initialOpen = true,
+    isOpen: isOpenProp = true,
+    onToggle,
     isFixed = false,
     toggleFixed
   } = props
-  const [isOpen, setIsOpen] = useState(initialOpen)
 
-  const detailsRef = useRef<HTMLDetailsElement>(null)
+  // onToggle が渡された場合は controlled、そうでなければ uncontrolled
+  const [internalOpen, setInternalOpen] = useState(isOpenProp)
+  const isOpen = onToggle ? isOpenProp : internalOpen
 
-  useImperativeHandle(ref, () => ({
-    open() {
-      setIsOpen(true)
-    }
-  }))
-
-  // こうしないとdetails要素のopen属性が変更されない
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    setIsOpen(!isOpen)
+    if (onToggle) {
+      onToggle()
+    } else {
+      setInternalOpen((prev) => !prev)
+    }
   }
 
   return (
     <>
       <div className='base-border rounded-md border'>
-        <details open={isOpen} ref={detailsRef}>
+        <details open={isOpen}>
           <summary
             onClick={handleClick}
             className='secondary-background cursor-pointer list-none rounded-t'
@@ -63,6 +59,6 @@ const Panel = forwardRef<PanelRefHandle, Props>((props: Props, ref) => {
       </div>
     </>
   )
-})
+}
 
 export default Panel

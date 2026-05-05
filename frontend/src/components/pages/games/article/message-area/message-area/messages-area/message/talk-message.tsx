@@ -122,7 +122,7 @@ const ReceiverName = ({
   if (!message.receiver || message.content.type !== 'Secret') return <></>
 
   const game = useGameValue()
-  const NameComponent = () => (
+  const name = (
     <p className='primary-hover-text'>
       ENo.{message.receiver!.entryNumber}&nbsp;
       {message.receiver!.name}
@@ -132,7 +132,7 @@ const ReceiverName = ({
     return (
       <>
         &nbsp;→&nbsp;
-        <NameComponent />
+        {name}
       </>
     )
   }
@@ -145,7 +145,7 @@ const ReceiverName = ({
         )}`}
         target='_blank'
       >
-        <NameComponent />
+        {name}
       </Link>
     </>
   )
@@ -161,7 +161,7 @@ const SenderIcon = ({
   imageSizeRatio: number
 }) => {
   const game = useGameValue()
-  const IconComponent = () => (
+  const icon = (
     <Image
       src={message.sender!.icon!.url}
       width={message.sender!.icon!.width * imageSizeRatio}
@@ -171,7 +171,7 @@ const SenderIcon = ({
   )
 
   if (preview) {
-    return <IconComponent />
+    return icon
   }
   return (
     <Link
@@ -180,7 +180,7 @@ const SenderIcon = ({
       )}`}
       target='_blank'
     >
-      <IconComponent />
+      {icon}
     </Link>
   )
 }

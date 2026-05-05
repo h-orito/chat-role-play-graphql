@@ -9,13 +9,7 @@ import {
   TalkMutationVariables
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useState
-} from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useModal } from '@/components/hooks/use-modal'
 import { Control, SubmitHandler, useForm } from 'react-hook-form'
 import InputTextarea from '@/components/form/input-textarea'
@@ -29,6 +23,7 @@ import ParticipantSelect from '../participant/participant-select'
 import { useGameValue, useIconsValue, useMyselfValue } from '../game-hook'
 import IconSelectButton from './icon-select-button'
 import TalkPreview from './talk-preview'
+import { useTalkPanel } from './use-talk-panel'
 
 type Props = {
   handleCompleted: () => void
@@ -40,216 +35,209 @@ interface FormInput {
   talkMessage: string
 }
 
-export interface TalkRefHandle {
-  replyTo(message: Message): void
-}
+const Talk = (props: Props) => {
+  const game = useGameValue()
+  const myself = useMyselfValue()!
+  const { replyTarget, cancelReply: cancelReplyAtom } = useTalkPanel()
 
-const Talk = forwardRef<TalkRefHandle, Props>(
-  (props: Props, ref: React.ForwardedRef<TalkRefHandle>) => {
-    const game = useGameValue()
-    const myself = useMyselfValue()!
-
-    const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
-      defaultValues: {
-        name: myself.name,
-        talkMessage: ''
-      }
-    })
-    const updateTalkMessage = (str: string) => setValue('talkMessage', str)
-
-    // 発言種別
-    const [talkType, setTalkType] = useState(MessageType.TalkNormal)
-    // 返信先メッセージ
-    const [replyTarget, setReplyTarget] = useState<Message | null>(null)
-    // 送信相手
-    const [receiver, setReceiver] = useState<GameParticipant | null>(null)
-    // 選択中のアイコン
-    const [iconId, setIconId] = useState<string>('')
-    // 装飾やランダム変換しない
-    const [isConvertDisabled, setIsConvertDisabled] = useState(false)
-
-    // アイコン候補
-    const icons = useIconsValue()
-    useEffect(() => {
-      setIconId(icons.length <= 0 ? '' : icons[0].id)
-    }, [icons])
-
-    const init = () => {
-      setTalkType(MessageType.TalkNormal)
-      setPreview(null)
-      setDryRunMessage(null)
-      setReplyTarget(null)
-      setReceiver(null)
-      setValue('name', myself.name)
-      setValue('talkMessage', '')
-      setIconId(icons[0].id)
-      setIsConvertDisabled(false)
+  const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
+    defaultValues: {
+      name: myself.name,
+      talkMessage: ''
     }
+  })
+  const updateTalkMessage = (str: string) => setValue('talkMessage', str)
 
-    const handleTalkCompleted = () => {
-      init()
-      props.handleCompleted()
-    }
+  // 発言種別
+  const [talkType, setTalkType] = useState(MessageType.TalkNormal)
+  // 送信相手
+  const [receiver, setReceiver] = useState<GameParticipant | null>(null)
+  // 選択中のアイコン
+  const [iconId, setIconId] = useState<string>('')
+  // 装飾やランダム変換しない
+  const [isConvertDisabled, setIsConvertDisabled] = useState(false)
 
-    const handlePreviewCanceled = () => {
-      setPreview(null)
-      setDryRunMessage(null)
-      document.querySelector(`#${props.talkAreaId}`)!.scrollIntoView({
-        behavior: 'smooth'
-      })
-    }
+  // アイコン候補
+  const icons = useIconsValue()
+  useEffect(() => {
+    setIconId(icons.length <= 0 ? '' : icons[0].id)
+  }, [icons])
 
-    const canSubmit: boolean =
-      formState.isValid &&
-      !formState.isSubmitting &&
-      (talkType !== MessageType.Secret ||
-        (receiver != null && receiver.id !== myself.id))
-
-    const createNewMessage = useCallback(
-      (data: FormInput): NewMessage => {
-        // 返信元またはこの発言が秘話の場合は返信扱いにしない
-        const replyToMessageId =
-          talkType === MessageType.Secret ||
-          replyTarget?.content.type === MessageType.Secret
-            ? null
-            : replyTarget?.id
-        return {
-          gameId: game.id,
-          type: talkType,
-          iconId: iconId,
-          name: data.name,
-          receiverParticipantId: receiver?.id,
-          replyToMessageId: replyToMessageId,
-          text: data.talkMessage.trim(),
-          isConvertDisabled: isConvertDisabled
-        } as NewMessage
-      },
-      [
-        game.id,
-        replyTarget,
-        talkType,
-        receiver,
-        iconId,
-        isConvertDisabled,
-        formState
-      ]
-    )
-
-    // 発言プレビュー
-    const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument)
-    const [dryRunMessage, setDryRunMessage] = useState<NewMessage | null>(null)
-    const [preview, setPreview] = useState<Message | null>(null)
-    const onSubmitPreview: SubmitHandler<FormInput> = useCallback(
-      async (data) => {
-        const mes = createNewMessage(data)
-        const { data: previewData } = await talkDryRun({
-          variables: {
-            input: mes
-          } as TalkMutationVariables
-        })
-        if (previewData?.registerMessageDryRun == null) return
-        setPreview(previewData.registerMessageDryRun.message as Message)
-        setDryRunMessage(mes)
-      },
-      [createNewMessage, talkDryRun]
-    )
-
-    useImperativeHandle(ref, () => ({
-      replyTo(message: Message) {
-        setReplyTarget(message)
-        setReceiver(
-          game.participants.find(
-            (p) => p.id === message!.sender!.participantId
-          )!
-        )
-        if (message.content.type === MessageType.Secret) {
-          setTalkType(MessageType.Secret)
-        }
-      }
-    }))
-
-    const cancelReply = () => {
-      setReplyTarget(null)
-      if (talkType !== MessageType.Secret) {
-        setReceiver(null)
+  // replyTarget の変更に反応して receiver と talkType を設定
+  useEffect(() => {
+    if (replyTarget) {
+      setReceiver(
+        game.participants.find(
+          (p) => p.id === replyTarget.sender!.participantId
+        )!
+      )
+      if (replyTarget.content.type === MessageType.Secret) {
+        setTalkType(MessageType.Secret)
       }
     }
+  }, [replyTarget, game.participants])
 
-    const talkMessageId = `${props.talkAreaId}-talk-message`
-
-    if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
-
-    return (
-      <div>
-        <form onSubmit={handleSubmit(onSubmitPreview)}>
-          <TalkType
-            talkType={talkType}
-            setTalkType={setTalkType}
-            preview={preview}
-            replyTarget={replyTarget}
-          />
-          <Receiver
-            talkType={talkType}
-            receiver={receiver}
-            setReceiver={setReceiver}
-          />
-          <SenderName control={control} disabled={preview != null} />
-          <div className='mb-1'>
-            <p className='text-xs font-bold'>発言装飾</p>
-            <div className='flex'>
-              <TalkTextDecorators
-                selector={`#${talkMessageId}`}
-                setMessage={updateTalkMessage}
-              />
-            </div>
-          </div>
-          <div className='flex'>
-            <IconSelectButton
-              icons={icons}
-              iconId={iconId}
-              setIconId={setIconId}
-            />
-            <MessageContent
-              id={talkMessageId}
-              talkType={talkType}
-              control={control}
-              disabled={preview != null}
-              isConvertDisabled={isConvertDisabled}
-              setIsConvertDisabled={setIsConvertDisabled}
-            />
-          </div>
-          <div className='mt-4 flex justify-end'>
-            <SubmitButton label='プレビュー' disabled={!canSubmit} />
-          </div>
-          {preview && (
-            <TalkPreview
-              preview={preview}
-              dryRunMessage={dryRunMessage}
-              talkAreaId={props.talkAreaId}
-              handleCompleted={handleTalkCompleted}
-              handleCanceled={handlePreviewCanceled}
-            />
-          )}
-        </form>
-        {replyTarget && (
-          <div className='mb-4'>
-            <div className='flex'>
-              <p className='text-xs font-bold'>返信先</p>
-              <button className='ml-2 text-xs' onClick={() => cancelReply()}>
-                返信解除
-              </button>
-            </div>
-            <div className='base-border border pt-2'>
-              <div>
-                <TalkMessage message={replyTarget!} handleReply={() => {}} />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    )
+  const init = () => {
+    setTalkType(MessageType.TalkNormal)
+    setPreview(null)
+    setDryRunMessage(null)
+    cancelReplyAtom()
+    setReceiver(null)
+    setValue('name', myself.name)
+    setValue('talkMessage', '')
+    setIconId(icons[0].id)
+    setIsConvertDisabled(false)
   }
-)
+
+  const handleTalkCompleted = () => {
+    init()
+    props.handleCompleted()
+  }
+
+  const handlePreviewCanceled = () => {
+    setPreview(null)
+    setDryRunMessage(null)
+    document.querySelector(`#${props.talkAreaId}`)!.scrollIntoView({
+      behavior: 'smooth'
+    })
+  }
+
+  const canSubmit: boolean =
+    formState.isValid &&
+    !formState.isSubmitting &&
+    (talkType !== MessageType.Secret ||
+      (receiver != null && receiver.id !== myself.id))
+
+  const createNewMessage = useCallback(
+    (data: FormInput): NewMessage => {
+      // 返信元またはこの発言が秘話の場合は返信扱いにしない
+      const replyToMessageId =
+        talkType === MessageType.Secret ||
+        replyTarget?.content.type === MessageType.Secret
+          ? null
+          : replyTarget?.id
+      return {
+        gameId: game.id,
+        type: talkType,
+        iconId: iconId,
+        name: data.name,
+        receiverParticipantId: receiver?.id,
+        replyToMessageId: replyToMessageId,
+        text: data.talkMessage.trim(),
+        isConvertDisabled: isConvertDisabled
+      } as NewMessage
+    },
+    [
+      game.id,
+      replyTarget,
+      talkType,
+      receiver,
+      iconId,
+      isConvertDisabled,
+      formState
+    ]
+  )
+
+  // 発言プレビュー
+  const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument)
+  const [dryRunMessage, setDryRunMessage] = useState<NewMessage | null>(null)
+  const [preview, setPreview] = useState<Message | null>(null)
+  const onSubmitPreview: SubmitHandler<FormInput> = useCallback(
+    async (data) => {
+      const mes = createNewMessage(data)
+      const { data: previewData } = await talkDryRun({
+        variables: {
+          input: mes
+        } as TalkMutationVariables
+      })
+      if (previewData?.registerMessageDryRun == null) return
+      setPreview(previewData.registerMessageDryRun.message as Message)
+      setDryRunMessage(mes)
+    },
+    [createNewMessage, talkDryRun]
+  )
+
+  const cancelReply = () => {
+    cancelReplyAtom()
+    if (talkType !== MessageType.Secret) {
+      setReceiver(null)
+    }
+  }
+
+  const talkMessageId = `${props.talkAreaId}-talk-message`
+
+  if (icons.length <= 0) return <div>まずはアイコンを登録してください。</div>
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit(onSubmitPreview)}>
+        <TalkType
+          talkType={talkType}
+          setTalkType={setTalkType}
+          preview={preview}
+          replyTarget={replyTarget}
+        />
+        <Receiver
+          talkType={talkType}
+          receiver={receiver}
+          setReceiver={setReceiver}
+        />
+        <SenderName control={control} disabled={preview != null} />
+        <div className='mb-1'>
+          <p className='text-xs font-bold'>発言装飾</p>
+          <div className='flex'>
+            <TalkTextDecorators
+              selector={`#${talkMessageId}`}
+              setMessage={updateTalkMessage}
+            />
+          </div>
+        </div>
+        <div className='flex'>
+          <IconSelectButton
+            icons={icons}
+            iconId={iconId}
+            setIconId={setIconId}
+          />
+          <MessageContent
+            id={talkMessageId}
+            talkType={talkType}
+            control={control}
+            disabled={preview != null}
+            isConvertDisabled={isConvertDisabled}
+            setIsConvertDisabled={setIsConvertDisabled}
+          />
+        </div>
+        <div className='mt-4 flex justify-end'>
+          <SubmitButton label='プレビュー' disabled={!canSubmit} />
+        </div>
+        {preview && (
+          <TalkPreview
+            preview={preview}
+            dryRunMessage={dryRunMessage}
+            talkAreaId={props.talkAreaId}
+            handleCompleted={handleTalkCompleted}
+            handleCanceled={handlePreviewCanceled}
+          />
+        )}
+      </form>
+      {replyTarget && (
+        <div className='mb-4'>
+          <div className='flex'>
+            <p className='text-xs font-bold'>返信先</p>
+            <button className='ml-2 text-xs' onClick={() => cancelReply()}>
+              返信解除
+            </button>
+          </div>
+          <div className='base-border border pt-2'>
+            <div>
+              <TalkMessage message={replyTarget!} handleReply={() => {}} />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default Talk
 
