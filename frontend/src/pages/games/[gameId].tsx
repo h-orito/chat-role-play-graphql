@@ -11,7 +11,7 @@ import {
   GameQueryVariables,
   MessagesQuery
 } from '@/lib/generated/graphql'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
@@ -27,7 +27,7 @@ import {
 } from '@/components/pages/games/game-hook'
 import {
   fromUrlQuery,
-  useMessagesQuery
+  useInitMessagesQuery
 } from '@/components/pages/games/article/message-area/message-area/messages-query'
 
 export const getServerSideProps = async (
@@ -57,15 +57,11 @@ type Props = {
 
 const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   useGame(game)
+  useInitMessagesQuery(initialMessagesQuery)
   useMyselfInit(game.id)
   useMyPlayer()
   useIcons()
   useUserDisplaySettingsAtom()
-  // 検索用クエリ
-  const [, setInitialMessagesQuery] = useMessagesQuery()
-  useEffect(() => {
-    setInitialMessagesQuery(initialMessagesQuery)
-  }, [initialMessagesQuery])
   // 1分に1回ゲーム更新チェック
   usePollingPeriod(game)
 
