@@ -6,8 +6,8 @@ import {
   MessageType,
   MessagesQuery
 } from '@/lib/generated/graphql'
-import { atom, useAtom } from 'jotai'
-import { useHydrateAtoms } from 'jotai/utils'
+import { atom, useAtom, useSetAtom } from 'jotai'
+import { useRef } from 'react'
 import { messageTypeOptions, messageTypeValues } from './message-type'
 import { ParsedUrlQueryInput } from 'querystring'
 import { base64ToId, idToBase64 } from '@/components/graphql/convert'
@@ -30,7 +30,12 @@ export const useMessagesQuery = () => {
   return [getter, setter] as const
 }
 export const useInitMessagesQuery = (messagesQuery: MessagesQuery) => {
-  useHydrateAtoms([[messagesQueryAtom, messagesQuery]])
+  const setMessagesQuery = useSetAtom(messagesQueryAtom)
+  const lastQueryRef = useRef<MessagesQuery | null>(null)
+  if (lastQueryRef.current !== messagesQuery) {
+    lastQueryRef.current = messagesQuery
+    setMessagesQuery(messagesQuery)
+  }
 }
 
 export const toUrlQuery = (

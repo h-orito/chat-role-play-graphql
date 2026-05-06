@@ -17,14 +17,18 @@ import {
 } from '@/lib/generated/graphql'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { useHydrateAtoms } from 'jotai/utils'
 import { useEffect, useRef } from 'react'
 import { defaultDisplaySettings, useUserDisplaySettings } from './user-settings'
 
 // game
 export const gameAtom = atom<Game | null>(null)
 export const useGame = (game: Game) => {
-  useHydrateAtoms([[gameAtom, game]])
+  const setGame = useSetAtom(gameAtom)
+  const lastIdRef = useRef<string | null>(null)
+  if (lastIdRef.current !== game.id) {
+    lastIdRef.current = game.id
+    setGame(game)
+  }
 }
 export const useGameValue = () => useAtomValue(gameAtom)!
 // 発言可能なゲームステータス

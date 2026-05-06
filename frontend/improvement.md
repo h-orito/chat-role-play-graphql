@@ -6,50 +6,254 @@ Next.js / React 初心者時代に作成されたコードのレビュー結果�
 
 ## 🔴 高優先度：Reactアンチパターン
 
-### 1. propsをatomに同期する useEffect → `useHydrateAtoms` に置き換え
+### 1. ページスコープの状態を Jotai atom から React Context に移行
 
-**`src/components/pages/games/game-hook.ts`**  
-**`src/pages/games/[gameId].tsx`**
+#### 現状の問題
 
-「SSRで受け取ったpropsをJotai atomに同期する」ために useEffect を使っているが、
-これは「レンダリングと無関係な useEffect」の典型的なアンチパターン。
+現在の atom 利用には以下の構造的問題がある:
 
-Jotaiはこのユースケースのために `useHydrateAtoms` を提供している。
+1. **ページスコープのデータを「アプリ全体のグローバル状態」である Jotai atom に入れている** ため、ページ遷移時にリセットされない
+2. 結果として、ページ遷移時の同期問題やリーク（前ページの値が残る）が発生する
+3. クリーンアップ useEffect で個別対応しているが、子コンポーネントの useEffect 実行順序やタイミングで取りこぼしが起きる
+
+#### atomの分類
+
+このプロジェクトの atom を**スコープ**で分類すると:
+
+| atom | スコープ | 由来 | 現状の問題 |
+|---|---|---|---|
+| `gameAtom` | ページ | SSR | renderフェーズsetterで回避中 |
+| `messagesQueryAtom` | ページ | SSR + ユーザー操作 | renderフェーズsetterで回避中 |
+| `myselfAtom` | ページ | クライアントfetch | refetch中のnull期間で `myself!` が壊れるリスク |
+| `iconsAtom` | ページ | クライアントfetch | refetch中の空配列期間 |
+| `replyTargetAtom` | ページ | UI操作 | クリーンアップなし → ゲーム間でリーク |
+| `talkPanelOpenAtom` | ページ | UI操作 | クリーンアップなし → ゲーム間でリーク |
+| `fixedBottomAtom` | ページ | UI操作 | クリーンアップなし → ゲーム間でリーク |
+| `sidebarOpenAtom` | ページ | UI操作 | クリーンアップあり ✅ |
+| `myPlayerAtom` | **アプリ** | クライアントfetch | atomで適切 ✅ |
+| `displaySettingsAtom` | **アプリ** | localStorage | atomで適切 ✅ |
+
+ページスコープのものは本来 Context で扱うべき。
+
+#### あるべき姿: スコープごとに状態管理を分ける
+
+| データの性質 | 例 | 適切な手段 |
+|---|---|---|
+| ページスコープ・SSR由来 | `game`, `messagesQuery` 初期値 | **React Context** |
+| ページスコープ・クライアントfetch | `myself`, `icons` | **React Context + 内部でfetch** |
+| ページスコープ・UI操作 | `replyTarget`, `talkPanelOpen`, `fixedBottom`, `sidebarOpen` | **React Context** または ページ内の useState |
+| アプリスコープ | `myPlayer`, `displaySettings` | Jotai atom |
+
+#### リファクタの段階分け
+
+##### Phase 1: SSR由来データのContext化（最優先）
+
+`gameAtom`, `messagesQueryAtom` を Context 化する。これだけで現状の renderフェーズsetter回避策が不要になる。
+
+具体的には:
+- atom はグローバルなのでページ遷移しても自動的にリセットされない
+- 子コンポーネントの useEffect（fetch 等）が親の useEffect より先に走るため、atom 更新前に古いデータで処理が実行される
+- `useHydrateAtoms` はストア単位で1回しか hydrate しないため再利用できない
+
+現状は **renderフェーズで条件付きにatomを更新する回避策**で動かしている:
 
 ```ts
-// 現状 (BAD) — useEffect でpropsをatomに同期
-export const useGame = (game: Game): Game => {
+export const useGame = (game: Game) => {
   const setGame = useSetAtom(gameAtom)
-  useEffect(() => {
+  const lastIdRef = useRef<string | null>(null)
+  if (lastIdRef.current !== game.id) {
+    lastIdRef.current = game.id
     setGame(game)
-    return () => setGame(null)
-  }, [game])
+  }
+}
+```
+
+これは React 公式が認めるパターンではあるが、本質的には**「ページスコープのデータをグローバル状態に入れている」設計ミス**を補正している状態。
+
+##### Phase 1のコード例
+
+**A. `GameContext` の作成**
+
+```tsx
+// src/components/pages/games/game-context.tsx
+import { createContext, useContext, ReactNode } from 'react'
+import { Game } from '@/lib/generated/graphql'
+
+const GameContext = createContext<Game | null>(null)
+
+export const GameProvider = ({
+  game,
+  children
+}: {
+  game: Game
+  children: ReactNode
+}) => <GameContext.Provider value={game}>{children}</GameContext.Provider>
+
+export const useGameValue = (): Game => {
+  const game = useContext(GameContext)
+  if (!game) throw new Error('useGameValue must be used within GameProvider')
   return game
 }
-
-// [gameId].tsx
-useEffect(() => {
-  setInitialMessagesQuery(initialMessagesQuery)
-}, [initialMessagesQuery])
 ```
 
-```ts
-// 修正 (GOOD) — useHydrateAtoms を使う
-// game-hook.ts — useGame フックごと削除し、pageAtom を export するだけに
-export const gameAtom = atom<Game | null>(null)
-export const useGameValue = () => useAtomValue(gameAtom)!
+**B. ページコンポーネントでProviderを配置**
 
-// [gameId].tsx
-import { useHydrateAtoms } from 'jotai/utils'
-
+```tsx
+// src/pages/games/[gameId].tsx
 const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
-  useHydrateAtoms([
-    [gameAtom, game],
-    [messagesQueryAtom, initialMessagesQuery],
-  ])
-  ...
+  return (
+    <GameProvider game={game}>
+      <MessagesQueryProvider initialQuery={initialMessagesQuery}>
+        {/* ... */}
+      </MessagesQueryProvider>
+    </GameProvider>
+  )
 }
 ```
+
+**C. `messagesQueryAtom` の扱い**
+
+`messagesQuery` は SSR 由来の初期値とユーザー操作による変更が混在する。
+Context で「初期値の伝達」を行い、ページスコープの useState に変換する形が綺麗:
+
+```tsx
+// messages-query-context.tsx
+const MessagesQueryContext = createContext<{
+  query: MessagesQuery
+  setQuery: (q: MessagesQuery) => void
+} | null>(null)
+
+export const MessagesQueryProvider = ({
+  initialQuery,
+  children
+}: {
+  initialQuery: MessagesQuery
+  children: ReactNode
+}) => {
+  const [query, setQuery] = useState(initialQuery)
+  return (
+    <MessagesQueryContext.Provider value={{ query, setQuery }}>
+      {children}
+    </MessagesQueryContext.Provider>
+  )
+}
+```
+
+ページ単位でmount/unmountされるため、ページ遷移時の状態リセットが自然に行われる。
+
+##### Phase 2: クライアントfetchデータのContext化
+
+`myselfAtom`, `iconsAtom` を Context 化する。fetch ロジックも Provider 内に閉じ込める:
+
+```tsx
+// myself-context.tsx
+const MyselfContext = createContext<{
+  myself: GameParticipant | null
+  refetch: () => void
+} | null>(null)
+
+export const MyselfProvider = ({
+  gameId,
+  children
+}: {
+  gameId: string
+  children: ReactNode
+}) => {
+  const { data, refetch } = useQuery<MyGameParticipantQuery>(
+    MyGameParticipantDocument,
+    { variables: { gameId } }
+  )
+  const myself = (data?.myGameParticipant as GameParticipant) ?? null
+  return (
+    <MyselfContext.Provider value={{ myself, refetch }}>
+      {children}
+    </MyselfContext.Provider>
+  )
+}
+```
+
+ゲーム遷移時には Provider ごと unmount → 新Provider mount で fetch 開始されるため、stale データが残らない。
+※ 項目2の `useQuery` 化と同時に行うと効率的。
+
+##### Phase 3: UI状態atomの整理
+
+| atom | 推奨対応 |
+|---|---|
+| `replyTargetAtom` | TalkPanelContext に移管（ゲームページ内で完結） |
+| `talkPanelOpenAtom` | TalkPanelContext に移管 |
+| `fixedBottomAtom` | FixedBottomContext に移管 |
+| `sidebarOpenAtom` | クリーンアップで動いているが、Context化が望ましい |
+
+これらは「ページ内で完結するUI状態」なので、ゲームページ Provider 配下に Context として配置するのが綺麗。
+
+```tsx
+// 例: TalkPanelContext
+const TalkPanelContext = createContext<{
+  isOpen: boolean
+  setIsOpen: (open: boolean) => void
+  replyTarget: Message | null
+  reply: (m: Message) => void
+  cancelReply: () => void
+} | null>(null)
+
+export const TalkPanelProvider = ({ children }: { children: ReactNode }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [replyTarget, setReplyTarget] = useState<Message | null>(null)
+  // ...
+}
+```
+
+#### 最終的なProvider構成イメージ
+
+```tsx
+const GamePage = ({ game, messagesQuery }: Props) => {
+  return (
+    <GameProvider game={game}>
+      <MyselfProvider gameId={game.id}>
+        <IconsProvider>
+          <MessagesQueryProvider initialQuery={messagesQuery}>
+            <TalkPanelProvider>
+              <FixedBottomProvider>
+                <SidebarProvider>
+                  {/* 各種子コンポーネント */}
+                </SidebarProvider>
+              </FixedBottomProvider>
+            </TalkPanelProvider>
+          </MessagesQueryProvider>
+        </IconsProvider>
+      </MyselfProvider>
+    </GameProvider>
+  )
+}
+```
+
+ネストが深くなる場合は、まとめた `GamePageProviders` コンポーネントに集約してもよい。
+
+#### 移行による効果
+
+- ✅ ページ遷移時の同期問題が消える（propsとContextは常に一致）
+- ✅ renderフェーズ副作用の回避策（useRef + setAtom）が不要になる
+- ✅ Concurrent Rendering / App Router で安全に動作する
+- ✅ クリーンアップ忘れによるリークが構造的に防げる
+- ✅ atom の責務が「真にグローバルな状態」（`myPlayer`, `displaySettings`）に絞られる
+
+#### 影響範囲
+
+各 `use***Value()` は多数のコンポーネントから呼ばれているため、Provider配置とimport差し替えが広範囲に及ぶ。
+ただし、各呼び出し箇所のシグネチャ自体は変わらないので、機械的な置換で済む見込み。
+
+主な影響ファイル:
+- `src/pages/games/[gameId].tsx`
+- `src/pages/games/[gameId]/profile/[participantId].tsx`
+- `src/pages/games/[gameId]/thread/[messageId].tsx`
+- `src/components/pages/games/**` 配下のほぼ全コンポーネント
+
+#### 残す atom
+
+以下は真にアプリスコープのため atom のままで OK:
+
+- `myPlayerAtom` — ユーザー本人情報、全ページで共通
+- `displaySettingsAtom` — localStorage 由来の表示設定、全ページで共通
 
 ---
 
@@ -320,7 +524,7 @@ CommonJS (`module.exports`) から `next.config.ts` に移行すると型補完�
 
 | 優先度 | # | 内容 | 影響 |
 |--------|---|------|------|
-| 🔴 推奨 | 1 | propsのatom同期 → `useHydrateAtoms` | useEffect アンチパターン解消 |
+| 🔴 推奨 | 1 | ページスコープデータを atom → React Context に移行 | 設計改善・ページ遷移時の同期問題解消 |
 | 🔴 推奨 | 2 | データ取得 → `useQuery` | コード簡潔化・状態管理の改善 |
 | 🟠 推奨 | 3 | useEffect deps 欠落 | stale closure / 将来バグ |
 | 🟠 推奨 | 4 | dayjs.extend in component | パフォーマンス劣化 |
