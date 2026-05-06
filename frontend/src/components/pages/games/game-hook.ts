@@ -24,10 +24,10 @@ import { defaultDisplaySettings, useUserDisplaySettings } from './user-settings'
 const gameAtom = atom<Game | null>(null)
 export const useGame = (game: Game): Game => {
   const setGame = useSetAtom(gameAtom)
-  setGame(game)
   useEffect(() => {
+    setGame(game)
     return () => setGame(null)
-  }, [])
+  }, [game])
   return game
 }
 export const useGameValue = () => useAtomValue(gameAtom)!
@@ -175,7 +175,7 @@ export const useSidebarOpen = () => {
   const [isOpen, setIsOpen] = useAtom(sidebarOpenAtom)
   const toggle = () => setIsOpen(!isOpen)
   useEffect(() => {
-    return setIsOpen(false)
+    return () => setIsOpen(false)
   }, [])
   return [isOpen, toggle] as const
 }

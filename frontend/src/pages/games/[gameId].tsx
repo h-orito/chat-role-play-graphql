@@ -11,7 +11,7 @@ import {
   GameQueryVariables,
   MessagesQuery
 } from '@/lib/generated/graphql'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
@@ -63,8 +63,9 @@ const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   useUserDisplaySettingsAtom()
   // 検索用クエリ
   const [, setInitialMessagesQuery] = useMessagesQuery()
-  setInitialMessagesQuery(initialMessagesQuery)
-  // useSetInitialMessagesQuery(initialMessagesQuery)
+  useEffect(() => {
+    setInitialMessagesQuery(initialMessagesQuery)
+  }, [initialMessagesQuery])
   // 1分に1回ゲーム更新チェック
   usePollingPeriod(game)
 
