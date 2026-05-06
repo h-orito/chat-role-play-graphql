@@ -394,7 +394,7 @@ const IconDeleteArea = ({
             className='absolute right-0 top-0'
             onClick={(e: React.MouseEvent) => handleDelete(e, icon.id)}
           >
-            <TrashIcon className='h-4 w-4 bg-red-500 text-white' />
+            <TrashIcon className='size-4 bg-red-500 text-white' />
           </button>
         </div>
       ))}

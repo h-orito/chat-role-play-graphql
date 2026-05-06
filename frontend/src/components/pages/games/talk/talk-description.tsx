@@ -78,7 +78,7 @@ const TalkDescription = (props: Props) => {
         isConvertDisabled: false // TODO
       } as NewMessage
     },
-    [game.id, formState]
+    [game.id]
   )
 
   // 発言プレビュー

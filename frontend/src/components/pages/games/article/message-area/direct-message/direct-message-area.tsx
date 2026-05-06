@@ -82,16 +82,6 @@ export default function DirectMessageArea(props: Props) {
     [game.id, query]
   )
 
-  useEffect(() => {
-    search(defaultQuery)
-  }, [group])
-
-  if (group == null) return <></>
-
-  const canModify = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
-    game.status
-  )
-
   const directMessageAreaRef = useRef<HTMLDivElement>(null)
   const scrollToTop = () => {
     directMessageAreaRef?.current?.scroll({ top: 0, behavior: 'smooth' })
@@ -102,6 +92,16 @@ export default function DirectMessageArea(props: Props) {
       behavior: 'smooth'
     })
   }
+
+  useEffect(() => {
+    search(defaultQuery)
+  }, [group])
+
+  if (group == null) return <></>
+
+  const canModify = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
+    game.status
+  )
 
   const talkAreaId = `talk-direct-${base64ToId(group.id)}`
 
@@ -156,11 +156,11 @@ const DirectMessageModal = (
   const { close, group, search, canModify, scrollToTop, scrollToBottom } = props
   return (
     <Portal target='#direct-message-area'>
-      <div className='base-background absolute inset-x-0 inset-y-0 z-50 h-full w-full text-sm'>
+      <div className='base-background absolute inset-0 z-50 size-full text-sm'>
         <div className='flex h-full flex-col overflow-y-auto'>
           <div className='base-border flex border-b p-2'>
             <button className='px-2' onClick={close}>
-              <ArrowLeftIcon className='mr-1 h-6 w-6' />
+              <ArrowLeftIcon className='mr-1 size-6' />
             </button>
             <p className='justify-center text-xl'>{group.name}</p>
           </div>
@@ -201,7 +201,7 @@ const DirectMessageGroupMembers = (
           className='primary-hover-background ml-auto pl-4'
           onClick={modifyGroupModal.open}
         >
-          <PencilIcon className='mr-1 h-4 w-4' />
+          <PencilIcon className='mr-1 size-4' />
         </button>
       )}
       {modifyGroupModal.isOpen && (

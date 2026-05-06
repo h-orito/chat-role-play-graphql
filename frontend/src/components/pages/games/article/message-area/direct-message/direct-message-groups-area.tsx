@@ -74,10 +74,7 @@ export default function DirectMessageGroupsArea({ className }: Props) {
     ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(game.status)
 
   return (
-    <div
-      id='direct-message-area'
-      className={`${className} relative h-full w-full`}
-    >
+    <div id='direct-message-area' className={`${className} relative size-full`}>
       {canCreate && (
         <div className='flex p-4'>
           <PrimaryButton click={createModal.open}>グループ作成</PrimaryButton>

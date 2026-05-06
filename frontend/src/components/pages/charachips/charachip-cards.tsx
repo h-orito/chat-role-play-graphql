@@ -24,6 +24,7 @@ const CharachipCard = ({ charachip }: { charachip: Charachip }) => {
           <div className='flex justify-center gap-2'>
             {charachip.charas.map((chara) => (
               <Image
+                key={chara.images[0].url}
                 src={chara.images[0].url}
                 width={chara.size.width}
                 height={chara.size.height}

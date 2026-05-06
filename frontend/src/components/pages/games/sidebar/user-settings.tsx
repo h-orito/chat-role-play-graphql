@@ -357,7 +357,7 @@ const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
       {children && (
         <>
           <button onClick={openModal}>
-            <QuestionMarkCircleIcon className='ml-1 h-4 w-4 text-blue-500' />
+            <QuestionMarkCircleIcon className='ml-1 size-4 text-blue-500' />
           </button>
           {modal.isOpen && (
             <Modal close={modal.close} hideFooter>

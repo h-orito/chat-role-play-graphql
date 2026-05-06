@@ -22,7 +22,8 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
   const { scrollToTop, scrollToBottom, searchable, messageQuery, search } =
     props
   const filterModal = useModal()
-  const filtering = searchable && isFiltering(messageQuery!, useGameValue())
+  const game = useGameValue()
+  const filtering = searchable && isFiltering(messageQuery!, game)
 
   return (
     <div className='base-border flex w-full border-t text-sm'>
@@ -31,7 +32,7 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
           className='sidebar-background flex w-full justify-center px-4 py-2'
           onClick={scrollToTop}
         >
-          <ArrowUpIcon className='h-5 w-5' />
+          <ArrowUpIcon className='size-5' />
           <span className='my-auto ml-1 hidden text-xs md:block'>最上部へ</span>
         </button>
       </div>
@@ -40,7 +41,7 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
           className='sidebar-background flex w-full justify-center px-4 py-2'
           onClick={scrollToBottom}
         >
-          <ArrowDownIcon className='h-5 w-5' />
+          <ArrowDownIcon className='size-5' />
           <span className='my-auto ml-1 hidden text-xs md:block'>最下部へ</span>
         </button>
       </div>
@@ -51,7 +52,7 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
             onClick={filterModal.open}
           >
             <MagnifyingGlassIcon
-              className={`h-5 w-5 ${filtering ? 'base-link' : ''}`}
+              className={`size-5 ${filtering ? 'base-link' : ''}`}
             />
             <span
               className={`my-auto ml-1 hidden text-xs md:block ${

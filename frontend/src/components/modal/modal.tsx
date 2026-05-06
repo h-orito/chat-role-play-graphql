@@ -38,14 +38,14 @@ export default function Modal({
   return (
     <Portal>
       <div
-        className='fixed inset-x-0 inset-y-0 z-50 flex items-center justify-center bg-black/60 text-sm'
+        className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 text-sm'
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
         role='dialog'
         aria-modal='true'
         aria-label={header}
       >
-        <div className='md:w-screen-md base-background max-h-[90vh] w-[90vw] max-w-[90vw] overflow-y-auto p-4 md:max-w-screen-md'>
+        <div className='base-background max-h-[90vh] w-[90vw] max-w-[90vw] overflow-y-auto p-4 md:max-w-screen-md'>
           {header && (
             <p className='base-border mb-2 border-b pb-2 text-xl'>{header}</p>
           )}

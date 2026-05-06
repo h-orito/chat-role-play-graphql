@@ -95,7 +95,7 @@ export default function Sidebar() {
       </nav>
       {isSidebarOpen && (
         <div
-          className='fixed inset-x-0 inset-y-0 z-20 h-screen w-screen bg-black/60 md:hidden'
+          className='fixed inset-0 z-20 h-screen w-screen bg-black/60 md:hidden'
           onClick={toggleSidebar}
         ></div>
       )}
@@ -149,7 +149,7 @@ const ParticipantsButton = () => {
           className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
           onClick={modal.open}
         >
-          <UsersIcon className='mr-1 h-5 w-5' />
+          <UsersIcon className='mr-1 size-5' />
           <p className='flex-1 self-center text-left'>参加者</p>
         </button>
       </div>
@@ -172,7 +172,7 @@ const GameSettingsButton = () => {
           className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
           onClick={modal.open}
         >
-          <InformationCircleIcon className='mr-1 h-5 w-5' />
+          <InformationCircleIcon className='mr-1 size-5' />
           <p className='flex-1 self-center text-left'>ゲーム設定</p>
         </button>
       </div>
@@ -194,7 +194,7 @@ const UserSettingsButton = () => {
           className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
           onClick={modal.open}
         >
-          <WrenchIcon className='mr-1 h-5 w-5' />
+          <WrenchIcon className='mr-1 size-5' />
           <p className='flex-1 self-center text-left'>ユーザー設定</p>
         </button>
       </div>
@@ -211,7 +211,7 @@ const TopPageButton = () => (
   <div>
     <Link href='/'>
       <button className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'>
-        <HomeIcon className='mr-1 h-5 w-5' />
+        <HomeIcon className='mr-1 size-5' />
         <p className='flex-1 self-center text-left'>トップ画面</p>
       </button>
     </Link>
@@ -226,7 +226,7 @@ const GameSettingsEditButton = () => {
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
         onClick={modal.open}
       >
-        <LockClosedIcon className='mr-1 h-5 w-5' />
+        <LockClosedIcon className='mr-1 size-5' />
         <p className='flex-1 self-center text-left'>ゲーム設定変更</p>
       </button>
       {modal.isOpen && (
@@ -246,7 +246,7 @@ const GameStatusEditButton = () => {
         className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
         onClick={modal.open}
       >
-        <LockClosedIcon className='mr-1 h-5 w-5' />
+        <LockClosedIcon className='mr-1 size-5' />
         <p className='flex-1 self-center text-left'>ステータス・期間変更</p>
       </button>
       {modal.isOpen && (
@@ -266,7 +266,7 @@ const GameMasterEditButton = () => {
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
         onClick={modal.open}
       >
-        <LockClosedIcon className='mr-1 h-5 w-5' />
+        <LockClosedIcon className='mr-1 size-5' />
         <p className='flex-1 self-center text-left'>GM追加削除</p>
       </button>
       {modal.isOpen && (
@@ -288,7 +288,7 @@ const ProfileButton = () => {
         target='_blank'
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
       >
-        <UserCircleIcon className='mr-1 h-5 w-5' />
+        <UserCircleIcon className='mr-1 size-5' />
         <p className='flex-1 self-center text-left'>{myself.name}</p>
       </Link>
     </>
@@ -303,7 +303,7 @@ const ParticipateButton = () => {
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
         onClick={modal.open}
       >
-        <UserPlusIcon className='mr-1 h-5 w-5' />
+        <UserPlusIcon className='mr-1 size-5' />
         <p className='flex-1 self-center text-left'>参加登録</p>
       </button>
       {modal.isOpen && (

@@ -31,7 +31,7 @@ export const GameIntroButton = () => {
           className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
           onClick={() => setShowModal(true)}
         >
-          <UsersIcon className='mr-1 h-5 w-5' />
+          <UsersIcon className='mr-1 size-5' />
           <p className='flex-1 self-center text-left'>ゲーム紹介</p>
         </button>
       </div>

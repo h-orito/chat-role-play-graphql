@@ -31,7 +31,7 @@ export const DebugMenu = () => {
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
         onClick={() => registerDebugMessages()}
       >
-        <UserPlusIcon className='mr-1 h-5 w-5' />
+        <UserPlusIcon className='mr-1 size-5' />
         <p className='flex-1 self-center text-left'>100回発言</p>
       </button>
     </div>

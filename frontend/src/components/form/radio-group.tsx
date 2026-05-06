@@ -35,7 +35,7 @@ export default function RadioGroup<T extends string>({
             <input
               type='radio'
               name={nameWithId}
-              className='h-0 w-0 opacity-0'
+              className='size-0 opacity-0'
               value={candidate.value}
               id={`${nameWithId}_${index}`}
               checked={selected === candidate.value}

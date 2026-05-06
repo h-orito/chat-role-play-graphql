@@ -108,7 +108,7 @@ const TalkDirect = (props: Props) => {
         isConvertDisabled: isConvertDisabled
       } as NewDirectMessage
     },
-    [game.id, gameParticipantGroup.id, iconId, isConvertDisabled, formState]
+    [game.id, gameParticipantGroup.id, iconId, isConvertDisabled]
   )
   const [dryRunMessage, setDryRunMessage] = useState<NewDirectMessage | null>(
     null

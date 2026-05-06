@@ -52,9 +52,7 @@ const Panel = (props: Props) => {
               )}
             </div>
           </summary>
-          <div className='primary-text details-content w-full p-4'>
-            {children}
-          </div>
+          <div className='primary-text w-full p-4'>{children}</div>
         </details>
       </div>
     </>

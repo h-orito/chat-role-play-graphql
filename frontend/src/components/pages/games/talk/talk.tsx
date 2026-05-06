@@ -127,15 +127,7 @@ const Talk = (props: Props) => {
         isConvertDisabled: isConvertDisabled
       } as NewMessage
     },
-    [
-      game.id,
-      replyTarget,
-      talkType,
-      receiver,
-      iconId,
-      isConvertDisabled,
-      formState
-    ]
+    [game.id, replyTarget, talkType, receiver, iconId, isConvertDisabled]
   )
 
   // 発言プレビュー

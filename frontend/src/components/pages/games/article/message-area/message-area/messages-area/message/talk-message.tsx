@@ -119,9 +119,8 @@ const ReceiverName = ({
   message: Message
   preview: boolean
 }) => {
-  if (!message.receiver || message.content.type !== 'Secret') return <></>
-
   const game = useGameValue()
+  if (!message.receiver || message.content.type !== 'Secret') return <></>
   const name = (
     <p className='primary-hover-text'>
       ENo.{message.receiver!.entryNumber}&nbsp;
@@ -235,7 +234,7 @@ const ReplyButton = ({
         onClick={() => handleReply(message)}
         disabled={isDisabled}
       >
-        <ChatBubbleOvalLeftEllipsisIcon className='y-4 secondary-text h-4' />
+        <ChatBubbleOvalLeftEllipsisIcon className='secondary-text h-4' />
       </button>
       {message.reactions.replyCount > 0 && (
         <button

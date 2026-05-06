@@ -49,7 +49,7 @@ export default function CheckGroup<T extends string>({
             <input
               type='checkbox'
               name={name}
-              className='h-0 w-0 opacity-0'
+              className='size-0 opacity-0'
               value={item.value}
               id={`${name}_${index}`}
               onChange={handleChange}

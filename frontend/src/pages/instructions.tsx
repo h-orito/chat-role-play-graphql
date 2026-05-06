@@ -139,7 +139,7 @@ export default function Instructions() {
                   </li>
                   <li>
                     ホーム画面またはフォロー画面の右下に表示される{' '}
-                    <PencilSquareIcon className='h-4 w-4' />{' '}
+                    <PencilSquareIcon className='size-4' />{' '}
                     をクリックすると発言フォームを表示できます
                   </li>
                 </ul>

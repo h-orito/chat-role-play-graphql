@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss}\"",
     "codegen": "graphql-codegen --config gqlcodegen.ts",
     "test": "vitest run",
     "test:watch": "vitest"

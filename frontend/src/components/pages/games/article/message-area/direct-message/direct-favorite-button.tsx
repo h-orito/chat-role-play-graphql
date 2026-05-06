@@ -92,7 +92,7 @@ export default function DirectFavoriteButton({ message }: Props) {
   return (
     <>
       <button onClick={() => handleFav()} disabled={!canFav}>
-        <StarIcon className={`y-4 h-4 ${starClass}`} />
+        <StarIcon className={`h-4 ${starClass}`} />
       </button>
       {favCount > 0 && (
         <button
