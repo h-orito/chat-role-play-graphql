@@ -22,20 +22,28 @@ go run github.com/99designs/gqlgen generate
 
 ### Frontend (Next.js)
 
+パッケージマネージャは **pnpm** を使用（`packageManager` フィールドで固定）。
+
 ```bash
 cd frontend
 
+# 依存インストール
+pnpm install
+
 # 開発サーバー起動
-npm run dev
+pnpm run dev
 
 # ビルド
-npm run build
+pnpm run build
 
 # Lint
-npm run lint
+pnpm run lint
+
+# Format
+pnpm run format
 
 # GraphQL コード生成
-npm run codegen
+pnpm run codegen
 ```
 
 ### Docker (MySQL)
@@ -79,7 +87,7 @@ docker compose up -d
 
 1. `graphql/schema.graphqls` を編集
 2. Backend: `go run github.com/99designs/gqlgen generate`
-3. Frontend: `npm run codegen`
+3. Frontend: `pnpm run codegen`
 
 ## 環境変数
 
