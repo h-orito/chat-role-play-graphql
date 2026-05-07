@@ -105,3 +105,14 @@ OAUTH_AUDIENCE={oauth audience}
 ### Frontend (.env.local)
 
 Auth0 とGraphQL エンドポイントの設定が必要。
+
+## Issue 対応の進め方
+
+`.issues/` 配下の Issue を消化する際の手順は [.issues/README.md](./.issues/README.md) に記載。要点:
+
+- 1 Issue = 1 feature ブランチ = 1 PR（squash merge 前提）
+- ブランチ名: `<type>/<issue-number>-<slug>`（例: `fix/14-commonjs-require`）
+- コミットは Conventional Commits（日本語、末尾に `(#XX)`）
+- 動作確認は **lint / build / 既存 E2E** + 必要に応じて E2E 追加 or ユーザー手動確認依頼
+- 完了したら Issue ファイルと README 一覧から削除
+- 別セッションの PR レビュー結果は `.reviews/PR-<番号>.md` に書き出して連携
