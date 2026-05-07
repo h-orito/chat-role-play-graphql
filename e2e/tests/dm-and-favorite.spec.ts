@@ -3,22 +3,24 @@ import { test, expect, type Page } from '@playwright/test'
 // ================================================================
 // シナリオ：
 //   1. ユーザーAがゲーム作成（キャラチップ利用あり）
-//   2. ユーザーAがキャラチップ利用で参加登録
+//   2. ユーザーAがキャラチップ利用で参加登録・通常発言
 //   3. ユーザーAがステータスを「参加者募集中」に変更
 //   4. ユーザーBがゲームに参加・通常発言
 //   5. ユーザーAがユーザーBの発言にいいねする
-//   6. ユーザーBがユーザーAと自分のダイレクトメッセージグループを作成
-//   7. ユーザーBが作成したダイレクトメッセージグループで発言
-//   8. ユーザーAがダイレクトメッセージグループの発言を参照
+//   6. ユーザーBがユーザーAをフォローする
+//   7. ユーザーBがユーザーAと自分のダイレクトメッセージグループを作成
+//   8. ユーザーBが作成したダイレクトメッセージグループで発言
+//   9. ユーザーAがダイレクトメッセージグループの発言を参照
 // ================================================================
 
-test('複数ユーザーシナリオ：いいね・DMグループ作成・DM発言・DM参照', async ({
+test('複数ユーザーシナリオ：いいね・フォロー・DMグループ作成・DM発言・DM参照', async ({
   browser
 }) => {
   test.setTimeout(120_000)
 
   const ts = Date.now()
   const gameName = `E2E_DM_${ts}`
+  const aNormal = `Aの通常発言_${ts}`
   const bNormal = `Bの通常発言_${ts}`
   const bDirect = `BからAへのDM_${ts}`
 
@@ -42,11 +44,15 @@ test('複数ユーザーシナリオ：いいね・DMグループ作成・DM発�
     timeout: 10_000
   })
 
-  // 2. ユーザーA: 参加登録（GMでも参加できる）
+  // 2. ユーザーA: 参加登録（GMでも参加できる）+ 通常発言
   await participateWithCharachip(pageA)
   await expect(
     pageA.locator('nav').locator('a[href*="/profile/"]')
   ).toBeVisible({ timeout: 10_000 })
+  await postNormalTalk(pageA, aNormal)
+  await expect(pageA.getByText(aNormal).first()).toBeVisible({
+    timeout: 10_000
+  })
 
   // 3. ユーザーA: ステータスを「参加者募集中」に変更
   await changeGameStatusToRecruiting(pageA)
@@ -84,7 +90,17 @@ test('複数ユーザーシナリオ：いいね・DMグループ作成・DM発�
   await favoriteMessage(pageA, bNormal)
 
   // ============================================================
-  // 6. ユーザーB: ユーザーAとのDMグループ作成
+  // 6. ユーザーB: ユーザーAをフォロー
+  // ============================================================
+  await followCharacterFromMessage(pageB, aNormal)
+  // フォロー後、ゲーム本編に戻る
+  await pageB.goto(`/chat-role-play/games/${gameId}`)
+  await expect(pageB.locator('h1').filter({ hasText: gameName })).toBeVisible({
+    timeout: 10_000
+  })
+
+  // ============================================================
+  // 7. ユーザーB: ユーザーAとのDMグループ作成
   // ============================================================
   await openDirectMessageTab(pageB)
   const dmAreaB = pageB.locator('#direct-message-area')
@@ -100,7 +116,7 @@ test('複数ユーザーシナリオ：いいね・DMグループ作成・DM発�
   await expect(groupButtonB).toBeVisible({ timeout: 10_000 })
 
   // ============================================================
-  // 7. ユーザーB: DMグループで発言
+  // 8. ユーザーB: DMグループで発言
   // ============================================================
   await groupButtonB.click()
   await expect(
@@ -112,7 +128,7 @@ test('複数ユーザーシナリオ：いいね・DMグループ作成・DM発�
   })
 
   // ============================================================
-  // 8. ユーザーA: DMグループの発言を参照
+  // 9. ユーザーA: DMグループの発言を参照
   // ============================================================
   await pageA.reload()
   await pageA.waitForLoadState('networkidle')
@@ -199,6 +215,28 @@ async function favoriteMessage(page: Page, targetText: string): Promise<void> {
     '1',
     { timeout: 10_000 }
   )
+}
+
+async function followCharacterFromMessage(
+  page: Page,
+  targetText: string
+): Promise<void> {
+  // 対象メッセージから sender link の href を取得し、同一ページでプロフィールへ遷移
+  // (sender link は target='_blank' なので click ではなく href で遷移する)
+  const profileLink = page
+    .locator('#message-area-home div.w-full')
+    .filter({ hasText: targetText })
+    .first()
+    .locator('a[href*="/profile/"]')
+    .first()
+  const href = await profileLink.getAttribute('href')
+  if (!href) throw new Error(`profile link for "${targetText}" not found`)
+  await page.goto(href)
+  await page.getByRole('button', { name: 'フォロー' }).click()
+  // フォロー後はボタンが「フォロー解除」に切り替わる
+  await expect(page.getByRole('button', { name: 'フォロー解除' })).toBeVisible({
+    timeout: 10_000
+  })
 }
 
 async function openDirectMessageTab(page: Page): Promise<void> {
