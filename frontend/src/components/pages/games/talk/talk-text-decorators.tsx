@@ -34,14 +34,14 @@ export default function TalkTextDecorators(props: Props) {
 type DecorateButtonProps = {
   selector: string
   setMessage: (message: string) => void
-  click: (e: any) => void
+  click: () => void
   children: React.ReactNode
 }
 
 const DecorateButton = ({ click, children }: DecorateButtonProps) => {
-  const onClick = (e: any) => {
+  const onClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    if (click) click(e)
+    if (click) click()
   }
 
   return (
@@ -57,7 +57,7 @@ const DecorateButton = ({ click, children }: DecorateButtonProps) => {
 const SimpleDecorateButton = (
   props: Props & { tag: string; closeTag?: string; children: React.ReactNode }
 ) => {
-  const click = (e: any) => {
+  const click = () => {
     props.setMessage(
       addTag(props.selector, props.tag, props.closeTag ?? props.tag)
     )
@@ -132,7 +132,7 @@ const ColorButton = (props: Props & { color: string }) => (
 )
 
 const RubyButton = (props: Props) => {
-  const click = (e: any) => {
+  const click = () => {
     props.setMessage(addRubyTag(props.selector))
   }
   return (
@@ -229,7 +229,9 @@ const RandomKeywordSelect = (props: Props) => {
     <select
       className='base-border ml-1 border p-1 text-xs text-gray-700'
       value={selected}
-      onChange={(e: any) => handleRandomSelected(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+        handleRandomSelected(e.target.value)
+      }
     >
       {candidates.map((c) => (
         <option key={c.value} value={c.value}>

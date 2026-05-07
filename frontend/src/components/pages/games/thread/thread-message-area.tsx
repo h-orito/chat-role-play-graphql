@@ -6,15 +6,7 @@ import {
   ThreadMessagesDocument,
   ThreadMessagesQuery
 } from '@/lib/generated/graphql'
-import {
-  forwardRef,
-  useRef,
-  useImperativeHandle,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect
-} from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import MessageComponent from '../article/message-area/message-area/messages-area/message/message'
 import {
   talkableGameStatuses,
@@ -23,10 +15,9 @@ import {
 } from '../game-hook'
 import { useLazyQuery } from '@apollo/client'
 import { useUserPagingSettings } from '../user-settings'
-import TalkArea, {
-  TalkAreaRefHandle
-} from '../article/message-area/message-area/talk-area'
+import TalkArea from '../article/message-area/message-area/talk-area'
 import MessageAreaFooterMenu from '../article/message-area/message-area/message-area-footer-menu'
+import { useTalkPanel } from '../talk/use-talk-panel'
 
 type Props = {
   game: Game
@@ -37,10 +28,19 @@ type Props = {
 const ThreadMessageArea = (props: Props) => {
   const game = useGameValue()
   const myself = useMyselfValue()
+  const { reply } = useTalkPanel()
   const [fetchMessages] = useLazyQuery<ThreadMessagesQuery>(
     ThreadMessagesDocument
   )
   const [userPagingSettings] = useUserPagingSettings()
+
+  // messages state をここで管理
+  const [messages, setMessages] = useState<Array<Message>>(() => {
+    return userPagingSettings.isDesc
+      ? [...props.threadMessages].reverse()
+      : props.threadMessages
+  })
+
   const search = useCallback(async () => {
     const { data } = await fetchMessages({
       variables: {
@@ -49,19 +49,20 @@ const ThreadMessageArea = (props: Props) => {
       } as MessagesQuery
     })
     if (data?.threadMessages == null) return
-    let messages = data.threadMessages as Array<Message>
+    let msgs = data.threadMessages as Array<Message>
     if (userPagingSettings.isDesc) {
-      messages = messages.reverse()
+      msgs = msgs.reverse()
     }
-    messagesAreaRef.current?.setMessages(messages)
-  }, [game.id, props.messageId])
+    setMessages(msgs)
+  }, [game.id, props.messageId, fetchMessages, userPagingSettings.isDesc])
 
   const canTalk = useMemo(() => {
     return !!myself && talkableGameStatuses.includes(game.status)
   }, [myself, game.status])
 
-  const reply = (message: Message) => {
-    talkAreaRef.current.reply(message)
+  const handleReply = (message: Message) => {
+    if (!canTalk) return
+    reply(message)
   }
 
   const scrollToTop = () => {
@@ -79,9 +80,6 @@ const ThreadMessageArea = (props: Props) => {
     })
   }
 
-  const messagesAreaRef = useRef({} as ThreadMessagesAreaRefHandle)
-  const talkAreaRef = useRef({} as TalkAreaRefHandle)
-
   return (
     <div className='mut-height-guard relative flex h-screen max-h-screen w-full flex-1 flex-col'>
       <div
@@ -89,19 +87,12 @@ const ThreadMessageArea = (props: Props) => {
         className='flex w-full flex-1 flex-col overflow-y-auto'
       >
         <ThreadMessagesArea
-          ref={messagesAreaRef}
+          messages={messages}
           messageId={props.messageId}
-          threadMessages={props.threadMessages}
           canTalk={canTalk}
-          search={search}
-          reply={reply}
+          handleReply={handleReply}
         />
-        <TalkArea
-          ref={talkAreaRef}
-          canTalk={canTalk}
-          search={search}
-          talkAreaId='talk-area'
-        />
+        <TalkArea canTalk={canTalk} search={search} talkAreaId='talk-area' />
       </div>
       <div id='talk-area-fixed'></div>
       <MessageAreaFooterMenu
@@ -115,49 +106,23 @@ const ThreadMessageArea = (props: Props) => {
 
 export default ThreadMessageArea
 
-interface ThreadMessagesAreaRefHandle {
-  setMessages: (messages: Array<Message>) => void
-}
 type ThreadMessagesAreaProps = {
+  messages: Array<Message>
   messageId: string
-  threadMessages: Array<Message>
   canTalk: boolean
-  search: () => void
-  reply: (message: Message) => void
+  handleReply: (message: Message) => void
 }
-const ThreadMessagesArea = forwardRef<
-  ThreadMessagesAreaRefHandle,
-  ThreadMessagesAreaProps
->((props: ThreadMessagesAreaProps, ref: any) => {
-  const [messages, _setMessages] = useState<Array<Message>>(
-    props.threadMessages
-  )
 
-  const handleReply = (message: Message) => {
-    if (!props.canTalk) return
-    props.reply(message)
-  }
-
-  const [userPagingSettings] = useUserPagingSettings()
-  useEffect(() => {
-    if (userPagingSettings.isDesc) {
-      _setMessages(messages.reverse())
-    }
-  }, [])
-
-  useImperativeHandle(ref, () => ({
-    setMessages(messages: Array<Message>) {
-      _setMessages(messages)
-    }
-  }))
-
+const ThreadMessagesArea = ({
+  messages,
+  handleReply
+}: ThreadMessagesAreaProps) => {
   return (
     <div className='relative flex-1'>
       <div id='talk-area-top'></div>
       <div id='talk-area-top-preview'></div>
       {messages.map((message: Message) => (
         <MessageComponent
-          {...props}
           message={message}
           key={message.id}
           handleReply={handleReply}
@@ -171,4 +136,4 @@ const ThreadMessagesArea = forwardRef<
       <div id='talk-area-bottom'></div>
     </div>
   )
-})
+}

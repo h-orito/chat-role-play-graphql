@@ -13,7 +13,7 @@ import { useCallback } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
   group: GameParticipantGroup
   refetchGroups: () => void
 }
@@ -39,7 +39,7 @@ export default function ParticipantGroupEdit({
     {
       onCompleted(e) {
         refetchGroups()
-        close(e)
+        close()
       },
       onError(error) {
         console.error(error)
@@ -59,7 +59,7 @@ export default function ParticipantGroupEdit({
         } as UpdateParticipantGroupMutationVariables
       })
     },
-    [updateGroup, group]
+    [updateGroup, group, game.id]
   )
 
   return (

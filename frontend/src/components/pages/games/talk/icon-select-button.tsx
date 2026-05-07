@@ -1,8 +1,8 @@
 import Modal from '@/components/modal/modal'
 import { GameParticipantIcon } from '@/lib/generated/graphql'
-import { useState } from 'react'
 import { useUserDisplaySettingsValue } from '../game-hook'
 import Image from 'next/image'
+import { useModal } from '@/components/hooks/use-modal'
 
 type Props = {
   icons: Array<GameParticipantIcon>
@@ -11,12 +11,7 @@ type Props = {
 }
 
 const IconButton = ({ icons, iconId, setIconId }: Props) => {
-  const [isOpenIconSelectModal, setIsOpenIconSelectModal] = useState(false)
-  const toggleIconSelectModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenIconSelectModal(!isOpenIconSelectModal)
-    }
-  }
+  const iconSelectModal = useModal()
 
   const selectedIcon = icons.find((icon) => icon.id === iconId)
   const imageSizeRatio = useUserDisplaySettingsValue().iconSizeRatio ?? 1
@@ -25,9 +20,9 @@ const IconButton = ({ icons, iconId, setIconId }: Props) => {
   return (
     <div>
       <button
-        onClick={(e: any) => {
+        onClick={(e: React.MouseEvent) => {
           e.preventDefault()
-          setIsOpenIconSelectModal(true)
+          iconSelectModal.open()
         }}
         disabled={icons.length <= 0}
       >
@@ -38,12 +33,12 @@ const IconButton = ({ icons, iconId, setIconId }: Props) => {
           alt='キャラアイコン'
         />
       </button>
-      {isOpenIconSelectModal && (
-        <Modal close={toggleIconSelectModal} hideFooter>
+      {iconSelectModal.isOpen && (
+        <Modal close={iconSelectModal.close} hideFooter>
           <IconSelect
             icons={icons}
             setIconId={setIconId}
-            toggle={() => setIsOpenIconSelectModal(false)}
+            toggle={iconSelectModal.close}
           />
         </Modal>
       )}
@@ -59,7 +54,7 @@ type IconSelectProps = {
   toggle: () => void
 }
 const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
-  const handleSelect = (e: any, iconId: string) => {
+  const handleSelect = (e: React.MouseEvent, iconId: string) => {
     e.preventDefault()
     setIconId(iconId)
     toggle()
@@ -69,7 +64,10 @@ const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
   return (
     <div>
       {icons.map((icon) => (
-        <button onClick={(e: any) => handleSelect(e, icon.id)} key={icon.id}>
+        <button
+          onClick={(e: React.MouseEvent) => handleSelect(e, icon.id)}
+          key={icon.id}
+        >
           <Image
             src={icon.url}
             width={icon.width * imageSizeRatio}

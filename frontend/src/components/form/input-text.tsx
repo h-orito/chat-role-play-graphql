@@ -69,6 +69,7 @@ const InputText = <
         value={field.value}
         onChange={handleChange}
         onBlur={handleBlur}
+        aria-invalid={!!errorMessage}
         {...fieldProps}
       />
       {errorMessage && <p className='danger-text text-xs'>{errorMessage}</p>}

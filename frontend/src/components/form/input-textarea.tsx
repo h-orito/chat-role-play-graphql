@@ -80,6 +80,7 @@ const InputTextarea = <
         value={field.value}
         onChange={handleChange}
         onBlur={handleBlur}
+        aria-invalid={!!errorMessage}
         {...props}
       />
       {maxLength && <TextCount maxLength={maxLength} value={field.value} />}

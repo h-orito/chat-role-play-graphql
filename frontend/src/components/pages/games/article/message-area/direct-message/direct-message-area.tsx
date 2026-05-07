@@ -18,6 +18,8 @@ import {
   useRef,
   useState
 } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
+import { useFixedPanel } from '@/components/hooks/use-fixed-panel'
 import Paging from '../message-area/messages-area/paging'
 import DirectMessageComponent from './direct-message'
 import { ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline'
@@ -26,16 +28,13 @@ import ParticipantGroupEdit from './participant-group-edit'
 import { useUserPagingSettings } from '../../../user-settings'
 import DirectFooterMenu from './direct-footer-menu'
 import Portal from '@/components/modal/portal'
-import {
-  useFixedBottom,
-  useGameValue
-} from '@/components/pages/games/game-hook'
+import { useGameValue } from '@/components/pages/games/game-hook'
 import Panel from '@/components/panel/panel'
 import TalkDirect from '../../../talk/talk-direct'
 import { base64ToId } from '@/components/graphql/convert'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
   group: GameParticipantGroup
   refetchGroups: () => void
 }
@@ -80,17 +79,7 @@ export default function DirectMessageArea(props: Props) {
       if (data?.directMessages == null) return
       setDirectMessages(data.directMessages as DirectMessages)
     },
-    [game.id, query]
-  )
-
-  useEffect(() => {
-    search(defaultQuery)
-  }, [group])
-
-  if (group == null) return <></>
-
-  const canModify = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
-    game.status
+    [game.id, query, fetchDirectMessages]
   )
 
   const directMessageAreaRef = useRef<HTMLDivElement>(null)
@@ -103,6 +92,18 @@ export default function DirectMessageArea(props: Props) {
       behavior: 'smooth'
     })
   }
+
+  useEffect(() => {
+    search(defaultQuery)
+    // group 切替時のみ defaultQuery で再検索する。search/defaultQuery は意図的に外す
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [group])
+
+  if (group == null) return <></>
+
+  const canModify = ['Opening', 'Recruiting', 'Progress', 'Epilogue'].includes(
+    game.status
+  )
 
   const talkAreaId = `talk-direct-${base64ToId(group.id)}`
 
@@ -147,7 +148,7 @@ const DirectMessageModal = (
     children: React.ReactNode
     search: (query?: DirectMessagesQuery) => Promise<void>
     query: DirectMessagesQuery
-    close: (e: any) => void
+    close: () => void
     canModify: boolean
     scrollToTop: () => void
     scrollToBottom: () => void
@@ -157,11 +158,11 @@ const DirectMessageModal = (
   const { close, group, search, canModify, scrollToTop, scrollToBottom } = props
   return (
     <Portal target='#direct-message-area'>
-      <div className='base-background absolute inset-x-0 inset-y-0 z-50 h-full w-full text-sm'>
+      <div className='base-background absolute inset-0 z-50 size-full text-sm'>
         <div className='flex h-full flex-col overflow-y-auto'>
           <div className='base-border flex border-b p-2'>
             <button className='px-2' onClick={close}>
-              <ArrowLeftIcon className='mr-1 h-6 w-6' />
+              <ArrowLeftIcon className='mr-1 size-6' />
             </button>
             <p className='justify-center text-xl'>{group.name}</p>
           </div>
@@ -189,15 +190,7 @@ const DirectMessageGroupMembers = (
   } & Props
 ) => {
   const { refetchGroups, group, canModify } = props
-  const [isOpenModifyGroupModal, setIsOpenModifyGroupModal] = useState(false)
-  const toggleModifyGroupModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenModifyGroupModal(!isOpenModifyGroupModal)
-    }
-  }
-  const openModifyGroupModal = (group: GameParticipantGroup) => {
-    setIsOpenModifyGroupModal(true)
-  }
+  const modifyGroupModal = useModal()
 
   return (
     <div className='base-border flex border-b px-4 py-2'>
@@ -208,16 +201,16 @@ const DirectMessageGroupMembers = (
       {canModify && (
         <button
           className='primary-hover-background ml-auto pl-4'
-          onClick={() => openModifyGroupModal(group)}
+          onClick={modifyGroupModal.open}
         >
-          <PencilIcon className='mr-1 h-4 w-4' />
+          <PencilIcon className='mr-1 size-4' />
         </button>
       )}
-      {isOpenModifyGroupModal && (
-        <Modal close={toggleModifyGroupModal} hideFooter>
+      {modifyGroupModal.isOpen && (
+        <Modal close={modifyGroupModal.close} hideFooter>
           <ParticipantGroupEdit
             group={group}
-            close={toggleModifyGroupModal}
+            close={modifyGroupModal.close}
             refetchGroups={refetchGroups}
           />
         </Modal>
@@ -288,22 +281,13 @@ const DirectTalkArea = memo((props: DirectTalkAreaProps) => {
 
 const DirectTalkPanel = (props: DirectTalkAreaProps) => {
   const { group, search } = props
+  const { isFixed, toggleFixed } = useFixedPanel()
 
   const handleCompleted = () => {
     search()
   }
 
-  const [isFixed, setIsFixed] = useState(false)
-  const otherFixedCanceler = useFixedBottom()
-  const toggleFixed = (e: any) => {
-    if (!isFixed) {
-      otherFixedCanceler(() => setIsFixed(false))
-    }
-    setIsFixed((current) => !current)
-    e.stopPropagation()
-  }
-
-  const PanelComponent = () => (
+  const panel = (
     <Panel
       header='ダイレクトメッセージ'
       toggleFixed={toggleFixed}
@@ -318,12 +302,12 @@ const DirectTalkPanel = (props: DirectTalkAreaProps) => {
   )
 
   if (!isFixed) {
-    return <PanelComponent />
+    return panel
   } else {
     return (
       <Portal target={`#${props.talkAreaId}-fixed`}>
         <div className='-m-4 max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
-          <PanelComponent />
+          {panel}
         </div>
       </Portal>
     )

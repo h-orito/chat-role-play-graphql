@@ -13,7 +13,7 @@ import Image from 'next/image'
 import { StarIcon } from '@heroicons/react/24/outline'
 import { iso2display } from '@/components/util/datetime/datetime'
 import { useMutation } from '@apollo/client'
-import { useCallback, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import MessageText from '../message-text/message-text'
 import {
   useGameValue,
@@ -29,7 +29,7 @@ type MessageProps = {
   preview?: boolean
 }
 
-export default function DirectMessageComponent({
+export default memo(function DirectMessageComponent({
   directMessage,
   preview = false
 }: MessageProps) {
@@ -100,7 +100,7 @@ export default function DirectMessageComponent({
         } as FavoriteDirectMutationVariables
       })
     }
-  }, [isFav, favorite, unfavorite])
+  }, [isFav, favorite, unfavorite, canFav, game.id, directMessage.id])
 
   const messageClass =
     directMessage.content.type === 'TalkNormal'
@@ -156,7 +156,7 @@ export default function DirectMessageComponent({
       </div>
     </div>
   )
-}
+})
 
 const SenderName = ({
   directMessage,
@@ -166,14 +166,14 @@ const SenderName = ({
   preview: boolean
 }) => {
   const game = useGameValue()
-  const NameComponent = () => (
+  const name = (
     <p className='primary-hover-text text-xs'>
       ENo.{directMessage.sender.entryNumber}&nbsp;
       {directMessage.sender.name}
     </p>
   )
   if (preview) {
-    return <NameComponent />
+    return name
   }
   return (
     <Link
@@ -182,7 +182,7 @@ const SenderName = ({
       )}`}
       target='_blank'
     >
-      <NameComponent />
+      {name}
     </Link>
   )
 }
@@ -197,7 +197,7 @@ const SenderIcon = ({
   imageSizeRatio: number
 }) => {
   const game = useGameValue()
-  const IconComponent = () => (
+  const icon = (
     <Image
       src={directMessage.sender!.icon!.url}
       width={directMessage.sender!.icon!.width * imageSizeRatio}
@@ -207,7 +207,7 @@ const SenderIcon = ({
   )
 
   if (preview) {
-    return <IconComponent />
+    return icon
   }
   return (
     <Link
@@ -216,7 +216,7 @@ const SenderIcon = ({
       )}`}
       target='_blank'
     >
-      <IconComponent />
+      {icon}
     </Link>
   )
 }

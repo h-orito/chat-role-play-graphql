@@ -140,7 +140,7 @@ export default function CreateGame() {
       }
       router.push(`/games/${base64ToId(id)}`)
     },
-    [registerGame, charachipIds, target, rating, catchImageFiles]
+    [registerGame, charachipIds, target, rating, catchImageFiles, router]
   )
 
   return (

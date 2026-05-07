@@ -24,7 +24,7 @@ import InputText from '@/components/form/input-text'
 import Modal from '@/components/modal/modal'
 import SubmitButton from '@/components/button/submit-button'
 import DirectMessageComponent from '../article/message-area/direct-message/direct-message'
-import SecondaryButton from '@/components/button/scondary-button'
+import SecondaryButton from '@/components/button/secondary-button'
 import TalkTextDecorators from './talk-text-decorators'
 import {
   useGameValue,
@@ -108,7 +108,7 @@ const TalkDirect = (props: Props) => {
         isConvertDisabled: isConvertDisabled
       } as NewDirectMessage
     },
-    [game.id, gameParticipantGroup.id, iconId, isConvertDisabled, formState]
+    [game.id, gameParticipantGroup.id, iconId, isConvertDisabled]
   )
   const [dryRunMessage, setDryRunMessage] = useState<NewDirectMessage | null>(
     null
@@ -192,7 +192,7 @@ const TalkDirect = (props: Props) => {
                 type='checkbox'
                 id='convert-disabled'
                 checked={isConvertDisabled}
-                onChange={(e: any) => setIsConvertDisabled((prev) => !prev)}
+                onChange={() => setIsConvertDisabled((prev) => !prev)}
               />
               <label htmlFor='convert-disabled' className='ml-1 text-xs'>
                 装飾やランダム変換しない
@@ -247,6 +247,8 @@ const DirectPreview = ({
         block: 'end'
       })
     }
+    // mount 時のみスクロール（isDesc / talkAreaId の変化には追従しない）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const [talkDirect] = useMutation<TalkDirectMutation>(TalkDirectDocument, {

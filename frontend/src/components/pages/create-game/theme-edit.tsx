@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import Modal from '@/components/modal/modal'
-import { ChromePicker } from 'react-color'
+import { useModal } from '@/components/hooks/use-modal'
+import { ChromePicker, ColorResult } from 'react-color'
 import {
   BaseTheme,
   SidebarTheme,
@@ -250,7 +251,7 @@ const TypeThemeColor = ({
             <>
               <button
                 className={`sample-button rounded-sm border px-4 py-1`}
-                onClick={(e: any) => e.preventDefault()}
+                onClick={(e: React.MouseEvent) => e.preventDefault()}
               >
                 {typeName}ボタン
               </button>
@@ -343,15 +344,10 @@ const ColorPicker = ({
   color: string
   setColor: (c: string) => void
 }) => {
-  const [isPickerOpen, setIsPickerOpen] = useState(false)
-  const handleOpen = (e: any) => {
+  const pickerModal = useModal()
+  const handleOpen = (e: React.MouseEvent) => {
     e.preventDefault()
-    setIsPickerOpen(true)
-  }
-  const toggleModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsPickerOpen(!isPickerOpen)
-    }
+    pickerModal.open()
   }
   return (
     <>
@@ -361,11 +357,11 @@ const ColorPicker = ({
       >
         <p className='h-3 w-6' style={{ backgroundColor: color }}></p>
       </button>
-      {isPickerOpen && (
-        <Modal close={toggleModal} hideFooter>
+      {pickerModal.isOpen && (
+        <Modal close={pickerModal.close} hideFooter>
           <PickerArea
             color={color}
-            handleChange={(c: any) => setColor(c.hex)}
+            handleChange={(c: ColorResult) => setColor(c.hex)}
           />
         </Modal>
       )}
@@ -378,7 +374,7 @@ const PickerArea = ({
   handleChange
 }: {
   color: string
-  handleChange: (c: any) => void
+  handleChange: (c: ColorResult) => void
 }) => {
   return (
     <div className='flex justify-center'>

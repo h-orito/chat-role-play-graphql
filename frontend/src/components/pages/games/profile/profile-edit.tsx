@@ -15,11 +15,12 @@ import { useMutation } from '@apollo/client'
 import { useCallback, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Modal from '@/components/modal/modal'
+import { useModal } from '@/components/hooks/use-modal'
 import TalkTextDecorators from '../talk/talk-text-decorators'
 import { useGameValue, useMyself } from '../game-hook'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
   profile: GameParticipantProfile
   icons: GameParticipantIcon[]
   refetchProfile: () => void
@@ -51,12 +52,7 @@ export default function ProfileEdit({
   const [iconId, setIconId] = useState<string | null>(
     myself?.profileIcon?.id ?? null
   )
-  const [isOpenIconSelectModal, setIsOpenIconSelectModal] = useState(false)
-  const toggleIconSelectModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenIconSelectModal(!isOpenIconSelectModal)
-    }
-  }
+  const iconSelectModal = useModal()
 
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting
   const [updateProfile] = useMutation<UpdateGameParticipantProfileMutation>(
@@ -65,7 +61,7 @@ export default function ProfileEdit({
       onCompleted(e) {
         refetchMyself()
         refetchProfile()
-        close(e)
+        close()
       },
       onError(error) {
         console.error(error)
@@ -90,7 +86,7 @@ export default function ProfileEdit({
         } as UpdateGameParticipantProfileMutationVariables
       })
     },
-    [updateProfile, images, iconId]
+    [updateProfile, images, iconId, game.id, profile.profileImageUrl]
   )
 
   const selectedIcon = icons.find((icon) => icon.id === iconId)
@@ -174,9 +170,9 @@ export default function ProfileEdit({
           {icons.length > 0 && (
             <div>
               <button
-                onClick={(e: any) => {
+                onClick={(e: React.MouseEvent) => {
                   e.preventDefault()
-                  setIsOpenIconSelectModal(true)
+                  iconSelectModal.open()
                 }}
                 disabled={icons.length <= 0}
               >
@@ -213,12 +209,12 @@ export default function ProfileEdit({
         <div className='flex justify-end'>
           <SubmitButton label='更新する' disabled={!canSubmit} />
         </div>
-        {isOpenIconSelectModal && (
-          <Modal close={toggleIconSelectModal} hideFooter>
+        {iconSelectModal.isOpen && (
+          <Modal close={iconSelectModal.close} hideFooter>
             <IconSelect
               icons={icons}
               setIconId={setIconId}
-              toggle={() => setIsOpenIconSelectModal(false)}
+              toggle={iconSelectModal.close}
             />
           </Modal>
         )}
@@ -233,7 +229,7 @@ type IconSelectProps = {
   toggle: () => void
 }
 const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
-  const handleSelect = (e: any, iconId: string) => {
+  const handleSelect = (e: React.MouseEvent, iconId: string) => {
     e.preventDefault()
     setIconId(iconId)
     toggle()
@@ -242,7 +238,10 @@ const IconSelect = ({ icons, setIconId, toggle }: IconSelectProps) => {
   return (
     <div>
       {icons.map((icon) => (
-        <button onClick={(e: any) => handleSelect(e, icon.id)} key={icon.id}>
+        <button
+          onClick={(e: React.MouseEvent) => handleSelect(e, icon.id)}
+          key={icon.id}
+        >
           <Image
             src={icon.url}
             width={icon.width}

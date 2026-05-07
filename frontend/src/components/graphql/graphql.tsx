@@ -1,14 +1,8 @@
 import { ApolloProvider } from '@apollo/client'
-import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useEffect, useState } from 'react'
 import { createClient } from './client'
 import { getAccessToken } from '../auth/auth0'
-
-const defaultClient = new ApolloClient({
-  uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
-  cache: new InMemoryCache()
-})
 
 const GraphqlProvider = ({ children }: { children: React.ReactNode }) => {
   const {
@@ -31,7 +25,7 @@ const GraphqlProvider = ({ children }: { children: React.ReactNode }) => {
       setClient(generatedClient)
     }
     generateClient()
-  }, [isLoading])
+  }, [isLoading, isAuthenticated, getAccessTokenSilently, loginWithRedirect])
   if (isLoading || !client) return <>Loading...</>
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>

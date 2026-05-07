@@ -1,15 +1,22 @@
 import {
   ApolloClient,
+  HttpLink,
   InMemoryCache,
   NormalizedCacheObject
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 
+type GetAccessTokenFn = (
+  isAuthenticated: boolean,
+  getAccessTokenSilently: () => Promise<string>,
+  loginWithRedirect: () => Promise<void>
+) => Promise<string | null | undefined>
+
 export const createClient = async (
   isAuthenticated: boolean,
-  getAccessTokenSilently: any,
-  loginWithRedirect: any,
-  getAccessToken: any
+  getAccessTokenSilently: () => Promise<string>,
+  loginWithRedirect: () => Promise<void>,
+  getAccessToken: GetAccessTokenFn
 ) => {
   const authLink = setContext(async (_, { headers }) => {
     const accessToken = await getAccessToken(
@@ -50,7 +57,7 @@ export const createInnerClient = () => {
   if (innerClient) return innerClient
   innerClient = new ApolloClient({
     ssrMode: true,
-    uri: process.env.NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT,
+    link: new HttpLink({ uri: process.env.NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT }),
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {

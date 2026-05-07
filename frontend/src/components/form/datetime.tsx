@@ -17,7 +17,7 @@ export default function Datetime({ className, value, setValue }: Props) {
     // memo: toISOString.substring(0,16)だとUTCにされてしまうので自力でformat
     return dayjs(date).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm')
   }
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const str = e.target.value
     if (str === '') return setValue(null)
     else setValue(new Date(e.target.value))

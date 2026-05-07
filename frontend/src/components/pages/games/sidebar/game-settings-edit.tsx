@@ -149,7 +149,17 @@ export default function GameSettingsEdit() {
       })
       router.reload()
     },
-    [updateGameSettings, target, rating, theme, catchImageFiles]
+    [
+      updateGameSettings,
+      target,
+      rating,
+      theme,
+      catchImageFiles,
+      charachipIds,
+      game.id,
+      game.settings.background.catchImageUrl,
+      router
+    ]
   )
 
   return (

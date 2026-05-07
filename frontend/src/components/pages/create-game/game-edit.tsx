@@ -9,6 +9,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
+import { useModal } from '@/components/hooks/use-modal'
 import {
   Charachip,
   CharachipsQuery,
@@ -84,6 +85,8 @@ export default function GameEdit(props: Props) {
       }
     }
     fetch()
+    // mount 時のみキャラチップ一覧を初期取得（fetchCharachips は識別性が変わるが意図的に依存に含めない）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const { control, formState, handleSubmit, setValue } = useForm<GameFormInput>(
@@ -221,7 +224,7 @@ export default function GameEdit(props: Props) {
               rules={{
                 required: '必須です',
                 validate: {
-                  greaterThanOpenAt: (value: string, values: any) => {
+                  greaterThanOpenAt: (value: string, values: GameFormInput) => {
                     const openAt = dayjs(values.openAt)
                     return dayjs(value).isAfter(openAt)
                       ? undefined
@@ -245,7 +248,7 @@ export default function GameEdit(props: Props) {
                 validate: {
                   greaterThanStartParticipateAt: (
                     value: string,
-                    values: any
+                    values: GameFormInput
                   ) => {
                     const startParticipateAt = dayjs(values.startParticipateAt)
                     return dayjs(value).isAfter(startParticipateAt)
@@ -268,7 +271,10 @@ export default function GameEdit(props: Props) {
               rules={{
                 required: '必須です',
                 validate: {
-                  greaterThanStartGameAt: (value: string, values: any) => {
+                  greaterThanStartGameAt: (
+                    value: string,
+                    values: GameFormInput
+                  ) => {
                     const startGameAt = dayjs(values.startGameAt)
                     return dayjs(value).isAfter(startGameAt)
                       ? undefined
@@ -290,7 +296,10 @@ export default function GameEdit(props: Props) {
               rules={{
                 required: '必須です',
                 validate: {
-                  greaterThanEpilogueGameAt: (value: string, values: any) => {
+                  greaterThanEpilogueGameAt: (
+                    value: string,
+                    values: GameFormInput
+                  ) => {
                     const epilogueGameAt = dayjs(values.epilogueGameAt)
                     return dayjs(value).isAfter(epilogueGameAt)
                       ? undefined
@@ -512,8 +521,7 @@ const ThemeForm = ({
     }
   }
   const [templateTheme, setTemplateTheme] = useState(themeOptions[0].value)
-  const handlePaste = (e: any) => {
-    e.preventDefault()
+  const handlePaste = () => {
     if (!window.confirm('現在のテーマ内容が破棄されますが、よろしいですか？')) {
       return
     }
@@ -564,15 +572,10 @@ type FormLabelProps = {
 }
 
 const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const toggleModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsModalOpen(!isModalOpen)
-    }
-  }
-  const openModal = (e: any) => {
+  const modal = useModal()
+  const openModal = (e: React.MouseEvent) => {
     e.preventDefault()
-    setIsModalOpen(true)
+    modal.open()
   }
   return (
     <label className='block text-sm font-bold'>
@@ -581,10 +584,10 @@ const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
       {children && (
         <>
           <button onClick={openModal}>
-            <QuestionMarkCircleIcon className='base-link ml-1 h-4 w-4' />
+            <QuestionMarkCircleIcon className='base-link ml-1 size-4' />
           </button>
-          {isModalOpen && (
-            <Modal close={toggleModal} hideFooter>
+          {modal.isOpen && (
+            <Modal close={modal.close} hideFooter>
               <div className='text-xs'>{children}</div>
             </Modal>
           )}

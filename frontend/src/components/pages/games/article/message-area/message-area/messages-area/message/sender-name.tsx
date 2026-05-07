@@ -10,14 +10,14 @@ type Props = {
 
 export const SenderName = ({ message, preview }: Props) => {
   const game = useGameValue()
-  const NameComponent = () => (
+  const name = (
     <p className='primary-hover-text text-xs'>
       ENo.{message.sender!.entryNumber}&nbsp;
       {message.sender!.name}
     </p>
   )
   if (preview) {
-    return <NameComponent />
+    return name
   }
   return (
     <Link
@@ -26,7 +26,7 @@ export const SenderName = ({ message, preview }: Props) => {
       )}`}
       target='_blank'
     >
-      <NameComponent />
+      {name}
     </Link>
   )
 }

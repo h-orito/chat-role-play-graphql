@@ -42,7 +42,7 @@ export default function ArticleMenu({
           className='sidebar-background flex w-full justify-center px-4 py-2'
           onClick={toggleSidebar}
         >
-          <Bars4Icon className={`mr-1 h-5 w-5`} />
+          <Bars4Icon className={`mr-1 size-5`} />
         </button>
       </div>
       <HomeButton
@@ -106,7 +106,7 @@ const HomeButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <HomeIcon
-        className={`mr-1 h-5 w-5 ${
+        className={`mr-1 size-5 ${
           props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
@@ -119,7 +119,7 @@ const ToMeButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <BellIcon
-        className={`mr-1 h-5 w-5 ${
+        className={`mr-1 size-5 ${
           props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />
@@ -132,7 +132,7 @@ const DirectMessageButton = (props: ButtonProps) => {
   return (
     <MenuButton {...props}>
       <EnvelopeIcon
-        className={`mr-1 h-5 w-5 ${
+        className={`mr-1 size-5 ${
           props.isActive && props.isFooter ? 'base-link' : ''
         }`}
       />

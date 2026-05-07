@@ -11,7 +11,7 @@ import Image from 'next/image'
 import { ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline'
 import { iso2display } from '@/components/util/datetime/datetime'
 import { useLazyQuery } from '@apollo/client'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import FavoriteButton from './favorite-button'
 import MessageComponent from './message'
 import MessageText from '../../../message-text/message-text'
@@ -31,7 +31,7 @@ type MessageProps = {
   shouldDisplayReplyTo?: boolean
 }
 
-export default function TalkMessage({
+export default memo(function TalkMessage({
   message,
   handleReply,
   preview = false,
@@ -110,7 +110,7 @@ export default function TalkMessage({
       {showReplies && <Replies replies={replies} handleReply={handleReply} />}
     </div>
   )
-}
+})
 
 const ReceiverName = ({
   message,
@@ -119,10 +119,9 @@ const ReceiverName = ({
   message: Message
   preview: boolean
 }) => {
-  if (!message.receiver || message.content.type !== 'Secret') return <></>
-
   const game = useGameValue()
-  const NameComponent = () => (
+  if (!message.receiver || message.content.type !== 'Secret') return <></>
+  const name = (
     <p className='primary-hover-text'>
       ENo.{message.receiver!.entryNumber}&nbsp;
       {message.receiver!.name}
@@ -132,7 +131,7 @@ const ReceiverName = ({
     return (
       <>
         &nbsp;→&nbsp;
-        <NameComponent />
+        {name}
       </>
     )
   }
@@ -145,7 +144,7 @@ const ReceiverName = ({
         )}`}
         target='_blank'
       >
-        <NameComponent />
+        {name}
       </Link>
     </>
   )
@@ -161,7 +160,7 @@ const SenderIcon = ({
   imageSizeRatio: number
 }) => {
   const game = useGameValue()
-  const IconComponent = () => (
+  const icon = (
     <Image
       src={message.sender!.icon!.url}
       width={message.sender!.icon!.width * imageSizeRatio}
@@ -171,7 +170,7 @@ const SenderIcon = ({
   )
 
   if (preview) {
-    return <IconComponent />
+    return icon
   }
   return (
     <Link
@@ -180,7 +179,7 @@ const SenderIcon = ({
       )}`}
       target='_blank'
     >
-      <IconComponent />
+      {icon}
     </Link>
   )
 }
@@ -235,7 +234,7 @@ const ReplyButton = ({
         onClick={() => handleReply(message)}
         disabled={isDisabled}
       >
-        <ChatBubbleOvalLeftEllipsisIcon className='y-4 secondary-text h-4' />
+        <ChatBubbleOvalLeftEllipsisIcon className='secondary-text h-4' />
       </button>
       {message.reactions.replyCount > 0 && (
         <button
@@ -291,6 +290,8 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
       setReplyToMessage(data.message as Message)
     }
     fetch()
+    // mount 時のみ返信元メッセージを取得（fetchMessage は render ごとに新しい関数になるため依存に含めない）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (!replyToMessage) {

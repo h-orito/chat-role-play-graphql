@@ -13,6 +13,7 @@ import {
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Link from 'next/link'
 import RadioGroup from '@/components/form/radio-group'
@@ -22,7 +23,7 @@ import CharaSelect from './chara-select'
 import { useGameValue } from '../game-hook'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
 }
 
 interface FormInput {
@@ -68,12 +69,7 @@ export default function Participate({ close }: Props) {
       })
     }
   }
-  const [isOpenCharaSelectModal, setIsOpenCharaSelectModel] = useState(false)
-  const toggleCharaSelectModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenCharaSelectModel(!isOpenCharaSelectModal)
-    }
-  }
+  const charaSelectModal = useModal()
 
   const onSubmit: SubmitHandler<FormInput> = useCallback(
     async (data) => {
@@ -96,7 +92,7 @@ export default function Participate({ close }: Props) {
         router.reload()
       }
     },
-    [participate, chara]
+    [participate, chara, game.id, router]
   )
 
   const canSubmit: boolean =
@@ -124,7 +120,7 @@ export default function Participate({ close }: Props) {
             type='checkbox'
             id='term-check'
             checked={checkedTerm}
-            onChange={(e: any) => setCheckedTerm((prev) => !prev)}
+            onChange={() => setCheckedTerm((prev) => !prev)}
           />
           <label htmlFor='term-check' className='ml-2 text-xs'>
             <Link target='_blank' href='/rules' className='base-link'>
@@ -138,7 +134,7 @@ export default function Participate({ close }: Props) {
             type='checkbox'
             id='policy-check'
             checked={checkedPolicy}
-            onChange={(e: any) => setCheckedPolicy((prev) => !prev)}
+            onChange={() => setCheckedPolicy((prev) => !prev)}
           />
           <label htmlFor='policy-check' className='ml-2 text-xs'>
             他者への礼節を欠いたり、正常な運営を妨げるような行為を行なった場合、管理人の裁量により処罰される可能性があることについて理解しました。
@@ -198,20 +194,19 @@ export default function Participate({ close }: Props) {
                       {chara == null ? '未選択' : chara.name}
                     </p>
                     <PrimaryButton
-                      click={(e: any) => {
-                        e.preventDefault()
-                        setIsOpenCharaSelectModel(true)
+                      click={() => {
+                        charaSelectModal.open()
                       }}
                     >
                       選択
                     </PrimaryButton>
                   </div>
-                  {isOpenCharaSelectModal && (
-                    <Modal close={toggleCharaSelectModal} hideFooter>
+                  {charaSelectModal.isOpen && (
+                    <Modal close={charaSelectModal.close} hideFooter>
                       <CharaSelect
                         charas={charachip?.charas || []}
                         setValue={(id: string) => {
-                          setIsOpenCharaSelectModel(false)
+                          charaSelectModal.close()
                           handleSelectChara(id)
                         }}
                       />

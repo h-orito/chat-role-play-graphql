@@ -14,7 +14,24 @@
     "plugin:tailwindcss/recommended"
   ],
   "rules": {
-    "react/display-name": "off"
+    "react/display-name": "off",
+    "react-hooks/exhaustive-deps": "warn",
+    "@next/next/no-img-element": "off",
+    "tailwindcss/no-custom-classname": ["warn", {
+      "whitelist": [
+        "base-.+",
+        "sidebar-.+",
+        "primary-.+",
+        "secondary-.+",
+        "warning-.+",
+        "danger-.+",
+        "notification-.+",
+        "adsbygoogle",
+        "mut-height-guard",
+        "sidebar-sample",
+        "sample-button"
+      ]
+    }]
   },
   "ignorePatterns": [
     "*.config.js"

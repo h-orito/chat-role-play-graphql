@@ -8,6 +8,7 @@ import {
   MessagesQuery
 } from '@/lib/generated/graphql'
 import React, { useState } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
 import { useGameValue, useMyselfValue } from '../../../game-hook'
 import ParticipantsCheckbox from '../../../participant/participants-checkbox'
 import { messageTypeOptions, messageTypeValues } from './message-type'
@@ -20,7 +21,7 @@ import DangerButton from '@/components/button/danger-button'
 type Props = {
   messageQuery: MessagesQuery
   search: (query: MessagesQuery) => void
-  close: (e: any) => void
+  close: () => void
 }
 
 export default function MessageFilter(props: Props) {
@@ -51,7 +52,7 @@ export default function MessageFilter(props: Props) {
     messageQuery.untilAt ? dayjs(messageQuery.untilAt).toDate() : null
   )
 
-  const handleReset = (e: any) => {
+  const handleReset = () => {
     if (!window.confirm('検索条件をリセットしてよろしいですか？')) return
     setTypes(messageTypeValues)
     setSenders([])
@@ -61,7 +62,7 @@ export default function MessageFilter(props: Props) {
     setUntilAt(null)
   }
 
-  const handleSearch = (e: any) => {
+  const handleSearch = () => {
     const keywords = keyword.split(' ').filter((k) => k.length !== 0)
     const query: MessagesQuery = {
       ...messageQuery,
@@ -86,7 +87,7 @@ export default function MessageFilter(props: Props) {
       }
     }
     search(query)
-    close(e)
+    close()
   }
 
   return (
@@ -177,12 +178,7 @@ type FilterSenderProps = {
 const FilterSender = (props: FilterSenderProps) => {
   const { participants, senders, setSenders } = props
   const myself = useMyselfValue()
-  const [isOpenSenderModal, setIsOpenSenderModal] = useState(false)
-  const toggleSenderModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenSenderModal(!isOpenSenderModal)
-    }
-  }
+  const senderModal = useModal()
   return (
     <div className='my-6'>
       <label className='text-sm font-bold'>発言者</label>
@@ -193,14 +189,11 @@ const FilterSender = (props: FilterSenderProps) => {
           <p className='text-xs'>{senders.map((s) => s.name).join('、')}</p>
         )}
       </div>
-      <PrimaryButton
-        className='text-xs'
-        click={() => setIsOpenSenderModal(true)}
-      >
+      <PrimaryButton className='text-xs' click={senderModal.open}>
         選択
       </PrimaryButton>
-      {isOpenSenderModal && (
-        <Modal close={toggleSenderModal}>
+      {senderModal.isOpen && (
+        <Modal close={senderModal.close}>
           <ParticipantsCheckbox
             participants={participants}
             selects={senders}
@@ -272,12 +265,7 @@ type FilterReceiverProps = {
 }
 const FilterReceiver = (props: FilterReceiverProps) => {
   const { participants, receivers, setReceivers } = props
-  const [isOpenReceiverModal, setIsOpenReceiverModal] = useState(false)
-  const toggleReceiverModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenReceiverModal(!isOpenReceiverModal)
-    }
-  }
+  const receiverModal = useModal()
   const myself = useMyselfValue()
   return (
     <div className='my-6'>
@@ -289,14 +277,11 @@ const FilterReceiver = (props: FilterReceiverProps) => {
           <p className='text-xs'>{receivers.map((s) => s.name).join('、')}</p>
         )}
       </div>
-      <PrimaryButton
-        className='text-xs'
-        click={() => setIsOpenReceiverModal(true)}
-      >
+      <PrimaryButton className='text-xs' click={receiverModal.open}>
         選択
       </PrimaryButton>
-      {isOpenReceiverModal && (
-        <Modal close={toggleReceiverModal}>
+      {receiverModal.isOpen && (
+        <Modal close={receiverModal.close}>
           <ParticipantsCheckbox
             participants={participants}
             selects={receivers}

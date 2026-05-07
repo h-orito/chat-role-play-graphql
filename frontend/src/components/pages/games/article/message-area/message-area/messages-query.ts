@@ -6,7 +6,8 @@ import {
   MessageType,
   MessagesQuery
 } from '@/lib/generated/graphql'
-import { atom, useAtom } from 'jotai'
+import { atom, useAtom, useSetAtom } from 'jotai'
+import { useRef } from 'react'
 import { messageTypeOptions, messageTypeValues } from './message-type'
 import { ParsedUrlQueryInput } from 'querystring'
 import { base64ToId, idToBase64 } from '@/components/graphql/convert'
@@ -23,10 +24,18 @@ export const emptyMessageQuery: MessagesQuery = {
   }
 }
 
-const messagesQueryAtom = atom<MessagesQuery>(emptyMessageQuery)
+export const messagesQueryAtom = atom<MessagesQuery>(emptyMessageQuery)
 export const useMessagesQuery = () => {
   const [getter, setter] = useAtom(messagesQueryAtom)
   return [getter, setter] as const
+}
+export const useInitMessagesQuery = (messagesQuery: MessagesQuery) => {
+  const setMessagesQuery = useSetAtom(messagesQueryAtom)
+  const lastQueryRef = useRef<MessagesQuery | null>(null)
+  if (lastQueryRef.current !== messagesQuery) {
+    lastQueryRef.current = messagesQuery
+    setMessagesQuery(messagesQuery)
+  }
 }
 
 export const toUrlQuery = (
@@ -58,7 +67,10 @@ export const toUrlQuery = (
   }
 }
 
-export const fromUrlQuery = (query: any, game: Game): MessagesQuery => {
+export const fromUrlQuery = (
+  query: Record<string, string | string[] | undefined>,
+  game: Game
+): MessagesQuery => {
   const types = getQueryStringAsArray(query.mt).map(
     (messageTypeString: string) => {
       return MessageType[messageTypeString as keyof typeof MessageType]
@@ -70,9 +82,11 @@ export const fromUrlQuery = (query: any, game: Game): MessagesQuery => {
   const recipientIds = getQueryStringAsArray(query.mrid).map((id: string) =>
     idToBase64(parseInt(id), 'GameParticipant')
   )
-  const keyword = query.mk
-  const sinceAt = query.msa && query.msa.length > 0 ? query.msa : null
-  const untilAt = query.mua && query.mua.length > 0 ? query.mua : null
+  const keyword = typeof query.mk === 'string' ? query.mk : undefined
+  const sinceAt =
+    typeof query.msa === 'string' && query.msa.length > 0 ? query.msa : null
+  const untilAt =
+    typeof query.mua === 'string' && query.mua.length > 0 ? query.mua : null
 
   const participants = game.participants.filter((p) => !p.isGone)
   return {

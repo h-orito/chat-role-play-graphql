@@ -5,8 +5,8 @@ import {
   ArrowDownIcon,
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
-import { useState } from 'react'
 import { useGameValue } from '../../../game-hook'
+import { useModal } from '@/components/hooks/use-modal'
 import MessageFilter from './message-filter'
 import { isFiltering } from './messages-query'
 
@@ -21,13 +21,9 @@ type FooterMenuProps = {
 const MessageAreaFooterMenu = (props: FooterMenuProps) => {
   const { scrollToTop, scrollToBottom, searchable, messageQuery, search } =
     props
-  const [isOpenFilterModal, setIsOpenFilterModal] = useState(false)
-  const toggleFilterModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenFilterModal(!isOpenFilterModal)
-    }
-  }
-  const filtering = searchable && isFiltering(messageQuery!, useGameValue())
+  const filterModal = useModal()
+  const game = useGameValue()
+  const filtering = searchable && isFiltering(messageQuery!, game)
 
   return (
     <div className='base-border flex w-full border-t text-sm'>
@@ -36,7 +32,7 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
           className='sidebar-background flex w-full justify-center px-4 py-2'
           onClick={scrollToTop}
         >
-          <ArrowUpIcon className='h-5 w-5' />
+          <ArrowUpIcon className='size-5' />
           <span className='my-auto ml-1 hidden text-xs md:block'>最上部へ</span>
         </button>
       </div>
@@ -45,7 +41,7 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
           className='sidebar-background flex w-full justify-center px-4 py-2'
           onClick={scrollToBottom}
         >
-          <ArrowDownIcon className='h-5 w-5' />
+          <ArrowDownIcon className='size-5' />
           <span className='my-auto ml-1 hidden text-xs md:block'>最下部へ</span>
         </button>
       </div>
@@ -53,10 +49,10 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
         <div className='flex flex-1 text-center'>
           <button
             className='sidebar-background flex w-full justify-center px-4 py-2'
-            onClick={() => setIsOpenFilterModal(true)}
+            onClick={filterModal.open}
           >
             <MagnifyingGlassIcon
-              className={`h-5 w-5 ${filtering ? 'base-link' : ''}`}
+              className={`size-5 ${filtering ? 'base-link' : ''}`}
             />
             <span
               className={`my-auto ml-1 hidden text-xs md:block ${
@@ -66,10 +62,10 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
               抽出
             </span>
           </button>
-          {isOpenFilterModal && (
-            <Modal header='発言抽出' close={toggleFilterModal}>
+          {filterModal.isOpen && (
+            <Modal header='発言抽出' close={filterModal.close}>
               <MessageFilter
-                close={toggleFilterModal}
+                close={filterModal.close}
                 messageQuery={messageQuery!}
                 search={search!}
               />

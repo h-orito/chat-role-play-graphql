@@ -1,3 +1,4 @@
+import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import { createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
@@ -10,8 +11,10 @@ import {
 import PageHeader from '@/components/pages/page-header'
 import CharaCards from '@/components/pages/charachips/chara-cards'
 
-export const getServerSideProps = async (context: any) => {
-  const { id } = context.params
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const id = Number(context.params!.id)
   const client = createInnerClient()
   const charachipId = idToBase64(id, 'Charachip')
   const { data: charachipData } = await client.query<CharachipDetailQuery>({

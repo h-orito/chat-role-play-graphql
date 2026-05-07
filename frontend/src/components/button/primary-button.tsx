@@ -1,5 +1,5 @@
 type Props = {
-  click?: (e: any) => void
+  click?: () => void
   disabled?: boolean
   children: React.ReactNode
   className?: string
@@ -13,10 +13,11 @@ export default function PrimaryButton({
 }: Props) {
   return (
     <button
+      type='button'
       className={`${
         className ?? ''
       } primary-button rounded-sm border px-4 py-1`}
-      onClick={click}
+      onClick={() => click?.()}
       disabled={disabled}
     >
       {children}

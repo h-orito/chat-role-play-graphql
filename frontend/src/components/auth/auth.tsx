@@ -33,7 +33,7 @@ type LogoutButtonProps = {
 }
 export const LogoutButton = ({ className }: LogoutButtonProps) => {
   const { logout } = useAuth0()
-  const doLogout = (e: any) => {
+  const doLogout = () => {
     logout({
       logoutParams: { returnTo: window.location.origin + '/chat-role-play' }
     })

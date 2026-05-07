@@ -13,7 +13,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import InputTextarea from '@/components/form/input-textarea'
 import SubmitButton from '@/components/button/submit-button'
-import SecondaryButton from '@/components/button/scondary-button'
+import SecondaryButton from '@/components/button/secondary-button'
 import SystemMessage from '@/components/pages/games/article/message-area/message-area/messages-area/message/system-message'
 import TalkTextDecorators from './talk-text-decorators'
 import { useGameValue } from '../game-hook'
@@ -73,7 +73,7 @@ const TalkSystem = (props: Props) => {
         isConvertDisabled: false // TODO
       } as NewMessage
     },
-    [game.id, formState]
+    [game.id]
   )
 
   // 発言プレビュー
@@ -172,6 +172,8 @@ const SystemMessagePreview = (props: PreviewProps) => {
         block: 'end'
       })
     }
+    // mount 時のみスクロール（isDesc / talkAreaId の変化には追従しない）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const [talk] = useMutation<TalkMutation>(TalkDocument, {

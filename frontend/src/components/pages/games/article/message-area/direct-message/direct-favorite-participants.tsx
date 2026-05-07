@@ -10,7 +10,7 @@ import Participants from '../../../participant/participants'
 import { useGameValue } from '@/components/pages/games/game-hook'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
   messageId: string
 }
 
@@ -36,6 +36,8 @@ export default function DirectFavoriteParticipants({ messageId }: Props) {
 
   useEffect(() => {
     refetchFavoriteParticipants()
+    // refetchFavoriteParticipants は render ごとに新しい関数になるため意図的に依存に含めない
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageId])
 
   if (participants == null) return <div>Loading...</div>

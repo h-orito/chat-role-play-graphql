@@ -1,3 +1,4 @@
+import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import { createInnerClient } from '@/components/graphql/client'
 import { idToBase64 } from '@/components/graphql/convert'
@@ -26,11 +27,13 @@ import {
 } from '@/components/pages/games/game-hook'
 import {
   fromUrlQuery,
-  useMessagesQuery
+  useInitMessagesQuery
 } from '@/components/pages/games/article/message-area/message-area/messages-query'
 
-export const getServerSideProps = async (context: any) => {
-  const { gameId } = context.params
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const gameId = Number(context.params!.gameId)
   const client = createInnerClient()
   const gameStringId = idToBase64(gameId, 'Game')
   const { data: gamedata } = await client.query<GameQuery>({
@@ -54,14 +57,11 @@ type Props = {
 
 const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   useGame(game)
+  useInitMessagesQuery(initialMessagesQuery)
   useMyselfInit(game.id)
   useMyPlayer()
   useIcons()
   useUserDisplaySettingsAtom()
-  // 検索用クエリ
-  const [, setInitialMessagesQuery] = useMessagesQuery()
-  setInitialMessagesQuery(initialMessagesQuery)
-  // useSetInitialMessagesQuery(initialMessagesQuery)
   // 1分に1回ゲーム更新チェック
   usePollingPeriod(game)
 

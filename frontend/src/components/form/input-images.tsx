@@ -30,8 +30,7 @@ export default function InputImages({
   const [errorMessage, setErrorMessage] = useState('')
   const inputRef = useRef<HTMLInputElement>(null!)
 
-  const onProfileButtonClick = (e: any) => {
-    e.preventDefault()
+  const onProfileButtonClick = () => {
     inputRef.current.click()
   }
 
@@ -64,8 +63,7 @@ export default function InputImages({
     setImages(files)
   }
 
-  const handleCancel = (e: any) => {
-    e.preventDefault()
+  const handleCancel = () => {
     setErrorMessage('')
     setImages([])
   }
@@ -87,7 +85,7 @@ export default function InputImages({
         画像を選択
       </PrimaryButton>
       {images.length > 0 && (
-        <DangerButton className='ml-2' click={(e: any) => handleCancel(e)}>
+        <DangerButton className='ml-2' click={() => handleCancel()}>
           削除
         </DangerButton>
       )}

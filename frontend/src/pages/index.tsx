@@ -11,13 +11,13 @@ import UserInfo from '@/components/pages/index/user-info'
 import Games from '@/components/pages/index/games'
 import PrimaryButton from '@/components/button/primary-button'
 import Link from 'next/link'
-import { useState } from 'react'
 import Modal from '@/components/modal/modal'
 import Term from '@/components/pages/index/term'
 import Policy from '@/components/pages/index/policy'
 import Tip from '@/components/pages/index/tip'
 import Head from 'next/head'
 import { useAuth0 } from '@auth0/auth0-react'
+import { useModal } from '@/components/hooks/use-modal'
 
 export const getServerSideProps = async () => {
   const client = createInnerClient()
@@ -55,24 +55,9 @@ type Props = {
 
 export default function Index({ games }: Props) {
   const { isAuthenticated } = useAuth0()
-  const [isOpenTermModal, setIsOpenTermModal] = useState(false)
-  const toggleTermModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenTermModal(!isOpenTermModal)
-    }
-  }
-  const [isOpenPolicyModal, setIsOpenPolicyModal] = useState(false)
-  const togglePolicyModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenPolicyModal(!isOpenPolicyModal)
-    }
-  }
-  const [isOpenTipModal, setIsOpenTipModal] = useState(false)
-  const toggleTipModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenTipModal(!isOpenTipModal)
-    }
-  }
+  const termModal = useModal()
+  const policyModal = useModal()
+  const tipModal = useModal()
 
   return (
     <main className='min-h-screen w-full lg:flex lg:justify-center'>
@@ -137,19 +122,19 @@ export default function Index({ games }: Props) {
             </Link>
             <a
               className='ml-2 cursor-pointer hover:text-blue-500'
-              onClick={() => setIsOpenTermModal(true)}
+              onClick={termModal.open}
             >
               利用規約
             </a>
             <a
               className='ml-2 cursor-pointer hover:text-blue-500'
-              onClick={() => setIsOpenPolicyModal(true)}
+              onClick={policyModal.open}
             >
               プライバシーポリシー
             </a>
             <a
               className='ml-2 cursor-pointer hover:text-blue-500'
-              onClick={() => setIsOpenTipModal(true)}
+              onClick={tipModal.open}
             >
               投げ銭
             </a>
@@ -173,22 +158,22 @@ export default function Index({ games }: Props) {
             )
           </div>
         </footer>
-        {isOpenTermModal && (
-          <Modal header='利用規約' close={toggleTermModal} hideFooter>
+        {termModal.isOpen && (
+          <Modal header='利用規約' close={termModal.close} hideFooter>
             <Term />
           </Modal>
         )}
-        {isOpenPolicyModal && (
+        {policyModal.isOpen && (
           <Modal
             header='プライバシーポリシー'
-            close={togglePolicyModal}
+            close={policyModal.close}
             hideFooter
           >
             <Policy />
           </Modal>
         )}
-        {isOpenTipModal && (
-          <Modal header='投げ銭' close={toggleTipModal} hideFooter>
+        {tipModal.isOpen && (
+          <Modal header='投げ銭' close={tipModal.close} hideFooter>
             <Tip />
           </Modal>
         )}

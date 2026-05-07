@@ -1,11 +1,12 @@
 import { Message } from '@/lib/generated/graphql'
+import { memo } from 'react'
 import MessageText from '../../../message-text/message-text'
 
 type Props = {
   message: Message
 }
 
-export default function SystemMessage({ message }: Props) {
+export default memo(function SystemMessage({ message }: Props) {
   const messageClass =
     message.content.type === 'SystemPublic' ? 'system-public' : ''
   return (
@@ -24,4 +25,4 @@ export default function SystemMessage({ message }: Props) {
       </div>
     </div>
   )
-}
+})

@@ -1,15 +1,13 @@
 import Portal from '@/components/modal/portal'
-import Panel, { PanelRefHandle } from '@/components/panel/panel'
-import { Message, MessagesQuery } from '@/lib/generated/graphql'
-import { memo, forwardRef, useRef, useImperativeHandle, useState } from 'react'
-import {
-  useFixedBottom,
-  useGameValue,
-  useMyPlayerValue
-} from '../../../game-hook'
-import Talk, { TalkRefHandle } from '../../../talk/talk'
+import Panel from '@/components/panel/panel'
+import { MessagesQuery } from '@/lib/generated/graphql'
+import { memo, useCallback, useEffect, useRef } from 'react'
+import { useFixedPanel } from '@/components/hooks/use-fixed-panel'
+import { useGameValue, useMyPlayerValue } from '../../../game-hook'
+import Talk from '../../../talk/talk'
 import TalkDescription from '../../../talk/talk-description'
 import TalkSystem from '../../../talk/talk-system'
+import { useTalkPanel } from '../../../talk/use-talk-panel'
 
 type TalkAreaProps = {
   canTalk: boolean
@@ -17,38 +15,19 @@ type TalkAreaProps = {
   talkAreaId: string
 }
 
-export interface TalkAreaRefHandle {
-  reply: (message: Message) => void
-}
+const TalkArea = memo((props: TalkAreaProps) => {
+  const { canTalk, search, talkAreaId } = props
 
-const TalkArea = memo(
-  forwardRef<TalkAreaRefHandle, TalkAreaProps>(
-    (props: TalkAreaProps, ref: any) => {
-      const { canTalk, search, talkAreaId } = props
-      const talkPanelRef = useRef({} as TalkAreaRefHandle)
+  if (!canTalk) return <></>
 
-      useImperativeHandle(ref, () => ({
-        reply(message: Message) {
-          talkPanelRef.current.reply(message)
-        }
-      }))
-
-      if (!canTalk) return <></>
-
-      return (
-        <div id={talkAreaId} className='base-border w-full border-t text-sm'>
-          <TalkPanel
-            search={search}
-            talkAreaId={talkAreaId}
-            ref={talkPanelRef}
-          />
-          <DescriptionPanel talkAreaId={talkAreaId} search={search} />
-          <SystemMessagePanel talkAreaId={talkAreaId} search={search} />
-        </div>
-      )
-    }
+  return (
+    <div id={talkAreaId} className='base-border w-full border-t text-sm'>
+      <TalkPanel search={search} talkAreaId={talkAreaId} />
+      <DescriptionPanel talkAreaId={talkAreaId} search={search} />
+      <SystemMessagePanel talkAreaId={talkAreaId} search={search} />
+    </div>
   )
-)
+})
 
 export default TalkArea
 
@@ -57,69 +36,52 @@ type TalkPanelProps = {
   talkAreaId: string
 }
 
-const TalkPanel = forwardRef<TalkAreaRefHandle, TalkPanelProps>(
-  (props: TalkPanelProps, ref: any) => {
-    const { search, talkAreaId } = props
-    const talkRef = useRef({} as TalkRefHandle)
-    const panelRef = useRef({} as PanelRefHandle)
-    const panelWrapperRef = useRef<HTMLDivElement>(null)
+const TalkPanel = ({ search, talkAreaId }: TalkPanelProps) => {
+  const { isOpen, setIsOpen, replyTarget } = useTalkPanel()
+  const panelWrapperRef = useRef<HTMLDivElement>(null)
+  const { isFixed, toggleFixed } = useFixedPanel()
 
-    useImperativeHandle(ref, () => ({
-      reply(message: Message) {
-        panelRef.current.open()
-        talkRef.current.replyTo(message)
-        panelWrapperRef.current?.scrollIntoView({ behavior: 'smooth' })
-      }
-    }))
-
-    const handleTalkCompleted = () => {
-      search()
+  // リプライ時にスクロール
+  useEffect(() => {
+    if (replyTarget) {
+      panelWrapperRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
+  }, [replyTarget])
 
-    const [isFixed, setIsFixed] = useState(false)
-    const otherFixedCanceler = useFixedBottom()
-    const toggleFixed = (e: any) => {
-      if (!isFixed) {
-        otherFixedCanceler(() => setIsFixed(false))
-      }
-      setIsFixed((current) => !current)
-      e.stopPropagation()
-    }
-
-    const PanelComponent = () => (
-      <div ref={panelWrapperRef}>
-        <Panel
-          header='発言'
-          ref={panelRef}
-          toggleFixed={toggleFixed}
-          isFixed={isFixed}
-        >
-          <Talk
-            handleCompleted={handleTalkCompleted}
-            talkAreaId={talkAreaId}
-            ref={talkRef}
-          />
-        </Panel>
-      </div>
-    )
-
-    if (!isFixed) {
-      return (
-        <div className='m-4'>
-          <PanelComponent />
-        </div>
-      )
-    } else {
-      return (
-        <Portal target={`#${talkAreaId}-fixed`}>
-          <div className='max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
-            <PanelComponent />
-          </div>
-        </Portal>
-      )
-    }
+  const handleTalkCompleted = () => {
+    search()
   }
-)
+
+  const handleToggle = useCallback(() => {
+    setIsOpen(!isOpen)
+  }, [isOpen, setIsOpen])
+
+  const panel = (
+    <div ref={panelWrapperRef}>
+      <Panel
+        header='発言'
+        isOpen={isOpen}
+        onToggle={handleToggle}
+        toggleFixed={toggleFixed}
+        isFixed={isFixed}
+      >
+        <Talk handleCompleted={handleTalkCompleted} talkAreaId={talkAreaId} />
+      </Panel>
+    </div>
+  )
+
+  if (!isFixed) {
+    return <div className='m-4'>{panel}</div>
+  } else {
+    return (
+      <Portal target={`#${talkAreaId}-fixed`}>
+        <div className='max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
+          {panel}
+        </div>
+      </Portal>
+    )
+  }
+}
 
 const DescriptionPanel = ({
   search,
@@ -128,21 +90,13 @@ const DescriptionPanel = ({
   search: (query?: MessagesQuery) => void
   talkAreaId: string
 }) => {
+  const { isFixed, toggleFixed } = useFixedPanel()
+
   const handleDescriptionCompleted = () => {
     search()
   }
 
-  const [isFixed, setIsFixed] = useState(false)
-  const otherFixedCanceler = useFixedBottom()
-  const toggleFixed = (e: any) => {
-    if (!isFixed) {
-      otherFixedCanceler(() => setIsFixed(false))
-    }
-    setIsFixed((current) => !current)
-    e.stopPropagation()
-  }
-
-  const PanelComponent = () => (
+  const panel = (
     <Panel header='ト書き' toggleFixed={toggleFixed} isFixed={isFixed}>
       <TalkDescription
         handleCompleted={handleDescriptionCompleted}
@@ -152,16 +106,12 @@ const DescriptionPanel = ({
   )
 
   if (!isFixed) {
-    return (
-      <div className='m-4'>
-        <PanelComponent />
-      </div>
-    )
+    return <div className='m-4'>{panel}</div>
   } else {
     return (
       <Portal target={`#${talkAreaId}-fixed`}>
         <div className='max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
-          <PanelComponent />
+          {panel}
         </div>
       </Portal>
     )
@@ -177,6 +127,7 @@ const SystemMessagePanel = ({
 }) => {
   const game = useGameValue()
   const myPlayer = useMyPlayerValue()
+  const { isFixed, toggleFixed } = useFixedPanel()
 
   const isGameMaster =
     myPlayer?.authorityCodes.includes('AuthorityAdmin') ||
@@ -194,35 +145,21 @@ const SystemMessagePanel = ({
     search()
   }
 
-  const [isFixed, setIsFixed] = useState(false)
-  const otherFixedCanceler = useFixedBottom()
-  const toggleFixed = (e: any) => {
-    if (!isFixed) {
-      otherFixedCanceler(() => setIsFixed(false))
-    }
-    setIsFixed((current) => !current)
-    e.stopPropagation()
-  }
-
   if (!isGameMaster || !canModify) return <></>
 
-  const PanelComponent = () => (
+  const panel = (
     <Panel header='GM発言' toggleFixed={toggleFixed} isFixed={isFixed}>
       <TalkSystem handleCompleted={handleCompleted} talkAreaId={talkAreaId} />
     </Panel>
   )
 
   if (!isFixed) {
-    return (
-      <div className='m-4'>
-        <PanelComponent />
-      </div>
-    )
+    return <div className='m-4'>{panel}</div>
   } else {
     return (
       <Portal target={`#${talkAreaId}-fixed`}>
         <div className='max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
-          <PanelComponent />
+          {panel}
         </div>
       </Portal>
     )

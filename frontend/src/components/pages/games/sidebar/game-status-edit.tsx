@@ -1,5 +1,6 @@
 import {
   Game,
+  GameStatus,
   UpdatePeriodMutation,
   UpdatePeriodDocument,
   UpdatePeriodMutationVariables,
@@ -22,6 +23,7 @@ import { useRouter } from 'next/router'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
+import { useModal } from '@/components/hooks/use-modal'
 import { gameStatuses } from '@/components/graphql/convert'
 import InputSelect from '@/components/form/input-select'
 import SubmitButton from '@/components/button/submit-button'
@@ -64,7 +66,7 @@ const UpdateGameStatusForm = () => {
   const [updateStatus] = useMutation<UpdateStatusMutation>(UpdateStatusDocument)
   const router = useRouter()
   const handleSubmit = useCallback(
-    async (e: any) => {
+    async (e: React.FormEvent) => {
       e.preventDefault()
       await updateStatus({
         variables: {
@@ -76,7 +78,7 @@ const UpdateGameStatusForm = () => {
       })
       router.reload()
     },
-    [updateStatus, gameStatus]
+    [updateStatus, gameStatus, game.id, router]
   )
 
   return (
@@ -89,7 +91,7 @@ const UpdateGameStatusForm = () => {
           className='w-64 md:w-96'
           candidates={gameStatusOptions}
           selected={gameStatus}
-          setSelected={setGameStatus}
+          setSelected={(value: string) => setGameStatus(value as GameStatus)}
         />
       </div>
       <div className='flex justify-center'>
@@ -161,7 +163,7 @@ const UpdateGamePeriodForm = () => {
       })
       router.reload()
     },
-    [updatePeriod, targetPeriodId]
+    [updatePeriod, targetPeriodId, game.id, game.periods, router]
   )
 
   return (
@@ -270,7 +272,14 @@ const DeleteGamePeriodForm = () => {
       } as DeletePeriodMutationVariables
     })
     router.reload()
-  }, [deletePeriod, targetPeriodId, destPeriodId, destCandidates])
+  }, [
+    deletePeriod,
+    targetPeriodId,
+    destPeriodId,
+    destCandidates,
+    game.id,
+    router
+  ])
 
   return (
     <div>
@@ -311,15 +320,10 @@ type FormLabelProps = {
 }
 
 const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const toggleModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsModalOpen(!isModalOpen)
-    }
-  }
-  const openModal = (e: any) => {
+  const modal = useModal()
+  const openModal = (e: React.MouseEvent) => {
     e.preventDefault()
-    setIsModalOpen(true)
+    modal.open()
   }
   return (
     <label className='block text-sm font-bold'>
@@ -328,10 +332,10 @@ const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
       {children && (
         <>
           <button onClick={openModal}>
-            <QuestionMarkCircleIcon className='base-link ml-1 h-4 w-4' />
+            <QuestionMarkCircleIcon className='base-link ml-1 size-4' />
           </button>
-          {isModalOpen && (
-            <Modal close={toggleModal} hideFooter>
+          {modal.isOpen && (
+            <Modal close={modal.close} hideFooter>
               <div>
                 <p className='text-xs'>{children}</p>
               </div>

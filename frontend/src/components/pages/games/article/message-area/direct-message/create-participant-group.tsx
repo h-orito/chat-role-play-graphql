@@ -16,7 +16,7 @@ import {
 } from '@/components/pages/games/game-hook'
 
 type Props = {
-  close: (e: any) => void
+  close: () => void
   groups: GameParticipantGroup[]
   refetchGroups: () => void
 }
@@ -33,7 +33,7 @@ export default function CreateParticipantGroup({
     {
       onCompleted(e) {
         refetchGroups()
-        close(e)
+        close()
       },
       onError(error) {
         console.error(error)
@@ -57,7 +57,7 @@ export default function CreateParticipantGroup({
     }).then((res) => {
       setSubmitting(false)
     })
-  }, [register, participants])
+  }, [register, participants, game.id, myself])
 
   const alreadyExists = groups.some((g) => {
     const pts = [...participants, myself]

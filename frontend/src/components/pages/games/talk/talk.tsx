@@ -4,34 +4,26 @@ import {
   Message,
   MessageType,
   NewMessage,
-  TalkDocument,
   TalkDryRunDocument,
   TalkDryRunMutation,
-  TalkMutation,
   TalkMutationVariables
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useState
-} from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useModal } from '@/components/hooks/use-modal'
 import { Control, SubmitHandler, useForm } from 'react-hook-form'
 import InputTextarea from '@/components/form/input-textarea'
 import InputText from '@/components/form/input-text'
 import Modal from '@/components/modal/modal'
 import SubmitButton from '@/components/button/submit-button'
 import TalkMessage from '@/components/pages/games/article/message-area/message-area/messages-area/message/talk-message'
-import SecondaryButton from '@/components/button/scondary-button'
 import TalkTextDecorators from './talk-text-decorators'
 import PrimaryButton from '@/components/button/primary-button'
 import ParticipantSelect from '../participant/participant-select'
-import { useUserPagingSettings } from '../user-settings'
 import { useGameValue, useIconsValue, useMyselfValue } from '../game-hook'
-import Portal from '@/components/modal/portal'
 import IconSelectButton from './icon-select-button'
+import TalkPreview from './talk-preview'
+import { useTalkPanel } from './use-talk-panel'
 
 type Props = {
   handleCompleted: () => void
@@ -43,13 +35,10 @@ interface FormInput {
   talkMessage: string
 }
 
-export interface TalkRefHandle {
-  replyTo(message: Message): void
-}
-
-const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
+const Talk = (props: Props) => {
   const game = useGameValue()
   const myself = useMyselfValue()!
+  const { replyTarget, cancelReply: cancelReplyAtom } = useTalkPanel()
 
   const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
     defaultValues: {
@@ -61,8 +50,6 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
 
   // 発言種別
   const [talkType, setTalkType] = useState(MessageType.TalkNormal)
-  // 返信先メッセージ
-  const [replyTarget, setReplyTarget] = useState<Message | null>(null)
   // 送信相手
   const [receiver, setReceiver] = useState<GameParticipant | null>(null)
   // 選択中のアイコン
@@ -76,11 +63,25 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
     setIconId(icons.length <= 0 ? '' : icons[0].id)
   }, [icons])
 
+  // replyTarget の変更に反応して receiver と talkType を設定
+  useEffect(() => {
+    if (replyTarget) {
+      setReceiver(
+        game.participants.find(
+          (p) => p.id === replyTarget.sender!.participantId
+        )!
+      )
+      if (replyTarget.content.type === MessageType.Secret) {
+        setTalkType(MessageType.Secret)
+      }
+    }
+  }, [replyTarget, game.participants])
+
   const init = () => {
     setTalkType(MessageType.TalkNormal)
     setPreview(null)
     setDryRunMessage(null)
-    setReplyTarget(null)
+    cancelReplyAtom()
     setReceiver(null)
     setValue('name', myself.name)
     setValue('talkMessage', '')
@@ -126,15 +127,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
         isConvertDisabled: isConvertDisabled
       } as NewMessage
     },
-    [
-      game.id,
-      replyTarget,
-      talkType,
-      receiver,
-      iconId,
-      isConvertDisabled,
-      formState
-    ]
+    [game.id, replyTarget, talkType, receiver, iconId, isConvertDisabled]
   )
 
   // 発言プレビュー
@@ -156,20 +149,8 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
     [createNewMessage, talkDryRun]
   )
 
-  useImperativeHandle(ref, () => ({
-    replyTo(message: Message) {
-      setReplyTarget(message)
-      setReceiver(
-        game.participants.find((p) => p.id === message!.sender!.participantId)!
-      )
-      if (message.content.type === MessageType.Secret) {
-        setTalkType(MessageType.Secret)
-      }
-    }
-  }))
-
-  const cancelReply = (e: any) => {
-    setReplyTarget(null)
+  const cancelReply = () => {
+    cancelReplyAtom()
     if (talkType !== MessageType.Secret) {
       setReceiver(null)
     }
@@ -235,7 +216,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
         <div className='mb-4'>
           <div className='flex'>
             <p className='text-xs font-bold'>返信先</p>
-            <button className='ml-2 text-xs' onClick={() => cancelReply(null)}>
+            <button className='ml-2 text-xs' onClick={() => cancelReply()}>
               返信解除
             </button>
           </div>
@@ -248,7 +229,7 @@ const Talk = forwardRef<TalkRefHandle, Props>((props: Props, ref: any) => {
       )}
     </div>
   )
-})
+}
 
 export default Talk
 
@@ -329,17 +310,12 @@ type ReceiverProps = {
 const Receiver = ({ talkType, receiver, setReceiver }: ReceiverProps) => {
   const game = useGameValue()
   const myself = useMyselfValue()!
-  const [isOpenReceiverModal, setIsOpenReceiverModal] = useState(false)
-  const toggleReceiverModal = (e: any) => {
-    if (e.target === e.currentTarget) {
-      setIsOpenReceiverModal(!isOpenReceiverModal)
-    }
-  }
+  const receiverModal = useModal()
   const handleSelectReceiver = (id: string) => {
     const receiver = game.participants.find((p) => p.id === id)
     if (receiver == null) return
     setReceiver(receiver)
-    setIsOpenReceiverModal(false)
+    receiverModal.close()
   }
 
   if (talkType !== MessageType.Secret) return <></>
@@ -350,9 +326,8 @@ const Receiver = ({ talkType, receiver, setReceiver }: ReceiverProps) => {
       <p className='text-xs'>{receiver == null ? '未選択' : receiver.name}</p>
       <PrimaryButton
         className='text-xs'
-        click={(e: any) => {
-          e.preventDefault()
-          setIsOpenReceiverModal(true)
+        click={() => {
+          receiverModal.open()
         }}
       >
         選択
@@ -362,8 +337,8 @@ const Receiver = ({ talkType, receiver, setReceiver }: ReceiverProps) => {
           自分に対して秘話を送信することはできません。
         </p>
       )}
-      {isOpenReceiverModal && (
-        <Modal close={toggleReceiverModal}>
+      {receiverModal.isOpen && (
+        <Modal close={receiverModal.close}>
           <ParticipantSelect
             participants={game.participants.filter((p) => p.id !== myself.id)}
             handleSelect={handleSelectReceiver}
@@ -375,7 +350,7 @@ const Receiver = ({ talkType, receiver, setReceiver }: ReceiverProps) => {
 }
 
 type SenderNameProps = {
-  control: Control<FormInput, any>
+  control: Control<FormInput>
   disabled: boolean
 }
 
@@ -402,7 +377,7 @@ const SenderName = ({ control, disabled }: SenderNameProps) => {
 type MessageContentProps = {
   id: string
   talkType: MessageType
-  control: Control<FormInput, any>
+  control: Control<FormInput>
   disabled: boolean
   isConvertDisabled: boolean
   setIsConvertDisabled: React.Dispatch<React.SetStateAction<boolean>>
@@ -448,79 +423,12 @@ const MessageContent = ({
           type='checkbox'
           id={`${id}_convert-disabled`}
           checked={isConvertDisabled}
-          onChange={(e: any) => setIsConvertDisabled((prev) => !prev)}
+          onChange={() => setIsConvertDisabled((prev) => !prev)}
         />
         <label htmlFor={`${id}_convert-disabled`} className='ml-1 text-xs'>
           装飾やランダム変換しない
         </label>
       </div>
     </div>
-  )
-}
-
-const TalkPreview = ({
-  preview,
-  dryRunMessage,
-  talkAreaId,
-  handleCompleted,
-  handleCanceled
-}: {
-  preview: Message | null
-  dryRunMessage: NewMessage | null
-  talkAreaId: string
-  handleCompleted: () => void
-  handleCanceled: () => void
-}) => {
-  const [userPagingSettings] = useUserPagingSettings()
-  const previewAreaId = `${talkAreaId}-${
-    userPagingSettings.isDesc ? 'top' : 'bottom'
-  }-preview`
-  useEffect(() => {
-    if (userPagingSettings.isDesc) {
-      document.querySelector(`#${talkAreaId}-top`)!.scrollIntoView({
-        behavior: 'smooth'
-      })
-    } else {
-      document.querySelector(`#${talkAreaId}-bottom`)!.scrollIntoView({
-        behavior: 'smooth',
-        block: 'end'
-      })
-    }
-  }, [])
-
-  const [talk] = useMutation<TalkMutation>(TalkDocument, {
-    onCompleted() {
-      handleCompleted()
-    }
-  })
-  const doTalk = async () => {
-    talk({
-      variables: {
-        input: dryRunMessage!
-      } as TalkMutationVariables
-    })
-  }
-
-  return (
-    <Portal target={`#${previewAreaId}`}>
-      <div className='primary-border m-4 rounded-md border p-2'>
-        <p className='text-xs'>
-          以下の内容で発言してよろしいですか？（まだ発言されていません）
-        </p>
-        <div className='mt-2'>
-          <TalkMessage
-            message={preview!}
-            handleReply={() => {}}
-            preview={true}
-          />
-        </div>
-        <div className='mt-4 flex justify-end'>
-          <PrimaryButton click={doTalk}>発言する</PrimaryButton>
-          <SecondaryButton className='ml-2' click={() => handleCanceled()}>
-            キャンセル
-          </SecondaryButton>
-        </div>
-      </div>
-    </Portal>
   )
 }
