@@ -5,6 +5,7 @@ import {
   NormalizedCacheObject
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
+import { createUploadLink } from 'apollo-upload-client'
 
 type GetAccessTokenFn = (
   isAuthenticated: boolean,
@@ -32,7 +33,6 @@ export const createClient = async (
     }
   })
 
-  const { createUploadLink } = require('apollo-upload-client')
   const httpLink = createUploadLink({
     uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
   })
