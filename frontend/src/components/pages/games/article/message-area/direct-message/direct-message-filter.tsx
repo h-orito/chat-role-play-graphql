@@ -10,7 +10,7 @@ import React, { useState } from 'react'
 import { useModal } from '@/components/hooks/use-modal'
 import { useMyselfValue } from '../../../game-hook'
 import ParticipantsCheckbox from '../../../participant/participants-checkbox'
-import dayjs from 'dayjs'
+import dayjs from '@/lib/dayjs'
 import DangerButton from '@/components/button/danger-button'
 
 type Props = {

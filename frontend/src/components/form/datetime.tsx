@@ -1,6 +1,4 @@
-import dayjs from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-import utc from 'dayjs/plugin/utc'
+import dayjs from '@/lib/dayjs'
 
 type Props = {
   className?: string
@@ -12,8 +10,6 @@ export default function Datetime({ className, value, setValue }: Props) {
   const toDatetime = (date: Date | null) => {
     // yyyy-MM-ddThh:mm
     if (date === null) return ''
-    dayjs.extend(utc)
-    dayjs.extend(timezone)
     // memo: toISOString.substring(0,16)だとUTCにされてしまうので自力でformat
     return dayjs(date).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm')
   }

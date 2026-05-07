@@ -15,7 +15,7 @@ import { messageTypeOptions, messageTypeValues } from './message-type'
 import { base64ToId } from '@/components/graphql/convert'
 import Link from 'next/link'
 import { toUrlQuery } from './messages-query'
-import dayjs from 'dayjs'
+import dayjs from '@/lib/dayjs'
 import DangerButton from '@/components/button/danger-button'
 
 type Props = {
