@@ -12,9 +12,7 @@ import {
   GameLabel
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
-import dayjs from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-import utc from 'dayjs/plugin/utc'
+import dayjs from '@/lib/dayjs'
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import { SubmitHandler } from 'react-hook-form'
@@ -26,9 +24,6 @@ import PageHeader from '@/components/pages/page-header'
 import Head from 'next/head'
 
 export default function CreateGame() {
-  dayjs.extend(utc)
-  dayjs.extend(timezone)
-  dayjs.tz.setDefault('Asia/Tokyo')
   const now = dayjs()
 
   const defaultValues = {

@@ -2,9 +2,7 @@ import SubmitButton from '@/components/button/submit-button'
 import InputDateTime from '@/components/form/input-datetime'
 import InputNumber from '@/components/form/input-number'
 import InputText from '@/components/form/input-text'
-import dayjs from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-import utc from 'dayjs/plugin/utc'
+import dayjs from '@/lib/dayjs'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
@@ -67,10 +65,6 @@ export interface GameFormInput {
 }
 
 export default function GameEdit(props: Props) {
-  dayjs.extend(utc)
-  dayjs.extend(timezone)
-  dayjs.tz.setDefault('Asia/Tokyo')
-
   const [charachips, setCharachips] = useState<Charachip[]>([])
   const [fetchCharachips] = useLazyQuery<QCharachipsQuery>(QCharachipsDocument)
   useEffect(() => {

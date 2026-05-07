@@ -15,9 +15,7 @@ import {
   DeletePeriodMutationVariables
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
-import dayjs from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-import utc from 'dayjs/plugin/utc'
+import dayjs from '@/lib/dayjs'
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -107,10 +105,6 @@ interface UpdatePeriodFormInput {
 }
 
 const UpdateGamePeriodForm = () => {
-  dayjs.extend(utc)
-  dayjs.extend(timezone)
-  dayjs.tz.setDefault('Asia/Tokyo')
-
   const game = useGameValue()
   const { control, handleSubmit, setValue } = useForm<UpdatePeriodFormInput>({
     defaultValues: {
