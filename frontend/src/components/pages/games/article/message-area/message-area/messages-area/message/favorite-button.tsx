@@ -77,7 +77,7 @@ export default function FavoriteButton({ message }: Props) {
         } as FavoriteMutationVariables
       })
     }
-  }, [isFav, favorite, unfavorite])
+  }, [isFav, favorite, unfavorite, canFav, game.id, message.id])
 
   const starClass = isFav
     ? 'text-yellow-500'

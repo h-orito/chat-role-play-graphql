@@ -79,7 +79,7 @@ export default function DirectMessageArea(props: Props) {
       if (data?.directMessages == null) return
       setDirectMessages(data.directMessages as DirectMessages)
     },
-    [game.id, query]
+    [game.id, query, fetchDirectMessages]
   )
 
   const directMessageAreaRef = useRef<HTMLDivElement>(null)
@@ -95,6 +95,8 @@ export default function DirectMessageArea(props: Props) {
 
   useEffect(() => {
     search(defaultQuery)
+    // group 切替時のみ defaultQuery で再検索する。search/defaultQuery は意図的に外す
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group])
 
   if (group == null) return <></>

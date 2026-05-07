@@ -290,7 +290,7 @@ const IconUploadArea = ({
         } as UploadIconsMutationVariables
       })
     },
-    [uploadIcons, images]
+    [uploadIcons, images, game.id, setSubmitting]
   )
 
   return (
@@ -368,7 +368,7 @@ const IconDeleteArea = ({
         } as DeleteParticipantIconMutationVariables
       })
     },
-    [deleteIcon]
+    [deleteIcon, game.id]
   )
 
   return (

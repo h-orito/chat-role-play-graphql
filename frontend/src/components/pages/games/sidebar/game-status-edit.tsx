@@ -78,7 +78,7 @@ const UpdateGameStatusForm = () => {
       })
       router.reload()
     },
-    [updateStatus, gameStatus]
+    [updateStatus, gameStatus, game.id, router]
   )
 
   return (
@@ -163,7 +163,7 @@ const UpdateGamePeriodForm = () => {
       })
       router.reload()
     },
-    [updatePeriod, targetPeriodId]
+    [updatePeriod, targetPeriodId, game.id, game.periods, router]
   )
 
   return (
@@ -272,7 +272,14 @@ const DeleteGamePeriodForm = () => {
       } as DeletePeriodMutationVariables
     })
     router.reload()
-  }, [deletePeriod, targetPeriodId, destPeriodId, destCandidates])
+  }, [
+    deletePeriod,
+    targetPeriodId,
+    destPeriodId,
+    destCandidates,
+    game.id,
+    router
+  ])
 
   return (
     <div>

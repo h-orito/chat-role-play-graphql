@@ -92,7 +92,7 @@ export default function Participate({ close }: Props) {
         router.reload()
       }
     },
-    [participate, chara]
+    [participate, chara, game.id, router]
   )
 
   const canSubmit: boolean =

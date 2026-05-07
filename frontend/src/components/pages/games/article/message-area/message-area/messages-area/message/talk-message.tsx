@@ -290,6 +290,8 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
       setReplyToMessage(data.message as Message)
     }
     fetch()
+    // mount 時のみ返信元メッセージを取得（fetchMessage は render ごとに新しい関数になるため依存に含めない）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (!replyToMessage) {

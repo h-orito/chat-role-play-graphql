@@ -57,7 +57,7 @@ export default function CreateParticipantGroup({
     }).then((res) => {
       setSubmitting(false)
     })
-  }, [register, participants])
+  }, [register, participants, game.id, myself])
 
   const alreadyExists = groups.some((g) => {
     const pts = [...participants, myself]

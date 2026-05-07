@@ -86,7 +86,7 @@ export default function ProfileEdit({
         } as UpdateGameParticipantProfileMutationVariables
       })
     },
-    [updateProfile, images, iconId]
+    [updateProfile, images, iconId, game.id, profile.profileImageUrl]
   )
 
   const selectedIcon = icons.find((icon) => icon.id === iconId)

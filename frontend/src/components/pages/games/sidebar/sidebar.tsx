@@ -126,7 +126,15 @@ const GameStatus = () => {
       case 'Epilogue':
         return `ゲーム終了: ${iso2display(time.finishGameAt)}`
     }
-  }, [game.status, game.settings.time, game.periods])
+  }, [
+    game.status,
+    game.periods,
+    time.openAt,
+    time.startParticipateAt,
+    time.startGameAt,
+    time.epilogueGameAt,
+    time.finishGameAt
+  ])
 
   return (
     <div className='mb-4 px-4 text-xs'>

@@ -235,6 +235,8 @@ const NotificationSettings = () => {
       }
     }
     fetch()
+    // mount 時のみ通知設定を初期取得
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const [update] = useMutation<UpdateGameParticipantSettingMutation>(
@@ -268,7 +270,7 @@ const NotificationSettings = () => {
       })
       router.reload()
     },
-    [update]
+    [update, game.id, router]
   )
 
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting

@@ -362,7 +362,7 @@ const FollowButton = ({
         }
       } as FollowMutationVariables
     })
-  }, [follow])
+  }, [follow, game.id, participantId])
 
   const canFollow =
     myself != null &&
@@ -406,7 +406,7 @@ const UnfollowButton = ({
         }
       } as UnfollowMutationVariables
     })
-  }, [unfollow])
+  }, [unfollow, game.id, participantId])
 
   const canUnfollow =
     myself != null &&

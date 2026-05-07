@@ -104,6 +104,8 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
             paging
           }
       search(q)
+      // mount 時のみ初回取得（initialMessagesQuery / pagingSettings / search 等は意図的に依存に含めない）
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const canTalk = useMemo(() => {

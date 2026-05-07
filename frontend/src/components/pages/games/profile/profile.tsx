@@ -64,6 +64,8 @@ export default function Profile({ close, participantId }: Props) {
   useEffect(() => {
     refetchProfile()
     refetchIcons()
+    // participantId 変化時のみプロフィール・アイコンを再取得（refetch 関数は意図的に外す）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [participantId])
 
   if (profile == null) return <div>Loading...</div>
@@ -258,7 +260,7 @@ const FollowButton = ({
         }
       } as FollowMutationVariables
     })
-  }, [follow])
+  }, [follow, game.id, participantId])
 
   const canFollow =
     myself != null &&
@@ -302,7 +304,7 @@ const UnfollowButton = ({
         }
       } as UnfollowMutationVariables
     })
-  }, [unfollow])
+  }, [unfollow, game.id, participantId])
 
   const canUnfollow =
     myself != null &&

@@ -25,7 +25,7 @@ const GraphqlProvider = ({ children }: { children: React.ReactNode }) => {
       setClient(generatedClient)
     }
     generateClient()
-  }, [isLoading])
+  }, [isLoading, isAuthenticated, getAccessTokenSilently, loginWithRedirect])
   if (isLoading || !client) return <>Loading...</>
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>

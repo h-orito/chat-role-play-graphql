@@ -100,7 +100,7 @@ export default memo(function DirectMessageComponent({
         } as FavoriteDirectMutationVariables
       })
     }
-  }, [isFav, favorite, unfavorite])
+  }, [isFav, favorite, unfavorite, canFav, game.id, directMessage.id])
 
   const messageClass =
     directMessage.content.type === 'TalkNormal'

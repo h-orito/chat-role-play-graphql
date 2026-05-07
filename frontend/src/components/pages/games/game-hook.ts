@@ -17,7 +17,7 @@ import {
 } from '@/lib/generated/graphql'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { defaultDisplaySettings, useUserDisplaySettings } from './user-settings'
 
 // game
@@ -88,6 +88,8 @@ export const useMyselfInit = (gameId: string): GameParticipant | null => {
   useEffect(() => {
     refetchMyself()
     return () => setMyselfAtom(null)
+    // mount 時のみ初回取得・unmount 時に atom をクリア
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return myself
 }
@@ -123,6 +125,8 @@ export const useMyPlayer = (): Player | null => {
     }
     fetch()
     return () => setMyPlayer(null)
+    // mount 時のみ初回取得・unmount 時に atom をクリア
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return myPlayer
 }
@@ -142,7 +146,7 @@ const periodChangeStatuses = [
 export const usePollingPeriod = (game: Game) => {
   const [changePeriod] = useMutation<ChangePeriodMutation>(ChangePeriodDocument)
 
-  const callback = async () => {
+  const callback = useCallback(async () => {
     if (!periodChangeStatuses.includes(game.status)) return
 
     await changePeriod({
@@ -152,7 +156,7 @@ export const usePollingPeriod = (game: Game) => {
         } as ChangePeriod
       } as ChangePeriodMutationVariables
     })
-  }
+  }, [game.status, game.id, changePeriod])
 
   const ref = useRef<() => void>(callback)
   useEffect(() => {
@@ -176,6 +180,8 @@ export const useSidebarOpen = () => {
   const toggle = () => setIsOpen(!isOpen)
   useEffect(() => {
     return () => setIsOpen(false)
+    // unmount 時に閉じるだけのクリーンアップ
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return [isOpen, toggle] as const
 }
@@ -197,6 +203,8 @@ export const useIcons = (): void => {
   useEffect(() => {
     fetch()
     return () => setIconsAtom([])
+    // myself 変化時にアイコン取得・unmount 時に空配列にリセット（fetch/setIconsAtom は意図的に外す）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myself])
 }
 export const useIconsValue = () => useAtomValue(iconsAtom)
@@ -208,7 +216,7 @@ export const useUserDisplaySettingsAtom = () => {
   const setAtom = useSetAtom(displaySettingsAtom)
   useEffect(() => {
     setAtom(displaySettings)
-  }, [displaySettings])
+  }, [displaySettings, setAtom])
 }
 export const useUserDisplaySettingsValue = () =>
   useAtomValue(displaySettingsAtom)

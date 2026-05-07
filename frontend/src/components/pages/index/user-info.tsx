@@ -26,6 +26,8 @@ export default function UserInfo() {
   }
   useEffect(() => {
     refetchMyPlayer()
+    // 認証状態変化時のみ再取得（refetchMyPlayer は render ごとに新しい関数になるため意図的に外す）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authState.isAuthenticated])
 
   return (

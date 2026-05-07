@@ -85,6 +85,8 @@ export default function GameEdit(props: Props) {
       }
     }
     fetch()
+    // mount 時のみキャラチップ一覧を初期取得（fetchCharachips は識別性が変わるが意図的に依存に含めない）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const { control, formState, handleSubmit, setValue } = useForm<GameFormInput>(

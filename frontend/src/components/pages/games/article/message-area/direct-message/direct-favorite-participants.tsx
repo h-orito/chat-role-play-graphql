@@ -36,6 +36,8 @@ export default function DirectFavoriteParticipants({ messageId }: Props) {
 
   useEffect(() => {
     refetchFavoriteParticipants()
+    // refetchFavoriteParticipants は render ごとに新しい関数になるため意図的に依存に含めない
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageId])
 
   if (participants == null) return <div>Loading...</div>

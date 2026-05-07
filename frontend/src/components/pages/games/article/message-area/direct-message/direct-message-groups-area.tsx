@@ -67,6 +67,8 @@ export default function DirectMessageGroupsArea({ className }: Props) {
 
   useEffect(() => {
     refetchGroups()
+    // mount 時のみグループ一覧を初期取得
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const canCreate =

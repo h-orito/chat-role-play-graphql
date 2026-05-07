@@ -59,7 +59,7 @@ export default function ParticipantGroupEdit({
         } as UpdateParticipantGroupMutationVariables
       })
     },
-    [updateGroup, group]
+    [updateGroup, group, game.id]
   )
 
   return (

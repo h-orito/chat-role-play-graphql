@@ -172,6 +172,8 @@ const SystemMessagePreview = (props: PreviewProps) => {
         block: 'end'
       })
     }
+    // mount 時のみスクロール（isDesc / talkAreaId の変化には追従しない）
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const [talk] = useMutation<TalkMutation>(TalkDocument, {
