@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=$(jq -r '.tool_input.file_path // empty'); if [[ -n \"$f\" && \"$f\" == */frontend/src/* ]]; then cd $CLAUDE_PROJECT_DIR/frontend && pnpm run format && pnpm run lint; fi 2>/dev/null || true",
+            "command": "f=$(jq -r '.tool_input.file_path // empty'); if [[ -n \"$f\" && \"$f\" == */frontend/src/* ]]; then cd \"$CLAUDE_PROJECT_DIR/frontend\" && pnpm run format && pnpm run lint; fi",
             "timeout": 60,
             "statusMessage": "format & lint..."
           }
