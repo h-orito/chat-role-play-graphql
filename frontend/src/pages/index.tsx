@@ -18,13 +18,14 @@ import Tip from '@/components/pages/index/tip'
 import Head from 'next/head'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useModal } from '@/components/hooks/use-modal'
+import { FETCH_ALL_PAGE_SIZE } from '@/lib/constants'
 
 export const getServerSideProps = async () => {
   const client = createInnerClient()
   const { data, error } = await client.query<IndexGamesQuery>({
     query: IndexGamesDocument,
     variables: {
-      pageSize: 100000,
+      pageSize: FETCH_ALL_PAGE_SIZE,
       pageNumber: 1,
       statuses: [
         GameStatus.Opening,
