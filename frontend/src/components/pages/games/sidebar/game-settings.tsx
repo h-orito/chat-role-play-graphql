@@ -27,7 +27,7 @@ export default function GameSettings({ close }: GameSettingsProps) {
       settings.chara.charachips.length > 0
         ? settings.chara.charachips.map((c, idx) => {
             return (
-              <span key={idx}>
+              <span key={c.id}>
                 {idx !== 0 && <span>、</span>}
                 <Link
                   className='base-link'

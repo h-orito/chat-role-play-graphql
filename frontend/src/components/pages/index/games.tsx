@@ -82,8 +82,8 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
               ))}
             </div>
             <div className='mt-2'>
-              {descriptions.map((d, idx) => (
-                <p key={idx}>{d}</p>
+              {descriptions.map((d) => (
+                <p key={d}>{d}</p>
               ))}
             </div>
           </div>

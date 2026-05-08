@@ -45,7 +45,7 @@ export default function CheckGroup<T extends string>({
           ? 'primary-active'
           : ''
         return (
-          <div className={`${className}`} key={index}>
+          <div className={`${className}`} key={item.value}>
             <input
               type='checkbox'
               name={name}

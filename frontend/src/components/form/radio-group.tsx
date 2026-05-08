@@ -31,7 +31,7 @@ export default function RadioGroup<T extends string>({
         const checkedClass =
           selected === candidate.value ? 'primary-active' : ''
         return (
-          <div className='' key={index}>
+          <div className='' key={candidate.value}>
             <input
               type='radio'
               name={nameWithId}
