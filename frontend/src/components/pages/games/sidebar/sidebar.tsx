@@ -217,11 +217,12 @@ const UserSettingsButton = () => {
 
 const TopPageButton = () => (
   <div>
-    <Link href='/'>
-      <button className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'>
-        <HomeIcon className='mr-1 size-5' />
-        <p className='flex-1 self-center text-left'>トップ画面</p>
-      </button>
+    <Link
+      href='/'
+      className='sidebar-hover sidebar-text flex w-full justify-start px-4 py-2 text-sm'
+    >
+      <HomeIcon className='mr-1 size-5' />
+      <p className='flex-1 self-center text-left'>トップ画面</p>
     </Link>
   </div>
 )

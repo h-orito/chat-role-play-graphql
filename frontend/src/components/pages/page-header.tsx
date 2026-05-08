@@ -9,10 +9,12 @@ type Props = {
 export default function PageHeader(props: Props) {
   return (
     <div className='relative mb-2 border-b border-gray-300 py-2 text-center'>
-      <Link className='absolute start-0 block px-2' href={props.href}>
-        <button>
-          <ArrowLeftIcon className='size-6' />
-        </button>
+      <Link
+        className='absolute start-0 block px-2'
+        href={props.href}
+        aria-label='戻る'
+      >
+        <ArrowLeftIcon className='size-6' />
       </Link>
       <h2 className='text-xl font-bold'>{props.header}</h2>
     </div>
