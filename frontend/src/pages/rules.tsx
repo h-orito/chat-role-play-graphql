@@ -23,12 +23,20 @@ export default function Rules() {
             </div>
             <ul className='list-inside list-disc py-2 text-left text-xs'>
               <li>
-                <button className='text-blue-500' onClick={termModal.open}>
+                <button
+                  type='button'
+                  className='text-blue-500'
+                  onClick={termModal.open}
+                >
                   利用規約
                 </button>
               </li>
               <li>
-                <button className='text-blue-500' onClick={policyModal.open}>
+                <button
+                  type='button'
+                  className='text-blue-500'
+                  onClick={policyModal.open}
+                >
                   プライバシーポリシー
                 </button>
               </li>
