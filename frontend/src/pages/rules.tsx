@@ -25,7 +25,7 @@ export default function Rules() {
               <li>
                 <button
                   type='button'
-                  className='bg-transparent p-0 text-blue-500'
+                  className='border-0 bg-transparent p-0 text-blue-500 hover:text-blue-700'
                   onClick={termModal.open}
                 >
                   利用規約
@@ -34,7 +34,7 @@ export default function Rules() {
               <li>
                 <button
                   type='button'
-                  className='bg-transparent p-0 text-blue-500'
+                  className='border-0 bg-transparent p-0 text-blue-500 hover:text-blue-700'
                   onClick={policyModal.open}
                 >
                   プライバシーポリシー

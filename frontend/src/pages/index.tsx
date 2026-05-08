@@ -123,21 +123,21 @@ export default function Index({ games }: Props) {
             </Link>
             <button
               type='button'
-              className='ml-2 bg-transparent p-0 hover:text-blue-500'
+              className='ml-2 border-0 bg-transparent p-0 hover:text-blue-500'
               onClick={termModal.open}
             >
               利用規約
             </button>
             <button
               type='button'
-              className='ml-2 bg-transparent p-0 hover:text-blue-500'
+              className='ml-2 border-0 bg-transparent p-0 hover:text-blue-500'
               onClick={policyModal.open}
             >
               プライバシーポリシー
             </button>
             <button
               type='button'
-              className='ml-2 bg-transparent p-0 hover:text-blue-500'
+              className='ml-2 border-0 bg-transparent p-0 hover:text-blue-500'
               onClick={tipModal.open}
             >
               投げ銭
