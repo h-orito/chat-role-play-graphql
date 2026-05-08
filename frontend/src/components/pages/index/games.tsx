@@ -33,19 +33,19 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
   switch (game.status) {
     case 'Closed':
       descriptions.push({
-        key: 'time',
+        key: 'openAt',
         text: `公開開始: ${iso2display(game.settings.time.openAt)}`
       })
       break
     case 'Opening':
       descriptions.push({
-        key: 'time',
+        key: 'startParticipateAt',
         text: `登録開始: ${iso2display(game.settings.time.startParticipateAt)}`
       })
       break
     case 'Recruiting':
       descriptions.push({
-        key: 'time',
+        key: 'startGameAt',
         text: `ゲーム開始: ${iso2display(game.settings.time.startGameAt)}`
       })
       break
@@ -54,19 +54,19 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
       const periodEndAt = game.periods[game.periods.length - 1].endAt
       if (epilogueAt < periodEndAt) {
         descriptions.push({
-          key: 'time',
+          key: 'epilogueAt',
           text: `エピローグ開始: ${iso2display(epilogueAt)}`
         })
       } else {
         descriptions.push({
-          key: 'time',
+          key: 'periodEndAt',
           text: `次回更新: ${iso2display(periodEndAt)}`
         })
       }
       break
     case 'Epilogue':
       descriptions.push({
-        key: 'time',
+        key: 'finishGameAt',
         text: `ゲーム終了: ${iso2display(game.settings.time.finishGameAt)}`
       })
       break
