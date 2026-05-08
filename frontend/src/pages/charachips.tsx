@@ -11,6 +11,7 @@ import {
   PageableQuery
 } from '@/lib/generated/graphql'
 import Head from 'next/head'
+import { FETCH_ALL_PAGE_SIZE } from '@/lib/constants'
 
 export const getServerSideProps = async () => {
   const client = createInnerClient()
@@ -19,7 +20,7 @@ export const getServerSideProps = async () => {
     variables: {
       query: {
         paging: {
-          pageSize: 100000,
+          pageSize: FETCH_ALL_PAGE_SIZE,
           pageNumber: 1,
           isDesc: false,
           isLatest: false

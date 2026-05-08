@@ -9,13 +9,14 @@ import {
   GameStatus
 } from '@/lib/generated/graphql'
 import Head from 'next/head'
+import { FETCH_ALL_PAGE_SIZE } from '@/lib/constants'
 
 export const getServerSideProps = async () => {
   const client = createInnerClient()
   const { data, error } = await client.query<IndexGamesQuery>({
     query: IndexGamesDocument,
     variables: {
-      pageSize: 100000,
+      pageSize: FETCH_ALL_PAGE_SIZE,
       pageNumber: 1,
       statuses: [
         GameStatus.Cancelled,
