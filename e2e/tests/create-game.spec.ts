@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 
 test.use({ storageState: '.auth/user-a.json' })
 
@@ -23,4 +23,23 @@ test('ゲーム作成画面でキャラチップを選択してゲームを作�
   await expect(page.locator('h1').filter({ hasText: gameName })).toBeVisible({
     timeout: 10000
   })
+
+  // 最後にステータスを「終了」に変更
+  await changeGameStatusToFinished(page)
 })
+
+async function changeGameStatusToFinished(page: Page): Promise<void> {
+  await page
+    .locator('nav')
+    .getByRole('button', { name: 'ステータス・期間変更' })
+    .click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toBeVisible()
+  await dialog
+    .locator('.css-13cymwt-control, [class*="control"]')
+    .first()
+    .click()
+  await page.getByRole('option', { name: '終了' }).click()
+  await dialog.locator('input[type="submit"][value="更新"]').first().click()
+  await page.waitForLoadState('networkidle')
+}

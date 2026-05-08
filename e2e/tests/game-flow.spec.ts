@@ -13,6 +13,7 @@ import { test, expect, type Page } from '@playwright/test'
 //   9. ユーザーBがユーザーAの通常発言にリプライ
 //  10. ユーザーBがユーザーAに秘話送信
 //  11. ユーザーAが自分宛タブで秘話を確認
+//  12. ユーザーAがゲームのステータスを「終了」に変更
 // ================================================================
 
 test('複数ユーザーシナリオ：ゲーム作成・参加・発言・リプライ・秘話', async ({
@@ -125,6 +126,9 @@ test('複数ユーザーシナリオ：ゲーム作成・参加・発言・リ�
   await expect(
     pageA.locator('#message-area-tome').getByText(bSecret)
   ).toBeVisible({ timeout: 10_000 })
+
+  // 12. ユーザーA: ステータスを「終了」に変更
+  await changeGameStatusToFinished(pageA)
 })
 
 // ================================================================
@@ -193,6 +197,14 @@ async function postDescription(page: Page, text: string): Promise<void> {
 }
 
 async function changeGameStatusToRecruiting(page: Page): Promise<void> {
+  await changeGameStatus(page, '参加者募集中')
+}
+
+async function changeGameStatusToFinished(page: Page): Promise<void> {
+  await changeGameStatus(page, '終了')
+}
+
+async function changeGameStatus(page: Page, statusName: string): Promise<void> {
   await page
     .locator('nav')
     .getByRole('button', { name: 'ステータス・期間変更' })
@@ -205,7 +217,7 @@ async function changeGameStatusToRecruiting(page: Page): Promise<void> {
     .locator('.css-13cymwt-control, [class*="control"]')
     .first()
     .click()
-  await page.getByRole('option', { name: '参加者募集中' }).click()
+  await page.getByRole('option', { name: statusName }).click()
   // 「更新」ボタン（最初のフォームのsubmit）
   await dialog.locator('input[type="submit"][value="更新"]').first().click()
   // page reload される
