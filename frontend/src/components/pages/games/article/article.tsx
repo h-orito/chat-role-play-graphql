@@ -5,7 +5,7 @@ import MessageArea, {
   MessageAreaRefHandle
 } from './message-area/message-area/message-area'
 import ArticleMenu from './article-menu'
-import { googleAdnsenseStyleGuard } from '@/components/adsense/google-adsense-guard'
+import { googleAdsenseStyleGuard } from '@/components/adsense/google-adsense-guard'
 import { useMyPlayerValue, useMyselfValue } from '../game-hook'
 import DirectMessageGroupsArea from './message-area/direct-message/direct-message-groups-area'
 
@@ -28,7 +28,7 @@ const Article = () => {
   }
 
   useEffect(() => {
-    googleAdnsenseStyleGuard()
+    googleAdsenseStyleGuard()
   }, [])
 
   const myPlayer = useMyPlayerValue()

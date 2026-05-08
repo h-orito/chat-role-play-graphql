@@ -1,14 +1,18 @@
 import { Html, Head, Main, NextScript } from 'next/document'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 export default function Document() {
   return (
     <Html>
       <Head>
-        <script
-          async
-          src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0917187897820609'
-          crossOrigin='anonymous'
-        ></script>
+        {isProduction && (
+          <script
+            async
+            src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0917187897820609'
+            crossOrigin='anonymous'
+          ></script>
+        )}
         <link
           rel='apple-touch-icon'
           sizes='180x180'
