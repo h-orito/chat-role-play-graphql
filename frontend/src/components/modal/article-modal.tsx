@@ -1,4 +1,4 @@
-import { cloneElement, useEffect } from 'react'
+import { cloneElement, useEffect, useId } from 'react'
 import Portal from './portal'
 import SecondaryButton from '../button/secondary-button'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
@@ -21,6 +21,7 @@ export default function ArticleModal({
   hideFooter
 }: ModalProps) {
   const zindexClass = `z-${zindex}`
+  const headerId = useId()
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -36,13 +37,19 @@ export default function ArticleModal({
         className={`base-background absolute inset-0 size-full overflow-y-auto text-sm ${zindexClass}`}
         role='dialog'
         aria-modal='true'
-        aria-label={header ?? 'ダイアログ'}
+        {...(header
+          ? { 'aria-labelledby': headerId }
+          : { 'aria-label': 'ダイアログ' })}
       >
         <div className='base-border flex border-b p-2'>
           <button aria-label='戻る' className='px-2' onClick={() => close()}>
             <ArrowLeftIcon aria-hidden='true' className='mr-1 size-6' />
           </button>
-          {header && <p className='justify-center text-xl'>{header}</p>}
+          {header && (
+            <p id={headerId} className='justify-center text-xl'>
+              {header}
+            </p>
+          )}
         </div>
         {cloneElement(children as React.ReactElement<{ close: () => void }>, {
           close: close

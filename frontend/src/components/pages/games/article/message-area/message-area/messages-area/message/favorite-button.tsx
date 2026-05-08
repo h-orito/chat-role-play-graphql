@@ -99,7 +99,7 @@ export default function FavoriteButton({ message }: Props) {
             ? 'いいねを取り消す'
             : 'いいね'
         }
-        aria-pressed={isFav}
+        {...(canFav ? { 'aria-pressed': isFav } : {})}
         onClick={() => handleFav()}
         disabled={!canFav}
       >
