@@ -34,6 +34,7 @@
     }]
   },
   "ignorePatterns": [
-    "*.config.js"
+    "*.config.js",
+    "src/lib/generated/**"
   ]
 }
