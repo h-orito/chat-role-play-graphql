@@ -121,28 +121,32 @@ export default function Index({ games }: Props) {
             <Link className='hover:text-blue-500' href='/release-note'>
               更新履歴
             </Link>
-            <a
-              className='ml-2 cursor-pointer hover:text-blue-500'
+            <button
+              type='button'
+              className='ml-2 border-0 bg-transparent p-0 hover:text-blue-500'
               onClick={termModal.open}
             >
               利用規約
-            </a>
-            <a
-              className='ml-2 cursor-pointer hover:text-blue-500'
+            </button>
+            <button
+              type='button'
+              className='ml-2 border-0 bg-transparent p-0 hover:text-blue-500'
               onClick={policyModal.open}
             >
               プライバシーポリシー
-            </a>
-            <a
-              className='ml-2 cursor-pointer hover:text-blue-500'
+            </button>
+            <button
+              type='button'
+              className='ml-2 border-0 bg-transparent p-0 hover:text-blue-500'
               onClick={tipModal.open}
             >
               投げ銭
-            </a>
+            </button>
             <a
               href='https://twitter.com/ort_dev'
               target='_blank'
-              className='ml-2 cursor-pointer hover:text-blue-500'
+              rel='noreferrer'
+              className='ml-2 hover:text-blue-500'
             >
               問い合わせ
             </a>
@@ -152,7 +156,8 @@ export default function Index({ games }: Props) {
             <a
               href='https://github.com/h-orito/chat-role-play-graphql'
               target='_blank'
-              className='cursor-pointer hover:text-blue-500'
+              rel='noreferrer'
+              className='hover:text-blue-500'
             >
               GitHub
             </a>

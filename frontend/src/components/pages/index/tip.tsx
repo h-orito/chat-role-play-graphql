@@ -9,6 +9,7 @@ export default function Tip() {
           <a
             href='https://www.amazon.jp/hz/wishlist/ls/1KZSJAJS1ETW4?ref_=wl_share'
             target='_blank'
+            rel='noreferrer'
           >
             <PrimaryButton>Amazonほしいものリスト</PrimaryButton>
           </a>
@@ -24,7 +25,11 @@ export default function Tip() {
           <li>金額は15円以上で自由に変更できます。</li>
         </ul>
         <div className='flex justify-end'>
-          <a href='https://www.amazon.co.jp/dp/B004N3APGO' target='_blank'>
+          <a
+            href='https://www.amazon.co.jp/dp/B004N3APGO'
+            target='_blank'
+            rel='noreferrer'
+          >
             <PrimaryButton>Amazonギフト券</PrimaryButton>
           </a>
         </div>
@@ -50,7 +55,7 @@ export default function Tip() {
       <div className='my-4'>
         <p className='text-lg font-bold'>Pixiv Fanbox</p>
         <div className='flex justify-end'>
-          <a href='https://ort.fanbox.cc/' target='_blank'>
+          <a href='https://ort.fanbox.cc/' target='_blank' rel='noreferrer'>
             <PrimaryButton>Pixiv Fanbox</PrimaryButton>
           </a>
         </div>
