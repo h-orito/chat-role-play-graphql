@@ -1,4 +1,4 @@
-export const googleAdnsenseStyleGuard = () => {
+export const googleAdsenseStyleGuard = () => {
   // GoogleAdsenseがstyle属性を勝手に付与してくるので回避するための処理
   // see https://deep.tacoskingdom.com/blog/195
   if (process.env.NODE_ENV !== 'production') return
