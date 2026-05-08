@@ -11,8 +11,9 @@ Playwright + Chromium のE2Eテスト一式は `e2e/` 配下にある。ロー�
 
 ```
 e2e/
-  global-setup.ts      # Auth0 ROPGでアクセストークン取得→storageStateを2ユーザー分作る
-  playwright.config.ts # baseURL=http://localhost:3000, workers=1, fullyParallel=false
+  global-setup.ts      # Auth0 ROPGでアクセストークン取得→storageStateを2ユーザー分作る + 主要ルートの warmup
+  playwright.config.ts # baseURL=http://localhost:3001, webServer 設定で frontend を自動起動, workers=1, fullyParallel=false
+  config.ts            # FRONTEND_PORT(3001) / BACKEND_PORT(8080) を共有
   tsconfig.json
   package.json         # pnpm
   .env.e2e             # Auth0設定とテストユーザー認証情報（gitignore）
@@ -34,7 +35,14 @@ pnpm exec playwright test --ui                 # UI mode
 pnpm exec playwright test --debug              # ステップ実行
 ```
 
-実行前に backend (8080) と frontend (3000) が起動している必要がある。Authentication state は globalSetup が毎回作り直す（ROPGでトークン取得→localStorageに `@@auth0spajs@@::...` を埋める→ `auth0.{clientId}.is.authenticated` cookie もセット）。
+## 起動前提
+
+- **backend (8080)**: 起動している必要あり。docker-compose の MySQL も含めて事前起動する。playwright は backend を `reuseExistingServer: true` で扱うので、起動していなければ自動起動を試みるが、Go 環境差異で失敗することがあるため事前起動推奨
+- **frontend**: playwright が `next dev -p 3001` で**毎回 fresh に起動**する（`reuseExistingServer: false`）。**通常の dev server (3000) を別途立ち上げていてもポート競合しない**。E2E が HMR の stale chunks 問題に巻き込まれない設計
+
+backend CORS は `http://localhost:3000` と `http://localhost:3001` の両方を許可済み（`backend/main.go`）。
+
+Authentication state は globalSetup が毎回作り直す（ROPGでトークン取得→localStorageに `@@auth0spajs@@::...` を埋める→ `auth0.{clientId}.is.authenticated` cookie もセット）。続けて主要ルート（`/chat-role-play`, `/chat-role-play/create-game`）に warmup fetch を投げて next dev の lazy compile を先回りさせる。
 
 ## テスト設計の前提
 

@@ -7,11 +7,11 @@ e2e テストを実行し、結果を報告する。
 
 ## 実行前提
 
-- backend (`http://localhost:8080`) が起動している
-- frontend (`http://localhost:3000`) が起動している
+- **backend (`http://localhost:8080`) が起動している**（docker-compose の MySQL も含む）
+- frontend は playwright の webServer 設定で `next dev -p 3001` を**毎回 fresh に自動起動**するため、ユーザーが手動で起動する必要はない（通常の dev server が 3000 で動いていても競合しない）
 - `e2e/.env.e2e` に Auth0 設定とテストユーザー認証情報がある
 
-実行前に backend/frontend の起動確認を行い、起動していなければユーザーに確認を取る。
+実行前に backend の起動確認のみ行い、起動していなければユーザーに確認を取る。frontend は触らない。
 
 ## 結果報告
 

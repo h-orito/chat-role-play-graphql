@@ -1,6 +1,7 @@
 import { chromium } from '@playwright/test'
 import * as dotenv from 'dotenv'
 import * as path from 'path'
+import { FRONTEND_PORT } from './config'
 
 dotenv.config({ path: path.resolve(__dirname, '.env.e2e') })
 
@@ -15,7 +16,7 @@ const USER_A_PASSWORD = process.env.E2E_USER_A_PASSWORD!
 const USER_B_EMAIL = process.env.E2E_USER_B_EMAIL!
 const USER_B_PASSWORD = process.env.E2E_USER_B_PASSWORD!
 
-const BASE_URL = 'http://localhost:3000/chat-role-play'
+const BASE_URL = `http://localhost:${FRONTEND_PORT}/chat-role-play`
 
 type RopgResponse = {
   access_token: string
@@ -129,6 +130,23 @@ async function saveStorageState(
   await browser.close()
 }
 
+async function warmupRoutes(): Promise<void> {
+  // next dev は初回アクセス時にルートを lazy compile するため、
+  // E2E で使う主要ルートを先に踏んでおいてテスト本体の cold compile タイムアウトを避ける
+  const routes = ['/chat-role-play', '/chat-role-play/create-game']
+  for (const route of routes) {
+    const url = `http://localhost:${FRONTEND_PORT}${route}`
+    try {
+      const res = await fetch(url)
+      if (!res.ok) {
+        console.warn(`warmup got ${res.status} for ${route}`)
+      }
+    } catch (e) {
+      console.warn(`warmup failed for ${route}:`, e)
+    }
+  }
+}
+
 export default async function globalSetup() {
   console.log('Fetching Auth0 tokens via ROPG...')
 
@@ -144,4 +162,7 @@ export default async function globalSetup() {
   await saveStorageState(cacheB, path.resolve(__dirname, '.auth/user-b.json'))
 
   console.log('Auth state saved: .auth/user-a.json, .auth/user-b.json')
+
+  console.log('Warming up Next.js dev server routes...')
+  await warmupRoutes()
 }
