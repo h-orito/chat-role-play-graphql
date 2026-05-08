@@ -21,36 +21,54 @@ export default function Games({ games }: Props) {
 }
 
 const GameCard = ({ game }: { game: SimpleGame }) => {
-  const descriptions = []
-  descriptions.push(`状態: ${convertToGameStatusName(game.status)}`)
-  descriptions.push(`参加人数: ${game.participantsCount}人`)
+  const descriptions: Array<{ key: string; text: string }> = []
+  descriptions.push({
+    key: 'status',
+    text: `状態: ${convertToGameStatusName(game.status)}`
+  })
+  descriptions.push({
+    key: 'participants',
+    text: `参加人数: ${game.participantsCount}人`
+  })
   switch (game.status) {
     case 'Closed':
-      descriptions.push(`公開開始: ${iso2display(game.settings.time.openAt)}`)
+      descriptions.push({
+        key: 'time',
+        text: `公開開始: ${iso2display(game.settings.time.openAt)}`
+      })
       break
     case 'Opening':
-      descriptions.push(
-        `登録開始: ${iso2display(game.settings.time.startParticipateAt)}`
-      )
+      descriptions.push({
+        key: 'time',
+        text: `登録開始: ${iso2display(game.settings.time.startParticipateAt)}`
+      })
       break
     case 'Recruiting':
-      descriptions.push(
-        `ゲーム開始: ${iso2display(game.settings.time.startGameAt)}`
-      )
+      descriptions.push({
+        key: 'time',
+        text: `ゲーム開始: ${iso2display(game.settings.time.startGameAt)}`
+      })
       break
     case 'Progress':
       const epilogueAt = game.settings.time.epilogueGameAt
       const periodEndAt = game.periods[game.periods.length - 1].endAt
       if (epilogueAt < periodEndAt) {
-        descriptions.push(`エピローグ開始: ${iso2display(epilogueAt)}`)
+        descriptions.push({
+          key: 'time',
+          text: `エピローグ開始: ${iso2display(epilogueAt)}`
+        })
       } else {
-        descriptions.push(`次回更新: ${iso2display(periodEndAt)}`)
+        descriptions.push({
+          key: 'time',
+          text: `次回更新: ${iso2display(periodEndAt)}`
+        })
       }
       break
     case 'Epilogue':
-      descriptions.push(
-        `ゲーム終了: ${iso2display(game.settings.time.finishGameAt)}`
-      )
+      descriptions.push({
+        key: 'time',
+        text: `ゲーム終了: ${iso2display(game.settings.time.finishGameAt)}`
+      })
       break
     default:
       break
@@ -78,12 +96,12 @@ const GameCard = ({ game }: { game: SimpleGame }) => {
           <div className='px-4 py-2 text-left text-xs leading-6'>
             <div className='flex'>
               {game.labels.map((l: GameLabel) => (
-                <Label key={l.name} label={l} />
+                <Label key={l.id} label={l} />
               ))}
             </div>
             <div className='mt-2'>
               {descriptions.map((d) => (
-                <p key={d}>{d}</p>
+                <p key={d.key}>{d.text}</p>
               ))}
             </div>
           </div>
