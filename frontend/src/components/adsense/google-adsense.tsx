@@ -32,14 +32,12 @@ export const GoogleAdsense = ({
 
   if (!isProduction) {
     return (
-      <div key={asPath}>
-        <div
-          className='flex items-center justify-center border border-dashed border-gray-300 text-xs text-gray-500'
-          style={{ minHeight: 80, ...style }}
-          data-testid='adsense-dummy'
-        >
-          Ad (dummy)
-        </div>
+      <div
+        className='flex items-center justify-center border border-dashed border-gray-300 text-xs text-gray-500'
+        style={{ minHeight: 80 }}
+        data-testid='adsense-dummy'
+      >
+        Ad (dummy)
       </div>
     )
   }
