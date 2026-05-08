@@ -161,8 +161,8 @@ const DirectMessageModal = (
       <div className='base-background absolute inset-0 z-50 size-full text-sm'>
         <div className='flex h-full flex-col overflow-y-auto'>
           <div className='base-border flex border-b p-2'>
-            <button className='px-2' onClick={close}>
-              <ArrowLeftIcon className='mr-1 size-6' />
+            <button aria-label='戻る' className='px-2' onClick={close}>
+              <ArrowLeftIcon aria-hidden='true' className='mr-1 size-6' />
             </button>
             <p className='justify-center text-xl'>{group.name}</p>
           </div>

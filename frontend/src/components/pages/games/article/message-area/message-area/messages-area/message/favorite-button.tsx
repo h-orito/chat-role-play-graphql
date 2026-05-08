@@ -91,8 +91,19 @@ export default function FavoriteButton({ message }: Props) {
 
   return (
     <>
-      <button onClick={() => handleFav()} disabled={!canFav}>
-        <StarIcon className={`h-4 ${starClass}`} />
+      <button
+        aria-label={
+          !canFav
+            ? '自分の発言にはいいねできません'
+            : isFav
+            ? 'いいねを取り消す'
+            : 'いいね'
+        }
+        {...(canFav ? { 'aria-pressed': isFav } : {})}
+        onClick={() => handleFav()}
+        disabled={!canFav}
+      >
+        <StarIcon aria-hidden='true' className={`h-4 ${starClass}`} />
       </button>
       {favCount > 0 && (
         <button

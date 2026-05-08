@@ -1,4 +1,4 @@
-import { cloneElement, useEffect, useState } from 'react'
+import { cloneElement, useEffect, useId, useState } from 'react'
 import Portal from './portal'
 import SecondaryButton from '../button/secondary-button'
 
@@ -17,6 +17,7 @@ export default function Modal({
   hideFooter,
   hideOnClickOutside = true
 }: ModalProps) {
+  const headerId = useId()
   const [insideClick, setInsideClick] = useState(false)
   const onMouseDown = (e: React.MouseEvent) =>
     setInsideClick(e.target === e.currentTarget)
@@ -43,11 +44,15 @@ export default function Modal({
         onMouseUp={onMouseUp}
         role='dialog'
         aria-modal='true'
-        aria-label={header}
+        {...(header
+          ? { 'aria-labelledby': headerId }
+          : { 'aria-label': 'ダイアログ' })}
       >
         <div className='base-background max-h-[90vh] w-[90vw] max-w-[90vw] overflow-y-auto p-4 md:max-w-screen-md'>
           {header && (
-            <p className='base-border mb-2 border-b pb-2 text-xl'>{header}</p>
+            <p id={headerId} className='base-border mb-2 border-b pb-2 text-xl'>
+              {header}
+            </p>
           )}
           {cloneElement(children as React.ReactElement<{ close: () => void }>, {
             close: close
