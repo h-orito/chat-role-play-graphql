@@ -25,6 +25,10 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='メンテナンス' date='2026/05/09'>
+            <li>今後の変更に向けて大リファクタリング大会を実施中</li>
+          </ReleaseContent>
+
           <ReleaseContent label='UI改修/機能拡張' date='2024/03/05'>
             <li>UI変更: 会話ツリー閲覧機能を追加</li>
             <li>
