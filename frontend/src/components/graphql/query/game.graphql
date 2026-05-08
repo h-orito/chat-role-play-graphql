@@ -4,6 +4,7 @@ query Game($id: ID!) {
     name
     status
     labels {
+      id
       name
       type
     }

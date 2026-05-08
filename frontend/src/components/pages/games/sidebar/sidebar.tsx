@@ -327,8 +327,8 @@ const GameLabels = () => {
   const game = useGameValue()
   return (
     <div className='mb-2 flex px-4'>
-      {game.labels.map((l: GameLabel, idx: number) => (
-        <Label key={idx} label={l} />
+      {game.labels.map((l: GameLabel) => (
+        <Label key={l.id} label={l} />
       ))}
     </div>
   )

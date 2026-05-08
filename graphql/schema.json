@@ -1,10 +1,12 @@
 {
   "__schema": {
     "queryType": {
-      "name": "Query"
+      "name": "Query",
+      "kind": "OBJECT"
     },
     "mutationType": {
-      "name": "Mutation"
+      "name": "Mutation",
+      "kind": "OBJECT"
     },
     "subscriptionType": null,
     "types": [
@@ -12,6 +14,7 @@
         "kind": "SCALAR",
         "name": "Boolean",
         "description": "The `Boolean` scalar type represents `true` or `false`.",
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -22,6 +25,7 @@
         "kind": "INPUT_OBJECT",
         "name": "ChangePeriod",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -49,6 +53,7 @@
         "kind": "OBJECT",
         "name": "ChangePeriodIfNeededPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -76,6 +81,7 @@
         "kind": "OBJECT",
         "name": "Chara",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "id",
@@ -159,6 +165,7 @@
         "kind": "OBJECT",
         "name": "CharaImage",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "id",
@@ -218,6 +225,7 @@
         "kind": "OBJECT",
         "name": "CharaSize",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "height",
@@ -261,6 +269,7 @@
         "kind": "OBJECT",
         "name": "Charachip",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "canChangeName",
@@ -376,6 +385,7 @@
         "kind": "INPUT_OBJECT",
         "name": "CharachipsQuery",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -431,6 +441,7 @@
         "kind": "SCALAR",
         "name": "DateTime",
         "description": null,
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -441,6 +452,7 @@
         "kind": "INPUT_OBJECT",
         "name": "DeleteDirectMessageFavorite",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -484,6 +496,7 @@
         "kind": "OBJECT",
         "name": "DeleteDirectMessageFavoritePayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -511,6 +524,7 @@
         "kind": "INPUT_OBJECT",
         "name": "DeleteGameMaster",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -554,6 +568,7 @@
         "kind": "OBJECT",
         "name": "DeleteGameMasterPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -581,6 +596,7 @@
         "kind": "INPUT_OBJECT",
         "name": "DeleteGameParticipant",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -608,6 +624,7 @@
         "kind": "INPUT_OBJECT",
         "name": "DeleteGameParticipantFollow",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -651,6 +668,7 @@
         "kind": "OBJECT",
         "name": "DeleteGameParticipantFollowPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -678,6 +696,7 @@
         "kind": "INPUT_OBJECT",
         "name": "DeleteGameParticipantIcon",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -721,6 +740,7 @@
         "kind": "OBJECT",
         "name": "DeleteGameParticipantIconPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -748,6 +768,7 @@
         "kind": "OBJECT",
         "name": "DeleteGameParticipantPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -775,6 +796,7 @@
         "kind": "INPUT_OBJECT",
         "name": "DeleteGamePeriod",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -834,6 +856,7 @@
         "kind": "OBJECT",
         "name": "DeleteGamePeriodPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -861,6 +884,7 @@
         "kind": "INPUT_OBJECT",
         "name": "DeleteMessageFavorite",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -904,6 +928,7 @@
         "kind": "OBJECT",
         "name": "DeleteMessageFavoritePayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -931,6 +956,7 @@
         "kind": "INPUT_OBJECT",
         "name": "DeletePlayerSnsAccount",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -958,6 +984,7 @@
         "kind": "OBJECT",
         "name": "DeletePlayerSnsAccountPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -985,6 +1012,7 @@
         "kind": "OBJECT",
         "name": "Designer",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "id",
@@ -1028,6 +1056,7 @@
         "kind": "INPUT_OBJECT",
         "name": "DesignersQuery",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -1083,6 +1112,7 @@
         "kind": "OBJECT",
         "name": "DirectMessage",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "content",
@@ -1190,6 +1220,7 @@
         "kind": "OBJECT",
         "name": "DirectMessageReactions",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "favoriteCounts",
@@ -1241,6 +1272,7 @@
         "kind": "OBJECT",
         "name": "DirectMessages",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "allPageCount",
@@ -1390,6 +1422,7 @@
         "kind": "INPUT_OBJECT",
         "name": "DirectMessagesQuery",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -1557,6 +1590,7 @@
         "kind": "OBJECT",
         "name": "Game",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "gameMasters",
@@ -1741,6 +1775,7 @@
         "kind": "OBJECT",
         "name": "GameBackgroundSetting",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "catchImageUrl",
@@ -1776,6 +1811,7 @@
         "kind": "OBJECT",
         "name": "GameCapacity",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "max",
@@ -1819,6 +1855,7 @@
         "kind": "OBJECT",
         "name": "GameCharaSetting",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "canOriginalCharacter",
@@ -1870,6 +1907,7 @@
         "kind": "INPUT_OBJECT",
         "name": "GameDiariesQuery",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -1905,6 +1943,7 @@
         "kind": "OBJECT",
         "name": "GameLabel",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "id",
@@ -1964,6 +2003,7 @@
         "kind": "OBJECT",
         "name": "GameMaster",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "id",
@@ -2023,6 +2063,7 @@
         "kind": "OBJECT",
         "name": "GameNotificationCondition",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "participate",
@@ -2066,6 +2107,7 @@
         "kind": "OBJECT",
         "name": "GameParticipant",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "canChangeName",
@@ -2273,6 +2315,7 @@
         "kind": "OBJECT",
         "name": "GameParticipantDiary",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "body",
@@ -2364,6 +2407,7 @@
         "kind": "OBJECT",
         "name": "GameParticipantGroup",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "id",
@@ -2447,6 +2491,7 @@
         "kind": "INPUT_OBJECT",
         "name": "GameParticipantGroupsQuery",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -2470,6 +2515,7 @@
         "kind": "OBJECT",
         "name": "GameParticipantIcon",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "displayOrder",
@@ -2561,6 +2607,7 @@
         "kind": "OBJECT",
         "name": "GameParticipantProfile",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "entryNumber",
@@ -2720,6 +2767,7 @@
         "kind": "OBJECT",
         "name": "GameParticipantSetting",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "notification",
@@ -2747,6 +2795,7 @@
         "kind": "OBJECT",
         "name": "GamePasswordSetting",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "hasPassword",
@@ -2774,6 +2823,7 @@
         "kind": "OBJECT",
         "name": "GamePeriod",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "count",
@@ -2865,6 +2915,7 @@
         "kind": "OBJECT",
         "name": "GameRuleSetting",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "canSendDirectMessage",
@@ -2936,6 +2987,7 @@
         "kind": "OBJECT",
         "name": "GameSettings",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "background",
@@ -3043,6 +3095,7 @@
         "kind": "ENUM",
         "name": "GameStatus",
         "description": null,
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -3096,6 +3149,7 @@
         "kind": "OBJECT",
         "name": "GameTimeSetting",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "epilogueGameAt",
@@ -3227,6 +3281,7 @@
         "kind": "INPUT_OBJECT",
         "name": "GamesQuery",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -3302,6 +3357,7 @@
         "kind": "SCALAR",
         "name": "ID",
         "description": "The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"4\"`) or integer (such as `4`) input value will be accepted as an ID.",
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -3312,6 +3368,7 @@
         "kind": "SCALAR",
         "name": "Int",
         "description": "The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.",
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -3322,6 +3379,7 @@
         "kind": "SCALAR",
         "name": "Long",
         "description": null,
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -3332,6 +3390,7 @@
         "kind": "OBJECT",
         "name": "Message",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "content",
@@ -3443,6 +3502,7 @@
         "kind": "OBJECT",
         "name": "MessageContent",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "isConvertDisabled",
@@ -3518,6 +3578,7 @@
         "kind": "OBJECT",
         "name": "MessageNotificationCondition",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "directMessage",
@@ -3601,6 +3662,7 @@
         "kind": "OBJECT",
         "name": "MessageReactions",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "favoriteCount",
@@ -3668,6 +3730,7 @@
         "kind": "OBJECT",
         "name": "MessageReceiver",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "entryNumber",
@@ -3727,6 +3790,7 @@
         "kind": "OBJECT",
         "name": "MessageRecipient",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "messageId",
@@ -3770,6 +3834,7 @@
         "kind": "OBJECT",
         "name": "MessageSender",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "entryNumber",
@@ -3841,6 +3906,7 @@
         "kind": "OBJECT",
         "name": "MessageTime",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "sendAt",
@@ -3884,6 +3950,7 @@
         "kind": "ENUM",
         "name": "MessageType",
         "description": null,
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -3931,6 +3998,7 @@
         "kind": "OBJECT",
         "name": "Messages",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "allPageCount",
@@ -4080,6 +4148,7 @@
         "kind": "INPUT_OBJECT",
         "name": "MessagesQuery",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -4263,6 +4332,7 @@
         "kind": "OBJECT",
         "name": "Mutation",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "changePeriodIfNeeded",
@@ -5462,6 +5532,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewDirectMessage",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -5585,6 +5656,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewDirectMessageFavorite",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -5628,6 +5700,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGame",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -5695,6 +5768,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameBackgroundSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -5742,6 +5816,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameCapacity",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -5785,6 +5860,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameCharaSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -5836,6 +5912,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameLabel",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -5879,6 +5956,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameMaster",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -5938,6 +6016,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameParticipant",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6005,6 +6084,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameParticipantDiary",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6080,6 +6160,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameParticipantFollow",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6123,6 +6204,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameParticipantGroup",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6190,6 +6272,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameParticipantIcon",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6265,6 +6348,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameParticipantIcons",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6348,6 +6432,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGamePasswordSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6371,6 +6456,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameRuleSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6442,6 +6528,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameSettings",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6549,6 +6636,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewGameTimeSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6680,6 +6768,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewMessage",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6803,6 +6892,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewMessageFavorite",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6846,6 +6936,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewPlayerProfile",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6897,6 +6988,7 @@
         "kind": "INPUT_OBJECT",
         "name": "NewPlayerSnsAccount",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -6956,6 +7048,7 @@
         "kind": "OBJECT",
         "name": "NotificationCondition",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "discordWebhookUrl",
@@ -7011,6 +7104,7 @@
         "kind": "INTERFACE",
         "name": "Pageable",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "allPageCount",
@@ -7109,6 +7203,7 @@
         "kind": "INPUT_OBJECT",
         "name": "PageableQuery",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -7184,6 +7279,7 @@
         "kind": "INPUT_OBJECT",
         "name": "ParticipantsQuery",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -7247,6 +7343,7 @@
         "kind": "OBJECT",
         "name": "Player",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "authorityCodes",
@@ -7338,6 +7435,7 @@
         "kind": "OBJECT",
         "name": "PlayerProfile",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "introduction",
@@ -7397,6 +7495,7 @@
         "kind": "OBJECT",
         "name": "PlayerSnsAccount",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "id",
@@ -7468,6 +7567,7 @@
         "kind": "INPUT_OBJECT",
         "name": "PlayersQuery",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -7523,6 +7623,7 @@
         "kind": "OBJECT",
         "name": "Query",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "chara",
@@ -8714,6 +8815,7 @@
         "kind": "INPUT_OBJECT",
         "name": "RegisterDebugMessages",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -8741,6 +8843,7 @@
         "kind": "OBJECT",
         "name": "RegisterDebugMessagesPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -8768,6 +8871,7 @@
         "kind": "OBJECT",
         "name": "RegisterDirectMessageDryRunPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "directMessage",
@@ -8795,6 +8899,7 @@
         "kind": "OBJECT",
         "name": "RegisterDirectMessageFavoritePayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -8822,6 +8927,7 @@
         "kind": "OBJECT",
         "name": "RegisterDirectMessagePayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -8849,6 +8955,7 @@
         "kind": "OBJECT",
         "name": "RegisterGameMasterPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "gameMaster",
@@ -8876,6 +8983,7 @@
         "kind": "OBJECT",
         "name": "RegisterGameParticipantDiaryPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "gameParticipantDiary",
@@ -8903,6 +9011,7 @@
         "kind": "OBJECT",
         "name": "RegisterGameParticipantFollowPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -8930,6 +9039,7 @@
         "kind": "OBJECT",
         "name": "RegisterGameParticipantGroupPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "gameParticipantGroup",
@@ -8957,6 +9067,7 @@
         "kind": "OBJECT",
         "name": "RegisterGameParticipantIconPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "gameParticipantIcon",
@@ -8984,6 +9095,7 @@
         "kind": "OBJECT",
         "name": "RegisterGameParticipantIconsPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "gameParticipantIcons",
@@ -9015,6 +9127,7 @@
         "kind": "OBJECT",
         "name": "RegisterGameParticipantPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "gameParticipant",
@@ -9042,6 +9155,7 @@
         "kind": "OBJECT",
         "name": "RegisterGamePayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "game",
@@ -9069,6 +9183,7 @@
         "kind": "OBJECT",
         "name": "RegisterMessageDryRunPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "message",
@@ -9096,6 +9211,7 @@
         "kind": "OBJECT",
         "name": "RegisterMessageFavoritePayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -9123,6 +9239,7 @@
         "kind": "OBJECT",
         "name": "RegisterMessagePayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -9150,6 +9267,7 @@
         "kind": "OBJECT",
         "name": "RegisterPlayerProfilePayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "playerProfile",
@@ -9177,6 +9295,7 @@
         "kind": "OBJECT",
         "name": "RegisterPlayerSnsAccountPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "playerSnsAccount",
@@ -9204,6 +9323,7 @@
         "kind": "OBJECT",
         "name": "SimpleGame",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "id",
@@ -9343,6 +9463,7 @@
         "kind": "ENUM",
         "name": "SnsType",
         "description": null,
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -9396,6 +9517,7 @@
         "kind": "SCALAR",
         "name": "String",
         "description": "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.",
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -9406,6 +9528,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateCharaSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -9457,6 +9580,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameBackgroundSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -9504,6 +9628,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameCapacity",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -9547,6 +9672,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameLabel",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -9590,6 +9716,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameMaster",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -9649,6 +9776,7 @@
         "kind": "OBJECT",
         "name": "UpdateGameMasterPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -9676,6 +9804,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameNotificationCondition",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -9719,6 +9848,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameParticipantDiary",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -9794,6 +9924,7 @@
         "kind": "OBJECT",
         "name": "UpdateGameParticipantDiaryPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -9821,6 +9952,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameParticipantGroup",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -9880,6 +10012,7 @@
         "kind": "OBJECT",
         "name": "UpdateGameParticipantGroupPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -9907,6 +10040,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameParticipantIcon",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -9966,6 +10100,7 @@
         "kind": "OBJECT",
         "name": "UpdateGameParticipantIconPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -9993,6 +10128,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameParticipantProfile",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10112,6 +10248,7 @@
         "kind": "OBJECT",
         "name": "UpdateGameParticipantProfilePayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -10139,6 +10276,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameParticipantSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10178,6 +10316,7 @@
         "kind": "OBJECT",
         "name": "UpdateGameParticipantSettingPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -10205,6 +10344,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGamePasswordSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10228,6 +10368,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGamePeriod",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10319,6 +10460,7 @@
         "kind": "OBJECT",
         "name": "UpdateGamePeriodPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -10346,6 +10488,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameRuleSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10417,6 +10560,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10500,6 +10644,7 @@
         "kind": "OBJECT",
         "name": "UpdateGameSettingPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -10527,6 +10672,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameSettings",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10634,6 +10780,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameStatus",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10677,6 +10824,7 @@
         "kind": "OBJECT",
         "name": "UpdateGameStatusPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -10704,6 +10852,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateGameTimeSetting",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10835,6 +10984,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateMessageNotificationCondition",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10918,6 +11068,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdateNotificationCondition",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -10973,6 +11124,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdatePlayerProfile",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -11036,6 +11188,7 @@
         "kind": "OBJECT",
         "name": "UpdatePlayerProfilePayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -11063,6 +11216,7 @@
         "kind": "INPUT_OBJECT",
         "name": "UpdatePlayerSnsAccount",
         "description": null,
+        "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
@@ -11138,6 +11292,7 @@
         "kind": "OBJECT",
         "name": "UpdatePlayerSnsAccountPayload",
         "description": null,
+        "isOneOf": null,
         "fields": [
           {
             "name": "ok",
@@ -11165,6 +11320,7 @@
         "kind": "SCALAR",
         "name": "Upload",
         "description": null,
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -11175,6 +11331,7 @@
         "kind": "OBJECT",
         "name": "__Directive",
         "description": "A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.\n\nIn some cases, you need to provide options to alter GraphQL's execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.",
+        "isOneOf": null,
         "fields": [
           {
             "name": "name",
@@ -11291,6 +11448,7 @@
         "kind": "ENUM",
         "name": "__DirectiveLocation",
         "description": "A Directive can be adjacent to many parts of the GraphQL language, a __DirectiveLocation describes one such possible adjacencies.",
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -11416,6 +11574,7 @@
         "kind": "OBJECT",
         "name": "__EnumValue",
         "description": "One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string.",
+        "isOneOf": null,
         "fields": [
           {
             "name": "name",
@@ -11483,6 +11642,7 @@
         "kind": "OBJECT",
         "name": "__Field",
         "description": "Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.",
+        "isOneOf": null,
         "fields": [
           {
             "name": "name",
@@ -11603,6 +11763,7 @@
         "kind": "OBJECT",
         "name": "__InputValue",
         "description": "Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value.",
+        "isOneOf": null,
         "fields": [
           {
             "name": "name",
@@ -11698,6 +11859,7 @@
         "kind": "OBJECT",
         "name": "__Schema",
         "description": "A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.",
+        "isOneOf": null,
         "fields": [
           {
             "name": "description",
@@ -11809,6 +11971,7 @@
         "kind": "OBJECT",
         "name": "__Type",
         "description": "The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.\n\nDepending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name, description and optional `specifiedByURL`, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.",
+        "isOneOf": null,
         "fields": [
           {
             "name": "kind",
@@ -12012,6 +12175,18 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "isOneOf",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -12023,6 +12198,7 @@
         "kind": "ENUM",
         "name": "__TypeKind",
         "description": "An enum describing what kind of type a given `__Type` is.",
+        "isOneOf": null,
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -12139,6 +12315,15 @@
         "isRepeatable": false,
         "locations": [
           "FIELD_DEFINITION"
+        ],
+        "args": []
+      },
+      {
+        "name": "oneOf",
+        "description": "Indicates exactly one field must be supplied and this field must not be `null`.",
+        "isRepeatable": false,
+        "locations": [
+          "INPUT_OBJECT"
         ],
         "args": []
       },
