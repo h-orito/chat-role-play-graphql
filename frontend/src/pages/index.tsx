@@ -145,6 +145,7 @@ export default function Index({ games }: Props) {
             <a
               href='https://twitter.com/ort_dev'
               target='_blank'
+              rel='noreferrer'
               className='ml-2 hover:text-blue-500'
             >
               問い合わせ
@@ -155,6 +156,7 @@ export default function Index({ games }: Props) {
             <a
               href='https://github.com/h-orito/chat-role-play-graphql'
               target='_blank'
+              rel='noreferrer'
               className='hover:text-blue-500'
             >
               GitHub
