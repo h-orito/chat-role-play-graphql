@@ -1,6 +1,7 @@
 import { chromium } from '@playwright/test'
 import * as dotenv from 'dotenv'
 import * as path from 'path'
+import { FRONTEND_PORT } from './config'
 
 dotenv.config({ path: path.resolve(__dirname, '.env.e2e') })
 
@@ -15,7 +16,7 @@ const USER_A_PASSWORD = process.env.E2E_USER_A_PASSWORD!
 const USER_B_EMAIL = process.env.E2E_USER_B_EMAIL!
 const USER_B_PASSWORD = process.env.E2E_USER_B_PASSWORD!
 
-const BASE_URL = 'http://localhost:3001/chat-role-play'
+const BASE_URL = `http://localhost:${FRONTEND_PORT}/chat-role-play`
 
 type RopgResponse = {
   access_token: string
@@ -134,8 +135,12 @@ async function warmupRoutes(): Promise<void> {
   // E2E で使う主要ルートを先に踏んでおいてテスト本体の cold compile タイムアウトを避ける
   const routes = ['/chat-role-play', '/chat-role-play/create-game']
   for (const route of routes) {
+    const url = `http://localhost:${FRONTEND_PORT}${route}`
     try {
-      await fetch(`http://localhost:3001${route}`)
+      const res = await fetch(url)
+      if (!res.ok) {
+        console.warn(`warmup got ${res.status} for ${route}`)
+      }
     } catch (e) {
       console.warn(`warmup failed for ${route}:`, e)
     }

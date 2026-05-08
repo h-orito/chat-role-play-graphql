@@ -1,8 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
+import { FRONTEND_PORT, BACKEND_PORT } from './config'
 
 // E2E では HMR の stale chunks を避けるため、本来の dev server (3000) とは別ポートで毎回 fresh に立ち上げる
-const FRONTEND_PORT = 3001
-const BACKEND_PORT = 8080
 
 export default defineConfig({
   testDir: './tests',
