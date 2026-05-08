@@ -43,7 +43,7 @@ export default function Modal({
         onMouseUp={onMouseUp}
         role='dialog'
         aria-modal='true'
-        aria-label={header}
+        aria-label={header ?? 'ダイアログ'}
       >
         <div className='base-background max-h-[90vh] w-[90vw] max-w-[90vw] overflow-y-auto p-4 md:max-w-screen-md'>
           {header && (

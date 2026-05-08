@@ -60,7 +60,7 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
       {searchable && (
         <div className='flex flex-1 text-center'>
           <button
-            aria-label='抽出'
+            aria-label='発言抽出'
             className='sidebar-background flex w-full justify-center px-4 py-2'
             onClick={filterModal.open}
           >
@@ -74,7 +74,7 @@ const MessageAreaFooterMenu = (props: FooterMenuProps) => {
                 filtering ? 'base-link' : ''
               }`}
             >
-              抽出
+              発言抽出
             </span>
           </button>
           {filterModal.isOpen && (

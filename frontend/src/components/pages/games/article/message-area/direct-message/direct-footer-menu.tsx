@@ -61,7 +61,7 @@ const DirectFooterMenu = (props: Props) => {
       </div>
       <div className='flex flex-1 text-center'>
         <button
-          aria-label='抽出'
+          aria-label='発言抽出'
           className='sidebar-background flex w-full justify-center px-4 py-2'
           onClick={filterModal.open}
         >
@@ -75,7 +75,7 @@ const DirectFooterMenu = (props: Props) => {
               filtering ? 'base-link' : ''
             }`}
           >
-            抽出
+            発言抽出
           </span>
         </button>
         {filterModal.isOpen && (

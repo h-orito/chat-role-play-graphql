@@ -92,7 +92,13 @@ export default function DirectFavoriteButton({ message }: Props) {
   return (
     <>
       <button
-        aria-label={isFav ? 'いいねを取り消す' : 'いいね'}
+        aria-label={
+          !canFav
+            ? '自分の発言にはいいねできません'
+            : isFav
+            ? 'いいねを取り消す'
+            : 'いいね'
+        }
         aria-pressed={isFav}
         onClick={() => handleFav()}
         disabled={!canFav}
