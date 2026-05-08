@@ -11,6 +11,7 @@ import { test, expect, type Page } from '@playwright/test'
 //   7. ユーザーBがユーザーAと自分のダイレクトメッセージグループを作成
 //   8. ユーザーBが作成したダイレクトメッセージグループで発言
 //   9. ユーザーAがダイレクトメッセージグループの発言を参照
+//  10. ユーザーAがゲームのステータスを「終了」に変更
 // ================================================================
 
 test('複数ユーザーシナリオ：いいね・フォロー・DMグループ作成・DM発言・DM参照', async ({
@@ -140,6 +141,15 @@ test('複数ユーザーシナリオ：いいね・フォロー・DMグループ
   await expect(dmAreaA.getByText(bDirect).first()).toBeVisible({
     timeout: 10_000
   })
+
+  // ============================================================
+  // 10. ユーザーA: ステータスを「終了」に変更
+  // ============================================================
+  await pageA.goto(`/chat-role-play/games/${gameId}`)
+  await expect(pageA.locator('h1').filter({ hasText: gameName })).toBeVisible({
+    timeout: 10_000
+  })
+  await changeGameStatusToFinished(pageA)
 })
 
 // ================================================================
@@ -187,6 +197,14 @@ async function postNormalTalk(page: Page, text: string): Promise<void> {
 }
 
 async function changeGameStatusToRecruiting(page: Page): Promise<void> {
+  await changeGameStatus(page, '参加者募集中')
+}
+
+async function changeGameStatusToFinished(page: Page): Promise<void> {
+  await changeGameStatus(page, '終了')
+}
+
+async function changeGameStatus(page: Page, statusName: string): Promise<void> {
   await page
     .locator('nav')
     .getByRole('button', { name: 'ステータス・期間変更' })
@@ -197,7 +215,7 @@ async function changeGameStatusToRecruiting(page: Page): Promise<void> {
     .locator('.css-13cymwt-control, [class*="control"]')
     .first()
     .click()
-  await page.getByRole('option', { name: '参加者募集中' }).click()
+  await page.getByRole('option', { name: statusName }).click()
   await dialog.locator('input[type="submit"][value="更新"]').first().click()
   await page.waitForLoadState('networkidle')
 }
