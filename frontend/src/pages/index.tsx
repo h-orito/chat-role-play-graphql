@@ -121,24 +121,24 @@ export default function Index({ games }: Props) {
             <Link className='hover:text-blue-500' href='/release-note'>
               更新履歴
             </Link>
-            <a
-              className='ml-2 cursor-pointer hover:text-blue-500'
+            <button
+              className='ml-2 hover:text-blue-500'
               onClick={termModal.open}
             >
               利用規約
-            </a>
-            <a
-              className='ml-2 cursor-pointer hover:text-blue-500'
+            </button>
+            <button
+              className='ml-2 hover:text-blue-500'
               onClick={policyModal.open}
             >
               プライバシーポリシー
-            </a>
-            <a
-              className='ml-2 cursor-pointer hover:text-blue-500'
+            </button>
+            <button
+              className='ml-2 hover:text-blue-500'
               onClick={tipModal.open}
             >
               投げ銭
-            </a>
+            </button>
             <a
               href='https://twitter.com/ort_dev'
               target='_blank'
