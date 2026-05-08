@@ -39,8 +39,8 @@ export default function ArticleModal({
         aria-label={header}
       >
         <div className='base-border flex border-b p-2'>
-          <button className='px-2' onClick={() => close()}>
-            <ArrowLeftIcon className='mr-1 size-6' />
+          <button aria-label='閉じる' className='px-2' onClick={() => close()}>
+            <ArrowLeftIcon aria-hidden='true' className='mr-1 size-6' />
           </button>
           {header && <p className='justify-center text-xl'>{header}</p>}
         </div>

@@ -358,8 +358,11 @@ const FormLabel = ({ label, required = false, children }: FormLabelProps) => {
       {label}
       {children && (
         <>
-          <button onClick={openModal}>
-            <QuestionMarkCircleIcon className='ml-1 size-4 text-blue-500' />
+          <button aria-label={`${label} のヘルプ`} onClick={openModal}>
+            <QuestionMarkCircleIcon
+              aria-hidden='true'
+              className='ml-1 size-4 text-blue-500'
+            />
           </button>
           {modal.isOpen && (
             <Modal close={modal.close} hideFooter>
