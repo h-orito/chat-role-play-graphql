@@ -117,16 +117,18 @@ export default function Term() {
       <OrderdList>
         <ListItem>
           管理人は、ユーザーが以下のいずれかに該当する場合には、事前の通知なく、ユーザーに対して、本サービスの全部もしくは一部の利用を制限し、またはユーザーとしての登録を抹消することができるものとします。
-          <ListItem>本規約のいずれかの条項に違反した場合</ListItem>
-          <ListItem>登録事項に虚偽の事実があることが判明した場合</ListItem>
-          <ListItem>料金等の支払債務の不履行があった場合</ListItem>
-          <ListItem>管理人からの連絡に対し、一定期間返答がない場合</ListItem>
-          <ListItem>
-            本サービスについて、最終の利用から一定期間利用がない場合
-          </ListItem>
-          <ListItem>
-            その他、管理人が本サービスの利用を適当でないと判断した場合
-          </ListItem>
+          <OrderdList className='pl-4'>
+            <ListItem>本規約のいずれかの条項に違反した場合</ListItem>
+            <ListItem>登録事項に虚偽の事実があることが判明した場合</ListItem>
+            <ListItem>料金等の支払債務の不履行があった場合</ListItem>
+            <ListItem>管理人からの連絡に対し、一定期間返答がない場合</ListItem>
+            <ListItem>
+              本サービスについて、最終の利用から一定期間利用がない場合
+            </ListItem>
+            <ListItem>
+              その他、管理人が本サービスの利用を適当でないと判断した場合
+            </ListItem>
+          </OrderdList>
         </ListItem>
         <ListItem>
           管理人は、本条に基づき管理人が行った行為によりユーザーに生じた損害について、一切の責任を負いません。
