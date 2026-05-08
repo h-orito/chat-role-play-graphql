@@ -14,6 +14,7 @@ query IndexGames($pageSize: Int!, $pageNumber: Int!, $statuses: [GameStatus!]) {
     name
     status
     labels {
+      id
       name
       type
     }
