@@ -5,6 +5,7 @@ import {
   TalkDocument,
   TalkDryRunDocument,
   TalkDryRunMutation,
+  TalkDryRunMutationVariables,
   TalkMutation,
   TalkMutationVariables
 } from '@/lib/generated/graphql'
@@ -77,9 +78,10 @@ const TalkSystem = (props: Props) => {
   )
 
   // 発言プレビュー
-  const [talkDryRun] = useMutation<TalkDryRunMutation, TalkMutationVariables>(
-    TalkDryRunDocument
-  )
+  const [talkDryRun] = useMutation<
+    TalkDryRunMutation,
+    TalkDryRunMutationVariables
+  >(TalkDryRunDocument)
   const [dryRunMessage, setDryRunMessage] = useState<NewMessage | null>(null)
   const [preview, setPreview] = useState<Message | null>(null)
   const onSubmitPreview: SubmitHandler<FormInput> = useCallback(

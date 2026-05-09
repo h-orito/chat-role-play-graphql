@@ -138,15 +138,17 @@ const GamePeriodLinksArea = (
   const { messageQuery, search, searchable } = props
 
   const setPeriodQuery = (periodId: string) => {
+    // paging は MessageArea 初期化時に必ず設定済み
+    const paging = messageQuery.paging!
     const newQuery: MessagesQuery = {
       ...messageQuery,
       periodId,
       paging: {
+        ...paging,
         // 期間移動したら1ページ目に戻す
-        ...messageQuery.paging,
         pageNumber: 1,
         isLatest: false
-      } as PageableQuery
+      }
     }
     search(newQuery)
   }
