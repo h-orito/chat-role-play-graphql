@@ -6,7 +6,7 @@ import {
   NewMessage,
   TalkDryRunDocument,
   TalkDryRunMutation,
-  TalkMutationVariables
+  TalkDryRunMutationVariables
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -125,13 +125,16 @@ const Talk = (props: Props) => {
         replyToMessageId: replyToMessageId,
         text: data.talkMessage.trim(),
         isConvertDisabled: isConvertDisabled
-      } as NewMessage
+      }
     },
     [game.id, replyTarget, talkType, receiver, iconId, isConvertDisabled]
   )
 
   // 発言プレビュー
-  const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument)
+  const [talkDryRun] = useMutation<
+    TalkDryRunMutation,
+    TalkDryRunMutationVariables
+  >(TalkDryRunDocument)
   const [dryRunMessage, setDryRunMessage] = useState<NewMessage | null>(null)
   const [preview, setPreview] = useState<Message | null>(null)
   const onSubmitPreview: SubmitHandler<FormInput> = useCallback(
@@ -140,7 +143,7 @@ const Talk = (props: Props) => {
       const { data: previewData } = await talkDryRun({
         variables: {
           input: mes
-        } as TalkMutationVariables
+        }
       })
       if (previewData?.registerMessageDryRun == null) return
       setPreview(previewData.registerMessageDryRun.message as Message)

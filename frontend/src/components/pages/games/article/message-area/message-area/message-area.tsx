@@ -1,7 +1,7 @@
 import {
   GameMessagesDocument,
   GameMessagesQuery,
-  Message,
+  GameMessagesQueryVariables,
   Messages,
   MessagesQuery
 } from '@/lib/generated/graphql'
@@ -64,8 +64,10 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     })
     const [latestTime, setLatestTime] = useState<number>(0)
 
-    const [fetchMessages] =
-      useLazyQuery<GameMessagesQuery>(GameMessagesDocument)
+    const [fetchMessages] = useLazyQuery<
+      GameMessagesQuery,
+      GameMessagesQueryVariables
+    >(GameMessagesDocument)
     const search = useCallback(
       async (query: MessagesQuery = messageQuery) => {
         setMessageQuery(query)
@@ -73,11 +75,11 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
           variables: {
             gameId: game.id,
             query: query
-          } as MessagesQuery
+          }
         })
         if (data?.messages == null) return
         setMessages(data.messages as Messages)
-        setLatestTime(data.messages.latestUnixTimeMilli as number)
+        setLatestTime(Number(data.messages.latestUnixTimeMilli))
         setExistUnread(false)
       },
       [game.id, messageQuery, fetchMessages, setExistUnread]

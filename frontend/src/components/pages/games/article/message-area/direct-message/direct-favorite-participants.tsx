@@ -17,16 +17,16 @@ type Props = {
 export default function DirectFavoriteParticipants({ messageId }: Props) {
   const game = useGameValue()
   const [participants, setParticipants] = useState<Array<GameParticipant>>([])
-  const [fetchFavoriteParticipants] =
-    useLazyQuery<DirectFavoriteParticipantsQuery>(
-      DirectFavoriteParticipantsDocument
-    )
+  const [fetchFavoriteParticipants] = useLazyQuery<
+    DirectFavoriteParticipantsQuery,
+    DirectFavoriteParticipantsQueryVariables
+  >(DirectFavoriteParticipantsDocument)
   const refetchFavoriteParticipants = async () => {
     const { data } = await fetchFavoriteParticipants({
       variables: {
         gameId: game.id,
         directMessageId: messageId
-      } as DirectFavoriteParticipantsQueryVariables
+      }
     })
     if (data?.directMessageFavoriteGameParticipants == null) return
     setParticipants(

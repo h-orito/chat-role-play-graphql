@@ -17,9 +17,12 @@ export const getServerSideProps = async (
   const id = Number(context.params!.id)
   const client = createInnerClient()
   const charachipId = idToBase64(id, 'Charachip')
-  const { data: charachipData } = await client.query<CharachipDetailQuery>({
+  const { data: charachipData } = await client.query<
+    CharachipDetailQuery,
+    CharachipDetailQueryVariables
+  >({
     query: CharachipDetailDocument,
-    variables: { id: charachipId } as CharachipDetailQueryVariables
+    variables: { id: charachipId }
   })
   return {
     props: {

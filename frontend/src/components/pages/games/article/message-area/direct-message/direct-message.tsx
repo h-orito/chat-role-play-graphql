@@ -1,10 +1,8 @@
 import {
-  DeleteDirectMessageFavorite,
   DirectMessage,
   FavoriteDirectDocument,
   FavoriteDirectMutation,
   FavoriteDirectMutationVariables,
-  NewDirectMessageFavorite,
   UnfavoriteDirectDocument,
   UnfavoriteDirectMutation,
   UnfavoriteDirectMutationVariables
@@ -54,30 +52,30 @@ export default memo(function DirectMessageComponent({
     ? 'hover:text-yellow-500 secondary-text'
     : 'secondary-text'
 
-  const [favorite] = useMutation<FavoriteDirectMutation>(
-    FavoriteDirectDocument,
-    {
-      onCompleted(_) {
-        setIsFav(true)
-        setFavCount(favCount + 1)
-      },
-      onError(error) {
-        console.error(error)
-      }
+  const [favorite] = useMutation<
+    FavoriteDirectMutation,
+    FavoriteDirectMutationVariables
+  >(FavoriteDirectDocument, {
+    onCompleted(_) {
+      setIsFav(true)
+      setFavCount(favCount + 1)
+    },
+    onError(error) {
+      console.error(error)
     }
-  )
-  const [unfavorite] = useMutation<UnfavoriteDirectMutation>(
-    UnfavoriteDirectDocument,
-    {
-      onCompleted(_) {
-        setIsFav(false)
-        setFavCount(favCount - 1)
-      },
-      onError(error) {
-        console.error(error)
-      }
+  })
+  const [unfavorite] = useMutation<
+    UnfavoriteDirectMutation,
+    UnfavoriteDirectMutationVariables
+  >(UnfavoriteDirectDocument, {
+    onCompleted(_) {
+      setIsFav(false)
+      setFavCount(favCount - 1)
+    },
+    onError(error) {
+      console.error(error)
     }
-  )
+  })
 
   const handleFav = useCallback(() => {
     if (!canFav) return
@@ -87,8 +85,8 @@ export default memo(function DirectMessageComponent({
           input: {
             gameId: game.id,
             directMessageId: directMessage.id
-          } as DeleteDirectMessageFavorite
-        } as UnfavoriteDirectMutationVariables
+          }
+        }
       })
     } else {
       favorite({
@@ -96,8 +94,8 @@ export default memo(function DirectMessageComponent({
           input: {
             gameId: game.id,
             directMessageId: directMessage.id
-          } as NewDirectMessageFavorite
-        } as FavoriteDirectMutationVariables
+          }
+        }
       })
     }
   }, [isFav, favorite, unfavorite, canFav, game.id, directMessage.id])

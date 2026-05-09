@@ -63,9 +63,10 @@ export default function DirectMessageArea(props: Props) {
     latestUnixTimeMilli: 0
   })
 
-  const [fetchDirectMessages] = useLazyQuery<GameDirectMessagesQuery>(
-    GameDirectMessagesDocument
-  )
+  const [fetchDirectMessages] = useLazyQuery<
+    GameDirectMessagesQuery,
+    GameDirectMessagesQueryVariables
+  >(GameDirectMessagesDocument)
 
   const search = useCallback(
     async (q: DirectMessagesQuery = query) => {
@@ -74,7 +75,7 @@ export default function DirectMessageArea(props: Props) {
         variables: {
           gameId: game.id,
           query: q
-        } as GameDirectMessagesQueryVariables
+        }
       })
       if (data?.directMessages == null) return
       setDirectMessages(data.directMessages as DirectMessages)
@@ -166,9 +167,12 @@ const DirectMessageModal = (
             </button>
             <p className='justify-center text-xl'>{group.name}</p>
           </div>
-          {cloneElement(props.children as any, {
-            close: close
-          })}
+          {cloneElement(
+            props.children as React.ReactElement<{ close: () => void }>,
+            {
+              close: close
+            }
+          )}
           <div id={`${props.talkAreaId}-fixed`}></div>
           <DirectFooterMenu
             group={group}
@@ -228,10 +232,10 @@ type DirectMessagesAreaProps = {
 const DirectMessagesArea = (props: DirectMessagesAreaProps) => {
   const { directMessages, query, search } = props
   const setPageableQuery = (q: PageableQuery) => {
-    const newQuery = {
+    const newQuery: DirectMessagesQuery = {
       ...query,
       paging: q
-    } as DirectMessagesQuery
+    }
     search(newQuery)
   }
 

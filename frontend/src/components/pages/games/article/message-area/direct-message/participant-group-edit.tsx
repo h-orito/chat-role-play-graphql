@@ -3,7 +3,6 @@ import InputText from '@/components/form/input-text'
 import { useGameValue } from '@/components/pages/games/game-hook'
 import {
   GameParticipantGroup,
-  UpdateGameParticipantGroup,
   UpdateParticipantGroupDocument,
   UpdateParticipantGroupMutation,
   UpdateParticipantGroupMutationVariables
@@ -34,18 +33,18 @@ export default function ParticipantGroupEdit({
     }
   })
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting
-  const [updateGroup] = useMutation<UpdateParticipantGroupMutation>(
-    UpdateParticipantGroupDocument,
-    {
-      onCompleted(e) {
-        refetchGroups()
-        close()
-      },
-      onError(error) {
-        console.error(error)
-      }
+  const [updateGroup] = useMutation<
+    UpdateParticipantGroupMutation,
+    UpdateParticipantGroupMutationVariables
+  >(UpdateParticipantGroupDocument, {
+    onCompleted(e) {
+      refetchGroups()
+      close()
+    },
+    onError(error) {
+      console.error(error)
     }
-  )
+  })
 
   const onSubmit: SubmitHandler<FormInput> = useCallback(
     (data) => {
@@ -55,8 +54,8 @@ export default function ParticipantGroupEdit({
             gameId: game.id,
             id: group.id,
             name: data.name
-          } as UpdateGameParticipantGroup
-        } as UpdateParticipantGroupMutationVariables
+          }
+        }
       })
     },
     [updateGroup, group, game.id]

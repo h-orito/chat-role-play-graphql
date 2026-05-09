@@ -3,6 +3,7 @@ import {
   Messages,
   MessagesLatestDocument,
   MessagesLatestQuery,
+  MessagesLatestQueryVariables,
   MessagesQuery,
   PageableQuery
 } from '@/lib/generated/graphql'
@@ -45,9 +46,10 @@ const MessagesArea = (props: Props) => {
     setExistsUnread
   } = props
 
-  const [fetchMessagesLatest] = useLazyQuery<MessagesLatestQuery>(
-    MessagesLatestDocument
-  )
+  const [fetchMessagesLatest] = useLazyQuery<
+    MessagesLatestQuery,
+    MessagesLatestQueryVariables
+  >(MessagesLatestDocument)
 
   const fetchLatestTime = async () => {
     if (!isViewing && existsUnread) return
@@ -58,10 +60,10 @@ const MessagesArea = (props: Props) => {
           ...messageQuery,
           offsetUnixTimeMilli: latestTime
         }
-      } as MessagesQuery
+      }
     })
     if (data?.messagesLatestUnixTimeMilli == null) return
-    const latest = data.messagesLatestUnixTimeMilli as number
+    const latest = Number(data.messagesLatestUnixTimeMilli)
     if (latestTime < latest) {
       if (isViewing) search()
       else setExistsUnread(true)
@@ -71,10 +73,10 @@ const MessagesArea = (props: Props) => {
   usePollingMessages(() => fetchLatestTime())
 
   const setPageableQuery = (q: PageableQuery) => {
-    const newQuery = {
+    const newQuery: MessagesQuery = {
       ...messageQuery,
       paging: q
-    } as MessagesQuery
+    }
     search(newQuery)
   }
 
@@ -136,16 +138,18 @@ const GamePeriodLinksArea = (
   const { messageQuery, search, searchable } = props
 
   const setPeriodQuery = (periodId: string) => {
-    const newQuery = {
+    // paging は MessageArea 初期化時に必ず設定済み
+    const paging = messageQuery.paging!
+    const newQuery: MessagesQuery = {
       ...messageQuery,
       periodId,
       paging: {
+        ...paging,
         // 期間移動したら1ページ目に戻す
-        ...messageQuery.paging,
         pageNumber: 1,
         isLatest: false
-      } as PageableQuery
-    } as MessagesQuery
+      }
+    }
     search(newQuery)
   }
 

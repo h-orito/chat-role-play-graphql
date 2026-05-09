@@ -1,15 +1,8 @@
 import {
   RegisterGameMutation,
   RegisterGameMutationVariables,
-  NewGame,
   RegisterGameDocument,
-  NewGameCapacity,
-  NewGameCharaSetting,
-  NewGamePasswordSetting,
-  NewGameRuleSetting,
-  NewGameSettings,
-  NewGameTimeSetting,
-  GameLabel
+  NewGameLabel
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
 import dayjs from '@/lib/dayjs'
@@ -26,7 +19,7 @@ import Head from 'next/head'
 export default function CreateGame() {
   const now = dayjs()
 
-  const defaultValues = {
+  const defaultValues: GameFormInput = {
     name: '',
     openAt: now.add(7, 'day').startOf('hour').format('YYYY-MM-DDTHH:mm'),
     startParticipateAt: now
@@ -48,37 +41,37 @@ export default function CreateGame() {
     periodIntervalMinutes: 0,
     password: '',
     introduction: ''
-  } as GameFormInput
+  }
 
   const [target, setTarget] = useState('誰歓')
   const [rating, setRating] = useState('全年齢')
   const [charachipIds, setCharachipIds] = useState<string[]>([])
   const [catchImageFiles, setCatchImageFiles] = useState<File[]>([])
 
-  const [registerGame] = useMutation<RegisterGameMutation>(
-    RegisterGameDocument,
-    {
-      onError(error) {
-        console.error(error)
-      }
+  const [registerGame] = useMutation<
+    RegisterGameMutation,
+    RegisterGameMutationVariables
+  >(RegisterGameDocument, {
+    onError(error) {
+      console.error(error)
     }
-  )
+  })
 
   const router = useRouter()
   const onSubmit: SubmitHandler<GameFormInput> = useCallback(
     async (data) => {
-      const labels: Array<GameLabel> = []
+      const labels: Array<NewGameLabel> = []
       if (target !== '') {
         labels.push({
           name: target,
           type: 'success'
-        } as GameLabel)
+        })
       }
       if (rating !== '全年齢') {
         labels.push({
           name: rating,
           type: 'danger'
-        } as GameLabel)
+        })
       }
 
       const { data: resData } = await registerGame({
@@ -96,11 +89,11 @@ export default function CreateGame() {
               chara: {
                 charachipIds: charachipIds,
                 canOriginalCharacter: true
-              } as NewGameCharaSetting,
+              },
               capacity: {
                 min: data.capacityMin,
                 max: data.capacityMax
-              } as NewGameCapacity,
+              },
               time: {
                 periodPrefix:
                   data.periodPrefix.length > 0 ? data.periodPrefix : null,
@@ -115,19 +108,19 @@ export default function CreateGame() {
                 startGameAt: dayjs(data.startGameAt).toDate(),
                 epilogueGameAt: dayjs(data.epilogueGameAt).toDate(),
                 finishGameAt: dayjs(data.finishGameAt).toDate()
-              } as NewGameTimeSetting,
+              },
               rule: {
                 isGameMasterProducer: false,
                 canShorten: true,
                 canSendDirectMessage: true,
                 theme: null
-              } as NewGameRuleSetting,
+              },
               password: {
                 password: data.password.length > 0 ? data.password : null
-              } as NewGamePasswordSetting
-            } as NewGameSettings
-          } as NewGame
-        } as RegisterGameMutationVariables
+              }
+            }
+          }
+        }
       })
       const id = resData?.registerGame?.game?.id
       if (!id) {

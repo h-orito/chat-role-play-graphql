@@ -36,9 +36,9 @@ export const getServerSideProps = async (
   const gameId = Number(context.params!.gameId)
   const client = createInnerClient()
   const gameStringId = idToBase64(gameId, 'Game')
-  const { data: gamedata } = await client.query<GameQuery>({
+  const { data: gamedata } = await client.query<GameQuery, GameQueryVariables>({
     query: GameDocument,
-    variables: { id: gameStringId } as GameQueryVariables
+    variables: { id: gameStringId }
   })
   const game = gamedata.game as Game
   const messagesQuery = fromUrlQuery(context.query, game)

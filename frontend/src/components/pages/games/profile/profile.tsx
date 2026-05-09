@@ -8,8 +8,10 @@ import {
   GameParticipantProfile,
   GameParticipantProfileDocument,
   GameParticipantProfileQuery,
+  GameParticipantProfileQueryVariables,
   IconsDocument,
   IconsQuery,
+  IconsQueryVariables,
   LeaveDocument,
   LeaveMutation,
   LeaveMutationVariables,
@@ -39,10 +41,13 @@ export default function Profile({ close, participantId }: Props) {
   const [profile, setProfile] = useState<GameParticipantProfile | null>(null)
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>([])
 
-  const [fetchProfile] = useLazyQuery<GameParticipantProfileQuery>(
-    GameParticipantProfileDocument
+  const [fetchProfile] = useLazyQuery<
+    GameParticipantProfileQuery,
+    GameParticipantProfileQueryVariables
+  >(GameParticipantProfileDocument)
+  const [fetchIcons] = useLazyQuery<IconsQuery, IconsQueryVariables>(
+    IconsDocument
   )
-  const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
 
   const refetchProfile = async () => {
     const { data } = await fetchProfile({
@@ -57,8 +62,8 @@ export default function Profile({ close, participantId }: Props) {
       variables: { participantId }
     })
     if (data?.gameParticipantIcons == null) return []
-    setIcons(data.gameParticipantIcons as Array<GameParticipantIcon>)
-    return data.gameParticipantIcons as Array<GameParticipantIcon>
+    setIcons(data.gameParticipantIcons)
+    return data.gameParticipantIcons
   }
 
   useEffect(() => {
@@ -128,14 +133,17 @@ export default function Profile({ close, participantId }: Props) {
 
 const LeaveButton = () => {
   const game = useGameValue()
-  const [leave] = useMutation<LeaveMutation>(LeaveDocument, {
-    onCompleted(e) {
-      location.reload()
-    },
-    onError(error) {
-      console.error(error)
+  const [leave] = useMutation<LeaveMutation, LeaveMutationVariables>(
+    LeaveDocument,
+    {
+      onCompleted(e) {
+        location.reload()
+      },
+      onError(error) {
+        console.error(error)
+      }
     }
-  })
+  )
 
   const confirmToLeave = () => {
     if (confirm('この操作は取り消せません。本当に退出しますか？')) {
@@ -144,7 +152,7 @@ const LeaveButton = () => {
           input: {
             gameId: game.id
           }
-        } as LeaveMutationVariables
+        }
       })
     }
   }
@@ -241,15 +249,18 @@ const FollowButton = ({
 }: FollowButtonProps) => {
   const game = useGameValue()
   const [myself, refetchMyself] = useMyself(game.id)
-  const [follow] = useMutation<FollowMutation>(FollowDocument, {
-    onCompleted(e) {
-      refetchMyself()
-      refetchProfile()
-    },
-    onError(error) {
-      console.error(error)
+  const [follow] = useMutation<FollowMutation, FollowMutationVariables>(
+    FollowDocument,
+    {
+      onCompleted(e) {
+        refetchMyself()
+        refetchProfile()
+      },
+      onError(error) {
+        console.error(error)
+      }
     }
-  })
+  )
 
   const handleFollow = useCallback(() => {
     follow({
@@ -258,7 +269,7 @@ const FollowButton = ({
           gameId: game.id,
           targetGameParticipantId: participantId
         }
-      } as FollowMutationVariables
+      }
     })
   }, [follow, game.id, participantId])
 
@@ -285,15 +296,18 @@ const UnfollowButton = ({
 }: UnfollowButtonProps) => {
   const game = useGameValue()
   const [myself, refetchMyself] = useMyself(game.id)
-  const [unfollow] = useMutation<UnfollowMutation>(UnfollowDocument, {
-    onCompleted(e) {
-      refetchMyself()
-      refetchProfile()
-    },
-    onError(error) {
-      console.error(error)
+  const [unfollow] = useMutation<UnfollowMutation, UnfollowMutationVariables>(
+    UnfollowDocument,
+    {
+      onCompleted(e) {
+        refetchMyself()
+        refetchProfile()
+      },
+      onError(error) {
+        console.error(error)
+      }
     }
-  })
+  )
 
   const handleUnfollow = useCallback(() => {
     unfollow({
@@ -302,7 +316,7 @@ const UnfollowButton = ({
           gameId: game.id,
           targetGameParticipantId: participantId
         }
-      } as UnfollowMutationVariables
+      }
     })
   }, [unfollow, game.id, participantId])
 

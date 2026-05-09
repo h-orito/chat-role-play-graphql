@@ -1,5 +1,4 @@
 import {
-  ChangePeriod,
   ChangePeriodDocument,
   ChangePeriodMutation,
   ChangePeriodMutationVariables,
@@ -8,11 +7,13 @@ import {
   GameParticipantIcon,
   IconsDocument,
   IconsQuery,
+  IconsQueryVariables,
   MyGameParticipantDocument,
   MyGameParticipantQuery,
   MyGameParticipantQueryVariables,
   MyPlayerDocument,
   MyPlayerQuery,
+  MyPlayerQueryVariables,
   Player
 } from '@/lib/generated/graphql'
 import { useLazyQuery, useMutation } from '@apollo/client'
@@ -96,13 +97,14 @@ export const useMyselfInit = (gameId: string): GameParticipant | null => {
 export const useMyself = (
   gameId: string
 ): [myself: GameParticipant | null, refetchMyself: () => void] => {
-  const [fetchMyself] = useLazyQuery<MyGameParticipantQuery>(
-    MyGameParticipantDocument
-  )
+  const [fetchMyself] = useLazyQuery<
+    MyGameParticipantQuery,
+    MyGameParticipantQueryVariables
+  >(MyGameParticipantDocument)
   const [myself, setMyselfAtom] = useAtom(myselfAtom)
   const fetch = async () => {
     const { data } = await fetchMyself({
-      variables: { gameId } as MyGameParticipantQueryVariables
+      variables: { gameId }
     })
     setMyselfAtom((data?.myGameParticipant as GameParticipant) ?? null)
   }
@@ -115,7 +117,9 @@ export const useMyselfValue = () => useAtomValue(myselfAtom)
 const myPlayerAtom = atom<Player | null>(null)
 
 export const useMyPlayer = (): Player | null => {
-  const [fetchMyPlayer] = useLazyQuery<MyPlayerQuery>(MyPlayerDocument)
+  const [fetchMyPlayer] = useLazyQuery<MyPlayerQuery, MyPlayerQueryVariables>(
+    MyPlayerDocument
+  )
   const [myPlayer, setMyPlayer] = useAtom(myPlayerAtom)
   useEffect(() => {
     const fetch = async () => {
@@ -144,7 +148,10 @@ const periodChangeStatuses = [
   'Epilogue'
 ]
 export const usePollingPeriod = (game: Game) => {
-  const [changePeriod] = useMutation<ChangePeriodMutation>(ChangePeriodDocument)
+  const [changePeriod] = useMutation<
+    ChangePeriodMutation,
+    ChangePeriodMutationVariables
+  >(ChangePeriodDocument)
 
   const callback = useCallback(async () => {
     if (!periodChangeStatuses.includes(game.status)) return
@@ -153,8 +160,8 @@ export const usePollingPeriod = (game: Game) => {
       variables: {
         input: {
           gameId: game.id
-        } as ChangePeriod
-      } as ChangePeriodMutationVariables
+        }
+      }
     })
   }, [game.status, game.id, changePeriod])
 
@@ -191,7 +198,9 @@ const iconsAtom = atom<Array<GameParticipantIcon>>([])
 export const useIcons = (): void => {
   const myself = useMyselfValue()
   const setIconsAtom = useSetAtom(iconsAtom)
-  const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
+  const [fetchIcons] = useLazyQuery<IconsQuery, IconsQueryVariables>(
+    IconsDocument
+  )
   const fetch = async () => {
     if (!myself) return
     const { data } = await fetchIcons({

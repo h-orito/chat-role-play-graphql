@@ -6,7 +6,6 @@ import InputTextarea from '@/components/form/input-textarea'
 import {
   GameParticipantIcon,
   GameParticipantProfile,
-  UpdateGameParticipantProfile,
   UpdateGameParticipantProfileDocument,
   UpdateGameParticipantProfileMutation,
   UpdateGameParticipantProfileMutationVariables
@@ -55,19 +54,19 @@ export default function ProfileEdit({
   const iconSelectModal = useModal()
 
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting
-  const [updateProfile] = useMutation<UpdateGameParticipantProfileMutation>(
-    UpdateGameParticipantProfileDocument,
-    {
-      onCompleted(e) {
-        refetchMyself()
-        refetchProfile()
-        close()
-      },
-      onError(error) {
-        console.error(error)
-      }
+  const [updateProfile] = useMutation<
+    UpdateGameParticipantProfileMutation,
+    UpdateGameParticipantProfileMutationVariables
+  >(UpdateGameParticipantProfileDocument, {
+    onCompleted(e) {
+      refetchMyself()
+      refetchProfile()
+      close()
+    },
+    onError(error) {
+      console.error(error)
     }
-  )
+  })
 
   const onSubmit: SubmitHandler<FormInput> = useCallback(
     (data) => {
@@ -82,8 +81,8 @@ export default function ProfileEdit({
             introduction: data.introduction,
             memo: null, // TODO: 消えてしまうかも
             isPlayerOpen: data.isPlayerOpen
-          } as UpdateGameParticipantProfile
-        } as UpdateGameParticipantProfileMutationVariables
+          }
+        }
       })
     },
     [updateProfile, images, iconId, game.id, profile.profileImageUrl]

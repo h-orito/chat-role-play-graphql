@@ -31,25 +31,25 @@ export default function UserEdit({ close, myPlayer, refetchMyPlayer }: Props) {
   })
 
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting
-  const [updateProfile] = useMutation<UpdatePlayerProfileMutation>(
-    UpdatePlayerProfileDocument,
-    {
-      onCompleted(e) {
-        refetchMyPlayer()
-        close()
-      },
-      onError(error) {
-        console.error(error)
-      }
+  const [updateProfile] = useMutation<
+    UpdatePlayerProfileMutation,
+    UpdatePlayerProfileMutationVariables
+  >(UpdatePlayerProfileDocument, {
+    onCompleted(e) {
+      refetchMyPlayer()
+      close()
+    },
+    onError(error) {
+      console.error(error)
     }
-  )
+  })
   const onSubmit: SubmitHandler<FormInput> = useCallback(
     (data) => {
       updateProfile({
         variables: {
           name: data.name,
           introduction: data.introduction
-        } as UpdatePlayerProfileMutationVariables
+        }
       })
     },
     [updateProfile]

@@ -12,10 +12,12 @@ import {
   GameParticipantProfile,
   GameParticipantProfileDocument,
   GameParticipantProfileQuery,
+  GameParticipantProfileQueryVariables,
   GameQuery,
   GameQueryVariables,
   IconsDocument,
   IconsQuery,
+  IconsQueryVariables,
   LeaveDocument,
   LeaveMutation,
   LeaveMutationVariables,
@@ -52,20 +54,24 @@ export const getServerSideProps = async (
   const client = createInnerClient()
   // game
   const gameStringId = idToBase64(gameId, 'Game')
-  const { data: gamedata } = await client.query<GameQuery>({
+  const { data: gamedata } = await client.query<GameQuery, GameQueryVariables>({
     query: GameDocument,
-    variables: { id: gameStringId } as GameQueryVariables
+    variables: { id: gameStringId }
   })
   // profile
   const participantStringId = idToBase64(participantId, 'GameParticipant')
-  const { data: profiledata } = await client.query<GameParticipantProfileQuery>(
-    {
-      query: GameParticipantProfileDocument,
-      variables: { participantId: participantStringId }
-    }
-  )
+  const { data: profiledata } = await client.query<
+    GameParticipantProfileQuery,
+    GameParticipantProfileQueryVariables
+  >({
+    query: GameParticipantProfileDocument,
+    variables: { participantId: participantStringId }
+  })
   // icons
-  const { data: icondata } = await client.query<IconsQuery>({
+  const { data: icondata } = await client.query<
+    IconsQuery,
+    IconsQueryVariables
+  >({
     query: IconsDocument,
     variables: { participantId: participantStringId }
   })
@@ -102,10 +108,13 @@ const GameParticipantProfilePage = ({
       game.status
     )
 
-  const [fetchProfile] = useLazyQuery<GameParticipantProfileQuery>(
-    GameParticipantProfileDocument
+  const [fetchProfile] = useLazyQuery<
+    GameParticipantProfileQuery,
+    GameParticipantProfileQueryVariables
+  >(GameParticipantProfileDocument)
+  const [fetchIcons] = useLazyQuery<IconsQuery, IconsQueryVariables>(
+    IconsDocument
   )
-  const [fetchIcons] = useLazyQuery<IconsQuery>(IconsDocument)
 
   const refetchProfile = useCallback(async () => {
     const { data } = await fetchProfile({
@@ -120,8 +129,8 @@ const GameParticipantProfilePage = ({
       variables: { participantId: profile.participantId }
     })
     if (data?.gameParticipantIcons == null) return []
-    setIcons(data.gameParticipantIcons as Array<GameParticipantIcon>)
-    return data.gameParticipantIcons as Array<GameParticipantIcon>
+    setIcons(data.gameParticipantIcons)
+    return data.gameParticipantIcons
   }
 
   return (
@@ -208,14 +217,17 @@ const ThemeCSS = () => {
 
 const LeaveButton = () => {
   const game = useGameValue()
-  const [leave] = useMutation<LeaveMutation>(LeaveDocument, {
-    onCompleted(e) {
-      location.reload()
-    },
-    onError(error) {
-      console.error(error)
+  const [leave] = useMutation<LeaveMutation, LeaveMutationVariables>(
+    LeaveDocument,
+    {
+      onCompleted(e) {
+        location.reload()
+      },
+      onError(error) {
+        console.error(error)
+      }
     }
-  })
+  )
 
   const confirmToLeave = () => {
     if (confirm('この操作は取り消せません。本当に退出しますか？')) {
@@ -224,7 +236,7 @@ const LeaveButton = () => {
           input: {
             gameId: game.id
           }
-        } as LeaveMutationVariables
+        }
       })
     }
   }
@@ -343,15 +355,18 @@ const FollowButton = ({
 }: FollowButtonProps) => {
   const game = useGameValue()
   const [myself, refetchMyself] = useMyself(game.id)
-  const [follow] = useMutation<FollowMutation>(FollowDocument, {
-    onCompleted(e) {
-      refetchMyself()
-      refetchProfile()
-    },
-    onError(error) {
-      console.error(error)
+  const [follow] = useMutation<FollowMutation, FollowMutationVariables>(
+    FollowDocument,
+    {
+      onCompleted(e) {
+        refetchMyself()
+        refetchProfile()
+      },
+      onError(error) {
+        console.error(error)
+      }
     }
-  })
+  )
 
   const handleFollow = useCallback(() => {
     follow({
@@ -360,7 +375,7 @@ const FollowButton = ({
           gameId: game.id,
           targetGameParticipantId: participantId
         }
-      } as FollowMutationVariables
+      }
     })
   }, [follow, game.id, participantId])
 
@@ -387,15 +402,18 @@ const UnfollowButton = ({
 }: UnfollowButtonProps) => {
   const game = useGameValue()
   const [myself, refetchMyself] = useMyself(game.id)
-  const [unfollow] = useMutation<UnfollowMutation>(UnfollowDocument, {
-    onCompleted(e) {
-      refetchMyself()
-      refetchProfile()
-    },
-    onError(error) {
-      console.error(error)
+  const [unfollow] = useMutation<UnfollowMutation, UnfollowMutationVariables>(
+    UnfollowDocument,
+    {
+      onCompleted(e) {
+        refetchMyself()
+        refetchProfile()
+      },
+      onError(error) {
+        console.error(error)
+      }
     }
-  })
+  )
 
   const handleUnfollow = useCallback(() => {
     unfollow({
@@ -404,7 +422,7 @@ const UnfollowButton = ({
           gameId: game.id,
           targetGameParticipantId: participantId
         }
-      } as UnfollowMutationVariables
+      }
     })
   }, [unfollow, game.id, participantId])
 

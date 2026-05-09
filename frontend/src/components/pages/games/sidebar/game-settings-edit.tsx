@@ -1,9 +1,8 @@
 import {
+  UpdateGameLabel,
   UpdateGameSettingsMutation,
   UpdateGameSettingsDocument,
-  UpdateGameSetting,
-  UpdateGameSettingsMutationVariables,
-  GameLabel
+  UpdateGameSettingsMutationVariables
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
 import dayjs from '@/lib/dayjs'
@@ -18,7 +17,7 @@ import { useGameValue } from '../game-hook'
 export default function GameSettingsEdit() {
   const game = useGameValue()
 
-  const defaultValues = {
+  const defaultValues: GameFormInput = {
     name: game.name,
     openAt: dayjs(game.settings.time.openAt).format('YYYY-MM-DDTHH:mm'),
     startParticipateAt: dayjs(game.settings.time.startParticipateAt).format(
@@ -46,7 +45,7 @@ export default function GameSettingsEdit() {
     periodIntervalMinutes: (game.settings.time.periodIntervalSeconds / 60) % 60,
     introduction: game.settings.background.introduction || '',
     password: ''
-  } as GameFormInput
+  }
 
   const [target, setTarget] = useState(
     game.labels.find((l) => ['誰歓', '身内'].includes(l.name))?.name ?? ''
@@ -63,29 +62,29 @@ export default function GameSettingsEdit() {
   )
   const [catchImageFiles, setCatchImageFiles] = useState<File[]>([])
 
-  const [updateGameSettings] = useMutation<UpdateGameSettingsMutation>(
-    UpdateGameSettingsDocument,
-    {
-      onError(error) {
-        console.error(error)
-      }
+  const [updateGameSettings] = useMutation<
+    UpdateGameSettingsMutation,
+    UpdateGameSettingsMutationVariables
+  >(UpdateGameSettingsDocument, {
+    onError(error) {
+      console.error(error)
     }
-  )
+  })
   const router = useRouter()
   const onSubmit: SubmitHandler<GameFormInput> = useCallback(
     async (data) => {
-      const labels: Array<GameLabel> = []
+      const labels: Array<UpdateGameLabel> = []
       if (target !== '') {
         labels.push({
           name: target,
           type: 'success'
-        } as GameLabel)
+        })
       }
       if (rating !== '全年齢') {
         labels.push({
           name: rating,
           type: 'danger'
-        } as GameLabel)
+        })
       }
 
       await updateGameSettings({
@@ -138,8 +137,8 @@ export default function GameSettingsEdit() {
                 password: data.password.length > 0 ? data.password : null
               }
             }
-          } as UpdateGameSetting
-        } as UpdateGameSettingsMutationVariables
+          }
+        }
       })
       router.reload()
     },

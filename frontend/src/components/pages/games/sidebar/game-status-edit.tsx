@@ -1,17 +1,13 @@
 import {
-  Game,
   GameStatus,
   UpdatePeriodMutation,
   UpdatePeriodDocument,
   UpdatePeriodMutationVariables,
-  UpdateGamePeriod,
   UpdateStatusDocument,
   UpdateStatusMutation,
-  UpdateGameStatus,
   UpdateStatusMutationVariables,
   DeletePeriodDocument,
   DeletePeriodMutation,
-  DeleteGamePeriod,
   DeletePeriodMutationVariables
 } from '@/lib/generated/graphql'
 import { useMutation } from '@apollo/client'
@@ -61,7 +57,10 @@ const UpdateGameStatusForm = () => {
     value: gs[0]
   }))
 
-  const [updateStatus] = useMutation<UpdateStatusMutation>(UpdateStatusDocument)
+  const [updateStatus] = useMutation<
+    UpdateStatusMutation,
+    UpdateStatusMutationVariables
+  >(UpdateStatusDocument)
   const router = useRouter()
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -71,8 +70,8 @@ const UpdateGameStatusForm = () => {
           input: {
             gameId: game.id,
             status: gameStatus
-          } as UpdateGameStatus
-        } as UpdateStatusMutationVariables
+          }
+        }
       })
       router.reload()
     },
@@ -112,7 +111,7 @@ const UpdateGamePeriodForm = () => {
       endAt: dayjs(game.periods[game.periods.length - 1].endAt).format(
         'YYYY-MM-DDTHH:mm'
       )
-    } as UpdatePeriodFormInput
+    }
   })
 
   const candidates = game.periods.map((p) => ({
@@ -133,7 +132,10 @@ const UpdateGamePeriodForm = () => {
     )
   }
 
-  const [updatePeriod] = useMutation<UpdatePeriodMutation>(UpdatePeriodDocument)
+  const [updatePeriod] = useMutation<
+    UpdatePeriodMutation,
+    UpdatePeriodMutationVariables
+  >(UpdatePeriodDocument)
   const router = useRouter()
   const onSubmit: SubmitHandler<UpdatePeriodFormInput> = useCallback(
     async (data) => {
@@ -152,8 +154,8 @@ const UpdateGamePeriodForm = () => {
                 : dayjs(
                     game.periods.find((p) => p.id === targetPeriodId)!.endAt
                   ).toDate()
-          } as UpdateGamePeriod
-        } as UpdatePeriodMutationVariables
+          }
+        }
       })
       router.reload()
     },
@@ -243,7 +245,10 @@ const DeleteGamePeriodForm = () => {
     setTargetPeriodId(id)
   }
 
-  const [deletePeriod] = useMutation<DeletePeriodMutation>(DeletePeriodDocument)
+  const [deletePeriod] = useMutation<
+    DeletePeriodMutation,
+    DeletePeriodMutationVariables
+  >(DeletePeriodDocument)
   const router = useRouter()
   const onSubmit = useCallback(async () => {
     if (!destCandidates.some((c) => c.value === destPeriodId)) {
@@ -262,8 +267,8 @@ const DeleteGamePeriodForm = () => {
           gameId: game.id,
           targetPeriodId: targetPeriodId,
           destPeriodId: destPeriodId
-        } as DeleteGamePeriod
-      } as DeletePeriodMutationVariables
+        }
+      }
     })
     router.reload()
   }, [

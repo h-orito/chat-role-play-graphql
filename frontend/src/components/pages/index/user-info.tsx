@@ -8,6 +8,7 @@ import UserEdit from './user-edit'
 import { useLazyQuery } from '@apollo/client'
 import {
   MyPlayerQuery,
+  MyPlayerQueryVariables,
   MyPlayerDocument,
   Player
 } from '@/lib/generated/graphql'
@@ -18,7 +19,9 @@ export default function UserInfo() {
   const userModifyModal = useModal()
 
   const [myPlayer, setMyPlayer] = useState<Player | null>(null)
-  const [fetchMyPlayer] = useLazyQuery<MyPlayerQuery>(MyPlayerDocument)
+  const [fetchMyPlayer] = useLazyQuery<MyPlayerQuery, MyPlayerQueryVariables>(
+    MyPlayerDocument
+  )
   const refetchMyPlayer = async () => {
     const { data } = await fetchMyPlayer()
     if (data?.myPlayer == null) return

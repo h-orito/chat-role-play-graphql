@@ -14,15 +14,15 @@ const Article = () => {
   const [existsHomeUnread, setExistsHomeUnread] = useState(false)
   const [existsToMeUnread, setExistsToMeUnread] = useState(false)
 
-  const homeRef = useRef({} as MessageAreaRefHandle)
-  const toMeRef = useRef({} as MessageAreaRefHandle)
+  const homeRef = useRef<MessageAreaRefHandle>(null)
+  const toMeRef = useRef<MessageAreaRefHandle>(null)
 
   const handleTabChange = (tab: string) => {
     setTab(tab)
     if (tab === 'home' && existsHomeUnread) {
-      homeRef.current.fetchLatest()
+      homeRef.current?.fetchLatest()
     } else if (tab === 'tome' && existsToMeUnread) {
-      toMeRef.current.fetchLatest()
+      toMeRef.current?.fetchLatest()
     } else {
     }
   }

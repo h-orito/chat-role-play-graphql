@@ -2,21 +2,15 @@ import Image from 'next/image'
 import {
   DirectMessage,
   GameParticipantGroup,
-  GameParticipantIcon,
-  IconsDocument,
-  IconsQuery,
   MessageType,
   NewDirectMessage,
   TalkDirectDocument,
   TalkDirectDryRunDocument,
   TalkDirectDryRunMutation,
   TalkDirectMutation,
-  TalkDirectMutationVariables,
-  TalkDocument,
-  TalkMutation,
-  TalkMutationVariables
+  TalkDirectMutationVariables
 } from '@/lib/generated/graphql'
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { useCallback, useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import InputTextarea from '@/components/form/input-textarea'
@@ -106,7 +100,7 @@ const TalkDirect = (props: Props) => {
         name: data.name,
         text: data.talkMessage,
         isConvertDisabled: isConvertDisabled
-      } as NewDirectMessage
+      }
     },
     [game.id, gameParticipantGroup.id, iconId, isConvertDisabled]
   )
@@ -114,16 +108,17 @@ const TalkDirect = (props: Props) => {
     null
   )
   const [preview, setPreview] = useState<DirectMessage | null>(null)
-  const [talkDirectDryRun] = useMutation<TalkDirectDryRunMutation>(
-    TalkDirectDryRunDocument
-  )
+  const [talkDirectDryRun] = useMutation<
+    TalkDirectDryRunMutation,
+    TalkDirectMutationVariables
+  >(TalkDirectDryRunDocument)
   const onSubmitPreview: SubmitHandler<FormInput> = useCallback(
     async (data) => {
       const dm = createNewDirectMessage(data)
       const { data: previewData } = await talkDirectDryRun({
         variables: {
           input: dm
-        } as TalkDirectMutationVariables
+        }
       })
       if (previewData?.registerDirectMessageDryRun == null) return
       setPreview(
@@ -251,7 +246,10 @@ const DirectPreview = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const [talkDirect] = useMutation<TalkDirectMutation>(TalkDirectDocument, {
+  const [talkDirect] = useMutation<
+    TalkDirectMutation,
+    TalkDirectMutationVariables
+  >(TalkDirectDocument, {
     onCompleted() {
       handleCompleted()
     }
@@ -260,7 +258,7 @@ const DirectPreview = ({
     talkDirect({
       variables: {
         input: dryRunMessage!
-      } as TalkDirectMutationVariables
+      }
     })
   }
 
