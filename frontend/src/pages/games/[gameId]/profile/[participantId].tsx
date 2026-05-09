@@ -32,9 +32,10 @@ import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
 import {
   GameProvider,
+  MyselfProvider,
   useGameValue,
   useMyself,
-  useMyselfInit
+  useMyselfValue
 } from '@/components/pages/games/game-hook'
 import DangerButton from '@/components/button/danger-button'
 import PrimaryButton from '@/components/button/primary-button'
@@ -98,11 +99,13 @@ const GameParticipantProfilePage = ({
 }: Props) => {
   return (
     <GameProvider game={game}>
-      <GameParticipantProfilePageContent
-        game={game}
-        initialProfile={initialProfile}
-        initialIcons={initialIcons}
-      />
+      <MyselfProvider gameId={game.id}>
+        <GameParticipantProfilePageContent
+          game={game}
+          initialProfile={initialProfile}
+          initialIcons={initialIcons}
+        />
+      </MyselfProvider>
     </GameProvider>
   )
 }
@@ -118,7 +121,7 @@ const GameParticipantProfilePageContent = ({
   initialProfile,
   initialIcons
 }: ContentProps) => {
-  const myself = useMyselfInit(game.id)
+  const myself = useMyselfValue()
   const [profile, setProfile] = useState<GameParticipantProfile>(initialProfile)
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>(initialIcons)
 
@@ -375,7 +378,7 @@ const FollowButton = ({
   refetchProfile
 }: FollowButtonProps) => {
   const game = useGameValue()
-  const [myself, refetchMyself] = useMyself(game.id)
+  const [myself, refetchMyself] = useMyself()
   const [follow] = useMutation<FollowMutation, FollowMutationVariables>(
     FollowDocument,
     {
@@ -422,7 +425,7 @@ const UnfollowButton = ({
   refetchProfile
 }: UnfollowButtonProps) => {
   const game = useGameValue()
-  const [myself, refetchMyself] = useMyself(game.id)
+  const [myself, refetchMyself] = useMyself()
   const [unfollow] = useMutation<UnfollowMutation, UnfollowMutationVariables>(
     UnfollowDocument,
     {

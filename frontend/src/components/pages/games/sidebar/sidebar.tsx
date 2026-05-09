@@ -33,7 +33,7 @@ import {
   canParticipate as _canParticipate,
   canModifyGameSetting,
   useGameValue,
-  useMyPlayer,
+  useMyPlayerValue,
   useMyselfValue,
   useSidebarOpen
 } from '../game-hook'
@@ -42,7 +42,7 @@ export default function Sidebar() {
   const [isSidebarOpen, toggleSidebar] = useSidebarOpen()
   const game = useGameValue()
   const myself = useMyselfValue()
-  const myPlayer = useMyPlayer()
+  const myPlayer = useMyPlayerValue()
 
   const isGameMaster = _isGameMaster(myPlayer, game)
   const canParticipate = _canParticipate(game, myPlayer, myself, isGameMaster)

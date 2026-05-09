@@ -18,10 +18,10 @@ import Layout from '@/components/layout/layout'
 import RatingWarningModal from '@/components/pages/games/rating-warning-modal'
 import {
   GameProvider,
+  IconsProvider,
+  MyselfProvider,
   useGameValue,
-  useIcons,
   useMyPlayer,
-  useMyselfInit,
   usePollingPeriod,
   useUserDisplaySettingsAtom
 } from '@/components/pages/games/game-hook'
@@ -58,10 +58,14 @@ type Props = {
 const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   return (
     <GameProvider game={game}>
-      <GamePageContent
-        game={game}
-        initialMessagesQuery={initialMessagesQuery}
-      />
+      <MyselfProvider gameId={game.id}>
+        <IconsProvider>
+          <GamePageContent
+            game={game}
+            initialMessagesQuery={initialMessagesQuery}
+          />
+        </IconsProvider>
+      </MyselfProvider>
     </GameProvider>
   )
 }
@@ -73,9 +77,7 @@ type ContentProps = {
 
 const GamePageContent = ({ game, initialMessagesQuery }: ContentProps) => {
   useInitMessagesQuery(initialMessagesQuery)
-  useMyselfInit(game.id)
   useMyPlayer()
-  useIcons()
   useUserDisplaySettingsAtom()
   // 1分に1回ゲーム更新チェック
   usePollingPeriod(game)

@@ -18,10 +18,10 @@ import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
 import {
   GameProvider,
+  IconsProvider,
+  MyselfProvider,
   useGameValue,
-  useIcons,
   useMyPlayer,
-  useMyself,
   useUserDisplaySettingsAtom
 } from '@/components/pages/games/game-hook'
 import ThreadMessageArea from '@/components/pages/games/thread/thread-message-area'
@@ -73,11 +73,15 @@ const GameParticipantProfilePage = ({
 }: Props) => {
   return (
     <GameProvider game={game}>
-      <GameParticipantProfilePageContent
-        game={game}
-        messageId={messageId}
-        threadMessages={threadMessages}
-      />
+      <MyselfProvider gameId={game.id}>
+        <IconsProvider>
+          <GameParticipantProfilePageContent
+            game={game}
+            messageId={messageId}
+            threadMessages={threadMessages}
+          />
+        </IconsProvider>
+      </MyselfProvider>
     </GameProvider>
   )
 }
@@ -87,9 +91,7 @@ const GameParticipantProfilePageContent = ({
   messageId,
   threadMessages
 }: Props) => {
-  const [myself] = useMyself(game.id)
   useMyPlayer()
-  useIcons()
   useUserDisplaySettingsAtom()
 
   return (

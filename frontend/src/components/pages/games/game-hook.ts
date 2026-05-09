@@ -4,24 +4,24 @@ import {
   ChangePeriodMutationVariables,
   Game,
   GameParticipant,
-  GameParticipantIcon,
-  IconsDocument,
-  IconsQuery,
-  IconsQueryVariables,
-  MyGameParticipantDocument,
-  MyGameParticipantQuery,
-  MyGameParticipantQueryVariables,
   MyPlayerDocument,
   MyPlayerQuery,
   MyPlayerQueryVariables,
   Player
 } from '@/lib/generated/graphql'
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useRef } from 'react'
 import { defaultDisplaySettings, useUserDisplaySettings } from './user-settings'
 
 export { GameProvider, useGameValue } from './contexts/game-context'
+export {
+  MyselfProvider,
+  useMyself,
+  useMyselfValue
+} from './contexts/myself-context'
+export { IconsProvider, useIconsValue } from './contexts/icons-context'
+
 // 発言可能なゲームステータス
 export const talkableGameStatuses = [
   'Closed',
@@ -70,59 +70,18 @@ export const canModifyGameSetting = (game: Game, myPlayer: Player | null) => {
   )
 }
 
-// myself
-const myselfAtom = atom<GameParticipant | null>(null)
-
-export const useMyselfInit = (gameId: string): GameParticipant | null => {
-  const [myself, refetchMyself] = useMyself(gameId)
-  const setMyselfAtom = useSetAtom(myselfAtom)
-  useEffect(() => {
-    refetchMyself()
-    return () => setMyselfAtom(null)
-    // mount 時のみ初回取得・unmount 時に atom をクリア
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  return myself
-}
-export const useMyself = (
-  gameId: string
-): [myself: GameParticipant | null, refetchMyself: () => void] => {
-  const [fetchMyself] = useLazyQuery<
-    MyGameParticipantQuery,
-    MyGameParticipantQueryVariables
-  >(MyGameParticipantDocument)
-  const [myself, setMyselfAtom] = useAtom(myselfAtom)
-  const fetch = async () => {
-    const { data } = await fetchMyself({
-      variables: { gameId }
-    })
-    setMyselfAtom((data?.myGameParticipant as GameParticipant) ?? null)
-  }
-  return [myself, fetch]
-}
-
-export const useMyselfValue = () => useAtomValue(myselfAtom)
-
-// player
+// player（アプリスコープ atom）
 const myPlayerAtom = atom<Player | null>(null)
 
 export const useMyPlayer = (): Player | null => {
-  const [fetchMyPlayer] = useLazyQuery<MyPlayerQuery, MyPlayerQueryVariables>(
+  const setMyPlayer = useSetAtom(myPlayerAtom)
+  const { data } = useQuery<MyPlayerQuery, MyPlayerQueryVariables>(
     MyPlayerDocument
   )
-  const [myPlayer, setMyPlayer] = useAtom(myPlayerAtom)
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await fetchMyPlayer()
-      if (data?.myPlayer == null) return
-      setMyPlayer(data.myPlayer as Player)
-    }
-    fetch()
-    return () => setMyPlayer(null)
-    // mount 時のみ初回取得・unmount 時に atom をクリア
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  return myPlayer
+    if (data?.myPlayer) setMyPlayer(data.myPlayer as Player)
+  }, [data, setMyPlayer])
+  return useAtomValue(myPlayerAtom)
 }
 export const useMyPlayerValue = () => useAtomValue(myPlayerAtom)
 const isAdmin = (myPlayer: Player | null) => {
@@ -182,31 +141,6 @@ export const useSidebarOpen = () => {
   }, [])
   return [isOpen, toggle] as const
 }
-
-// icons
-const iconsAtom = atom<Array<GameParticipantIcon>>([])
-export const useIcons = (): void => {
-  const myself = useMyselfValue()
-  const setIconsAtom = useSetAtom(iconsAtom)
-  const [fetchIcons] = useLazyQuery<IconsQuery, IconsQueryVariables>(
-    IconsDocument
-  )
-  const fetch = async () => {
-    if (!myself) return
-    const { data } = await fetchIcons({
-      variables: { participantId: myself.id }
-    })
-    if (data?.gameParticipantIcons == null) return
-    setIconsAtom(data.gameParticipantIcons)
-  }
-  useEffect(() => {
-    fetch()
-    return () => setIconsAtom([])
-    // myself 変化時にアイコン取得・unmount 時に空配列にリセット（fetch/setIconsAtom は意図的に外す）
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myself])
-}
-export const useIconsValue = () => useAtomValue(iconsAtom)
 
 // display settings
 const displaySettingsAtom = atom(defaultDisplaySettings)

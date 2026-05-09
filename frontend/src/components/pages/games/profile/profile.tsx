@@ -248,7 +248,7 @@ const FollowButton = ({
   refetchProfile
 }: FollowButtonProps) => {
   const game = useGameValue()
-  const [myself, refetchMyself] = useMyself(game.id)
+  const [myself, refetchMyself] = useMyself()
   const [follow] = useMutation<FollowMutation, FollowMutationVariables>(
     FollowDocument,
     {
@@ -295,7 +295,7 @@ const UnfollowButton = ({
   refetchProfile
 }: UnfollowButtonProps) => {
   const game = useGameValue()
-  const [myself, refetchMyself] = useMyself(game.id)
+  const [myself, refetchMyself] = useMyself()
   const [unfollow] = useMutation<UnfollowMutation, UnfollowMutationVariables>(
     UnfollowDocument,
     {
