@@ -22,9 +22,9 @@ export const GoogleAdsense = ({
   useEffect(() => {
     if (!isProduction) return
     try {
-      ;((window as any).adsbygoogle = (window as any).adsbygoogle || []).push(
-        {}
-      )
+      const w = window as unknown as { adsbygoogle: unknown[] }
+      w.adsbygoogle = w.adsbygoogle || []
+      w.adsbygoogle.push({})
     } catch (error) {
       console.log(error)
     }

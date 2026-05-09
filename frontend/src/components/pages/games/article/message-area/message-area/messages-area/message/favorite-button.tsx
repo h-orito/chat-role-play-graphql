@@ -4,12 +4,10 @@ import {
   useMyselfValue
 } from '@/components/pages/games/game-hook'
 import {
-  DeleteMessageFavorite,
   FavoriteDocument,
   FavoriteMutation,
   FavoriteMutationVariables,
   Message,
-  NewMessageFavorite,
   UnfavoriteDocument,
   UnfavoriteMutation,
   UnfavoriteMutationVariables
@@ -37,16 +35,22 @@ export default function FavoriteButton({ message }: Props) {
     message.reactions.favoriteCount
   )
 
-  const [favorite] = useMutation<FavoriteMutation>(FavoriteDocument, {
-    onCompleted(_) {
-      setIsFav(true)
-      setFavCount(favCount + 1)
-    },
-    onError(error) {
-      console.error(error)
+  const [favorite] = useMutation<FavoriteMutation, FavoriteMutationVariables>(
+    FavoriteDocument,
+    {
+      onCompleted(_) {
+        setIsFav(true)
+        setFavCount(favCount + 1)
+      },
+      onError(error) {
+        console.error(error)
+      }
     }
-  })
-  const [unfavorite] = useMutation<UnfavoriteMutation>(UnfavoriteDocument, {
+  )
+  const [unfavorite] = useMutation<
+    UnfavoriteMutation,
+    UnfavoriteMutationVariables
+  >(UnfavoriteDocument, {
     onCompleted(_) {
       setIsFav(false)
       setFavCount(favCount - 1)
@@ -64,8 +68,8 @@ export default function FavoriteButton({ message }: Props) {
           input: {
             gameId: game.id,
             messageId: message.id
-          } as DeleteMessageFavorite
-        } as UnfavoriteMutationVariables
+          }
+        }
       })
     } else {
       favorite({
@@ -73,8 +77,8 @@ export default function FavoriteButton({ message }: Props) {
           input: {
             gameId: game.id,
             messageId: message.id
-          } as NewMessageFavorite
-        } as FavoriteMutationVariables
+          }
+        }
       })
     }
   }, [isFav, favorite, unfavorite, canFav, game.id, message.id])

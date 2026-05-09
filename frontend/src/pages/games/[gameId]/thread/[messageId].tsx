@@ -9,7 +9,8 @@ import {
   GameQueryVariables,
   Message,
   ThreadMessagesDocument,
-  ThreadMessagesQuery
+  ThreadMessagesQuery,
+  ThreadMessagesQueryVariables
 } from '@/lib/generated/graphql'
 import { ReactElement } from 'react'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
@@ -33,13 +34,16 @@ export const getServerSideProps = async (
   const client = createInnerClient()
   // game
   const gameStringId = idToBase64(gameId, 'Game')
-  const { data: gamedata } = await client.query<GameQuery>({
+  const { data: gamedata } = await client.query<GameQuery, GameQueryVariables>({
     query: GameDocument,
-    variables: { id: gameStringId } as GameQueryVariables
+    variables: { id: gameStringId }
   })
   // thread messages
   const messageStringId = idToBase64(messageId, 'Message')
-  const { data: threadMessageData } = await client.query<ThreadMessagesQuery>({
+  const { data: threadMessageData } = await client.query<
+    ThreadMessagesQuery,
+    ThreadMessagesQueryVariables
+  >({
     query: ThreadMessagesDocument,
     variables: {
       gameId: gameStringId,

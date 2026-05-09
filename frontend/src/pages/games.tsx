@@ -13,7 +13,10 @@ import { FETCH_ALL_PAGE_SIZE } from '@/lib/constants'
 
 export const getServerSideProps = async () => {
   const client = createInnerClient()
-  const { data, error } = await client.query<IndexGamesQuery>({
+  const { data, error } = await client.query<
+    IndexGamesQuery,
+    IndexGamesQueryVariables
+  >({
     query: IndexGamesDocument,
     variables: {
       pageSize: FETCH_ALL_PAGE_SIZE,
@@ -26,7 +29,7 @@ export const getServerSideProps = async () => {
         GameStatus.Epilogue,
         GameStatus.Finished
       ]
-    } as IndexGamesQueryVariables
+    }
   })
   if (error) {
     console.log(error)

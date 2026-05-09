@@ -47,16 +47,19 @@ export default function TalkPreview({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const [talk] = useMutation<TalkMutation>(TalkDocument, {
-    onCompleted() {
-      handleCompleted()
+  const [talk] = useMutation<TalkMutation, TalkMutationVariables>(
+    TalkDocument,
+    {
+      onCompleted() {
+        handleCompleted()
+      }
     }
-  })
+  )
   const doTalk = async () => {
     talk({
       variables: {
         input: dryRunMessage!
-      } as TalkMutationVariables
+      }
     })
   }
 

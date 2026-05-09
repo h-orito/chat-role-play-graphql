@@ -5,17 +5,18 @@ import {
   CharachipDetailsQuery,
   CharachipDetailsDocument,
   CharachipDetailsQueryVariables,
-  CharachipsQuery,
   Charachip,
-  Chara,
-  PageableQuery
+  Chara
 } from '@/lib/generated/graphql'
 import Head from 'next/head'
 import { FETCH_ALL_PAGE_SIZE } from '@/lib/constants'
 
 export const getServerSideProps = async () => {
   const client = createInnerClient()
-  const { data, error } = await client.query<CharachipDetailsQuery>({
+  const { data, error } = await client.query<
+    CharachipDetailsQuery,
+    CharachipDetailsQueryVariables
+  >({
     query: CharachipDetailsDocument,
     variables: {
       query: {
@@ -24,9 +25,9 @@ export const getServerSideProps = async () => {
           pageNumber: 1,
           isDesc: false,
           isLatest: false
-        } as PageableQuery
-      } as CharachipsQuery
-    } as CharachipDetailsQueryVariables
+        }
+      }
+    }
   })
   if (error) {
     console.log(error)
@@ -48,9 +49,9 @@ export const getServerSideProps = async () => {
             return {
               ...ch,
               images: cis.filter((ci) => ci.type === 'NORMAL') // 通常画像のみ
-            } as Chara
+            }
           })
-        } as Charachip
+        }
       })
     }
   }

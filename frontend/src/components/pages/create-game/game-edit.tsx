@@ -9,8 +9,6 @@ import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import { useModal } from '@/components/hooks/use-modal'
 import {
-  Charachip,
-  CharachipsQuery,
   QCharachipsDocument,
   QCharachipsQuery,
   QCharachipsQueryVariables
@@ -54,7 +52,6 @@ export interface GameFormInput {
   startGameAt: string
   epilogueGameAt: string
   finishGameAt: string
-  charachipIds: string[]
   periodPrefix: string
   periodSuffix: string
   periodIntervalDays: number
@@ -65,17 +62,22 @@ export interface GameFormInput {
 }
 
 export default function GameEdit(props: Props) {
-  const [charachips, setCharachips] = useState<Charachip[]>([])
-  const [fetchCharachips] = useLazyQuery<QCharachipsQuery>(QCharachipsDocument)
+  const [charachips, setCharachips] = useState<QCharachipsQuery['charachips']>(
+    []
+  )
+  const [fetchCharachips] = useLazyQuery<
+    QCharachipsQuery,
+    QCharachipsQueryVariables
+  >(QCharachipsDocument)
   useEffect(() => {
     const fetch = async () => {
       const { data } = await fetchCharachips({
         variables: {
-          query: {} as CharachipsQuery
-        } as QCharachipsQueryVariables
+          query: {}
+        }
       })
       if (data?.charachips) {
-        setCharachips(data.charachips as Charachip[])
+        setCharachips(data.charachips)
       }
     }
     fetch()

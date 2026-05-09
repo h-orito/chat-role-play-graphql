@@ -5,7 +5,6 @@ import {
   DeleteParticipantIconMutation,
   DeleteParticipantIconMutationVariables,
   GameParticipantIcon,
-  UpdateGameParticipantIcon,
   UpdateIconDocument,
   UpdateIconMutation,
   UpdateIconMutationVariables,
@@ -122,7 +121,10 @@ const IconSortArea = ({
     setActiveIcon(undefined)
   }
   const handleDragCancel = () => setActiveIcon(undefined)
-  const [updateIcon] = useMutation<UpdateIconMutation>(UpdateIconDocument)
+  const [updateIcon] = useMutation<
+    UpdateIconMutation,
+    UpdateIconMutationVariables
+  >(UpdateIconDocument)
   const handleSaveSort = async () => {
     setSubmitting(true)
     // 並び順に変更のあったアイコンのみ更新
@@ -138,8 +140,8 @@ const IconSortArea = ({
                 gameId: game.id,
                 id: icon.id,
                 displayOrder: newDisplayOrder
-              } as UpdateGameParticipantIcon
-            } as UpdateIconMutationVariables
+              }
+            }
           })
         )
       }
@@ -261,7 +263,10 @@ const IconUploadArea = ({
   // upload new icon --------------------------------------
   const [images, setImages] = useState<File[]>([])
   const canSubmit: boolean = images.length > 0 && !submitting
-  const [uploadIcons] = useMutation<UploadIconsMutation>(UploadIconsDocument, {
+  const [uploadIcons] = useMutation<
+    UploadIconsMutation,
+    UploadIconsMutationVariables
+  >(UploadIconsDocument, {
     onCompleted(e) {
       setSubmitting(false)
       setImages([])
@@ -287,7 +292,7 @@ const IconUploadArea = ({
             width: 60,
             height: 60
           }
-        } as UploadIconsMutationVariables
+        }
       })
     },
     [uploadIcons, images, game.id, setSubmitting]
@@ -341,19 +346,19 @@ const IconDeleteArea = ({
   refetchIcons: () => Promise<Array<GameParticipantIcon>>
 }) => {
   const game = useGameValue()
-  const [deleteIcon] = useMutation<DeleteParticipantIconMutation>(
-    DeleteParticipantIconDocument,
-    {
-      onCompleted(e) {
-        refetchIcons().then((icons) => {
-          setIcons(icons)
-        })
-      },
-      onError(error) {
-        console.error(error)
-      }
+  const [deleteIcon] = useMutation<
+    DeleteParticipantIconMutation,
+    DeleteParticipantIconMutationVariables
+  >(DeleteParticipantIconDocument, {
+    onCompleted(e) {
+      refetchIcons().then((icons) => {
+        setIcons(icons)
+      })
+    },
+    onError(error) {
+      console.error(error)
     }
-  )
+  })
 
   const handleDelete = useCallback(
     (e: React.MouseEvent, iconId: string) => {
@@ -365,7 +370,7 @@ const IconDeleteArea = ({
             gameId: game.id,
             iconId: iconId
           }
-        } as DeleteParticipantIconMutationVariables
+        }
       })
     },
     [deleteIcon, game.id]

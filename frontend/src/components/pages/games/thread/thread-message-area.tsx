@@ -2,9 +2,9 @@ import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import {
   Game,
   Message,
-  MessagesQuery,
   ThreadMessagesDocument,
-  ThreadMessagesQuery
+  ThreadMessagesQuery,
+  ThreadMessagesQueryVariables
 } from '@/lib/generated/graphql'
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import MessageComponent from '../article/message-area/message-area/messages-area/message/message'
@@ -29,9 +29,10 @@ const ThreadMessageArea = (props: Props) => {
   const game = useGameValue()
   const myself = useMyselfValue()
   const { reply } = useTalkPanel()
-  const [fetchMessages] = useLazyQuery<ThreadMessagesQuery>(
-    ThreadMessagesDocument
-  )
+  const [fetchMessages] = useLazyQuery<
+    ThreadMessagesQuery,
+    ThreadMessagesQueryVariables
+  >(ThreadMessagesDocument)
   const [userPagingSettings] = useUserPagingSettings()
 
   // messages state をここで管理
@@ -46,7 +47,7 @@ const ThreadMessageArea = (props: Props) => {
       variables: {
         gameId: game.id,
         messageId: props.messageId
-      } as MessagesQuery
+      }
     })
     if (data?.threadMessages == null) return
     let msgs = data.threadMessages as Array<Message>

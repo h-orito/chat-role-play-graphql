@@ -1,10 +1,12 @@
 import {
   GameMessageDocument,
   GameMessageQuery,
+  GameMessageQueryVariables,
   Message,
   MessageRecipient,
   MessageRepliesDocument,
   MessageRepliesQuery,
+  MessageRepliesQueryVariables,
   MessageType
 } from '@/lib/generated/graphql'
 import Image from 'next/image'
@@ -204,9 +206,10 @@ const ReplyButton = ({
 }: ReplyButtonProps) => {
   const game = useGameValue()
   const myself = useMyselfValue()
-  const [fetchReplies] = useLazyQuery<MessageRepliesQuery>(
-    MessageRepliesDocument
-  )
+  const [fetchReplies] = useLazyQuery<
+    MessageRepliesQuery,
+    MessageRepliesQueryVariables
+  >(MessageRepliesDocument)
   const toggleReplies = async () => {
     if (!showReplies && replies.length === 0) {
       const { data } = await fetchReplies({
@@ -277,7 +280,10 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
     (p) => p.id === message.replyTo!.participantId
   )?.name
 
-  const [fetchMessage] = useLazyQuery<GameMessageQuery>(GameMessageDocument)
+  const [fetchMessage] = useLazyQuery<
+    GameMessageQuery,
+    GameMessageQueryVariables
+  >(GameMessageDocument)
   useEffect(() => {
     const fetch = async () => {
       const { data } = await fetchMessage({

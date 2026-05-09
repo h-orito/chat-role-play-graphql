@@ -14,14 +14,16 @@ type Props = {
 
 export default function Follows({ participantId }: Props) {
   const [follows, setFollows] = useState<Array<GameParticipant>>([])
-  const [fetchFollows] = useLazyQuery<FollowsQuery>(FollowsDocument)
+  const [fetchFollows] = useLazyQuery<FollowsQuery, FollowsQueryVariables>(
+    FollowsDocument
+  )
 
   useEffect(() => {
     const fetch = async () => {
       const { data } = await fetchFollows({
         variables: {
           participantId: participantId
-        } as FollowsQueryVariables
+        }
       })
       if (data?.gameParticipantFollows == null) return
       setFollows(data.gameParticipantFollows as Array<GameParticipant>)

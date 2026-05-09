@@ -1,6 +1,7 @@
 import {
   FavoriteParticipantsDocument,
   FavoriteParticipantsQuery,
+  FavoriteParticipantsQueryVariables,
   GameParticipant
 } from '@/lib/generated/graphql'
 import { useLazyQuery } from '@apollo/client'
@@ -16,9 +17,10 @@ type Props = {
 export default function FavoriteParticipants({ messageId }: Props) {
   const game = useGameValue()
   const [participants, setParticipants] = useState<GameParticipant[]>([])
-  const [fetchFavoriteParticipants] = useLazyQuery<FavoriteParticipantsQuery>(
-    FavoriteParticipantsDocument
-  )
+  const [fetchFavoriteParticipants] = useLazyQuery<
+    FavoriteParticipantsQuery,
+    FavoriteParticipantsQueryVariables
+  >(FavoriteParticipantsDocument)
   const refetchFavoriteParticipants = async () => {
     const { data } = await fetchFavoriteParticipants({
       variables: {

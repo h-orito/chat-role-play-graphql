@@ -71,13 +71,15 @@ const TalkSystem = (props: Props) => {
         replyToMessageId: null,
         text: data.talkMessage,
         isConvertDisabled: false // TODO
-      } as NewMessage
+      }
     },
     [game.id]
   )
 
   // 発言プレビュー
-  const [talkDryRun] = useMutation<TalkDryRunMutation>(TalkDryRunDocument)
+  const [talkDryRun] = useMutation<TalkDryRunMutation, TalkMutationVariables>(
+    TalkDryRunDocument
+  )
   const [dryRunMessage, setDryRunMessage] = useState<NewMessage | null>(null)
   const [preview, setPreview] = useState<Message | null>(null)
   const onSubmitPreview: SubmitHandler<FormInput> = useCallback(
@@ -86,7 +88,7 @@ const TalkSystem = (props: Props) => {
       const { data: previewData } = await talkDryRun({
         variables: {
           input: mes
-        } as TalkMutationVariables
+        }
       })
       if (previewData?.registerMessageDryRun == null) return
       setPreview(previewData.registerMessageDryRun.message as Message)
@@ -176,16 +178,19 @@ const SystemMessagePreview = (props: PreviewProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const [talk] = useMutation<TalkMutation>(TalkDocument, {
-    onCompleted() {
-      props.handleCompleted()
+  const [talk] = useMutation<TalkMutation, TalkMutationVariables>(
+    TalkDocument,
+    {
+      onCompleted() {
+        props.handleCompleted()
+      }
     }
-  })
+  )
   const doTalk = async () => {
     talk({
       variables: {
         input: props.dryRunMessage!
-      } as TalkMutationVariables
+      }
     })
   }
   return (

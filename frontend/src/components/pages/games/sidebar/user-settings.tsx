@@ -3,21 +3,14 @@ import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 import Modal from '@/components/modal/modal'
 import { useModal } from '@/components/hooks/use-modal'
 import InputSelect from '@/components/form/input-select'
-import {
-  UserDisplaySettings,
-  UserPagingSettings,
-  useUserDisplaySettings,
-  useUserPagingSettings
-} from '../user-settings'
+import { useUserDisplaySettings, useUserPagingSettings } from '../user-settings'
 import PrimaryButton from '@/components/button/primary-button'
 import RadioGroup from '@/components/form/radio-group'
 import { useRouter } from 'next/router'
 import {
-  GameParticipantSetting,
   GameParticipantSettingDocument,
   GameParticipantSettingQuery,
   GameParticipantSettingQueryVariables,
-  UpdateGameParticipantSetting,
   UpdateGameParticipantSettingDocument,
   UpdateGameParticipantSettingMutation,
   UpdateGameParticipantSettingMutationVariables
@@ -76,7 +69,7 @@ const PagingSettings = () => {
     setUserPagingSettings({
       pageSize: pageSize,
       isDesc: order === 'desc'
-    } as UserPagingSettings)
+    })
     router.reload()
   }
   return (
@@ -123,7 +116,7 @@ const DisplaySettings = () => {
     setUserDisplaySettings({
       themeName: themeName,
       iconSizeRatio: iconSizeRatio
-    } as UserDisplaySettings)
+    })
     router.reload()
   }
   const candidates = [
@@ -199,18 +192,19 @@ const NotificationSettings = () => {
         keyword: ''
       }
     })
-  const [fetchSetting] = useLazyQuery<GameParticipantSettingQuery>(
-    GameParticipantSettingDocument
-  )
+  const [fetchSetting] = useLazyQuery<
+    GameParticipantSettingQuery,
+    GameParticipantSettingQueryVariables
+  >(GameParticipantSettingDocument)
   useEffect(() => {
     const fetch = async () => {
       const { data } = await fetchSetting({
         variables: {
           gameId: game.id
-        } as GameParticipantSettingQueryVariables
+        }
       })
       if (data?.gameParticipantSetting) {
-        const setting = data.gameParticipantSetting as GameParticipantSetting
+        const setting = data.gameParticipantSetting
         setValue('webhookUrl', setting.notification?.discordWebhookUrl || '')
         setValue(
           'shouldNotifyGameStart',
@@ -239,9 +233,10 @@ const NotificationSettings = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const [update] = useMutation<UpdateGameParticipantSettingMutation>(
-    UpdateGameParticipantSettingDocument
-  )
+  const [update] = useMutation<
+    UpdateGameParticipantSettingMutation,
+    UpdateGameParticipantSettingMutationVariables
+  >(UpdateGameParticipantSettingDocument)
   const router = useRouter()
   const onSubmit: SubmitHandler<NotificationFormInput> = useCallback(
     async (data) => {
@@ -265,8 +260,8 @@ const NotificationSettings = () => {
                   .filter((k) => k !== '')
               }
             }
-          } as UpdateGameParticipantSetting
-        } as UpdateGameParticipantSettingMutationVariables
+          }
+        }
       })
       router.reload()
     },

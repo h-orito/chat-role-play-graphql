@@ -1,8 +1,8 @@
 import {
   GameParticipantGroup,
-  GameParticipantGroupsQuery,
   ParticipantGroupsDocument,
-  ParticipantGroupsQuery
+  ParticipantGroupsQuery,
+  ParticipantGroupsQueryVariables
 } from '@/lib/generated/graphql'
 import { useEffect, useState } from 'react'
 import { useModal } from '@/components/hooks/use-modal'
@@ -25,9 +25,10 @@ type Props = {
 export default function DirectMessageGroupsArea({ className }: Props) {
   const game = useGameValue()
   const myself = useMyselfValue()!
-  const [fetchParticipantGroups] = useLazyQuery<ParticipantGroupsQuery>(
-    ParticipantGroupsDocument
-  )
+  const [fetchParticipantGroups] = useLazyQuery<
+    ParticipantGroupsQuery,
+    ParticipantGroupsQueryVariables
+  >(ParticipantGroupsDocument)
   const [groups, setGroups] = useState<GameParticipantGroup[]>([])
 
   const createModal = useModal()
@@ -45,7 +46,7 @@ export default function DirectMessageGroupsArea({ className }: Props) {
       variables: {
         gameId: game.id,
         participantId: myself?.id
-      } as GameParticipantGroupsQuery
+      }
     })
     if (data?.gameParticipantGroups == null) return
     const newGroups = (

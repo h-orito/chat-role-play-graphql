@@ -1,14 +1,12 @@
 import DangerButton from '@/components/button/danger-button'
 import PrimaryButton from '@/components/button/primary-button'
 import {
-  DeleteGameMaster,
   DeleteGameMasterDocument,
   DeleteGameMasterMutation,
   DeleteGameMasterMutationVariables,
-  NewGameMaster,
-  Player,
   QPlayersDocument,
   QPlayersQuery,
+  QPlayersQueryVariables,
   RegisterGameMasterDocument,
   RegisterGameMasterMutation,
   RegisterGameMasterMutationVariables
@@ -25,12 +23,14 @@ type Props = {
 export default function GameMasterEdit({ close }: Props) {
   const game = useGameValue()
   const router = useRouter()
-  const [deleteGameMaster] = useMutation<DeleteGameMasterMutation>(
-    DeleteGameMasterDocument
-  )
-  const [registerGameMaster] = useMutation<RegisterGameMasterMutation>(
-    RegisterGameMasterDocument
-  )
+  const [deleteGameMaster] = useMutation<
+    DeleteGameMasterMutation,
+    DeleteGameMasterMutationVariables
+  >(DeleteGameMasterDocument)
+  const [registerGameMaster] = useMutation<
+    RegisterGameMasterMutation,
+    RegisterGameMasterMutationVariables
+  >(RegisterGameMasterDocument)
 
   const handleRegister = async (id: string) => {
     if (!window.confirm('本当にゲームマスターを追加してよろしいですか？'))
@@ -42,8 +42,8 @@ export default function GameMasterEdit({ close }: Props) {
           gameId: game.id,
           playerId: id,
           isProducer: false
-        } as NewGameMaster
-      } as RegisterGameMasterMutationVariables
+        }
+      }
     })
     router.reload()
   }
@@ -57,15 +57,17 @@ export default function GameMasterEdit({ close }: Props) {
         input: {
           gameId: game.id,
           id
-        } as DeleteGameMaster
-      } as DeleteGameMasterMutationVariables
+        }
+      }
     })
     router.reload()
   }
 
-  const [players, setPlayers] = useState([] as Player[])
+  const [players, setPlayers] = useState<QPlayersQuery['players']>([])
   const [playerName, setPlayerName] = useState('')
-  const [fetchPlayers] = useLazyQuery<QPlayersQuery>(QPlayersDocument)
+  const [fetchPlayers] = useLazyQuery<QPlayersQuery, QPlayersQueryVariables>(
+    QPlayersDocument
+  )
   const refetchPlayers = async () => {
     if (playerName.length <= 1) return
     const { data } = await fetchPlayers({
@@ -76,7 +78,7 @@ export default function GameMasterEdit({ close }: Props) {
       }
     })
     if (data?.players == null) return
-    setPlayers(data.players as Player[])
+    setPlayers(data.players)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

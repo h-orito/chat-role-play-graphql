@@ -2,7 +2,6 @@ import PrimaryButton from '@/components/button/primary-button'
 import {
   GameParticipant,
   GameParticipantGroup,
-  NewGameParticipantGroup,
   RegisterParticipantGroupDocument,
   RegisterParticipantGroupMutation,
   RegisterParticipantGroupMutationVariables
@@ -28,18 +27,18 @@ export default function CreateParticipantGroup({
 }: Props) {
   const game = useGameValue()
   const myself = useMyselfValue()!
-  const [register] = useMutation<RegisterParticipantGroupMutation>(
-    RegisterParticipantGroupDocument,
-    {
-      onCompleted(e) {
-        refetchGroups()
-        close()
-      },
-      onError(error) {
-        console.error(error)
-      }
+  const [register] = useMutation<
+    RegisterParticipantGroupMutation,
+    RegisterParticipantGroupMutationVariables
+  >(RegisterParticipantGroupDocument, {
+    onCompleted(e) {
+      refetchGroups()
+      close()
+    },
+    onError(error) {
+      console.error(error)
     }
-  )
+  })
   const [participants, setParticipants] = useState<Array<GameParticipant>>([])
   const [submitting, setSubmitting] = useState(false)
   const handleRegister = useCallback(() => {
@@ -52,8 +51,8 @@ export default function CreateParticipantGroup({
           gameId: game.id,
           name: name.length > 30 ? name.substring(0, 30) + '…' : name,
           gameParticipantIds: pts.map((p) => p.id)
-        } as NewGameParticipantGroup
-      } as RegisterParticipantGroupMutationVariables
+        }
+      }
     }).then((res) => {
       setSubmitting(false)
     })

@@ -4,8 +4,6 @@ import Modal from '@/components/modal/modal'
 import {
   Chara,
   Charachip,
-  Game,
-  NewGameParticipant,
   RegisterGameParticipantDocument,
   RegisterGameParticipantMutation,
   RegisterGameParticipantMutationVariables
@@ -42,9 +40,10 @@ export default function Participate({ close }: Props) {
   })
   const [checkedTerm, setCheckedTerm] = useState(false)
   const [checkedPolicy, setCheckedPolicy] = useState(false)
-  const [participate] = useMutation<RegisterGameParticipantMutation>(
-    RegisterGameParticipantDocument
-  )
+  const [participate] = useMutation<
+    RegisterGameParticipantMutation,
+    RegisterGameParticipantMutationVariables
+  >(RegisterGameParticipantDocument)
   const [bizError, setBizError] = useState<string | null>(null)
 
   const canUseCharachip = game.settings.chara.charachips.length > 0
@@ -81,8 +80,8 @@ export default function Participate({ close }: Props) {
             name: data.participantName,
             charaId: chara?.id,
             password: data.password
-          } as NewGameParticipant
-        } as RegisterGameParticipantMutationVariables
+          }
+        }
       })
       if (errors) {
         if (errors[0].extensions?.code === 'PARTICIPATE_ERROR') {
