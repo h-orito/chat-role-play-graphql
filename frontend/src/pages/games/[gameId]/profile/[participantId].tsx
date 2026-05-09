@@ -31,7 +31,7 @@ import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
 import {
-  useGame,
+  GameProvider,
   useGameValue,
   useMyself,
   useMyselfInit
@@ -96,7 +96,28 @@ const GameParticipantProfilePage = ({
   profile: initialProfile,
   icons: initialIcons
 }: Props) => {
-  useGame(game)
+  return (
+    <GameProvider game={game}>
+      <GameParticipantProfilePageContent
+        game={game}
+        initialProfile={initialProfile}
+        initialIcons={initialIcons}
+      />
+    </GameProvider>
+  )
+}
+
+type ContentProps = {
+  game: Game
+  initialProfile: GameParticipantProfile
+  initialIcons: Array<GameParticipantIcon>
+}
+
+const GameParticipantProfilePageContent = ({
+  game,
+  initialProfile,
+  initialIcons
+}: ContentProps) => {
   const myself = useMyselfInit(game.id)
   const [profile, setProfile] = useState<GameParticipantProfile>(initialProfile)
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>(initialIcons)

@@ -17,7 +17,7 @@ import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
 import RatingWarningModal from '@/components/pages/games/rating-warning-modal'
 import {
-  useGame,
+  GameProvider,
   useGameValue,
   useIcons,
   useMyPlayer,
@@ -56,7 +56,22 @@ type Props = {
 }
 
 const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
-  useGame(game)
+  return (
+    <GameProvider game={game}>
+      <GamePageContent
+        game={game}
+        initialMessagesQuery={initialMessagesQuery}
+      />
+    </GameProvider>
+  )
+}
+
+type ContentProps = {
+  game: Game
+  initialMessagesQuery: MessagesQuery
+}
+
+const GamePageContent = ({ game, initialMessagesQuery }: ContentProps) => {
   useInitMessagesQuery(initialMessagesQuery)
   useMyselfInit(game.id)
   useMyPlayer()

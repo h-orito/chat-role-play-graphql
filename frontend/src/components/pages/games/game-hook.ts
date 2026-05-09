@@ -21,17 +21,7 @@ import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useRef } from 'react'
 import { defaultDisplaySettings, useUserDisplaySettings } from './user-settings'
 
-// game
-export const gameAtom = atom<Game | null>(null)
-export const useGame = (game: Game) => {
-  const setGame = useSetAtom(gameAtom)
-  const lastIdRef = useRef<string | null>(null)
-  if (lastIdRef.current !== game.id) {
-    lastIdRef.current = game.id
-    setGame(game)
-  }
-}
-export const useGameValue = () => useAtomValue(gameAtom)!
+export { GameProvider, useGameValue } from './contexts/game-context'
 // 発言可能なゲームステータス
 export const talkableGameStatuses = [
   'Closed',

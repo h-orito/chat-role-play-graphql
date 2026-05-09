@@ -17,7 +17,7 @@ import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
 import {
-  useGame,
+  GameProvider,
   useGameValue,
   useIcons,
   useMyPlayer,
@@ -71,7 +71,22 @@ const GameParticipantProfilePage = ({
   messageId,
   threadMessages
 }: Props) => {
-  useGame(game)
+  return (
+    <GameProvider game={game}>
+      <GameParticipantProfilePageContent
+        game={game}
+        messageId={messageId}
+        threadMessages={threadMessages}
+      />
+    </GameProvider>
+  )
+}
+
+const GameParticipantProfilePageContent = ({
+  game,
+  messageId,
+  threadMessages
+}: Props) => {
   const [myself] = useMyself(game.id)
   useMyPlayer()
   useIcons()
