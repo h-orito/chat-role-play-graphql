@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next'
-import path from 'path'
 
 const nextConfig: NextConfig = {
   basePath: '/chat-role-play',
@@ -18,9 +17,6 @@ const nextConfig: NextConfig = {
         hostname: 'image.wolfort.dev',
       },
     ],
-  },
-  sassOptions: {
-    includePaths: [path.join(process.cwd(), 'styles')],
   },
 }
 
