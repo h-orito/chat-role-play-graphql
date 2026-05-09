@@ -27,11 +27,9 @@ import {
   usePollingPeriod,
   useUserDisplaySettingsAtom
 } from '@/components/pages/games/game-hook'
-import {
-  fromUrlQuery,
-  MessagesQueryProvider
-} from '@/components/pages/games/article/message-area/message-area/messages-query'
-import { TalkPanelProvider } from '@/components/pages/games/talk/use-talk-panel'
+import { fromUrlQuery } from '@/components/pages/games/article/message-area/message-area/messages-query'
+import { MessagesQueryProvider } from '@/components/pages/games/contexts/messages-query-context'
+import { TalkPanelProvider } from '@/components/pages/games/contexts/talk-panel-context'
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -86,7 +84,7 @@ const GamePageContent = ({ game }: ContentProps) => {
   useMyPlayer()
   useUserDisplaySettingsAtom()
   // 1分に1回ゲーム更新チェック
-  usePollingPeriod(game)
+  usePollingPeriod()
 
   return (
     <>

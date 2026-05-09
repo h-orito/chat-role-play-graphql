@@ -12,6 +12,7 @@ import {
 import { useMutation, useQuery } from '@apollo/client'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useRef } from 'react'
+import { useGameValue } from './contexts/game-context'
 import { defaultDisplaySettings, useUserDisplaySettings } from './user-settings'
 
 export { GameProvider, useGameValue } from './contexts/game-context'
@@ -76,6 +77,8 @@ export const canModifyGameSetting = (game: Game, myPlayer: Player | null) => {
 }
 
 // player（アプリスコープ atom）
+// useMyPlayer は useQuery の結果を直接返し、useEffect は useMyPlayerValue
+// 用に myPlayerAtom へ書き込むためだけに使う。
 const myPlayerAtom = atom<Player | null>(null)
 
 export const useMyPlayer = (): Player | null => {
@@ -83,10 +86,11 @@ export const useMyPlayer = (): Player | null => {
   const { data } = useQuery<MyPlayerQuery, MyPlayerQueryVariables>(
     MyPlayerDocument
   )
+  const myPlayer = (data?.myPlayer as Player | null | undefined) ?? null
   useEffect(() => {
-    if (data?.myPlayer) setMyPlayer(data.myPlayer as Player)
-  }, [data, setMyPlayer])
-  return useAtomValue(myPlayerAtom)
+    if (myPlayer) setMyPlayer(myPlayer)
+  }, [myPlayer, setMyPlayer])
+  return myPlayer
 }
 export const useMyPlayerValue = () => useAtomValue(myPlayerAtom)
 const isAdmin = (myPlayer: Player | null) => {
@@ -101,7 +105,8 @@ const periodChangeStatuses = [
   'Progress',
   'Epilogue'
 ]
-export const usePollingPeriod = (game: Game) => {
+export const usePollingPeriod = () => {
+  const game = useGameValue()
   const [changePeriod] = useMutation<
     ChangePeriodMutation,
     ChangePeriodMutationVariables

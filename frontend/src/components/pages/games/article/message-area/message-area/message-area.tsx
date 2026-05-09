@@ -20,7 +20,8 @@ import {
   useGameValue,
   useMyselfValue
 } from '@/components/pages/games/game-hook'
-import { emptyMessageQuery, useInitialMessagesQuery } from './messages-query'
+import { emptyMessageQuery } from './messages-query'
+import { useInitialMessagesQuery } from '@/components/pages/games/contexts/messages-query-context'
 import { useUserPagingSettings } from '../../../user-settings'
 import TalkArea from './talk-area'
 import MessageAreaFooterMenu from './message-area-footer-menu'

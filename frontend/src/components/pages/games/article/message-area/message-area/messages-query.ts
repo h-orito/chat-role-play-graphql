@@ -10,11 +10,6 @@ import { messageTypeOptions, messageTypeValues } from './message-type'
 import { ParsedUrlQueryInput } from 'querystring'
 import { base64ToId, idToBase64 } from '@/components/graphql/convert'
 
-export {
-  MessagesQueryProvider,
-  useInitialMessagesQuery
-} from '@/components/pages/games/contexts/messages-query-context'
-
 export const emptyMessageQuery: MessagesQuery = {
   senderIds: null,
   recipientIds: null,
