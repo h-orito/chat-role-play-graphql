@@ -20,7 +20,7 @@ import {
   useGameValue,
   useMyselfValue
 } from '@/components/pages/games/game-hook'
-import { emptyMessageQuery, useMessagesQuery } from './messages-query'
+import { emptyMessageQuery, useInitialMessagesQuery } from './messages-query'
 import { useUserPagingSettings } from '../../../user-settings'
 import TalkArea from './talk-area'
 import MessageAreaFooterMenu from './message-area-footer-menu'
@@ -86,7 +86,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     )
 
     // 初回の取得
-    const [initialMessagesQuery] = useMessagesQuery()
+    const initialMessagesQuery = useInitialMessagesQuery()
     const [pagingSettings] = useUserPagingSettings()
     useEffect(() => {
       const paging = {

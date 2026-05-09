@@ -17,6 +17,7 @@ import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
 import {
+  FixedBottomProvider,
   GameProvider,
   IconsProvider,
   MyselfProvider,
@@ -24,6 +25,7 @@ import {
   useMyPlayer,
   useUserDisplaySettingsAtom
 } from '@/components/pages/games/game-hook'
+import { TalkPanelProvider } from '@/components/pages/games/talk/use-talk-panel'
 import ThreadMessageArea from '@/components/pages/games/thread/thread-message-area'
 
 export const getServerSideProps = async (
@@ -75,11 +77,15 @@ const GameParticipantProfilePage = ({
     <GameProvider game={game}>
       <MyselfProvider gameId={game.id}>
         <IconsProvider>
-          <GameParticipantProfilePageContent
-            game={game}
-            messageId={messageId}
-            threadMessages={threadMessages}
-          />
+          <FixedBottomProvider>
+            <TalkPanelProvider>
+              <GameParticipantProfilePageContent
+                game={game}
+                messageId={messageId}
+                threadMessages={threadMessages}
+              />
+            </TalkPanelProvider>
+          </FixedBottomProvider>
         </IconsProvider>
       </MyselfProvider>
     </GameProvider>

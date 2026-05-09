@@ -17,9 +17,11 @@ import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
 import RatingWarningModal from '@/components/pages/games/rating-warning-modal'
 import {
+  FixedBottomProvider,
   GameProvider,
   IconsProvider,
   MyselfProvider,
+  SidebarProvider,
   useGameValue,
   useMyPlayer,
   usePollingPeriod,
@@ -27,8 +29,9 @@ import {
 } from '@/components/pages/games/game-hook'
 import {
   fromUrlQuery,
-  useInitMessagesQuery
+  MessagesQueryProvider
 } from '@/components/pages/games/article/message-area/message-area/messages-query'
+import { TalkPanelProvider } from '@/components/pages/games/talk/use-talk-panel'
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -60,10 +63,15 @@ const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
     <GameProvider game={game}>
       <MyselfProvider gameId={game.id}>
         <IconsProvider>
-          <GamePageContent
-            game={game}
-            initialMessagesQuery={initialMessagesQuery}
-          />
+          <MessagesQueryProvider initialMessagesQuery={initialMessagesQuery}>
+            <SidebarProvider>
+              <FixedBottomProvider>
+                <TalkPanelProvider>
+                  <GamePageContent game={game} />
+                </TalkPanelProvider>
+              </FixedBottomProvider>
+            </SidebarProvider>
+          </MessagesQueryProvider>
         </IconsProvider>
       </MyselfProvider>
     </GameProvider>
@@ -72,11 +80,9 @@ const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
 
 type ContentProps = {
   game: Game
-  initialMessagesQuery: MessagesQuery
 }
 
-const GamePageContent = ({ game, initialMessagesQuery }: ContentProps) => {
-  useInitMessagesQuery(initialMessagesQuery)
+const GamePageContent = ({ game }: ContentProps) => {
   useMyPlayer()
   useUserDisplaySettingsAtom()
   // 1分に1回ゲーム更新チェック

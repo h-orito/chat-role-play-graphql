@@ -10,7 +10,7 @@ import {
   Player
 } from '@/lib/generated/graphql'
 import { useMutation, useQuery } from '@apollo/client'
-import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useRef } from 'react'
 import { defaultDisplaySettings, useUserDisplaySettings } from './user-settings'
 
@@ -21,6 +21,11 @@ export {
   useMyselfValue
 } from './contexts/myself-context'
 export { IconsProvider, useIconsValue } from './contexts/icons-context'
+export { SidebarProvider, useSidebarOpen } from './contexts/sidebar-context'
+export {
+  FixedBottomProvider,
+  useFixedBottom
+} from './contexts/fixed-bottom-context'
 
 // 発言可能なゲームステータス
 export const talkableGameStatuses = [
@@ -129,19 +134,6 @@ export const usePollingPeriod = (game: Game) => {
   }, [])
 }
 
-// sidebar
-const sidebarOpenAtom = atom(false)
-export const useSidebarOpen = () => {
-  const [isOpen, setIsOpen] = useAtom(sidebarOpenAtom)
-  const toggle = () => setIsOpen(!isOpen)
-  useEffect(() => {
-    return () => setIsOpen(false)
-    // unmount 時に閉じるだけのクリーンアップ
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  return [isOpen, toggle] as const
-}
-
 // display settings
 const displaySettingsAtom = atom(defaultDisplaySettings)
 export const useUserDisplaySettingsAtom = () => {
@@ -153,17 +145,3 @@ export const useUserDisplaySettingsAtom = () => {
 }
 export const useUserDisplaySettingsValue = () =>
   useAtomValue(displaySettingsAtom)
-
-// 発言欄の下部固定
-// 1つ固定したら他の固定は解除する
-// 解除するための関数を保存しておく
-const fixedBottomAtom = atom({ fn: () => {} })
-export const useFixedBottom = () => {
-  const [cancelFunction, setCancelFunction] = useAtom(fixedBottomAtom)
-
-  const canceler = (func: () => void) => {
-    cancelFunction.fn()
-    setCancelFunction({ fn: func })
-  }
-  return canceler
-}
