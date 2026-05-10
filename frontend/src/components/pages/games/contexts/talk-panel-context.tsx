@@ -61,6 +61,11 @@ export const TalkPanelProvider = ({ children }: Props) => {
     setReceiver(sender)
     if (message.content.type === MessageType.Secret) {
       setTalkType(MessageType.Secret)
+    } else if (talkTypeRef.current === MessageType.Secret) {
+      // 秘話メッセージへの返信から通常返信に切り替えた場合、新しい
+      // 返信先に対して意図せず秘話を送らないよう Secret → TalkNormal に戻す。
+      // ユーザーが明示的に選んだ Monologue は保持する。
+      setTalkType(MessageType.TalkNormal)
     }
   }, [])
 
