@@ -47,6 +47,8 @@ export default function CreateGame() {
   const [rating, setRating] = useState('全年齢')
   const [charachipIds, setCharachipIds] = useState<string[]>([])
   const [catchImageFiles, setCatchImageFiles] = useState<File[]>([])
+  // 新規作成画面では submit 時に catchImageFile のみ送信するため、
+  // この state はプレビュー表示と削除ボタン制御のために InputImage に渡すだけ。
   const [catchImageUrl, setCatchImageUrl] = useState<string | null>(null)
 
   const [registerGame] = useMutation<
