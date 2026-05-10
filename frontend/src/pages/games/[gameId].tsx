@@ -17,18 +17,19 @@ import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
 import RatingWarningModal from '@/components/pages/games/rating-warning-modal'
 import {
-  useGame,
+  FixedBottomProvider,
+  GameProvider,
+  IconsProvider,
+  MyPlayerProvider,
+  MyselfProvider,
+  SidebarProvider,
   useGameValue,
-  useIcons,
-  useMyPlayer,
-  useMyselfInit,
   usePollingPeriod,
   useUserDisplaySettingsAtom
 } from '@/components/pages/games/game-hook'
-import {
-  fromUrlQuery,
-  useInitMessagesQuery
-} from '@/components/pages/games/article/message-area/message-area/messages-query'
+import { fromUrlQuery } from '@/components/pages/games/article/message-area/message-area/messages-query'
+import { MessagesQueryProvider } from '@/components/pages/games/contexts/messages-query-context'
+import { TalkPanelProvider } from '@/components/pages/games/contexts/talk-panel-context'
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -56,14 +57,32 @@ type Props = {
 }
 
 const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
-  useGame(game)
-  useInitMessagesQuery(initialMessagesQuery)
-  useMyselfInit(game.id)
-  useMyPlayer()
-  useIcons()
+  return (
+    <GameProvider game={game}>
+      <MyPlayerProvider>
+        <MyselfProvider gameId={game.id}>
+          <IconsProvider>
+            <MessagesQueryProvider initialMessagesQuery={initialMessagesQuery}>
+              <SidebarProvider>
+                <FixedBottomProvider>
+                  <TalkPanelProvider>
+                    <GamePageContent />
+                  </TalkPanelProvider>
+                </FixedBottomProvider>
+              </SidebarProvider>
+            </MessagesQueryProvider>
+          </IconsProvider>
+        </MyselfProvider>
+      </MyPlayerProvider>
+    </GameProvider>
+  )
+}
+
+const GamePageContent = () => {
+  const game = useGameValue()
   useUserDisplaySettingsAtom()
   // 1分に1回ゲーム更新チェック
-  usePollingPeriod(game)
+  usePollingPeriod()
 
   return (
     <>

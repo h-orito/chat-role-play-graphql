@@ -38,7 +38,7 @@ export default function ProfileEdit({
   refetchProfile
 }: Props) {
   const game = useGameValue()
-  const [myself, refetchMyself] = useMyself(game.id)
+  const [myself, refetchMyself] = useMyself()
   const { register, control, formState, handleSubmit, setValue } =
     useForm<FormInput>({
       defaultValues: {

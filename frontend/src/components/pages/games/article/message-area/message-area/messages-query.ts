@@ -6,8 +6,6 @@ import {
   MessageType,
   MessagesQuery
 } from '@/lib/generated/graphql'
-import { atom, useAtom, useSetAtom } from 'jotai'
-import { useRef } from 'react'
 import { messageTypeOptions, messageTypeValues } from './message-type'
 import { ParsedUrlQueryInput } from 'querystring'
 import { base64ToId, idToBase64 } from '@/components/graphql/convert'
@@ -21,20 +19,6 @@ export const emptyMessageQuery: MessagesQuery = {
     pageNumber: 1,
     isDesc: true,
     isLatest: true
-  }
-}
-
-export const messagesQueryAtom = atom<MessagesQuery>(emptyMessageQuery)
-export const useMessagesQuery = () => {
-  const [getter, setter] = useAtom(messagesQueryAtom)
-  return [getter, setter] as const
-}
-export const useInitMessagesQuery = (messagesQuery: MessagesQuery) => {
-  const setMessagesQuery = useSetAtom(messagesQueryAtom)
-  const lastQueryRef = useRef<MessagesQuery | null>(null)
-  if (lastQueryRef.current !== messagesQuery) {
-    lastQueryRef.current = messagesQuery
-    setMessagesQuery(messagesQuery)
   }
 }
 

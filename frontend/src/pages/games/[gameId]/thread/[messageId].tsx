@@ -17,13 +17,15 @@ import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
 import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
 import {
-  useGame,
+  FixedBottomProvider,
+  GameProvider,
+  IconsProvider,
+  MyPlayerProvider,
+  MyselfProvider,
   useGameValue,
-  useIcons,
-  useMyPlayer,
-  useMyself,
   useUserDisplaySettingsAtom
 } from '@/components/pages/games/game-hook'
+import { TalkPanelProvider } from '@/components/pages/games/contexts/talk-panel-context'
 import ThreadMessageArea from '@/components/pages/games/thread/thread-message-area'
 
 export const getServerSideProps = async (
@@ -71,10 +73,36 @@ const GameParticipantProfilePage = ({
   messageId,
   threadMessages
 }: Props) => {
-  useGame(game)
-  const [myself] = useMyself(game.id)
-  useMyPlayer()
-  useIcons()
+  return (
+    <GameProvider game={game}>
+      <MyPlayerProvider>
+        <MyselfProvider gameId={game.id}>
+          <IconsProvider>
+            <FixedBottomProvider>
+              <TalkPanelProvider>
+                <GameParticipantProfilePageContent
+                  messageId={messageId}
+                  threadMessages={threadMessages}
+                />
+              </TalkPanelProvider>
+            </FixedBottomProvider>
+          </IconsProvider>
+        </MyselfProvider>
+      </MyPlayerProvider>
+    </GameProvider>
+  )
+}
+
+type ContentProps = {
+  messageId: string
+  threadMessages: Array<Message>
+}
+
+const GameParticipantProfilePageContent = ({
+  messageId,
+  threadMessages
+}: ContentProps) => {
+  const game = useGameValue()
   useUserDisplaySettingsAtom()
 
   return (
