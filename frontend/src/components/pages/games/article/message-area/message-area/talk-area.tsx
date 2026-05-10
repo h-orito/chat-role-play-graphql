@@ -8,6 +8,7 @@ import Talk from '../../../talk/talk'
 import TalkDescription from '../../../talk/talk-description'
 import TalkSystem from '../../../talk/talk-system'
 import { useTalkPanel } from '../../../talk/use-talk-panel'
+import FixedPanelWrapper from '../fixed-panel-wrapper'
 
 type TalkAreaProps = {
   canTalk: boolean
@@ -72,9 +73,7 @@ const TalkPanel = ({ search, talkAreaId }: TalkPanelProps) => {
   } else {
     return (
       <Portal target={`#${talkAreaId}-fixed`}>
-        <div className='max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
-          {panel}
-        </div>
+        <FixedPanelWrapper>{panel}</FixedPanelWrapper>
       </Portal>
     )
   }
@@ -107,9 +106,7 @@ const DescriptionPanel = ({
   } else {
     return (
       <Portal target={`#${talkAreaId}-fixed`}>
-        <div className='max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
-          {panel}
-        </div>
+        <FixedPanelWrapper>{panel}</FixedPanelWrapper>
       </Portal>
     )
   }
@@ -155,9 +152,7 @@ const SystemMessagePanel = ({
   } else {
     return (
       <Portal target={`#${talkAreaId}-fixed`}>
-        <div className='max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
-          {panel}
-        </div>
+        <FixedPanelWrapper>{panel}</FixedPanelWrapper>
       </Portal>
     )
   }

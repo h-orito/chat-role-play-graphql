@@ -34,6 +34,14 @@ export default function CreateGame() {
               変更:
               発言抽出のリセットボタンで、条件クリアと同時に再抽出も実行するよう変更
             </li>
+            <li>
+              修正:
+              ダイレクトメッセージの発言パネルを下部固定にすると左右が見切れる不具合を修正
+            </li>
+            <li>
+              変更: 発言パネル下部固定時の高さをスマホ 30vh / PC 35vh に調整（PC
+              は従来上限なしのため大きく占有していた）
+            </li>
           </ReleaseContent>
 
           <ReleaseContent label='メンテナンス' date='2026/05/09'>
