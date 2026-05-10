@@ -100,7 +100,14 @@ const IconSortArea = ({
   const game = useGameValue()
   // see https://iwaking.com/blog/sort-images-with-dnd-kit-react-typescript
   const [activeIcon, setActiveIcon] = useState<GameParticipantIcon>()
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor))
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 }
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 250, tolerance: 5 }
+    })
+  )
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
     setActiveIcon(icons.find((icon) => icon.id === active.id))
@@ -204,6 +211,7 @@ const SortableItem = ({ icon, ...props }: SortableItemProps) => {
       icon={icon}
       ref={setNodeRef}
       isOpacityEnabled={isDragging}
+      style={{ touchAction: 'none' }}
       {...props}
       {...attributes}
       {...listeners}

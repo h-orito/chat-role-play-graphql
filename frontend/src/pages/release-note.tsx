@@ -47,6 +47,10 @@ export default function CreateGame() {
               からテキストリンクに変更（iframe 形式が Amazon
               側で非対応となったため）
             </li>
+            <li>
+              修正:
+              スマホでアイコン並び替え時に上下方向への入れ替えができない不具合を修正
+            </li>
           </ReleaseContent>
 
           <ReleaseContent label='メンテナンス' date='2026/05/09'>
