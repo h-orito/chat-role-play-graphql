@@ -40,11 +40,25 @@ export default function DirectMessageFilter(props: Props) {
   )
 
   const handleReset = () => {
-    if (!window.confirm('検索条件をリセットしてよろしいですか？')) return
+    if (!window.confirm('検索条件をリセットして再抽出します。よろしいですか？'))
+      return
     setSenders([])
     setKeyword('')
     setSinceAt(null)
     setUntilAt(null)
+    const resetQuery: DirectMessagesQuery = {
+      ...messageQuery,
+      senderIds: null,
+      keywords: null,
+      sinceAt: null,
+      untilAt: null,
+      paging: {
+        ...messageQuery.paging!,
+        pageNumber: 1
+      }
+    }
+    search(resetQuery)
+    close()
   }
 
   const handleSearch = () => {

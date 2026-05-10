@@ -30,6 +30,10 @@ export default function CreateGame() {
               修正:
               プロフィール画像/ゲームキャッチ画像の削除ボタンを押して更新しても画像が消えない不具合を修正
             </li>
+            <li>
+              変更:
+              発言抽出のリセットボタンで、条件クリアと同時に再抽出も実行するよう変更
+            </li>
           </ReleaseContent>
 
           <ReleaseContent label='メンテナンス' date='2026/05/09'>
