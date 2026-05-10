@@ -23,7 +23,7 @@ type Props = {
 }
 
 export const TalkPanelProvider = ({ children }: Props) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const [replyTarget, setReplyTarget] = useState<Message | null>(null)
 
   const toggle = useCallback(() => setIsOpen((prev) => !prev), [])
