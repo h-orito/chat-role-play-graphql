@@ -1,32 +1,38 @@
 import { useState } from 'react'
 
-type Props = {
+type BaseProps = {
   header: string
   children: React.ReactNode
-  isOpen?: boolean
-  onToggle?: () => void
   isFixed?: boolean
   toggleFixed?: (e: React.MouseEvent) => void
 }
 
-const Panel = (props: Props) => {
-  const {
-    header,
-    children,
-    isOpen: isOpenProp = true,
-    onToggle,
-    isFixed = false,
-    toggleFixed
-  } = props
+type ControlledProps = {
+  isOpen: boolean
+  onToggle: () => void
+  defaultOpen?: never
+}
 
-  // onToggle が渡された場合は controlled、そうでなければ uncontrolled
-  const [internalOpen, setInternalOpen] = useState(isOpenProp)
-  const isOpen = onToggle ? isOpenProp : internalOpen
+type UncontrolledProps = {
+  isOpen?: never
+  onToggle?: never
+  defaultOpen?: boolean
+}
+
+type Props = BaseProps & (ControlledProps | UncontrolledProps)
+
+const Panel = (props: Props) => {
+  const { header, children, isFixed = false, toggleFixed } = props
+
+  // controlled 時は使われないが、Hooks の規則上常に呼ぶ必要がある
+  const [internalOpen, setInternalOpen] = useState(props.defaultOpen ?? true)
+
+  const isOpen = props.onToggle !== undefined ? props.isOpen : internalOpen
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    if (onToggle) {
-      onToggle()
+    if (props.onToggle !== undefined) {
+      props.onToggle()
     } else {
       setInternalOpen((prev) => !prev)
     }
