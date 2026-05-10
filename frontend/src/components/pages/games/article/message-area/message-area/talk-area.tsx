@@ -28,6 +28,7 @@ const TalkArea = memo((props: TalkAreaProps) => {
     </div>
   )
 })
+TalkArea.displayName = 'TalkArea'
 
 export default TalkArea
 

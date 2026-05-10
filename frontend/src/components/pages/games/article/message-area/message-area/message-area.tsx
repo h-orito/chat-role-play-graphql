@@ -183,5 +183,6 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     )
   }
 )
+MessageArea.displayName = 'MessageArea'
 
 export default MessageArea

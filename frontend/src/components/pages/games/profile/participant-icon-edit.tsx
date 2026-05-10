@@ -247,6 +247,7 @@ const Icon = forwardRef<HTMLDivElement, IconProps>(
     )
   }
 )
+Icon.displayName = 'Icon'
 
 const IconUploadArea = ({
   refetchIcons,

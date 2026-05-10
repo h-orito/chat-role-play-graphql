@@ -282,6 +282,7 @@ const DirectTalkArea = memo((props: DirectTalkAreaProps) => {
     </div>
   )
 })
+DirectTalkArea.displayName = 'DirectTalkArea'
 
 const DirectTalkPanel = (props: DirectTalkAreaProps) => {
   const { group, search } = props
