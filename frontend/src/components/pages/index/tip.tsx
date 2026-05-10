@@ -43,12 +43,9 @@ export default function Tip() {
           </li>
         </ul>
         <div className='flex justify-end'>
-          <iframe
-            src='https://rcm-fe.amazon-adsystem.com/e/cm?o=9&p=20&l=ez&f=ifr&linkID=c5438f7fc033eeee42260876403c6c51&t=wolfort0d-22&tracking_id=wolfort0d-22'
-            className='border border-gray-300'
-            scrolling='no'
-            style={{ border: 'none', width: '120px', height: '90px' }}
-          ></iframe>
+          <a href='https://amzn.to/48auG7Q' target='_blank' rel='noreferrer'>
+            <PrimaryButton>Amazonに遷移</PrimaryButton>
+          </a>
         </div>
       </div>
       <hr />

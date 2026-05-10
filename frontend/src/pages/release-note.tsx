@@ -42,6 +42,11 @@ export default function CreateGame() {
               変更: 発言パネル下部固定時の高さをスマホ 30vh / PC 35vh に調整（PC
               は従来上限なしのため大きく占有していた）
             </li>
+            <li>
+              修正: 投げ銭モーダルの Amazon アソシエイトを iframe
+              からテキストリンクに変更（iframe 形式が Amazon
+              側で非対応となったため）
+            </li>
           </ReleaseContent>
 
           <ReleaseContent label='メンテナンス' date='2026/05/09'>
