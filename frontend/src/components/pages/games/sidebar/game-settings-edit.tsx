@@ -61,6 +61,9 @@ export default function GameSettingsEdit() {
     game.settings.rule.theme ?? null
   )
   const [catchImageFiles, setCatchImageFiles] = useState<File[]>([])
+  const [catchImageUrl, setCatchImageUrl] = useState<string | null>(
+    game.settings.background.catchImageUrl ?? null
+  )
 
   const [updateGameSettings] = useMutation<
     UpdateGameSettingsMutation,
@@ -99,10 +102,9 @@ export default function GameSettingsEdit() {
                   data.introduction.length > 0 ? data.introduction : null,
                 catchImageFile:
                   catchImageFiles.length > 0 ? catchImageFiles[0] : null,
-                catchImageUrl:
-                  catchImageFiles.length > 0
-                    ? null
-                    : game.settings.background.catchImageUrl
+                // 新規アップロード時はファイル経由で送るので URL は null。
+                // それ以外は state で保持する preview URL（既存 URL or 削除後の null）。
+                catchImageUrl: catchImageFiles.length > 0 ? null : catchImageUrl
               },
               chara: {
                 charachipIds: charachipIds,
@@ -148,9 +150,9 @@ export default function GameSettingsEdit() {
       rating,
       theme,
       catchImageFiles,
+      catchImageUrl,
       charachipIds,
       game.id,
-      game.settings.background.catchImageUrl,
       router
     ]
   )
@@ -171,7 +173,8 @@ export default function GameSettingsEdit() {
         canModifyTheme={true}
         theme={theme}
         setTheme={setTheme}
-        catchImageUrl={game.settings.background.catchImageUrl ?? null}
+        catchImageUrl={catchImageUrl}
+        setCatchImageUrl={setCatchImageUrl}
         catchImages={catchImageFiles}
         setCatchImages={setCatchImageFiles}
       />

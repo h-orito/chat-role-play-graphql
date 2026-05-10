@@ -39,6 +39,7 @@ type Props = {
   theme?: string | null
   setTheme?: Dispatch<SetStateAction<string | null>>
   catchImageUrl: string | null
+  setCatchImageUrl: (url: string | null) => void
   catchImages: File[]
   setCatchImages: Dispatch<SetStateAction<File[]>>
 }
@@ -474,7 +475,8 @@ export default function GameEdit(props: Props) {
             <InputImage
               name='profileImage'
               setImages={props.setCatchImages}
-              defaultImageUrl={props.catchImageUrl}
+              previewImageUrl={props.catchImageUrl}
+              setPreviewImageUrl={props.setCatchImageUrl}
             />
           </div>
           {props.canModifyTheme == true && (

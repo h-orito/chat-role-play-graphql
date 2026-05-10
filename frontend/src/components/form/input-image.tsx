@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import DangerButton from '../button/danger-button'
 import PrimaryButton from '../button/primary-button'
 
@@ -6,7 +6,12 @@ interface Props {
   label?: string
   name: string
   setImages: Dispatch<SetStateAction<File[]>>
-  defaultImageUrl?: string | null
+  // 現在の画像 URL（既存登録 URL / アップロード直後の blob URL / 削除後の null）。
+  // 親が単一ソースを管理することで「削除→更新で URL が消えない」バグを防ぐ。
+  // blob URL は InputImage 内部で createObjectURL/revokeObjectURL を行うので
+  // 呼び出し側は revoke を意識する必要なし。
+  previewImageUrl: string | null
+  setPreviewImageUrl: (url: string | null) => void
   maxFileKByte?: number
   disabled?: boolean
 }
@@ -23,13 +28,33 @@ export default function InputImage({
   label,
   name,
   setImages,
-  defaultImageUrl,
+  previewImageUrl,
+  setPreviewImageUrl,
   maxFileKByte = 1024,
   disabled = false
 }: Props) {
   const [errorMessage, setErrorMessage] = useState('')
-  const [previewImageUrl, setPreviewImageUrl] = useState(defaultImageUrl)
   const inputRef = useRef<HTMLInputElement>(null!)
+  // この InputImage が createObjectURL で作った blob URL のみを追跡する。
+  // 親由来の既存 URL（http(s)://...）は revoke 対象外。
+  const ownedBlobUrlRef = useRef<string | null>(null)
+
+  const replaceOwnedBlobUrl = (next: string | null) => {
+    if (ownedBlobUrlRef.current !== null) {
+      URL.revokeObjectURL(ownedBlobUrlRef.current)
+    }
+    ownedBlobUrlRef.current = next
+  }
+
+  // アンマウント時にも blob URL をリークさせない
+  useEffect(() => {
+    return () => {
+      if (ownedBlobUrlRef.current !== null) {
+        URL.revokeObjectURL(ownedBlobUrlRef.current)
+        ownedBlobUrlRef.current = null
+      }
+    }
+  }, [])
 
   const onProfileButtonClick = () => {
     inputRef.current.click()
@@ -54,14 +79,18 @@ export default function InputImage({
       return
     }
 
+    const nextBlobUrl = URL.createObjectURL(file)
+    replaceOwnedBlobUrl(nextBlobUrl)
     setImages([file])
-    setPreviewImageUrl(URL.createObjectURL(file))
+    setPreviewImageUrl(nextBlobUrl)
   }
 
   const handleCancel = () => {
     setErrorMessage('')
+    // ref が null の場合（親由来の既存 URL）は内部で no-op になる
+    replaceOwnedBlobUrl(null)
     setImages([])
-    setPreviewImageUrl('')
+    setPreviewImageUrl(null)
   }
 
   return (

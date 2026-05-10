@@ -48,6 +48,9 @@ export default function ProfileEdit({
       }
     })
   const [images, setImages] = useState<File[]>([])
+  const [profileImagePreviewUrl, setProfileImagePreviewUrl] = useState<
+    string | null
+  >(profile.profileImageUrl ?? null)
   const [iconId, setIconId] = useState<string | null>(
     myself?.profileIcon?.id ?? null
   )
@@ -76,7 +79,9 @@ export default function ProfileEdit({
             gameId: game.id,
             name: data.name,
             profileImageFile: images.length > 0 ? images[0] : null,
-            profileImageUrl: images.length > 0 ? null : profile.profileImageUrl,
+            // 新規アップロード時はファイル経由で送るので URL は null。
+            // それ以外は親が保持する preview URL（既存 URL or 削除後の null）。
+            profileImageUrl: images.length > 0 ? null : profileImagePreviewUrl,
             profileIconId: iconId,
             introduction: data.introduction,
             memo: null, // TODO: 消えてしまうかも
@@ -85,7 +90,7 @@ export default function ProfileEdit({
         }
       })
     },
-    [updateProfile, images, iconId, game.id, profile.profileImageUrl]
+    [updateProfile, images, profileImagePreviewUrl, iconId, game.id]
   )
 
   const selectedIcon = icons.find((icon) => icon.id === iconId)
@@ -149,7 +154,8 @@ export default function ProfileEdit({
           <InputImage
             name='profileImage'
             setImages={setImages}
-            defaultImageUrl={profile.profileImageUrl}
+            previewImageUrl={profileImagePreviewUrl}
+            setPreviewImageUrl={setProfileImagePreviewUrl}
             disabled={!canChangeProfileImage}
           />
         </div>
