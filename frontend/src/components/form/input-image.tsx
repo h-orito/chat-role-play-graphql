@@ -6,7 +6,10 @@ interface Props {
   label?: string
   name: string
   setImages: Dispatch<SetStateAction<File[]>>
-  defaultImageUrl?: string | null
+  // 現在の画像 URL（既存登録 URL / アップロード直後の blob URL / 削除後の null）。
+  // 親が単一ソースを管理することで「削除→更新で URL が消えない」バグを防ぐ。
+  previewImageUrl: string | null
+  setPreviewImageUrl: (url: string | null) => void
   maxFileKByte?: number
   disabled?: boolean
 }
@@ -23,12 +26,12 @@ export default function InputImage({
   label,
   name,
   setImages,
-  defaultImageUrl,
+  previewImageUrl,
+  setPreviewImageUrl,
   maxFileKByte = 1024,
   disabled = false
 }: Props) {
   const [errorMessage, setErrorMessage] = useState('')
-  const [previewImageUrl, setPreviewImageUrl] = useState(defaultImageUrl)
   const inputRef = useRef<HTMLInputElement>(null!)
 
   const onProfileButtonClick = () => {
@@ -61,7 +64,7 @@ export default function InputImage({
   const handleCancel = () => {
     setErrorMessage('')
     setImages([])
-    setPreviewImageUrl('')
+    setPreviewImageUrl(null)
   }
 
   return (
