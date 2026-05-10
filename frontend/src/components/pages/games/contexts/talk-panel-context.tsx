@@ -55,10 +55,10 @@ export const TalkPanelProvider = ({ children }: Props) => {
     setReplyTarget(message)
     setIsOpen(true)
     const senderId = message.sender?.participantId
-    if (senderId) {
-      const sender = participantsRef.current.find((p) => p.id === senderId)
-      if (sender) setReceiver(sender)
-    }
+    const sender = senderId
+      ? participantsRef.current.find((p) => p.id === senderId) ?? null
+      : null
+    setReceiver(sender)
     if (message.content.type === MessageType.Secret) {
       setTalkType(MessageType.Secret)
     }
@@ -98,7 +98,9 @@ export const TalkPanelProvider = ({ children }: Props) => {
       reply,
       cancelReply,
       talkType,
+      setTalkType,
       receiver,
+      setReceiver,
       resetForm
     ]
   )
