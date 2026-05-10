@@ -4,12 +4,9 @@ import {
   ChangePeriodMutationVariables,
   Game,
   GameParticipant,
-  MyPlayerDocument,
-  MyPlayerQuery,
-  MyPlayerQueryVariables,
   Player
 } from '@/lib/generated/graphql'
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useRef } from 'react'
 import { useGameValue } from './contexts/game-context'
@@ -22,6 +19,10 @@ export {
   useMyselfValue
 } from './contexts/myself-context'
 export { IconsProvider, useIconsValue } from './contexts/icons-context'
+export {
+  MyPlayerProvider,
+  useMyPlayerValue
+} from './contexts/my-player-context'
 export { SidebarProvider, useSidebarOpen } from './contexts/sidebar-context'
 export {
   FixedBottomProvider,
@@ -76,23 +77,6 @@ export const canModifyGameSetting = (game: Game, myPlayer: Player | null) => {
   )
 }
 
-// player（アプリスコープ atom）
-// useMyPlayer は useQuery の結果を直接返し、useEffect は useMyPlayerValue
-// 用に myPlayerAtom へ書き込むためだけに使う。
-const myPlayerAtom = atom<Player | null>(null)
-
-export const useMyPlayer = (): Player | null => {
-  const setMyPlayer = useSetAtom(myPlayerAtom)
-  const { data } = useQuery<MyPlayerQuery, MyPlayerQueryVariables>(
-    MyPlayerDocument
-  )
-  const myPlayer = (data?.myPlayer as Player | null | undefined) ?? null
-  useEffect(() => {
-    if (myPlayer) setMyPlayer(myPlayer)
-  }, [myPlayer, setMyPlayer])
-  return myPlayer
-}
-export const useMyPlayerValue = () => useAtomValue(myPlayerAtom)
 const isAdmin = (myPlayer: Player | null) => {
   return myPlayer && myPlayer.authorityCodes.includes('AuthorityAdmin')
 }

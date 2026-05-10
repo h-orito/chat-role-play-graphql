@@ -20,10 +20,10 @@ import {
   FixedBottomProvider,
   GameProvider,
   IconsProvider,
+  MyPlayerProvider,
   MyselfProvider,
   SidebarProvider,
   useGameValue,
-  useMyPlayer,
   usePollingPeriod,
   useUserDisplaySettingsAtom
 } from '@/components/pages/games/game-hook'
@@ -59,19 +59,21 @@ type Props = {
 const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   return (
     <GameProvider game={game}>
-      <MyselfProvider gameId={game.id}>
-        <IconsProvider>
-          <MessagesQueryProvider initialMessagesQuery={initialMessagesQuery}>
-            <SidebarProvider>
-              <FixedBottomProvider>
-                <TalkPanelProvider>
-                  <GamePageContent game={game} />
-                </TalkPanelProvider>
-              </FixedBottomProvider>
-            </SidebarProvider>
-          </MessagesQueryProvider>
-        </IconsProvider>
-      </MyselfProvider>
+      <MyPlayerProvider>
+        <MyselfProvider gameId={game.id}>
+          <IconsProvider>
+            <MessagesQueryProvider initialMessagesQuery={initialMessagesQuery}>
+              <SidebarProvider>
+                <FixedBottomProvider>
+                  <TalkPanelProvider>
+                    <GamePageContent game={game} />
+                  </TalkPanelProvider>
+                </FixedBottomProvider>
+              </SidebarProvider>
+            </MessagesQueryProvider>
+          </IconsProvider>
+        </MyselfProvider>
+      </MyPlayerProvider>
     </GameProvider>
   )
 }
@@ -81,7 +83,6 @@ type ContentProps = {
 }
 
 const GamePageContent = ({ game }: ContentProps) => {
-  useMyPlayer()
   useUserDisplaySettingsAtom()
   // 1分に1回ゲーム更新チェック
   usePollingPeriod()

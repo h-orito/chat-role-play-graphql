@@ -20,12 +20,12 @@ import {
   FixedBottomProvider,
   GameProvider,
   IconsProvider,
+  MyPlayerProvider,
   MyselfProvider,
   useGameValue,
-  useMyPlayer,
   useUserDisplaySettingsAtom
 } from '@/components/pages/games/game-hook'
-import { TalkPanelProvider } from '@/components/pages/games/talk/use-talk-panel'
+import { TalkPanelProvider } from '@/components/pages/games/contexts/talk-panel-context'
 import ThreadMessageArea from '@/components/pages/games/thread/thread-message-area'
 
 export const getServerSideProps = async (
@@ -75,19 +75,21 @@ const GameParticipantProfilePage = ({
 }: Props) => {
   return (
     <GameProvider game={game}>
-      <MyselfProvider gameId={game.id}>
-        <IconsProvider>
-          <FixedBottomProvider>
-            <TalkPanelProvider>
-              <GameParticipantProfilePageContent
-                game={game}
-                messageId={messageId}
-                threadMessages={threadMessages}
-              />
-            </TalkPanelProvider>
-          </FixedBottomProvider>
-        </IconsProvider>
-      </MyselfProvider>
+      <MyPlayerProvider>
+        <MyselfProvider gameId={game.id}>
+          <IconsProvider>
+            <FixedBottomProvider>
+              <TalkPanelProvider>
+                <GameParticipantProfilePageContent
+                  game={game}
+                  messageId={messageId}
+                  threadMessages={threadMessages}
+                />
+              </TalkPanelProvider>
+            </FixedBottomProvider>
+          </IconsProvider>
+        </MyselfProvider>
+      </MyPlayerProvider>
     </GameProvider>
   )
 }
@@ -97,7 +99,6 @@ const GameParticipantProfilePageContent = ({
   messageId,
   threadMessages
 }: Props) => {
-  useMyPlayer()
   useUserDisplaySettingsAtom()
 
   return (

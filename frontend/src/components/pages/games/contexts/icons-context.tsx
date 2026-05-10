@@ -26,5 +26,8 @@ export const IconsProvider = ({ children }: Props) => {
 
 export const useIconsValue = (): Array<GameParticipantIcon> => {
   const icons = useContext(IconsContext)
-  return icons ?? []
+  if (icons === null) {
+    throw new Error('useIconsValue must be used within IconsProvider')
+  }
+  return icons
 }
