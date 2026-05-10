@@ -46,7 +46,7 @@ export default function DirectMessageFilter(props: Props) {
     setKeyword('')
     setSinceAt(null)
     setUntilAt(null)
-    const newQuery: DirectMessagesQuery = {
+    const resetQuery: DirectMessagesQuery = {
       ...messageQuery,
       senderIds: null,
       keywords: null,
@@ -57,7 +57,7 @@ export default function DirectMessageFilter(props: Props) {
         pageNumber: 1
       }
     }
-    search(newQuery)
+    search(resetQuery)
     close()
   }
 

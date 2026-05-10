@@ -299,8 +299,9 @@ async function searchMessageByKeyword(
 
 async function resetMessageFilter(page: Page): Promise<void> {
   await openMessageFilterModal(page)
-  // window.confirm を accept
-  page.once('dialog', (dialog) => dialog.accept())
+  // window.confirm を accept（page.on('dialog') の dialog はネイティブダイアログ。
+  // 上で扱う getByRole('dialog') の React モーダルとは別物なので nativeDialog と命名）
+  page.once('dialog', (nativeDialog) => nativeDialog.accept())
   await page.getByRole('dialog').getByRole('button', { name: 'リセット' }).click()
 }
 

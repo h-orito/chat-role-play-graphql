@@ -61,7 +61,7 @@ export default function MessageFilter(props: Props) {
     setKeyword('')
     setSinceAt(null)
     setUntilAt(null)
-    const query: MessagesQuery = {
+    const resetQuery: MessagesQuery = {
       ...messageQuery,
       types: null,
       senderIds: null,
@@ -74,7 +74,7 @@ export default function MessageFilter(props: Props) {
         pageNumber: 1
       }
     }
-    search(query)
+    search(resetQuery)
     close()
   }
 
