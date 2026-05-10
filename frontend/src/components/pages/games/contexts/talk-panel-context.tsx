@@ -77,6 +77,8 @@ export const TalkPanelProvider = ({ children }: Props) => {
     }
   }, [])
 
+  // 送信完了後の form 初期化用。ユーザー操作の返信解除は cancelReply を使う
+  // （cancelReply は秘話継続中の receiver 保持などの分岐を持つ）
   const resetForm = useCallback(() => {
     setReplyTarget(null)
     setReceiver(null)
