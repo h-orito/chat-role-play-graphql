@@ -38,7 +38,15 @@ interface FormInput {
 const Talk = (props: Props) => {
   const game = useGameValue()
   const myself = useMyselfValue()!
-  const { replyTarget, cancelReply: cancelReplyAtom } = useTalkPanel()
+  const {
+    replyTarget,
+    cancelReply,
+    talkType,
+    setTalkType,
+    receiver,
+    setReceiver,
+    resetForm
+  } = useTalkPanel()
 
   const { control, formState, handleSubmit, setValue } = useForm<FormInput>({
     defaultValues: {
@@ -48,10 +56,6 @@ const Talk = (props: Props) => {
   })
   const updateTalkMessage = (str: string) => setValue('talkMessage', str)
 
-  // 発言種別
-  const [talkType, setTalkType] = useState(MessageType.TalkNormal)
-  // 送信相手
-  const [receiver, setReceiver] = useState<GameParticipant | null>(null)
   // 選択中のアイコン
   const [iconId, setIconId] = useState<string>('')
   // 装飾やランダム変換しない
@@ -63,26 +67,10 @@ const Talk = (props: Props) => {
     setIconId(icons.length <= 0 ? '' : icons[0].id)
   }, [icons])
 
-  // replyTarget の変更に反応して receiver と talkType を設定
-  useEffect(() => {
-    if (replyTarget) {
-      setReceiver(
-        game.participants.find(
-          (p) => p.id === replyTarget.sender!.participantId
-        )!
-      )
-      if (replyTarget.content.type === MessageType.Secret) {
-        setTalkType(MessageType.Secret)
-      }
-    }
-  }, [replyTarget, game.participants])
-
   const init = () => {
-    setTalkType(MessageType.TalkNormal)
     setPreview(null)
     setDryRunMessage(null)
-    cancelReplyAtom()
-    setReceiver(null)
+    resetForm()
     setValue('name', myself.name)
     setValue('talkMessage', '')
     setIconId(icons[0].id)
@@ -151,13 +139,6 @@ const Talk = (props: Props) => {
     },
     [createNewMessage, talkDryRun]
   )
-
-  const cancelReply = () => {
-    cancelReplyAtom()
-    if (talkType !== MessageType.Secret) {
-      setReceiver(null)
-    }
-  }
 
   const talkMessageId = `${props.talkAreaId}-talk-message`
 
