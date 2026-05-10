@@ -32,6 +32,7 @@ import { useGameValue } from '@/components/pages/games/game-hook'
 import Panel from '@/components/panel/panel'
 import TalkDirect from '../../../talk/talk-direct'
 import { base64ToId } from '@/components/graphql/convert'
+import FixedPanelWrapper from '../fixed-panel-wrapper'
 
 type Props = {
   close: () => void
@@ -311,9 +312,7 @@ const DirectTalkPanel = (props: DirectTalkAreaProps) => {
   } else {
     return (
       <Portal target={`#${props.talkAreaId}-fixed`}>
-        <div className='-m-4 max-h-[40vh] overflow-y-scroll md:max-h-full md:overflow-y-hidden'>
-          {panel}
-        </div>
+        <FixedPanelWrapper>{panel}</FixedPanelWrapper>
       </Portal>
     )
   }
