@@ -25,6 +25,13 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='不具合修正' date='2026/05/11'>
+            <li>
+              修正:
+              プロフィール画像/ゲームキャッチ画像の削除ボタンを押して更新しても画像が消えない不具合を修正
+            </li>
+          </ReleaseContent>
+
           <ReleaseContent label='メンテナンス' date='2026/05/09'>
             <li>今後の変更に向けて大リファクタリング大会を実施中</li>
           </ReleaseContent>
