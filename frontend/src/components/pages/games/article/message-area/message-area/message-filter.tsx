@@ -53,13 +53,29 @@ export default function MessageFilter(props: Props) {
   )
 
   const handleReset = () => {
-    if (!window.confirm('検索条件をリセットしてよろしいですか？')) return
+    if (!window.confirm('検索条件をリセットして再抽出します。よろしいですか？'))
+      return
     setTypes(messageTypeValues)
     setSenders([])
     setReceivers([])
     setKeyword('')
     setSinceAt(null)
     setUntilAt(null)
+    const query: MessagesQuery = {
+      ...messageQuery,
+      types: null,
+      senderIds: null,
+      recipientIds: null,
+      keywords: null,
+      sinceAt: null,
+      untilAt: null,
+      paging: {
+        ...messageQuery.paging!,
+        pageNumber: 1
+      }
+    }
+    search(query)
+    close()
   }
 
   const handleSearch = () => {

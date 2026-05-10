@@ -12,8 +12,9 @@ import { test, expect, type Page } from '@playwright/test'
 //   8. ユーザーBが通常発言
 //   9. ユーザーBがユーザーAの通常発言にリプライ
 //  10. ユーザーBがユーザーAに秘話送信
-//  11. ユーザーAが自分宛タブで秘話を確認
-//  12. ユーザーAがゲームのステータスを「終了」に変更
+//  11. ユーザーAが発言抽出（キーワード絞り込み→リセットで再抽出）を確認
+//  12. ユーザーAが自分宛タブで秘話を確認
+//  13. ユーザーAがゲームのステータスを「終了」に変更
 // ================================================================
 
 test('複数ユーザーシナリオ：ゲーム作成・参加・発言・リプライ・秘話', async ({
@@ -111,13 +112,40 @@ test('複数ユーザーシナリオ：ゲーム作成・参加・発言・リ�
   await postSecretTalk(pageB, bSecret)
 
   // ============================================================
-  // 11. ユーザーA: 自分宛タブで秘話を確認
+  // 11. ユーザーA: 発言抽出（キーワード絞り込み→リセットで再抽出）を確認
   // ============================================================
   await pageA.reload()
   await pageA.waitForURL(/\/chat-role-play\/games\/\d+/)
   await expect(pageA.locator('h1').filter({ hasText: gameName })).toBeVisible({
     timeout: 10_000
   })
+  // 抽出前は home に A/B 両方の通常発言が見える
+  await expect(
+    pageA.locator('#message-area-home').getByText(aNormal, { exact: true })
+  ).toBeVisible({ timeout: 10_000 })
+  await expect(
+    pageA.locator('#message-area-home').getByText(bNormal, { exact: true })
+  ).toBeVisible({ timeout: 10_000 })
+
+  // キーワード「Aの通常発言」で絞り込み → A のみ残り B は消える
+  await searchMessageByKeyword(pageA, 'Aの通常発言')
+  await expect(
+    pageA.locator('#message-area-home').getByText(aNormal, { exact: true })
+  ).toBeVisible({ timeout: 10_000 })
+  await expect(
+    pageA.locator('#message-area-home').getByText(bNormal, { exact: true })
+  ).toHaveCount(0)
+
+  // リセット押下（confirm を accept）→ モーダル閉じる、再抽出されて B が再表示
+  await resetMessageFilter(pageA)
+  await expect(pageA.getByRole('dialog')).toHaveCount(0)
+  await expect(
+    pageA.locator('#message-area-home').getByText(bNormal, { exact: true })
+  ).toBeVisible({ timeout: 10_000 })
+
+  // ============================================================
+  // 12. ユーザーA: 自分宛タブで秘話を確認
+  // ============================================================
   // 自分宛タブに切り替え、tome側メッセージエリアで秘話を確認
   await pageA
     .getByRole('button', { name: /自分宛/ })
@@ -127,7 +155,7 @@ test('複数ユーザーシナリオ：ゲーム作成・参加・発言・リ�
     pageA.locator('#message-area-tome').getByText(bSecret)
   ).toBeVisible({ timeout: 10_000 })
 
-  // 12. ユーザーA: ステータスを「終了」に変更
+  // 13. ユーザーA: ステータスを「終了」に変更
   await changeGameStatusToFinished(pageA)
 })
 
@@ -242,6 +270,38 @@ async function replyToTalk(
   const form = talkMessageTextarea.locator('xpath=ancestor::form')
   await form.locator('input[type="submit"][value="プレビュー"]').click()
   await page.getByRole('button', { name: '発言する' }).first().click()
+}
+
+async function openMessageFilterModal(page: Page): Promise<void> {
+  // home の MessageArea は #message-area-home の親 div 配下にフッターメニューを持つ。
+  // tome 側は searchable=false なのでフィルタボタンが生えないが、念のため home に scope。
+  await page
+    .locator('#message-area-home')
+    .locator('xpath=..')
+    .getByRole('button', { name: '発言抽出' })
+    .click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+}
+
+async function searchMessageByKeyword(
+  page: Page,
+  keyword: string
+): Promise<void> {
+  await openMessageFilterModal(page)
+  const dialog = page.getByRole('dialog')
+  await dialog
+    .locator('input[placeholder="スペース区切りでOR検索"]')
+    .fill(keyword)
+  // 「検索（別タブ）」と区別するため exact: true
+  await dialog.getByRole('button', { name: '検索', exact: true }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+}
+
+async function resetMessageFilter(page: Page): Promise<void> {
+  await openMessageFilterModal(page)
+  // window.confirm を accept
+  page.once('dialog', (dialog) => dialog.accept())
+  await page.getByRole('dialog').getByRole('button', { name: 'リセット' }).click()
 }
 
 async function postSecretTalk(page: Page, text: string): Promise<void> {
