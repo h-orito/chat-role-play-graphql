@@ -1,7 +1,7 @@
 import Portal from '@/components/modal/portal'
 import Panel from '@/components/panel/panel'
 import { MessagesQuery } from '@/lib/generated/graphql'
-import { memo, useCallback, useEffect, useRef } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { useFixedPanel } from '@/components/hooks/use-fixed-panel'
 import { useGameValue, useMyPlayerValue } from '../../../game-hook'
 import Talk from '../../../talk/talk'
@@ -37,7 +37,7 @@ type TalkPanelProps = {
 }
 
 const TalkPanel = ({ search, talkAreaId }: TalkPanelProps) => {
-  const { isOpen, setIsOpen, replyTarget } = useTalkPanel()
+  const { isOpen, toggle, replyTarget } = useTalkPanel()
   const panelWrapperRef = useRef<HTMLDivElement>(null)
   const { isFixed, toggleFixed } = useFixedPanel()
 
@@ -52,16 +52,12 @@ const TalkPanel = ({ search, talkAreaId }: TalkPanelProps) => {
     search()
   }
 
-  const handleToggle = useCallback(() => {
-    setIsOpen(!isOpen)
-  }, [isOpen, setIsOpen])
-
   const panel = (
     <div ref={panelWrapperRef}>
       <Panel
         header='発言'
         isOpen={isOpen}
-        onToggle={handleToggle}
+        onToggle={toggle}
         toggleFixed={toggleFixed}
         isFixed={isFixed}
       >

@@ -101,7 +101,6 @@ const GameParticipantProfilePage = ({
     <GameProvider game={game}>
       <MyselfProvider gameId={game.id}>
         <GameParticipantProfilePageContent
-          game={game}
           initialProfile={initialProfile}
           initialIcons={initialIcons}
         />
@@ -111,16 +110,15 @@ const GameParticipantProfilePage = ({
 }
 
 type ContentProps = {
-  game: Game
   initialProfile: GameParticipantProfile
   initialIcons: Array<GameParticipantIcon>
 }
 
 const GameParticipantProfilePageContent = ({
-  game,
   initialProfile,
   initialIcons
 }: ContentProps) => {
+  const game = useGameValue()
   const myself = useMyselfValue()
   const [profile, setProfile] = useState<GameParticipantProfile>(initialProfile)
   const [icons, setIcons] = useState<Array<GameParticipantIcon>>(initialIcons)

@@ -66,7 +66,7 @@ const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
               <SidebarProvider>
                 <FixedBottomProvider>
                   <TalkPanelProvider>
-                    <GamePageContent game={game} />
+                    <GamePageContent />
                   </TalkPanelProvider>
                 </FixedBottomProvider>
               </SidebarProvider>
@@ -78,11 +78,8 @@ const GamePage = ({ game, messagesQuery: initialMessagesQuery }: Props) => {
   )
 }
 
-type ContentProps = {
-  game: Game
-}
-
-const GamePageContent = ({ game }: ContentProps) => {
+const GamePageContent = () => {
+  const game = useGameValue()
   useUserDisplaySettingsAtom()
   // 1分に1回ゲーム更新チェック
   usePollingPeriod()

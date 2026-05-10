@@ -19,7 +19,7 @@ export const MessagesQueryProvider = ({
 
 export const useInitialMessagesQuery = (): MessagesQuery => {
   const value = useContext(MessagesQueryContext)
-  if (!value) {
+  if (value === null) {
     throw new Error(
       'useInitialMessagesQuery must be used within MessagesQueryProvider'
     )

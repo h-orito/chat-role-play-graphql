@@ -81,7 +81,6 @@ const GameParticipantProfilePage = ({
             <FixedBottomProvider>
               <TalkPanelProvider>
                 <GameParticipantProfilePageContent
-                  game={game}
                   messageId={messageId}
                   threadMessages={threadMessages}
                 />
@@ -94,11 +93,16 @@ const GameParticipantProfilePage = ({
   )
 }
 
+type ContentProps = {
+  messageId: string
+  threadMessages: Array<Message>
+}
+
 const GameParticipantProfilePageContent = ({
-  game,
   messageId,
   threadMessages
-}: Props) => {
+}: ContentProps) => {
+  const game = useGameValue()
   useUserDisplaySettingsAtom()
 
   return (

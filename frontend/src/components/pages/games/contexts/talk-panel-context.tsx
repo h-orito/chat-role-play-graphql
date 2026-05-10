@@ -1,8 +1,6 @@
 import { Message } from '@/lib/generated/graphql'
 import {
-  Dispatch,
   ReactNode,
-  SetStateAction,
   createContext,
   useCallback,
   useContext,
@@ -12,7 +10,7 @@ import {
 
 type TalkPanelContextValue = {
   isOpen: boolean
-  setIsOpen: Dispatch<SetStateAction<boolean>>
+  toggle: () => void
   replyTarget: Message | null
   reply: (message: Message) => void
   cancelReply: () => void
@@ -28,6 +26,8 @@ export const TalkPanelProvider = ({ children }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
   const [replyTarget, setReplyTarget] = useState<Message | null>(null)
 
+  const toggle = useCallback(() => setIsOpen((prev) => !prev), [])
+
   const reply = useCallback((message: Message) => {
     setReplyTarget(message)
     setIsOpen(true)
@@ -38,8 +38,8 @@ export const TalkPanelProvider = ({ children }: Props) => {
   }, [])
 
   const value = useMemo<TalkPanelContextValue>(
-    () => ({ isOpen, setIsOpen, replyTarget, reply, cancelReply }),
-    [isOpen, replyTarget, reply, cancelReply]
+    () => ({ isOpen, toggle, replyTarget, reply, cancelReply }),
+    [isOpen, toggle, replyTarget, reply, cancelReply]
   )
 
   return (
