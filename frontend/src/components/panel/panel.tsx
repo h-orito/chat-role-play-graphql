@@ -23,14 +23,15 @@ type Props = BaseProps & (ControlledProps | UncontrolledProps)
 
 const Panel = (props: Props) => {
   const { header, children, isFixed = false, toggleFixed } = props
-  const isControlled = props.onToggle !== undefined
 
+  // controlled 時は使われないが、Hooks の規則上常に呼ぶ必要がある
   const [internalOpen, setInternalOpen] = useState(props.defaultOpen ?? true)
-  const isOpen = isControlled ? props.isOpen : internalOpen
+
+  const isOpen = props.onToggle !== undefined ? props.isOpen : internalOpen
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    if (isControlled) {
+    if (props.onToggle !== undefined) {
       props.onToggle()
     } else {
       setInternalOpen((prev) => !prev)
