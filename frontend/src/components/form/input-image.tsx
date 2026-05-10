@@ -16,9 +16,6 @@ interface Props {
   disabled?: boolean
 }
 
-const isBlobUrl = (url: string | null): boolean =>
-  url !== null && url.startsWith('blob:')
-
 const allowImageTypes = [
   'image/jpeg',
   'image/png',
@@ -90,9 +87,8 @@ export default function InputImage({
 
   const handleCancel = () => {
     setErrorMessage('')
-    if (isBlobUrl(previewImageUrl)) {
-      replaceOwnedBlobUrl(null)
-    }
+    // ref が null の場合（親由来の既存 URL）は内部で no-op になる
+    replaceOwnedBlobUrl(null)
     setImages([])
     setPreviewImageUrl(null)
   }
