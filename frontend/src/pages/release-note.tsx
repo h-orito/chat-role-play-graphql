@@ -25,6 +25,13 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='性能改善' date='2026/05/12'>
+            <li>
+              改善:
+              画面遷移やタブ切り替え時にキャッシュから即座に表示し、背景で最新化するよう変更（メッセージ系は従来どおり都度取得）
+            </li>
+          </ReleaseContent>
+
           <ReleaseContent label='不具合修正' date='2026/05/11'>
             <li>
               修正:

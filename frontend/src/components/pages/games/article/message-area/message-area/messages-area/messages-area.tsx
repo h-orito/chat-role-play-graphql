@@ -49,7 +49,7 @@ const MessagesArea = (props: Props) => {
   const [fetchMessagesLatest] = useLazyQuery<
     MessagesLatestQuery,
     MessagesLatestQueryVariables
-  >(MessagesLatestDocument)
+  >(MessagesLatestDocument, { fetchPolicy: 'no-cache' })
 
   const fetchLatestTime = async () => {
     if (!isViewing && existsUnread) return

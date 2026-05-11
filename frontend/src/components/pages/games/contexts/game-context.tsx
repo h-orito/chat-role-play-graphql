@@ -29,7 +29,7 @@ export const GameProvider = ({ game: initialGame, children }: Props) => {
   const [game, setGame] = useState<Game>(initialGame)
   const [refetchGame] = useLazyQuery<GameQuery, GameQueryVariables>(
     GameDocument,
-    { variables: { id: initialGame.id } }
+    { variables: { id: initialGame.id }, fetchPolicy: 'no-cache' }
   )
 
   useEffect(() => {

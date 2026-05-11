@@ -211,7 +211,7 @@ const ReplyButton = ({
   const [fetchReplies] = useLazyQuery<
     MessageRepliesQuery,
     MessageRepliesQueryVariables
-  >(MessageRepliesDocument)
+  >(MessageRepliesDocument, { fetchPolicy: 'no-cache' })
   const toggleReplies = async () => {
     if (!showReplies && replies.length === 0) {
       const { data } = await fetchReplies({
@@ -285,7 +285,7 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
   const [fetchMessage] = useLazyQuery<
     GameMessageQuery,
     GameMessageQueryVariables
-  >(GameMessageDocument)
+  >(GameMessageDocument, { fetchPolicy: 'no-cache' })
   useEffect(() => {
     const fetch = async () => {
       const { data } = await fetchMessage({

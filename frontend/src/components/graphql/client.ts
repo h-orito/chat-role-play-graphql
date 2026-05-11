@@ -41,11 +41,14 @@ export const createClient = async (
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {
-        fetchPolicy: 'no-cache',
+        fetchPolicy: 'cache-and-network',
+        errorPolicy: 'all'
+      },
+      query: {
+        fetchPolicy: 'cache-first',
         errorPolicy: 'all'
       },
       mutate: {
-        fetchPolicy: 'no-cache',
         errorPolicy: 'all'
       }
     }

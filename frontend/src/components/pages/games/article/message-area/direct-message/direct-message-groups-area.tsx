@@ -28,7 +28,7 @@ export default function DirectMessageGroupsArea({ className }: Props) {
   const [fetchParticipantGroups] = useLazyQuery<
     ParticipantGroupsQuery,
     ParticipantGroupsQueryVariables
-  >(ParticipantGroupsDocument)
+  >(ParticipantGroupsDocument, { fetchPolicy: 'no-cache' })
   const [groups, setGroups] = useState<GameParticipantGroup[]>([])
 
   const createModal = useModal()

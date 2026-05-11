@@ -20,7 +20,7 @@ export default function FavoriteParticipants({ messageId }: Props) {
   const [fetchFavoriteParticipants] = useLazyQuery<
     FavoriteParticipantsQuery,
     FavoriteParticipantsQueryVariables
-  >(FavoriteParticipantsDocument)
+  >(FavoriteParticipantsDocument, { fetchPolicy: 'no-cache' })
   const refetchFavoriteParticipants = async () => {
     const { data } = await fetchFavoriteParticipants({
       variables: {
