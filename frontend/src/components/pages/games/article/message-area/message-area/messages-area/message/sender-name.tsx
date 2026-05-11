@@ -25,6 +25,7 @@ export const SenderName = ({ message, preview }: Props) => {
         message.sender!.participantId
       )}`}
       target='_blank'
+      rel='noreferrer'
     >
       {name}
     </Link>

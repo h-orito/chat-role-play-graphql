@@ -145,6 +145,7 @@ const ReceiverName = ({
           message.receiver!.participantId
         )}`}
         target='_blank'
+        rel='noreferrer'
       >
         {name}
       </Link>
@@ -180,6 +181,7 @@ const SenderIcon = ({
         message.sender!.participantId
       )}`}
       target='_blank'
+      rel='noreferrer'
     >
       {icon}
     </Link>
@@ -321,6 +323,7 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
             message.id
           )}`}
           target='_blank'
+          rel='noreferrer'
         >
           <p>
             →&nbsp;#{replyToMessage.content.number}&nbsp;

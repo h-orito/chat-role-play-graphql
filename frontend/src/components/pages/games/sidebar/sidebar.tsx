@@ -295,6 +295,7 @@ const ProfileButton = () => {
       <Link
         href={`/games/${base64ToId(game.id)}/profile/${base64ToId(myself.id)}`}
         target='_blank'
+        rel='noreferrer'
         className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
       >
         <UserCircleIcon className='mr-1 size-5' />
