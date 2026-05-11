@@ -32,7 +32,7 @@ const ThreadMessageArea = (props: Props) => {
   const [fetchMessages] = useLazyQuery<
     ThreadMessagesQuery,
     ThreadMessagesQueryVariables
-  >(ThreadMessagesDocument)
+  >(ThreadMessagesDocument, { fetchPolicy: 'no-cache' })
   const [userPagingSettings] = useUserPagingSettings()
 
   // messages state をここで管理

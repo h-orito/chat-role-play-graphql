@@ -68,7 +68,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
     const [fetchMessages] = useLazyQuery<
       GameMessagesQuery,
       GameMessagesQueryVariables
-    >(GameMessagesDocument)
+    >(GameMessagesDocument, { fetchPolicy: 'no-cache' })
     const search = useCallback(
       async (query: MessagesQuery = messageQuery) => {
         setMessageQuery(query)

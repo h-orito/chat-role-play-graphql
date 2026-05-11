@@ -67,7 +67,7 @@ export default function DirectMessageArea(props: Props) {
   const [fetchDirectMessages] = useLazyQuery<
     GameDirectMessagesQuery,
     GameDirectMessagesQueryVariables
-  >(GameDirectMessagesDocument)
+  >(GameDirectMessagesDocument, { fetchPolicy: 'no-cache' })
 
   const search = useCallback(
     async (q: DirectMessagesQuery = query) => {

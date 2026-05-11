@@ -211,7 +211,7 @@ const ReplyButton = ({
   const [fetchReplies] = useLazyQuery<
     MessageRepliesQuery,
     MessageRepliesQueryVariables
-  >(MessageRepliesDocument)
+  >(MessageRepliesDocument, { fetchPolicy: 'no-cache' })
   const toggleReplies = async () => {
     if (!showReplies && replies.length === 0) {
       const { data } = await fetchReplies({
@@ -285,7 +285,7 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
   const [fetchMessage] = useLazyQuery<
     GameMessageQuery,
     GameMessageQueryVariables
-  >(GameMessageDocument)
+  >(GameMessageDocument, { fetchPolicy: 'no-cache' })
   useEffect(() => {
     const fetch = async () => {
       const { data } = await fetchMessage({
@@ -298,7 +298,7 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
       setReplyToMessage(data.message as Message)
     }
     fetch()
-    // mount 時のみ返信元メッセージを取得（fetchMessage は render ごとに新しい関数になるため依存に含めない）
+    // mount 時のみ返信元メッセージを取得すれば十分なため、fetchMessage は依存に含めない
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

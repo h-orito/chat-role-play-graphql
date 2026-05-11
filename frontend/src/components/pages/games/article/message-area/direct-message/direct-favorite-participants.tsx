@@ -20,7 +20,7 @@ export default function DirectFavoriteParticipants({ messageId }: Props) {
   const [fetchFavoriteParticipants] = useLazyQuery<
     DirectFavoriteParticipantsQuery,
     DirectFavoriteParticipantsQueryVariables
-  >(DirectFavoriteParticipantsDocument)
+  >(DirectFavoriteParticipantsDocument, { fetchPolicy: 'no-cache' })
   const refetchFavoriteParticipants = async () => {
     const { data } = await fetchFavoriteParticipants({
       variables: {
