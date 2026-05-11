@@ -179,6 +179,7 @@ const SenderName = ({
         directMessage.sender!.participantId
       )}`}
       target='_blank'
+      rel='noreferrer'
     >
       {name}
     </Link>
@@ -213,6 +214,7 @@ const SenderIcon = ({
         directMessage.sender!.participantId
       )}`}
       target='_blank'
+      rel='noreferrer'
     >
       {icon}
     </Link>

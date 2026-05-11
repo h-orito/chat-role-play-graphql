@@ -86,6 +86,7 @@ export default function Instructions() {
                         <Link
                           href={'/rules'}
                           target='_blank'
+                          rel='noreferrer'
                           className='text-blue-500'
                         >
                           ルール
@@ -97,6 +98,7 @@ export default function Instructions() {
                         <Link
                           href={'/rules'}
                           target='_blank'
+                          rel='noreferrer'
                           className='text-blue-500'
                         >
                           ルール

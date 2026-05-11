@@ -16,6 +16,8 @@
   "rules": {
     "react-hooks/exhaustive-deps": "warn",
     "@next/next/no-img-element": "off",
+    // next/core-web-vitals が "off" にしているため明示的に上書き
+    "react/jsx-no-target-blank": ["error", { "allowReferrer": false }],
     "tailwindcss/no-custom-classname": ["warn", {
       "whitelist": [
         "base-.+",

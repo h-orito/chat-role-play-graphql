@@ -488,6 +488,7 @@ const NewTabFilterLink = (props: NewTabFilterLinkProps) => {
         )
       }}
       target='_blank'
+      rel='noreferrer'
     >
       <PrimaryButton className='ml-2' click={() => {}}>
         検索（別タブ）

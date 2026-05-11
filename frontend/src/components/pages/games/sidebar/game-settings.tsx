@@ -33,6 +33,7 @@ export default function GameSettings({ close }: GameSettingsProps) {
                   className='base-link'
                   href={`/charachips/${base64ToId(c.id)}`}
                   target='_blank'
+                  rel='noreferrer'
                 >
                   {c.name}
                 </Link>

@@ -21,6 +21,7 @@ export default function Participants({ className, participants }: Props) {
             participant.id
           )}`}
           target='_blank'
+          rel='noreferrer'
           key={participant.id}
           className='base-border flex rounded-md border p-4 hover:bg-gray-100'
         >

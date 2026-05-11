@@ -122,7 +122,12 @@ export default function Participate({ close }: Props) {
             onChange={() => setCheckedTerm((prev) => !prev)}
           />
           <label htmlFor='term-check' className='ml-2 text-xs'>
-            <Link target='_blank' href='/rules' className='base-link'>
+            <Link
+              target='_blank'
+              rel='noreferrer'
+              href='/rules'
+              className='base-link'
+            >
               ルール
             </Link>
             を確認し、守るべき事項について理解しました。
