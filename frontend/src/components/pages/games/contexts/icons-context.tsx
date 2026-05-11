@@ -18,7 +18,8 @@ export const IconsProvider = ({ children }: Props) => {
   const myself = useMyselfValue()
   const { data } = useQuery<IconsQuery, IconsQueryVariables>(IconsDocument, {
     variables: { participantId: myself?.id ?? '' },
-    skip: !myself
+    skip: !myself,
+    fetchPolicy: 'no-cache'
   })
   const icons = data?.gameParticipantIcons ?? []
   return <IconsContext.Provider value={icons}>{children}</IconsContext.Provider>

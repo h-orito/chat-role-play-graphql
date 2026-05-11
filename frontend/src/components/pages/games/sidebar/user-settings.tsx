@@ -195,7 +195,7 @@ const NotificationSettings = () => {
   const [fetchSetting] = useLazyQuery<
     GameParticipantSettingQuery,
     GameParticipantSettingQueryVariables
-  >(GameParticipantSettingDocument)
+  >(GameParticipantSettingDocument, { fetchPolicy: 'no-cache' })
   useEffect(() => {
     const fetch = async () => {
       const { data } = await fetchSetting({

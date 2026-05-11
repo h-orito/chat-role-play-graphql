@@ -133,9 +133,10 @@ const GameParticipantProfilePageContent = ({
   const [fetchProfile] = useLazyQuery<
     GameParticipantProfileQuery,
     GameParticipantProfileQueryVariables
-  >(GameParticipantProfileDocument)
+  >(GameParticipantProfileDocument, { fetchPolicy: 'no-cache' })
   const [fetchIcons] = useLazyQuery<IconsQuery, IconsQueryVariables>(
-    IconsDocument
+    IconsDocument,
+    { fetchPolicy: 'no-cache' }
   )
 
   const refetchProfile = useCallback(async () => {

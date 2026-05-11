@@ -30,7 +30,8 @@ export const MyselfProvider = ({ gameId, children }: Props) => {
     MyGameParticipantQuery,
     MyGameParticipantQueryVariables
   >(MyGameParticipantDocument, {
-    variables: { gameId }
+    variables: { gameId },
+    fetchPolicy: 'no-cache'
   })
   const myself = (data?.myGameParticipant as GameParticipant | null) ?? null
   const refetchCallback = useCallback(async () => {

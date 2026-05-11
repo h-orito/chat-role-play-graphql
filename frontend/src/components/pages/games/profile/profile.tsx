@@ -44,9 +44,10 @@ export default function Profile({ close, participantId }: Props) {
   const [fetchProfile] = useLazyQuery<
     GameParticipantProfileQuery,
     GameParticipantProfileQueryVariables
-  >(GameParticipantProfileDocument)
+  >(GameParticipantProfileDocument, { fetchPolicy: 'no-cache' })
   const [fetchIcons] = useLazyQuery<IconsQuery, IconsQueryVariables>(
-    IconsDocument
+    IconsDocument,
+    { fetchPolicy: 'no-cache' }
   )
 
   const refetchProfile = async () => {

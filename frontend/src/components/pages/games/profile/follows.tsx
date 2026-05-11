@@ -15,7 +15,8 @@ type Props = {
 export default function Follows({ participantId }: Props) {
   const [follows, setFollows] = useState<Array<GameParticipant>>([])
   const [fetchFollows] = useLazyQuery<FollowsQuery, FollowsQueryVariables>(
-    FollowsDocument
+    FollowsDocument,
+    { fetchPolicy: 'no-cache' }
   )
 
   useEffect(() => {

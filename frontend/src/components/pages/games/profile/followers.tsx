@@ -17,7 +17,7 @@ export default function Followers({ participantId }: Props) {
   const [fetchFollowers] = useLazyQuery<
     FollowersQuery,
     FollowersQueryVariables
-  >(FollowersDocument)
+  >(FollowersDocument, { fetchPolicy: 'no-cache' })
 
   useEffect(() => {
     const fetch = async () => {
