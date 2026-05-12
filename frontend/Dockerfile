@@ -1,14 +1,14 @@
 FROM arm64v8/node:24-bookworm
 
 # pnpm をインストール
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
 
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY src src
 COPY tsconfig.json tsconfig.json
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml .npmrc ./
 COPY next.config.ts next.config.ts
 COPY tailwind.config.js tailwind.config.js
 COPY postcss.config.js postcss.config.js
