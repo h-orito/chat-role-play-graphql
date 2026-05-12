@@ -100,10 +100,14 @@ func (*GameParticipantRepository) UpdateGameParticipantProfileImageURL(ctx conte
 	if !ok {
 		return fmt.Errorf("failed to get tx from context")
 	}
-	if result := tx.Model(&GameParticipantProfile{}).
+	result := tx.Model(&GameParticipantProfile{}).
 		Where("game_participant_id = ?", ID).
-		Update("profile_image_url", profileImageURL); result.Error != nil {
+		Update("profile_image_url", profileImageURL)
+	if result.Error != nil {
 		return fmt.Errorf("failed to save: %s", result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("game participant profile not found for id=%d", ID)
 	}
 	return nil
 }
