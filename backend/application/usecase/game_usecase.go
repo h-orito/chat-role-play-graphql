@@ -492,15 +492,7 @@ func (g *gameUsecase) Participate(
 			return image.Type == "NORMAL"
 		})
 		if normalImage != nil {
-			profile, err := g.gameService.FindGameParticipantProfile(myself.ID)
-			if err != nil {
-				return nil, err
-			}
-			if profile == nil {
-				return nil, fmt.Errorf("game participant profile not found")
-			}
-			profile.ProfileImageURL = &normalImage.URL
-			if err := g.gameService.UpdateGameParticipantProfile(ctx, myself.ID, *profile); err != nil {
+			if err := g.gameService.UpdateGameParticipantProfileImageURL(ctx, myself.ID, normalImage.URL); err != nil {
 				return nil, err
 			}
 		}

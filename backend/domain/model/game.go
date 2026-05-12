@@ -301,6 +301,7 @@ type GameParticipantRepository interface {
 	// participant profile
 	FindGameParticipantProfile(gameParticipantID uint32) (profile *GameParticipantProfile, err error)
 	UpdateGameParticipantProfile(ctx context.Context, ID uint32, profile GameParticipantProfile) (err error)
+	UpdateGameParticipantProfileImageURL(ctx context.Context, ID uint32, profileImageURL string) (err error)
 	// participant icon
 	FindGameParticipantIcons(query GameParticipantIconsQuery) (icons []GameParticipantIcon, err error)
 	RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon GameParticipantIcon) (saved *GameParticipantIcon, err error)
