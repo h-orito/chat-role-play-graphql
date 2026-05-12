@@ -472,26 +472,22 @@ func (g *gameUsecase) Participate(
 		}
 		var order uint32 = 1
 		var normalIconID *uint32
-		array.ForEach(chara.Images, func(image model.CharaImage) {
+		for _, image := range chara.Images {
 			icon := model.GameParticipantIcon{
 				IconImageURL: image.URL,
 				Width:        chara.Size.Width,
 				Height:       chara.Size.Height,
 				DisplayOrder: order,
 			}
-			saved, regErr := g.gameService.RegisterGameParticipantIcon(ctx, myself.ID, icon)
-			if regErr != nil {
-				err = regErr
-				return
+			saved, err := g.gameService.RegisterGameParticipantIcon(ctx, myself.ID, icon)
+			if err != nil {
+				return nil, err
 			}
-			if image.Type == "NORMAL" && normalIconID == nil {
+			if image.Type == model.CharaImageTypeNormal && normalIconID == nil {
 				id := saved.ID
 				normalIconID = &id
 			}
 			order++
-		})
-		if err != nil {
-			return nil, err
 		}
 		// NORMAL 種別の画像のアイコンをプロフィールアイコンとして自動設定する
 		if normalIconID != nil {
