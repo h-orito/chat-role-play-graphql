@@ -18,7 +18,7 @@ jobs:
           docker system prune --force
 
       - name: clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: build
         run: >

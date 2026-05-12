@@ -9,7 +9,7 @@ WORKDIR /app
 COPY src src
 COPY tsconfig.json tsconfig.json
 COPY package.json pnpm-lock.yaml ./
-COPY next.config.js next.config.js
+COPY next.config.ts next.config.ts
 COPY tailwind.config.js tailwind.config.js
 COPY postcss.config.js postcss.config.js
 COPY public public
@@ -26,9 +26,10 @@ ARG GRAPHQL_INNER_ENDPOINT
 ENV NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT=${GRAPHQL_INNER_ENDPOINT}
 
 RUN pnpm install --frozen-lockfile
+
+ENV NODE_ENV=production
 RUN pnpm build
 
-ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 ENV HOME=/home/nextjs
@@ -40,7 +41,7 @@ RUN chown nextjs:nodejs /app/.next/cache
 USER nextjs
 
 EXPOSE 3000
-ENV PORT 3000
-ENV HOST 0.0.0.0
+ENV PORT=3000
+ENV HOST=0.0.0.0
 
 CMD ["pnpm", "start"]
