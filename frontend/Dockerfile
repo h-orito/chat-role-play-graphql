@@ -26,9 +26,10 @@ ARG GRAPHQL_INNER_ENDPOINT
 ENV NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT=${GRAPHQL_INNER_ENDPOINT}
 
 RUN pnpm install --frozen-lockfile
-RUN pnpm build
 
 ENV NODE_ENV=production
+RUN pnpm build
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 ENV HOME=/home/nextjs
