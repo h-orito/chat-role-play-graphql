@@ -471,6 +471,7 @@ func (g *gameUsecase) Participate(
 			return nil, fmt.Errorf("chara not found")
 		}
 		var order uint32 = 1
+		var normalIconID *uint32
 		array.ForEach(chara.Images, func(image model.CharaImage) {
 			icon := model.GameParticipantIcon{
 				IconImageURL: image.URL,
@@ -478,21 +479,23 @@ func (g *gameUsecase) Participate(
 				Height:       chara.Size.Height,
 				DisplayOrder: order,
 			}
-			_, err = g.gameService.RegisterGameParticipantIcon(ctx, myself.ID, icon)
-			if err != nil {
+			saved, regErr := g.gameService.RegisterGameParticipantIcon(ctx, myself.ID, icon)
+			if regErr != nil {
+				err = regErr
 				return
+			}
+			if image.Type == "NORMAL" && normalIconID == nil {
+				id := saved.ID
+				normalIconID = &id
 			}
 			order++
 		})
 		if err != nil {
 			return nil, err
 		}
-		// NORMAL 種別の画像をプロフィール画像として自動登録する
-		normalImage := array.Find(chara.Images, func(image model.CharaImage) bool {
-			return image.Type == "NORMAL"
-		})
-		if normalImage != nil {
-			if err := g.gameService.UpdateGameParticipantProfileImageURL(ctx, myself.ID, normalImage.URL); err != nil {
+		// NORMAL 種別の画像のアイコンをプロフィールアイコンとして自動設定する
+		if normalIconID != nil {
+			if err := g.gameService.UpdateGameParticipantProfileIconID(ctx, myself.ID, *normalIconID); err != nil {
 				return nil, err
 			}
 		}
