@@ -95,6 +95,23 @@ func (*GameParticipantRepository) UpdateGameParticipantProfile(ctx context.Conte
 	return nil
 }
 
+func (*GameParticipantRepository) UpdateGameParticipantProfileIconID(ctx context.Context, ID uint32, profileIconID uint32) (err error) {
+	tx, ok := GetTx(ctx)
+	if !ok {
+		return fmt.Errorf("failed to get tx from context")
+	}
+	result := tx.Model(&GameParticipant{}).
+		Where("id = ?", ID).
+		Update("profile_icon_id", profileIconID)
+	if result.Error != nil {
+		return fmt.Errorf("failed to save: %s", result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("game participant not found for id=%d", ID)
+	}
+	return nil
+}
+
 func (repo *GameParticipantRepository) FindGameParticipantIcons(query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {
 	return findGameParticipantIcons(repo.db.Connection, query)
 }

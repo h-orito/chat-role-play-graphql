@@ -32,6 +32,7 @@ type GameService interface {
 	// game participant profile
 	FindGameParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, err error)
 	UpdateGameParticipantProfile(ctx context.Context, participantID uint32, profile model.GameParticipantProfile) (err error)
+	UpdateGameParticipantProfileIconID(ctx context.Context, participantID uint32, profileIconID uint32) (err error)
 	// game participant icon
 	FindGameParticipantIcons(query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error)
 	RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error)
@@ -245,6 +246,10 @@ func (g *gameService) FindGameParticipantProfile(participantID uint32) (profile 
 
 func (g *gameService) UpdateGameParticipantProfile(ctx context.Context, participantID uint32, profile model.GameParticipantProfile) (err error) {
 	return g.gameParticipantRepository.UpdateGameParticipantProfile(ctx, participantID, profile)
+}
+
+func (g *gameService) UpdateGameParticipantProfileIconID(ctx context.Context, participantID uint32, profileIconID uint32) (err error) {
+	return g.gameParticipantRepository.UpdateGameParticipantProfileIconID(ctx, participantID, profileIconID)
 }
 
 func (g *gameService) FindGameParticipantIcons(query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {

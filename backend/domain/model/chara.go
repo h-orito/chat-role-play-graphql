@@ -53,6 +53,11 @@ type CharaImage struct {
 	URL  string
 }
 
+// CharaImage の Type フィールドの値
+const (
+	CharaImageTypeNormal = "NORMAL"
+)
+
 type CharaImageQuery struct {
 	IDs      *[]uint32
 	CharaID  *uint32
