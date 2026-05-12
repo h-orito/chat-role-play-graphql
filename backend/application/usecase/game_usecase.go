@@ -484,6 +484,23 @@ func (g *gameUsecase) Participate(
 			}
 			order++
 		})
+		if err != nil {
+			return nil, err
+		}
+		// NORMAL 種別の画像をプロフィール画像として自動登録する
+		normalImage := array.Find(chara.Images, func(image model.CharaImage) bool {
+			return image.Type == "NORMAL"
+		})
+		if normalImage != nil {
+			profileImageURL := normalImage.URL
+			if err := g.gameService.UpdateGameParticipantProfile(ctx, myself.ID, model.GameParticipantProfile{
+				GameParticipantID: myself.ID,
+				ProfileImageURL:   &profileImageURL,
+				IsPlayerOpen:      false,
+			}); err != nil {
+				return nil, err
+			}
+		}
 		return myself, nil
 	})
 	if err != nil {

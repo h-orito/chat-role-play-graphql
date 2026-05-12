@@ -30,6 +30,10 @@ export default function CreateGame() {
               改善:
               画面遷移やタブ切り替え時にキャッシュから即座に表示し、背景で最新化するよう変更（メッセージ系は従来どおり都度取得）
             </li>
+            <li>
+              修正:
+              キャラチップを選択して参加登録した際に、通常画像が自動でプロフィール画像に設定されるよう変更
+            </li>
           </ReleaseContent>
 
           <ReleaseContent label='不具合修正' date='2026/05/11'>
