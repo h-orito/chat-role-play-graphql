@@ -422,6 +422,12 @@ func (s *messageUsecase) FindGameParticipantGroups(query model.GameParticipantGr
 		if !s.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
 			return nil, fmt.Errorf("forbidden: only game masters can list all groups")
 		}
+		// GM 全発言閲覧設定が OFF のゲームでは GM であっても全グループ列挙は許可しない。
+		// （admin はゲーム設定によらず常に許可、というポリシーも考えられるが、
+		//   IsGameMaster で admin も GM として扱う以上、設定 OFF のゲームでは admin も含めて禁止する）
+		if !game.Settings.Rule.IsGameMasterViewAllMessages {
+			return nil, fmt.Errorf("forbidden: isGameMasterViewAllMessages is not enabled for this game")
+		}
 	}
 	return s.messageService.FindGameParticipantGroups(query)
 }
