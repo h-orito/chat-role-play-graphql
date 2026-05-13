@@ -611,10 +611,11 @@ func (r *queryResolver) gameParticipantGroups(ctx context.Context, gameID string
 		}
 		memberID = &id
 	}
+	user := auth.GetUser(ctx)
 	groups, err := r.messageUsecase.FindGameParticipantGroups(model.GameParticipantGroupsQuery{
 		GameID:                   gID,
 		MemberGroupParticipantID: memberID,
-	})
+	}, user)
 	if err != nil {
 		return nil, err
 	}

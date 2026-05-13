@@ -23,7 +23,7 @@ type MessageUsecase interface {
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, user model.User, messageID uint64) error
 	DeleteMessageFavorite(ctx context.Context, gameID uint32, user model.User, messageID uint64) error
 	// participant group
-	FindGameParticipantGroups(query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error)
+	FindGameParticipantGroups(query model.GameParticipantGroupsQuery, user *model.User) ([]model.GameParticipantGroup, error)
 	RegisterGameParticipantGroup(ctx context.Context, user model.User, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error)
 	UpdateGameParticipantGroup(ctx context.Context, user model.User, gameID uint32, group model.GameParticipantGroup) error
 	// direct message
@@ -131,6 +131,8 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 			return v == t
 		})
 	})
+	// 全タイプが viewable な場合は query.Types を nil のまま維持し、type フィルタ自体を無効化する。
+	// （GM 全発言閲覧 ON 時はここで全タイプが残るため、後段の DB クエリで type 制約が付かない）
 	if len(types) == 0 {
 		query.Types = &types
 	} else if len(types) != len(model.MessageTypeValues()) {
@@ -391,7 +393,36 @@ func (s *messageUsecase) DeleteMessageFavorite(
 	return err
 }
 
-func (s *messageUsecase) FindGameParticipantGroups(query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error) {
+func (s *messageUsecase) FindGameParticipantGroups(query model.GameParticipantGroupsQuery, user *model.User) ([]model.GameParticipantGroup, error) {
+	// MemberGroupParticipantID 未指定は「全 DM グループ一覧」リクエスト。
+	// プライバシー保護のため GM / Admin のみ許可する。
+	// フロント (direct-message-groups-area.tsx) は GM 全発言閲覧 ON ゲームの GM のみこの形式で呼ぶ。
+	if query.MemberGroupParticipantID == nil {
+		if user == nil {
+			return nil, fmt.Errorf("not authenticated")
+		}
+		player, err := s.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		authorities, err := s.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, err
+		}
+		game, err := s.gameService.FindGame(query.GameID)
+		if err != nil {
+			return nil, err
+		}
+		if game == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+		if !s.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
+			return nil, fmt.Errorf("forbidden: only game masters can list all groups")
+		}
+	}
 	return s.messageService.FindGameParticipantGroups(query)
 }
 
