@@ -15,11 +15,6 @@ jobs:
       - name: clone repository
         uses: actions/checkout@v4
 
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version-file: backend/go.mod
-
       - name: build
         run: |
           cd backend
