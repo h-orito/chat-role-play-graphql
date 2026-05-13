@@ -605,6 +605,9 @@ func registerGameSettings(db *gorm.DB, ID uint32, settings model.GameSettings) (
 	if err := registerGameSetting(db, ID, GameSettingKeyIsHidden, boolToString(settings.Rule.IsHidden)); err != nil {
 		return err
 	}
+	if err := registerGameSetting(db, ID, GameSettingKeyIsGameMasterViewAllMessages, boolToString(settings.Rule.IsGameMasterViewAllMessages)); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -662,6 +665,10 @@ func updateGameSettings(db *gorm.DB, gameID uint32, settings model.GameSettings)
 	}
 	// IsHidden は後から追加されたキーで、既存ゲームには行が無いため upsert する
 	if err := upsertGameSetting(db, gameID, GameSettingKeyIsHidden, boolToString(settings.Rule.IsHidden)); err != nil {
+		return err
+	}
+	// IsGameMasterViewAllMessages も後から追加されたキーのため upsert する
+	if err := upsertGameSetting(db, gameID, GameSettingKeyIsGameMasterViewAllMessages, boolToString(settings.Rule.IsGameMasterViewAllMessages)); err != nil {
 		return err
 	}
 	return nil

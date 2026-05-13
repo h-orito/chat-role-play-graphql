@@ -51,6 +51,8 @@ export default function CreateGame() {
   // この state はプレビュー表示と削除ボタン制御のために InputImage に渡すだけ。
   const [catchImageUrl, setCatchImageUrl] = useState<string | null>(null)
   const [isHidden, setIsHidden] = useState(false)
+  const [isGameMasterViewAllMessages, setIsGameMasterViewAllMessages] =
+    useState(false)
 
   const [registerGame] = useMutation<
     RegisterGameMutation,
@@ -118,7 +120,8 @@ export default function CreateGame() {
                 canShorten: true,
                 canSendDirectMessage: true,
                 theme: null,
-                isHidden: isHidden
+                isHidden: isHidden,
+                isGameMasterViewAllMessages: isGameMasterViewAllMessages
               },
               password: {
                 password: data.password.length > 0 ? data.password : null
@@ -140,6 +143,7 @@ export default function CreateGame() {
       rating,
       catchImageFiles,
       isHidden,
+      isGameMasterViewAllMessages,
       router
     ]
   )
@@ -168,6 +172,8 @@ export default function CreateGame() {
           setCatchImages={setCatchImageFiles}
           isHidden={isHidden}
           setIsHidden={setIsHidden}
+          isGameMasterViewAllMessages={isGameMasterViewAllMessages}
+          setIsGameMasterViewAllMessages={setIsGameMasterViewAllMessages}
         />
       </article>
     </main>

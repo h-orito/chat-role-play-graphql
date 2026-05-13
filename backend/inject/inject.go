@@ -59,7 +59,7 @@ func injectResolver(
 	charaUsecase := injectCharaUsecase(charaService, tx)
 	gameUsecase := injectGameUsecase(gameService, playerService, charaService, gameMasterDomainService, participateDomainService, tx)
 	playerUsecase := injectPlayerUsecase(playerService, tx)
-	messageUsecase := injectMessageUsecase(messageService, gameService, playerService, messageDomainService, tx)
+	messageUsecase := injectMessageUsecase(messageService, gameService, playerService, messageDomainService, gameMasterDomainService, tx)
 	imageUsecase := injectImageUsecase()
 	loaders := injectLoaders(playerUsecase, gameUsecase, charaUsecase)
 	return graphql.NewResolver(
@@ -115,6 +115,7 @@ func injectMessageUsecase(
 	gameService app_service.GameService,
 	playerService app_service.PlayerService,
 	messageDomainService dom_service.MessageDomainService,
+	gameMasterDomainService dom_service.GameMasterDomainService,
 	tx usecase.Transaction,
 ) usecase.MessageUsecase {
 	return usecase.NewMessageUsecase(
@@ -122,6 +123,7 @@ func injectMessageUsecase(
 		gameService,
 		playerService,
 		messageDomainService,
+		gameMasterDomainService,
 		tx,
 	)
 }

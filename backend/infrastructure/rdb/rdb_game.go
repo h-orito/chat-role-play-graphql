@@ -288,6 +288,7 @@ const (
 	GameSettingKeyTheme
 	GameSettingKeyPassword
 	GameSettingKeyIsHidden
+	GameSettingKeyIsGameMasterViewAllMessages
 )
 
 func (pa GameSettingKey) String() string {
@@ -328,6 +329,8 @@ func (pa GameSettingKey) String() string {
 		return "Password"
 	case GameSettingKeyIsHidden:
 		return "IsHidden"
+	case GameSettingKeyIsGameMasterViewAllMessages:
+		return "IsGameMasterViewAllMessages"
 	default:
 		return ""
 	}
@@ -353,6 +356,7 @@ func GameSettingKeyValues() []GameSettingKey {
 		GameSettingKeyTheme,
 		GameSettingKeyPassword,
 		GameSettingKeyIsHidden,
+		GameSettingKeyIsGameMasterViewAllMessages,
 	}
 }
 
@@ -391,10 +395,11 @@ func ToGameSettingsModel(
 			EpilogueGameAt:        gameSettingsToTime(settings, GameSettingKeyEpilogueGameAt, time.Now()),
 		},
 		Rule: model.GameRuleSettings{
-			IsHidden:             gameSettingsToBool(settings, GameSettingKeyIsHidden, false),
-			CanShorten:           gameSettingsToBool(settings, GameSettingKeyCanShorten, false),
-			CanSendDirectMessage: gameSettingsToBool(settings, GameSettingKeyCanSendDirectMessage, false),
-			Theme:                gameSettingsToString(settings, GameSettingKeyTheme, nil),
+			IsHidden:                    gameSettingsToBool(settings, GameSettingKeyIsHidden, false),
+			IsGameMasterViewAllMessages: gameSettingsToBool(settings, GameSettingKeyIsGameMasterViewAllMessages, false),
+			CanShorten:                  gameSettingsToBool(settings, GameSettingKeyCanShorten, false),
+			CanSendDirectMessage:        gameSettingsToBool(settings, GameSettingKeyCanSendDirectMessage, false),
+			Theme:                       gameSettingsToString(settings, GameSettingKeyTheme, nil),
 		},
 		Password: model.GamePasswordSettings{
 			HasPassword: password != nil && len(*password) > 0,

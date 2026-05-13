@@ -4,7 +4,7 @@ import {
   ParticipantGroupsQuery,
   ParticipantGroupsQueryVariables
 } from '@/lib/generated/graphql'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useModal } from '@/components/hooks/use-modal'
 import { useLazyQuery } from '@apollo/client'
 import PrimaryButton from '@/components/button/primary-button'
@@ -14,9 +14,11 @@ import DirectMessageArea from './direct-message-area'
 import Modal from '@/components/modal/modal'
 import DirectFavoriteParticipants from './direct-favorite-participants'
 import {
+  isGameMaster,
   useGameValue,
   useMyselfValue
 } from '@/components/pages/games/game-hook'
+import { useMyPlayerValue } from '@/components/pages/games/contexts/my-player-context'
 
 type Props = {
   className?: string
@@ -25,6 +27,12 @@ type Props = {
 export default function DirectMessageGroupsArea({ className }: Props) {
   const game = useGameValue()
   const myself = useMyselfValue()!
+  const myPlayer = useMyPlayerValue()
+  // GM 全発言閲覧設定 ON のゲームでは、GM は自分が属していないグループの DM も一覧で見られるよう、
+  // memberParticipantID フィルタを外して全グループを取得する。
+  const canViewAllGroups =
+    game.settings.rule.isGameMasterViewAllMessages &&
+    isGameMaster(myPlayer, game)
   const [fetchParticipantGroups] = useLazyQuery<
     ParticipantGroupsQuery,
     ParticipantGroupsQueryVariables
@@ -35,17 +43,21 @@ export default function DirectMessageGroupsArea({ className }: Props) {
 
   const [directMessageGroup, setDirectMessageGroup] =
     useState<GameParticipantGroup | null>(null)
+  // refetchGroups の deps に directMessageGroup を入れると、DM グループを開くたびに再取得が走ってしまう。
+  // ref 経由で最新値を読むことで、deps を絞りつつ「現在開いているグループの最新データに更新」を保つ。
+  const directMessageGroupRef = useRef<GameParticipantGroup | null>(null)
+  directMessageGroupRef.current = directMessageGroup
   const directMessageModal = useModal()
   const openDirectMessageModal = (group: GameParticipantGroup) => {
     setDirectMessageGroup(group)
     directMessageModal.open()
   }
 
-  const refetchGroups = async () => {
+  const refetchGroups = useCallback(async () => {
     const { data } = await fetchParticipantGroups({
       variables: {
         gameId: game.id,
-        participantId: myself?.id
+        participantId: canViewAllGroups ? null : myself?.id
       }
     })
     if (data?.gameParticipantGroups == null) return
@@ -56,21 +68,22 @@ export default function DirectMessageGroupsArea({ className }: Props) {
       return g2.latestUnixTimeMilli - g1.latestUnixTimeMilli
     })
     setGroups(newGroups)
-    if (directMessageGroup != null) {
+    const current = directMessageGroupRef.current
+    if (current != null) {
       const newGroup = data.gameParticipantGroups.find(
-        (g) => g.id === directMessageGroup.id
+        (g) => g.id === current.id
       )
       if (newGroup != null) {
         setDirectMessageGroup(newGroup as GameParticipantGroup)
       }
     }
-  }
+  }, [fetchParticipantGroups, game.id, canViewAllGroups, myself?.id])
 
   useEffect(() => {
     refetchGroups()
-    // mount 時のみグループ一覧を初期取得
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    // canViewAllGroups の確定タイミング（MyPlayerProvider の非同期ロード後）で再取得する。
+    // refetchGroups は同じ deps を持つ useCallback で安定化済みのため、ここの deps はそれだけでよい。
+  }, [refetchGroups])
 
   const canCreate =
     !!myself &&

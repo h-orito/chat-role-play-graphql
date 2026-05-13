@@ -23,7 +23,7 @@ type MessageUsecase interface {
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, user model.User, messageID uint64) error
 	DeleteMessageFavorite(ctx context.Context, gameID uint32, user model.User, messageID uint64) error
 	// participant group
-	FindGameParticipantGroups(query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error)
+	FindGameParticipantGroups(query model.GameParticipantGroupsQuery, user *model.User) ([]model.GameParticipantGroup, error)
 	RegisterGameParticipantGroup(ctx context.Context, user model.User, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error)
 	UpdateGameParticipantGroup(ctx context.Context, user model.User, gameID uint32, group model.GameParticipantGroup) error
 	// direct message
@@ -38,11 +38,12 @@ type MessageUsecase interface {
 }
 
 type messageUsecase struct {
-	messageService       app_service.MessageService
-	gameService          app_service.GameService
-	playerService        app_service.PlayerService
-	messageDomainService dom_service.MessageDomainService
-	transaction          Transaction
+	messageService           app_service.MessageService
+	gameService              app_service.GameService
+	playerService            app_service.PlayerService
+	messageDomainService     dom_service.MessageDomainService
+	gameMasterDomainService  dom_service.GameMasterDomainService
+	transaction              Transaction
 }
 
 func NewMessageUsecase(
@@ -50,14 +51,16 @@ func NewMessageUsecase(
 	gameService app_service.GameService,
 	playerService app_service.PlayerService,
 	messageDomainService dom_service.MessageDomainService,
+	gameMasterDomainService dom_service.GameMasterDomainService,
 	tx Transaction,
 ) MessageUsecase {
 	return &messageUsecase{
-		messageService:       messageService,
-		gameService:          gameService,
-		playerService:        playerService,
-		messageDomainService: messageDomainService,
-		transaction:          tx,
+		messageService:          messageService,
+		gameService:             gameService,
+		playerService:           playerService,
+		messageDomainService:    messageDomainService,
+		gameMasterDomainService: gameMasterDomainService,
+		transaction:             tx,
 	}
 }
 
@@ -92,13 +95,14 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 		return nil, nil, err
 	}
 	var myself *model.GameParticipant = nil
+	var player *model.Player = nil
 	authorities := []model.PlayerAuthority{}
 	if user != nil {
 		myself, err = s.findMyGameParticipant(gameID, *user)
 		if err != nil {
 			return nil, nil, err
 		}
-		player, err := s.playerService.FindByUserName(user.UserName)
+		player, err = s.playerService.FindByUserName(user.UserName)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -115,11 +119,20 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 		requestMessageTypes = *query.Types
 	}
 	viewableMessageTypes := s.messageDomainService.GetViewableMessageTypes(*game, authorities)
+	// GM 全発言閲覧設定が ON のゲームでは、GM は monologue / secret を含む全タイプを閲覧可能。
+	// これにより以降の type フィルタが自然に全タイプを許容し、独り言/秘話の "自分宛のみ" 拡張も不要になる。
+	// Admin も GM 扱いとするため gameMasterDomainService.IsGameMaster を使用する。
+	if game.Settings.Rule.IsGameMasterViewAllMessages && player != nil &&
+		s.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
+		viewableMessageTypes = model.MessageTypeValues()
+	}
 	types := array.Filter(requestMessageTypes, func(t model.MessageType) bool {
 		return array.Any(viewableMessageTypes, func(v model.MessageType) bool {
 			return v == t
 		})
 	})
+	// 全タイプが viewable な場合は query.Types を nil のまま維持し、type フィルタ自体を無効化する。
+	// （GM 全発言閲覧 ON 時はここで全タイプが残るため、後段の DB クエリで type 制約が付かない）
 	if len(types) == 0 {
 		query.Types = &types
 	} else if len(types) != len(model.MessageTypeValues()) {
@@ -128,7 +141,7 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 	// 独り言を取得するか
 	shouldIncludeMonologue := shouldIncludeMonologue(query, requestMessageTypes, myself)
 	query.IncludeMonologue = &shouldIncludeMonologue
-	shouldIncludeSecret := shouldIncludeSecrt(query, requestMessageTypes, myself)
+	shouldIncludeSecret := shouldIncludeSecret(query, requestMessageTypes, myself)
 	query.IncludeSecret = &shouldIncludeSecret
 
 	return &query, myself, nil
@@ -163,7 +176,7 @@ func shouldIncludeMonologue(
 	return true
 }
 
-func shouldIncludeSecrt(
+func shouldIncludeSecret(
 	query model.MessagesQuery,
 	requestMessageTypes []model.MessageType,
 	myself *model.GameParticipant,
@@ -380,7 +393,42 @@ func (s *messageUsecase) DeleteMessageFavorite(
 	return err
 }
 
-func (s *messageUsecase) FindGameParticipantGroups(query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error) {
+func (s *messageUsecase) FindGameParticipantGroups(query model.GameParticipantGroupsQuery, user *model.User) ([]model.GameParticipantGroup, error) {
+	// MemberGroupParticipantID 未指定は「全 DM グループ一覧」リクエスト。
+	// プライバシー保護のため GM / Admin のみ許可する。
+	// フロント (direct-message-groups-area.tsx) は GM 全発言閲覧 ON ゲームの GM のみこの形式で呼ぶ。
+	if query.MemberGroupParticipantID == nil {
+		if user == nil {
+			return nil, fmt.Errorf("not authenticated")
+		}
+		player, err := s.playerService.FindByUserName(user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if player == nil {
+			return nil, fmt.Errorf("player not found")
+		}
+		authorities, err := s.playerService.FindAuthorities(player.ID)
+		if err != nil {
+			return nil, err
+		}
+		game, err := s.gameService.FindGame(query.GameID)
+		if err != nil {
+			return nil, err
+		}
+		if game == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+		if !s.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
+			return nil, fmt.Errorf("forbidden: only game masters can list all groups")
+		}
+		// GM 全発言閲覧設定が OFF のゲームでは GM であっても全グループ列挙は許可しない。
+		// （admin はゲーム設定によらず常に許可、というポリシーも考えられるが、
+		//   IsGameMaster で admin も GM として扱う以上、設定 OFF のゲームでは admin も含めて禁止する）
+		if !game.Settings.Rule.IsGameMasterViewAllMessages {
+			return nil, fmt.Errorf("forbidden: isGameMasterViewAllMessages is not enabled for this game")
+		}
+	}
 	return s.messageService.FindGameParticipantGroups(query)
 }
 

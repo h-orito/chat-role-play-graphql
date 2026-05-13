@@ -44,6 +44,8 @@ type Props = {
   setCatchImages: Dispatch<SetStateAction<File[]>>
   isHidden: boolean
   setIsHidden: Dispatch<SetStateAction<boolean>>
+  isGameMasterViewAllMessages: boolean
+  setIsGameMasterViewAllMessages: Dispatch<SetStateAction<boolean>>
 }
 
 export interface GameFormInput {
@@ -140,6 +142,30 @@ export default function GameEdit(props: Props) {
                 selected={props.isHidden ? 'true' : 'false'}
                 setSelected={(value: string) =>
                   props.setIsHidden(value === 'true')
+                }
+              />
+            </div>
+          </div>
+          <hr />
+          <div className='my-4'>
+            <FormLabel label='GMの発言閲覧範囲' required>
+              「全て閲覧可」を選ぶと、GM
+              は他参加者の独り言・秘話・自分が属していないグループの DM
+              を含む全ての発言を閲覧できるようになります。
+              <br />
+              ゲーム概要に「GM
+              は全発言を閲覧できます」と表示され、参加者からも分かる形になります。
+            </FormLabel>
+            <div className='mt-1 flex justify-center'>
+              <RadioGroup
+                name='isGameMasterViewAllMessages'
+                candidates={[
+                  { label: '通常（参加者と同じ）', value: 'false' },
+                  { label: '全て閲覧可', value: 'true' }
+                ]}
+                selected={props.isGameMasterViewAllMessages ? 'true' : 'false'}
+                setSelected={(value: string) =>
+                  props.setIsGameMasterViewAllMessages(value === 'true')
                 }
               />
             </div>
