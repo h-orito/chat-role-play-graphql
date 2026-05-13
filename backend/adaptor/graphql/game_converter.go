@@ -56,6 +56,7 @@ func MapToGame(g *model.Game) *gqlmodel.Game {
 				CanShorten:           g.Settings.Rule.CanShorten,
 				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
 				Theme:                g.Settings.Rule.Theme,
+				IsHidden:             g.Settings.Rule.IsHidden,
 			},
 			Password: &gqlmodel.GamePasswordSetting{
 				HasPassword: g.Settings.Password.HasPassword,
@@ -131,6 +132,7 @@ func MapToSimpleGame(g *model.Game) *gqlmodel.SimpleGame {
 				CanShorten:           g.Settings.Rule.CanShorten,
 				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
 				Theme:                g.Settings.Rule.Theme,
+				IsHidden:             g.Settings.Rule.IsHidden,
 			},
 			Password: &gqlmodel.GamePasswordSetting{
 				HasPassword: g.Settings.Password.HasPassword,

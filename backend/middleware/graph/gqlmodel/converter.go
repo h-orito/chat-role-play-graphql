@@ -57,6 +57,7 @@ func (g NewGame) MapToGame(imageURL *string) model.Game {
 				FinishGameAt:          g.Settings.Time.FinishGameAt,
 			},
 			Rule: model.GameRuleSettings{
+				IsHidden:             g.Settings.Rule.IsHidden,
 				CanShorten:           g.Settings.Rule.CanShorten,
 				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
 				Theme:                g.Settings.Rule.Theme,
@@ -106,6 +107,7 @@ func (g UpdateGameSetting) MapToGameSetting(imageUrl *string) model.GameSettings
 			FinishGameAt:          g.Settings.Time.FinishGameAt,
 		},
 		Rule: model.GameRuleSettings{
+			IsHidden:             g.Settings.Rule.IsHidden,
 			CanShorten:           g.Settings.Rule.CanShorten,
 			CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
 			Theme:                g.Settings.Rule.Theme,

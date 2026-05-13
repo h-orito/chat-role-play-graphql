@@ -25,6 +25,14 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能拡張' date='2026/05/13'>
+            <li>
+              追加: ゲームの公開設定（公開/非公開）を追加。非公開設定の
+              ゲームは終了/中止になるまでトップページや一覧に表示されません（URL
+              直リンクは引き続き閲覧可能）
+            </li>
+          </ReleaseContent>
+
           <ReleaseContent label='性能改善' date='2026/05/12'>
             <li>
               改善:
