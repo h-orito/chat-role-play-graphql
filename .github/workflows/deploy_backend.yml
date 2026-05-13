@@ -11,6 +11,9 @@ on:
 jobs:
   delivery:
     runs-on: [self-hosted]
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: clone repository
         uses: actions/checkout@v4
@@ -20,8 +23,11 @@ jobs:
           cd backend
           docker build -t ghcr.io/h-orito/chat-role-play-backend .
       - name: deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTOR: ${{ github.actor }}
         run: |
-          docker login ghcr.io -u h-orito -p ${{ secrets.PACKAGE_PAT }}
+          echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin
           docker push ghcr.io/h-orito/chat-role-play-backend
       - name: release
         run: |
