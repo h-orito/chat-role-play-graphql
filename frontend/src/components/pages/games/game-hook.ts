@@ -71,9 +71,12 @@ export const canParticipate = (
 }
 export type ParticipateInvitation = 'hide' | 'login-required' | 'participate'
 // 参加登録パネルの表示状態
-// - 参加済み → 'hide'
-// - ログイン済み: canParticipate に従う（GM 判定込み）
+// - 参加済み (myself != null) → 'hide'
+// - ログイン済み未参加: canParticipate に従う（GM 判定込み）
 // - 未ログイン: プレイヤー参加可能ステータスのみ案内（GM 判定はログイン後）
+//
+// 引数 myself は冒頭の「参加済みガード」専用。以降の canParticipate 呼び出しでは
+// 既に myself == null が確定しているため、第3引数には null リテラルを渡す。
 export const participateInvitation = (
   game: Game,
   player: Player | null,
