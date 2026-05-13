@@ -4,7 +4,7 @@ import {
   ParticipantGroupsQuery,
   ParticipantGroupsQueryVariables
 } from '@/lib/generated/graphql'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useModal } from '@/components/hooks/use-modal'
 import { useLazyQuery } from '@apollo/client'
 import PrimaryButton from '@/components/button/primary-button'
@@ -43,13 +43,17 @@ export default function DirectMessageGroupsArea({ className }: Props) {
 
   const [directMessageGroup, setDirectMessageGroup] =
     useState<GameParticipantGroup | null>(null)
+  // refetchGroups の deps に directMessageGroup を入れると、DM グループを開くたびに再取得が走ってしまう。
+  // ref 経由で最新値を読むことで、deps を絞りつつ「現在開いているグループの最新データに更新」を保つ。
+  const directMessageGroupRef = useRef<GameParticipantGroup | null>(null)
+  directMessageGroupRef.current = directMessageGroup
   const directMessageModal = useModal()
   const openDirectMessageModal = (group: GameParticipantGroup) => {
     setDirectMessageGroup(group)
     directMessageModal.open()
   }
 
-  const refetchGroups = async () => {
+  const refetchGroups = useCallback(async () => {
     const { data } = await fetchParticipantGroups({
       variables: {
         gameId: game.id,
@@ -64,23 +68,22 @@ export default function DirectMessageGroupsArea({ className }: Props) {
       return g2.latestUnixTimeMilli - g1.latestUnixTimeMilli
     })
     setGroups(newGroups)
-    if (directMessageGroup != null) {
+    const current = directMessageGroupRef.current
+    if (current != null) {
       const newGroup = data.gameParticipantGroups.find(
-        (g) => g.id === directMessageGroup.id
+        (g) => g.id === current.id
       )
       if (newGroup != null) {
         setDirectMessageGroup(newGroup as GameParticipantGroup)
       }
     }
-  }
+  }, [fetchParticipantGroups, game.id, canViewAllGroups, myself?.id])
 
   useEffect(() => {
     refetchGroups()
-    // mount 時、および GM 全発言閲覧の判定が確定したタイミングで初期取得し直す
-    // （MyPlayerProvider は非同期ロードのため、初回 render では isGameMaster 判定が false に
-    //   倒れる可能性があり、その場合は myPlayer 取得後に再取得する必要がある）
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canViewAllGroups])
+    // canViewAllGroups の確定タイミング（MyPlayerProvider の非同期ロード後）で再取得する。
+    // refetchGroups は同じ deps を持つ useCallback で安定化済みのため、ここの deps はそれだけでよい。
+  }, [refetchGroups])
 
   const canCreate =
     !!myself &&
