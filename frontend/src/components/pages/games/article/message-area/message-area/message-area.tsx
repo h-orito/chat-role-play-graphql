@@ -24,6 +24,7 @@ import { emptyMessageQuery } from './messages-query'
 import { useInitialMessagesQuery } from '@/components/pages/games/contexts/messages-query-context'
 import { useUserPagingSettings } from '../../../user-settings'
 import TalkArea from './talk-area'
+import ParticipatePanel from './participate-panel'
 import MessageAreaFooterMenu from './message-area-footer-menu'
 
 type Props = {
@@ -170,6 +171,7 @@ const MessageArea = forwardRef<MessageAreaRefHandle, Props>(
             setExistsUnread={setExistUnread}
           />
           <TalkArea canTalk={canTalk} search={search} talkAreaId={talkAreaId} />
+          {!onlyToMe && <ParticipatePanel />}
         </div>
         <div id={`${talkAreaId}-fixed`}></div>
         <MessageAreaFooterMenu

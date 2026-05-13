@@ -4,7 +4,6 @@ import {
   InformationCircleIcon,
   WrenchIcon,
   UserCircleIcon,
-  UserPlusIcon,
   HomeIcon,
   LockClosedIcon
 } from '@heroicons/react/24/outline'
@@ -12,7 +11,6 @@ import { useMemo } from 'react'
 import { useModal } from '@/components/hooks/use-modal'
 import GameSettings from './game-settings'
 import Modal from '@/components/modal/modal'
-import Participate from './participate'
 import ArticleModal from '@/components/modal/article-modal'
 import Participants from '../participant/participants'
 import Link from 'next/link'
@@ -29,8 +27,6 @@ import UserSettingsComponent from './user-settings'
 import { GameIntroButton } from './game-intro-modal'
 import { DebugMenu } from './debug-menu'
 import {
-  isGameMaster as _isGameMaster,
-  canParticipate as _canParticipate,
   canModifyGameSetting,
   useGameValue,
   useMyPlayerValue,
@@ -44,8 +40,6 @@ export default function Sidebar() {
   const myself = useMyselfValue()
   const myPlayer = useMyPlayerValue()
 
-  const isGameMaster = _isGameMaster(myPlayer, game)
-  const canParticipate = _canParticipate(game, myPlayer, myself, isGameMaster)
   const canModify = canModifyGameSetting(game, myPlayer)
 
   const displayClass = isSidebarOpen
@@ -79,11 +73,6 @@ export default function Sidebar() {
           </div>
         )}
         <DebugMenu />
-        {canParticipate && (
-          <div className='base-border border-t py-2'>
-            <ParticipateButton />
-          </div>
-        )}
         <div className='base-border border-t py-2'>
           <TopPageButton />
         </div>
@@ -301,26 +290,6 @@ const ProfileButton = () => {
         <UserCircleIcon className='mr-1 size-5' />
         <p className='flex-1 self-center text-left'>{myself.name}</p>
       </Link>
-    </>
-  )
-}
-
-const ParticipateButton = () => {
-  const modal = useModal()
-  return (
-    <>
-      <button
-        className='sidebar-text sidebar-hover flex w-full justify-start px-4 py-2 text-sm'
-        onClick={modal.open}
-      >
-        <UserPlusIcon className='mr-1 size-5' />
-        <p className='flex-1 self-center text-left'>参加登録</p>
-      </button>
-      {modal.isOpen && (
-        <Modal header='参加登録' close={modal.close} hideFooter>
-          <Participate close={modal.close} />
-        </Modal>
-      )}
     </>
   )
 }
