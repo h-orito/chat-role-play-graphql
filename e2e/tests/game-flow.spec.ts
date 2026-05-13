@@ -53,7 +53,7 @@ test('複数ユーザーシナリオ：ゲーム作成・参加・発言・リ�
 
   // 2. ユーザーA: 参加登録（キャラチップ利用、最初のキャラ）
   await participateWithCharachip(pageA)
-  // 参加後はリロードされ、サイドバーから参加登録ボタンが消えてプロフィールリンクが出る
+  // 参加後はリロードされ、参加登録パネルが消えてプロフィールリンクが出る
   await expect(
     pageA.locator('nav').locator('a[href*="/profile/"]')
   ).toBeVisible({ timeout: 10_000 })
@@ -164,8 +164,8 @@ test('複数ユーザーシナリオ：ゲーム作成・参加・発言・リ�
 // ================================================================
 
 async function participateWithCharachip(page: Page): Promise<void> {
-  // サイドバーの「参加登録」ボタン（モーダル外）
-  await page.locator('nav').getByRole('button', { name: '参加登録' }).click()
+  // メッセージエリアの「参加登録」パネル内ボタン（モーダル外）
+  await page.getByRole('button', { name: '参加登録する' }).first().click()
   // モーダル内の操作
   const dialog = page.getByRole('dialog')
   await expect(dialog).toBeVisible()

@@ -25,6 +25,13 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能拡張' date='2026/05/14'>
+            <li>
+              改善:
+              ゲーム画面のメッセージ下に「参加登録」パネルを追加（未参加かつ参加可能なステータスの場合のみ表示）。未ログインの場合はログイン案内を表示。左メニューの参加登録ボタンは廃止
+            </li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能拡張' date='2026/05/13'>
             <li>
               追加: ゲームの公開設定（公開/非公開）を追加。非公開設定の

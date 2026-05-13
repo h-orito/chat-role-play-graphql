@@ -157,7 +157,7 @@ test('複数ユーザーシナリオ：いいね・フォロー・DMグループ
 // ================================================================
 
 async function participateWithCharachip(page: Page): Promise<void> {
-  await page.locator('nav').getByRole('button', { name: '参加登録' }).click()
+  await page.getByRole('button', { name: '参加登録する' }).first().click()
   const dialog = page.getByRole('dialog')
   await expect(dialog).toBeVisible()
   await dialog.locator('#term-check').check()

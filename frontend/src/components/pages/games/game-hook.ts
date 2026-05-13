@@ -69,6 +69,27 @@ export const canParticipate = (
     playerParticipatableGameStatuses.includes(game.status)
   )
 }
+export type ParticipateInvitation = 'hide' | 'login-required' | 'participate'
+// 参加登録パネルの表示状態
+// - 参加済み → 'hide'
+// - ログイン済み: canParticipate に従う
+// - 未ログイン: プレイヤー参加可能ステータスのみ案内（GM 判定はログイン後）
+export const participateInvitation = (
+  game: Game,
+  player: Player | null,
+  myself: GameParticipant | null,
+  isGameMasterValue: boolean
+): ParticipateInvitation => {
+  if (myself) return 'hide'
+  if (player) {
+    return canParticipate(game, player, myself, isGameMasterValue)
+      ? 'participate'
+      : 'hide'
+  }
+  return playerParticipatableGameStatuses.includes(game.status)
+    ? 'login-required'
+    : 'hide'
+}
 // ゲーム設定変更可能か
 export const canModifyGameSetting = (game: Game, myPlayer: Player | null) => {
   return (
