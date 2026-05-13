@@ -378,6 +378,9 @@ type MessagesQuery struct {
 	Paging              *PageableQuery `json:"paging,omitempty"`
 }
 
+type Mutation struct {
+}
+
 type NewDirectMessage struct {
 	GameID                 string      `json:"gameId"`
 	GameParticipantGroupID string      `json:"gameParticipantGroupId"`
@@ -568,6 +571,9 @@ type PlayersQuery struct {
 	Ids    []string       `json:"ids,omitempty"`
 	Name   *string        `json:"name,omitempty"`
 	Paging *PageableQuery `json:"paging,omitempty"`
+}
+
+type Query struct {
 }
 
 type RegisterDebugMessages struct {

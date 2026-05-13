@@ -4210,1120 +4210,2474 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Game_participants_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *gqlmodel.PageableQuery
-	if tmp, ok := rawArgs["paging"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paging"))
-		arg0, err = ec.unmarshalOPageableQuery2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPageableQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Game_participants_argsPaging(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["paging"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Game_participants_argsPaging(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (*gqlmodel.PageableQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["paging"]
+	if !ok {
+		var zeroVal *gqlmodel.PageableQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("paging"))
+	if tmp, ok := rawArgs["paging"]; ok {
+		return ec.unmarshalOPageableQuery2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPageableQuery(ctx, tmp)
+	}
+
+	var zeroVal *gqlmodel.PageableQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_changePeriodIfNeeded_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.ChangePeriod
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNChangePeriod2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChangePeriod(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_changePeriodIfNeeded_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_changePeriodIfNeeded_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.ChangePeriod, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.ChangePeriod
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNChangePeriod2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChangePeriod(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.ChangePeriod
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_deleteDirectMessageFavorite_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.DeleteDirectMessageFavorite
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteDirectMessageFavorite2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteDirectMessageFavorite(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_deleteDirectMessageFavorite_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteDirectMessageFavorite_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DeleteDirectMessageFavorite, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.DeleteDirectMessageFavorite
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNDeleteDirectMessageFavorite2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteDirectMessageFavorite(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DeleteDirectMessageFavorite
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_deleteGameMaster_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.DeleteGameMaster
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteGameMaster2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGameMaster(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_deleteGameMaster_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteGameMaster_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DeleteGameMaster, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.DeleteGameMaster
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNDeleteGameMaster2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGameMaster(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DeleteGameMaster
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_deleteGameParticipantFollow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.DeleteGameParticipantFollow
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteGameParticipantFollow2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGameParticipantFollow(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_deleteGameParticipantFollow_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteGameParticipantFollow_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DeleteGameParticipantFollow, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.DeleteGameParticipantFollow
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNDeleteGameParticipantFollow2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGameParticipantFollow(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DeleteGameParticipantFollow
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_deleteGameParticipantIcon_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.DeleteGameParticipantIcon
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteGameParticipantIcon2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGameParticipantIcon(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_deleteGameParticipantIcon_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteGameParticipantIcon_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DeleteGameParticipantIcon, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.DeleteGameParticipantIcon
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNDeleteGameParticipantIcon2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGameParticipantIcon(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DeleteGameParticipantIcon
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_deleteGameParticipant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.DeleteGameParticipant
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteGameParticipant2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGameParticipant(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_deleteGameParticipant_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteGameParticipant_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DeleteGameParticipant, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.DeleteGameParticipant
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNDeleteGameParticipant2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGameParticipant(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DeleteGameParticipant
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_deleteGamePeriod_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.DeleteGamePeriod
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteGamePeriod2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGamePeriod(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_deleteGamePeriod_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteGamePeriod_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DeleteGamePeriod, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.DeleteGamePeriod
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNDeleteGamePeriod2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteGamePeriod(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DeleteGamePeriod
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_deleteMessageFavorite_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.DeleteMessageFavorite
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteMessageFavorite2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteMessageFavorite(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_deleteMessageFavorite_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteMessageFavorite_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DeleteMessageFavorite, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.DeleteMessageFavorite
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNDeleteMessageFavorite2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeleteMessageFavorite(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DeleteMessageFavorite
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_deletePlayerSnsAccount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.DeletePlayerSnsAccount
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeletePlayerSnsAccount2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeletePlayerSnsAccount(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_deletePlayerSnsAccount_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_deletePlayerSnsAccount_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DeletePlayerSnsAccount, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.DeletePlayerSnsAccount
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNDeletePlayerSnsAccount2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDeletePlayerSnsAccount(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DeletePlayerSnsAccount
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerDebugMessages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.RegisterDebugMessages
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNRegisterDebugMessages2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDebugMessages(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerDebugMessages_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerDebugMessages_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.RegisterDebugMessages, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.RegisterDebugMessages
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNRegisterDebugMessages2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐRegisterDebugMessages(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.RegisterDebugMessages
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerDirectMessageDryRun_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewDirectMessage
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewDirectMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewDirectMessage(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerDirectMessageDryRun_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerDirectMessageDryRun_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewDirectMessage, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewDirectMessage
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewDirectMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewDirectMessage(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewDirectMessage
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerDirectMessageFavorite_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewDirectMessageFavorite
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewDirectMessageFavorite2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewDirectMessageFavorite(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerDirectMessageFavorite_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerDirectMessageFavorite_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewDirectMessageFavorite, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewDirectMessageFavorite
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewDirectMessageFavorite2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewDirectMessageFavorite(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewDirectMessageFavorite
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerDirectMessage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewDirectMessage
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewDirectMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewDirectMessage(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerDirectMessage_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerDirectMessage_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewDirectMessage, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewDirectMessage
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewDirectMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewDirectMessage(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewDirectMessage
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerGameMaster_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewGameMaster
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewGameMaster2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameMaster(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerGameMaster_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerGameMaster_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewGameMaster, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewGameMaster
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewGameMaster2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameMaster(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewGameMaster
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerGameParticipantDiary_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewGameParticipantDiary
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewGameParticipantDiary2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantDiary(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerGameParticipantDiary_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerGameParticipantDiary_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewGameParticipantDiary, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewGameParticipantDiary
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewGameParticipantDiary2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantDiary(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewGameParticipantDiary
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerGameParticipantFollow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewGameParticipantFollow
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewGameParticipantFollow2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantFollow(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerGameParticipantFollow_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerGameParticipantFollow_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewGameParticipantFollow, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewGameParticipantFollow
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewGameParticipantFollow2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantFollow(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewGameParticipantFollow
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerGameParticipantGroup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewGameParticipantGroup
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewGameParticipantGroup2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantGroup(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerGameParticipantGroup_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerGameParticipantGroup_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewGameParticipantGroup, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewGameParticipantGroup
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewGameParticipantGroup2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantGroup(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewGameParticipantGroup
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerGameParticipantIcon_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewGameParticipantIcon
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewGameParticipantIcon2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantIcon(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerGameParticipantIcon_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerGameParticipantIcon_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewGameParticipantIcon, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewGameParticipantIcon
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewGameParticipantIcon2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantIcon(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewGameParticipantIcon
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerGameParticipantIcons_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewGameParticipantIcons
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewGameParticipantIcons2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantIcons(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerGameParticipantIcons_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerGameParticipantIcons_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewGameParticipantIcons, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewGameParticipantIcons
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewGameParticipantIcons2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipantIcons(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewGameParticipantIcons
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerGameParticipant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewGameParticipant
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewGameParticipant2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipant(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerGameParticipant_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerGameParticipant_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewGameParticipant, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewGameParticipant
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewGameParticipant2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameParticipant(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewGameParticipant
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerGame_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewGame
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewGame2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGame(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerGame_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerGame_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewGame, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewGame
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewGame2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGame(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewGame
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerMessageDryRun_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewMessage
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewMessage(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerMessageDryRun_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerMessageDryRun_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewMessage, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewMessage
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewMessage(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewMessage
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerMessageFavorite_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewMessageFavorite
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewMessageFavorite2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewMessageFavorite(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerMessageFavorite_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerMessageFavorite_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewMessageFavorite, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewMessageFavorite
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewMessageFavorite2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewMessageFavorite(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewMessageFavorite
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerMessage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewMessage
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewMessage(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerMessage_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerMessage_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewMessage, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewMessage
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewMessage2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewMessage(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewMessage
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_registerPlayerSnsAccount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.NewPlayerSnsAccount
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewPlayerSnsAccount2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewPlayerSnsAccount(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_registerPlayerSnsAccount_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_registerPlayerSnsAccount_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.NewPlayerSnsAccount, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.NewPlayerSnsAccount
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNNewPlayerSnsAccount2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewPlayerSnsAccount(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.NewPlayerSnsAccount
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updateGameMaster_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdateGameMaster
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateGameMaster2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameMaster(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updateGameMaster_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateGameMaster_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdateGameMaster, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdateGameMaster
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateGameMaster2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameMaster(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdateGameMaster
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updateGameParticipantDiary_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdateGameParticipantDiary
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateGameParticipantDiary2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameParticipantDiary(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updateGameParticipantDiary_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateGameParticipantDiary_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdateGameParticipantDiary, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdateGameParticipantDiary
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateGameParticipantDiary2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameParticipantDiary(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdateGameParticipantDiary
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updateGameParticipantGroup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdateGameParticipantGroup
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateGameParticipantGroup2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameParticipantGroup(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updateGameParticipantGroup_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateGameParticipantGroup_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdateGameParticipantGroup, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdateGameParticipantGroup
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateGameParticipantGroup2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameParticipantGroup(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdateGameParticipantGroup
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updateGameParticipantIcon_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdateGameParticipantIcon
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateGameParticipantIcon2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameParticipantIcon(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updateGameParticipantIcon_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateGameParticipantIcon_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdateGameParticipantIcon, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdateGameParticipantIcon
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateGameParticipantIcon2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameParticipantIcon(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdateGameParticipantIcon
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updateGameParticipantProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdateGameParticipantProfile
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateGameParticipantProfile2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameParticipantProfile(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updateGameParticipantProfile_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateGameParticipantProfile_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdateGameParticipantProfile, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdateGameParticipantProfile
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateGameParticipantProfile2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameParticipantProfile(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdateGameParticipantProfile
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updateGameParticipantSetting_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdateGameParticipantSetting
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateGameParticipantSetting2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameParticipantSetting(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updateGameParticipantSetting_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateGameParticipantSetting_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdateGameParticipantSetting, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdateGameParticipantSetting
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateGameParticipantSetting2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameParticipantSetting(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdateGameParticipantSetting
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updateGamePeriod_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdateGamePeriod
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateGamePeriod2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGamePeriod(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updateGamePeriod_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateGamePeriod_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdateGamePeriod, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdateGamePeriod
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateGamePeriod2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGamePeriod(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdateGamePeriod
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updateGameSetting_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdateGameSetting
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateGameSetting2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameSetting(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updateGameSetting_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateGameSetting_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdateGameSetting, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdateGameSetting
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateGameSetting2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameSetting(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdateGameSetting
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updateGameStatus_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdateGameStatus
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateGameStatus2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameStatus(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updateGameStatus_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateGameStatus_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdateGameStatus, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdateGameStatus
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateGameStatus2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameStatus(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdateGameStatus
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updatePlayerProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdatePlayerProfile
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdatePlayerProfile2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdatePlayerProfile(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updatePlayerProfile_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updatePlayerProfile_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdatePlayerProfile, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdatePlayerProfile
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdatePlayerProfile2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdatePlayerProfile(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdatePlayerProfile
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_updatePlayerSnsAccount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.UpdatePlayerSnsAccount
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdatePlayerSnsAccount2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdatePlayerSnsAccount(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_updatePlayerSnsAccount_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_updatePlayerSnsAccount_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.UpdatePlayerSnsAccount, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal gqlmodel.UpdatePlayerSnsAccount
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdatePlayerSnsAccount2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdatePlayerSnsAccount(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.UpdatePlayerSnsAccount
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query___type_argsName(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["name"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query___type_argsName(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["name"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+	if tmp, ok := rawArgs["name"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_chara_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_chara_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["id"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_chara_argsID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["id"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_charachip_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_charachip_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["id"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_charachip_argsID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["id"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_charachips_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.CharachipsQuery
-	if tmp, ok := rawArgs["query"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-		arg0, err = ec.unmarshalNCharachipsQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐCharachipsQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_charachips_argsQuery(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["query"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_charachips_argsQuery(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.CharachipsQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["query"]
+	if !ok {
+		var zeroVal gqlmodel.CharachipsQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+	if tmp, ok := rawArgs["query"]; ok {
+		return ec.unmarshalNCharachipsQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐCharachipsQuery(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.CharachipsQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_designer_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_designer_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["id"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_designer_argsID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["id"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_designers_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.DesignersQuery
-	if tmp, ok := rawArgs["query"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-		arg0, err = ec.unmarshalNDesignersQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDesignersQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_designers_argsQuery(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["query"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_designers_argsQuery(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DesignersQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["query"]
+	if !ok {
+		var zeroVal gqlmodel.DesignersQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+	if tmp, ok := rawArgs["query"]; ok {
+		return ec.unmarshalNDesignersQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDesignersQuery(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DesignersQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_directMessageFavoriteGameParticipants_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_directMessageFavoriteGameParticipants_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["directMessageId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("directMessageId"))
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_directMessageFavoriteGameParticipants_argsDirectMessageID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["directMessageId"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_directMessageFavoriteGameParticipants_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_directMessageFavoriteGameParticipants_argsDirectMessageID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["directMessageId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("directMessageId"))
+	if tmp, ok := rawArgs["directMessageId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_directMessage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_directMessage_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["directMessageId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("directMessageId"))
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_directMessage_argsDirectMessageID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["directMessageId"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_directMessage_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_directMessage_argsDirectMessageID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["directMessageId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("directMessageId"))
+	if tmp, ok := rawArgs["directMessageId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_directMessagesLatestUnixTimeMilli_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_directMessagesLatestUnixTimeMilli_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 gqlmodel.DirectMessagesQuery
-	if tmp, ok := rawArgs["query"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-		arg1, err = ec.unmarshalNDirectMessagesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDirectMessagesQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_directMessagesLatestUnixTimeMilli_argsQuery(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["query"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_directMessagesLatestUnixTimeMilli_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_directMessagesLatestUnixTimeMilli_argsQuery(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DirectMessagesQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["query"]
+	if !ok {
+		var zeroVal gqlmodel.DirectMessagesQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+	if tmp, ok := rawArgs["query"]; ok {
+		return ec.unmarshalNDirectMessagesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDirectMessagesQuery(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DirectMessagesQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_directMessages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_directMessages_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 gqlmodel.DirectMessagesQuery
-	if tmp, ok := rawArgs["query"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-		arg1, err = ec.unmarshalNDirectMessagesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDirectMessagesQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_directMessages_argsQuery(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["query"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_directMessages_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_directMessages_argsQuery(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.DirectMessagesQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["query"]
+	if !ok {
+		var zeroVal gqlmodel.DirectMessagesQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+	if tmp, ok := rawArgs["query"]; ok {
+		return ec.unmarshalNDirectMessagesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDirectMessagesQuery(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.DirectMessagesQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_gameDiaries_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.GameDiariesQuery
-	if tmp, ok := rawArgs["query"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-		arg0, err = ec.unmarshalNGameDiariesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameDiariesQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_gameDiaries_argsQuery(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["query"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_gameDiaries_argsQuery(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.GameDiariesQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["query"]
+	if !ok {
+		var zeroVal gqlmodel.GameDiariesQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+	if tmp, ok := rawArgs["query"]; ok {
+		return ec.unmarshalNGameDiariesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameDiariesQuery(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.GameDiariesQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_gameDiary_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["diaryId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("diaryId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_gameDiary_argsDiaryID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["diaryId"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_gameDiary_argsDiaryID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["diaryId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("diaryId"))
+	if tmp, ok := rawArgs["diaryId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_gameParticipantFollowers_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["participantId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("participantId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_gameParticipantFollowers_argsParticipantID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["participantId"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_gameParticipantFollowers_argsParticipantID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["participantId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("participantId"))
+	if tmp, ok := rawArgs["participantId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_gameParticipantFollows_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["participantId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("participantId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_gameParticipantFollows_argsParticipantID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["participantId"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_gameParticipantFollows_argsParticipantID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["participantId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("participantId"))
+	if tmp, ok := rawArgs["participantId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_gameParticipantGroups_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_gameParticipantGroups_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 gqlmodel.GameParticipantGroupsQuery
-	if tmp, ok := rawArgs["query"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-		arg1, err = ec.unmarshalNGameParticipantGroupsQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantGroupsQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_gameParticipantGroups_argsQuery(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["query"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_gameParticipantGroups_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_gameParticipantGroups_argsQuery(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.GameParticipantGroupsQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["query"]
+	if !ok {
+		var zeroVal gqlmodel.GameParticipantGroupsQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+	if tmp, ok := rawArgs["query"]; ok {
+		return ec.unmarshalNGameParticipantGroupsQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantGroupsQuery(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.GameParticipantGroupsQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_gameParticipantIcons_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["participantId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("participantId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_gameParticipantIcons_argsParticipantID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["participantId"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_gameParticipantIcons_argsParticipantID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["participantId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("participantId"))
+	if tmp, ok := rawArgs["participantId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_gameParticipantProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["participantId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("participantId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_gameParticipantProfile_argsParticipantID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["participantId"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_gameParticipantProfile_argsParticipantID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["participantId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("participantId"))
+	if tmp, ok := rawArgs["participantId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_gameParticipantSetting_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_gameParticipantSetting_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_gameParticipantSetting_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_game_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_game_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["id"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_game_argsID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["id"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_games_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.GamesQuery
-	if tmp, ok := rawArgs["query"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-		arg0, err = ec.unmarshalNGamesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGamesQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_games_argsQuery(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["query"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_games_argsQuery(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.GamesQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["query"]
+	if !ok {
+		var zeroVal gqlmodel.GamesQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+	if tmp, ok := rawArgs["query"]; ok {
+		return ec.unmarshalNGamesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGamesQuery(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.GamesQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_messageFavoriteGameParticipants_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_messageFavoriteGameParticipants_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["messageId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageId"))
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_messageFavoriteGameParticipants_argsMessageID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["messageId"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_messageFavoriteGameParticipants_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_messageFavoriteGameParticipants_argsMessageID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["messageId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("messageId"))
+	if tmp, ok := rawArgs["messageId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_messageReplies_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_messageReplies_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["messageId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageId"))
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_messageReplies_argsMessageID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["messageId"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_messageReplies_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_messageReplies_argsMessageID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["messageId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("messageId"))
+	if tmp, ok := rawArgs["messageId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_message_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_message_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["messageId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageId"))
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_message_argsMessageID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["messageId"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_message_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_message_argsMessageID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["messageId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("messageId"))
+	if tmp, ok := rawArgs["messageId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_messagesLatestUnixTimeMilli_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_messagesLatestUnixTimeMilli_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 gqlmodel.MessagesQuery
-	if tmp, ok := rawArgs["query"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-		arg1, err = ec.unmarshalNMessagesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessagesQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_messagesLatestUnixTimeMilli_argsQuery(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["query"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_messagesLatestUnixTimeMilli_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_messagesLatestUnixTimeMilli_argsQuery(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.MessagesQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["query"]
+	if !ok {
+		var zeroVal gqlmodel.MessagesQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+	if tmp, ok := rawArgs["query"]; ok {
+		return ec.unmarshalNMessagesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessagesQuery(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.MessagesQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_messages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_messages_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 gqlmodel.MessagesQuery
-	if tmp, ok := rawArgs["query"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-		arg1, err = ec.unmarshalNMessagesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessagesQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_messages_argsQuery(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["query"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_messages_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_messages_argsQuery(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.MessagesQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["query"]
+	if !ok {
+		var zeroVal gqlmodel.MessagesQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+	if tmp, ok := rawArgs["query"]; ok {
+		return ec.unmarshalNMessagesQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessagesQuery(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.MessagesQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_myGameParticipant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_myGameParticipant_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_myGameParticipant_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_player_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_player_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["id"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_player_argsID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["id"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_players_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 gqlmodel.PlayersQuery
-	if tmp, ok := rawArgs["query"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-		arg0, err = ec.unmarshalNPlayersQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayersQuery(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_players_argsQuery(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["query"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_players_argsQuery(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (gqlmodel.PlayersQuery, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["query"]
+	if !ok {
+		var zeroVal gqlmodel.PlayersQuery
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
+	if tmp, ok := rawArgs["query"]; ok {
+		return ec.unmarshalNPlayersQuery2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayersQuery(ctx, tmp)
+	}
+
+	var zeroVal gqlmodel.PlayersQuery
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_threadMessages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gameId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_threadMessages_argsGameID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gameId"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["messageId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageId"))
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_threadMessages_argsMessageID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["messageId"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_threadMessages_argsGameID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gameId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
+	if tmp, ok := rawArgs["gameId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_threadMessages_argsMessageID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["messageId"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("messageId"))
+	if tmp, ok := rawArgs["messageId"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 bool
-	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
-		arg0, err = ec.unmarshalOBoolean2bool(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field___Type_enumValues_argsIncludeDeprecated(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["includeDeprecated"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field___Type_enumValues_argsIncludeDeprecated(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (bool, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["includeDeprecated"]
+	if !ok {
+		var zeroVal bool
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
+	if tmp, ok := rawArgs["includeDeprecated"]; ok {
+		return ec.unmarshalOBoolean2bool(ctx, tmp)
+	}
+
+	var zeroVal bool
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 bool
-	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
-		arg0, err = ec.unmarshalOBoolean2bool(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field___Type_fields_argsIncludeDeprecated(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["includeDeprecated"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field___Type_fields_argsIncludeDeprecated(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (bool, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["includeDeprecated"]
+	if !ok {
+		var zeroVal bool
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
+	if tmp, ok := rawArgs["includeDeprecated"]; ok {
+		return ec.unmarshalOBoolean2bool(ctx, tmp)
+	}
+
+	var zeroVal bool
+	return zeroVal, nil
 }
 
 // endregion ***************************** args.gotpl *****************************
@@ -5365,7 +6719,7 @@ func (ec *executionContext) _ChangePeriodIfNeededPayload_ok(ctx context.Context,
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ChangePeriodIfNeededPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_ChangePeriodIfNeededPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "ChangePeriodIfNeededPayload",
 		Field:      field,
@@ -5409,7 +6763,7 @@ func (ec *executionContext) _Chara_id(ctx context.Context, field graphql.Collect
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Chara_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Chara_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Chara",
 		Field:      field,
@@ -5453,7 +6807,7 @@ func (ec *executionContext) _Chara_name(ctx context.Context, field graphql.Colle
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Chara_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Chara_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Chara",
 		Field:      field,
@@ -5497,7 +6851,7 @@ func (ec *executionContext) _Chara_size(ctx context.Context, field graphql.Colle
 	return ec.marshalNCharaSize2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐCharaSize(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Chara_size(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Chara_size(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Chara",
 		Field:      field,
@@ -5547,7 +6901,7 @@ func (ec *executionContext) _Chara_images(ctx context.Context, field graphql.Col
 	return ec.marshalNCharaImage2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐCharaImageᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Chara_images(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Chara_images(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Chara",
 		Field:      field,
@@ -5599,7 +6953,7 @@ func (ec *executionContext) _CharaImage_id(ctx context.Context, field graphql.Co
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CharaImage_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CharaImage_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CharaImage",
 		Field:      field,
@@ -5643,7 +6997,7 @@ func (ec *executionContext) _CharaImage_type(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CharaImage_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CharaImage_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CharaImage",
 		Field:      field,
@@ -5687,7 +7041,7 @@ func (ec *executionContext) _CharaImage_url(ctx context.Context, field graphql.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CharaImage_url(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CharaImage_url(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CharaImage",
 		Field:      field,
@@ -5731,7 +7085,7 @@ func (ec *executionContext) _CharaSize_width(ctx context.Context, field graphql.
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CharaSize_width(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CharaSize_width(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CharaSize",
 		Field:      field,
@@ -5775,7 +7129,7 @@ func (ec *executionContext) _CharaSize_height(ctx context.Context, field graphql
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CharaSize_height(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CharaSize_height(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CharaSize",
 		Field:      field,
@@ -5819,7 +7173,7 @@ func (ec *executionContext) _Charachip_id(ctx context.Context, field graphql.Col
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Charachip_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Charachip_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Charachip",
 		Field:      field,
@@ -5863,7 +7217,7 @@ func (ec *executionContext) _Charachip_name(ctx context.Context, field graphql.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Charachip_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Charachip_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Charachip",
 		Field:      field,
@@ -5907,7 +7261,7 @@ func (ec *executionContext) _Charachip_designer(ctx context.Context, field graph
 	return ec.marshalNDesigner2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDesigner(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Charachip_designer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Charachip_designer(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Charachip",
 		Field:      field,
@@ -5957,7 +7311,7 @@ func (ec *executionContext) _Charachip_descriptionUrl(ctx context.Context, field
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Charachip_descriptionUrl(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Charachip_descriptionUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Charachip",
 		Field:      field,
@@ -6001,7 +7355,7 @@ func (ec *executionContext) _Charachip_canChangeName(ctx context.Context, field 
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Charachip_canChangeName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Charachip_canChangeName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Charachip",
 		Field:      field,
@@ -6045,7 +7399,7 @@ func (ec *executionContext) _Charachip_charas(ctx context.Context, field graphql
 	return ec.marshalNChara2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐCharaᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Charachip_charas(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Charachip_charas(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Charachip",
 		Field:      field,
@@ -6099,7 +7453,7 @@ func (ec *executionContext) _DeleteDirectMessageFavoritePayload_ok(ctx context.C
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DeleteDirectMessageFavoritePayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DeleteDirectMessageFavoritePayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteDirectMessageFavoritePayload",
 		Field:      field,
@@ -6143,7 +7497,7 @@ func (ec *executionContext) _DeleteGameMasterPayload_ok(ctx context.Context, fie
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DeleteGameMasterPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DeleteGameMasterPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteGameMasterPayload",
 		Field:      field,
@@ -6187,7 +7541,7 @@ func (ec *executionContext) _DeleteGameParticipantFollowPayload_ok(ctx context.C
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DeleteGameParticipantFollowPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DeleteGameParticipantFollowPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteGameParticipantFollowPayload",
 		Field:      field,
@@ -6231,7 +7585,7 @@ func (ec *executionContext) _DeleteGameParticipantIconPayload_ok(ctx context.Con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DeleteGameParticipantIconPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DeleteGameParticipantIconPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteGameParticipantIconPayload",
 		Field:      field,
@@ -6275,7 +7629,7 @@ func (ec *executionContext) _DeleteGameParticipantPayload_ok(ctx context.Context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DeleteGameParticipantPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DeleteGameParticipantPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteGameParticipantPayload",
 		Field:      field,
@@ -6319,7 +7673,7 @@ func (ec *executionContext) _DeleteGamePeriodPayload_ok(ctx context.Context, fie
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DeleteGamePeriodPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DeleteGamePeriodPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteGamePeriodPayload",
 		Field:      field,
@@ -6363,7 +7717,7 @@ func (ec *executionContext) _DeleteMessageFavoritePayload_ok(ctx context.Context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DeleteMessageFavoritePayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DeleteMessageFavoritePayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteMessageFavoritePayload",
 		Field:      field,
@@ -6407,7 +7761,7 @@ func (ec *executionContext) _DeletePlayerSnsAccountPayload_ok(ctx context.Contex
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DeletePlayerSnsAccountPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DeletePlayerSnsAccountPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeletePlayerSnsAccountPayload",
 		Field:      field,
@@ -6451,7 +7805,7 @@ func (ec *executionContext) _Designer_id(ctx context.Context, field graphql.Coll
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Designer_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Designer_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Designer",
 		Field:      field,
@@ -6495,7 +7849,7 @@ func (ec *executionContext) _Designer_name(ctx context.Context, field graphql.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Designer_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Designer_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Designer",
 		Field:      field,
@@ -6539,7 +7893,7 @@ func (ec *executionContext) _DirectMessage_id(ctx context.Context, field graphql
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessage_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessage_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessage",
 		Field:      field,
@@ -6583,7 +7937,7 @@ func (ec *executionContext) _DirectMessage_participantGroupId(ctx context.Contex
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessage_participantGroupId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessage_participantGroupId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessage",
 		Field:      field,
@@ -6627,7 +7981,7 @@ func (ec *executionContext) _DirectMessage_content(ctx context.Context, field gr
 	return ec.marshalNMessageContent2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageContent(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessage_content(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessage_content(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessage",
 		Field:      field,
@@ -6681,7 +8035,7 @@ func (ec *executionContext) _DirectMessage_time(ctx context.Context, field graph
 	return ec.marshalNMessageTime2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessage_time(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessage_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessage",
 		Field:      field,
@@ -6731,7 +8085,7 @@ func (ec *executionContext) _DirectMessage_sender(ctx context.Context, field gra
 	return ec.marshalNMessageSender2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageSender(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessage_sender(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessage_sender(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessage",
 		Field:      field,
@@ -6785,7 +8139,7 @@ func (ec *executionContext) _DirectMessage_reactions(ctx context.Context, field 
 	return ec.marshalNDirectMessageReactions2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDirectMessageReactions(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessage_reactions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessage_reactions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessage",
 		Field:      field,
@@ -6835,7 +8189,7 @@ func (ec *executionContext) _DirectMessageReactions_favoriteCounts(ctx context.C
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessageReactions_favoriteCounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessageReactions_favoriteCounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessageReactions",
 		Field:      field,
@@ -6879,7 +8233,7 @@ func (ec *executionContext) _DirectMessageReactions_favoriteParticipantIds(ctx c
 	return ec.marshalNID2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessageReactions_favoriteParticipantIds(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessageReactions_favoriteParticipantIds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessageReactions",
 		Field:      field,
@@ -6923,7 +8277,7 @@ func (ec *executionContext) _DirectMessages_list(ctx context.Context, field grap
 	return ec.marshalNDirectMessage2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDirectMessageᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessages_list(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessages_list(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessages",
 		Field:      field,
@@ -6981,7 +8335,7 @@ func (ec *executionContext) _DirectMessages_allPageCount(ctx context.Context, fi
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessages_allPageCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessages_allPageCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessages",
 		Field:      field,
@@ -7025,7 +8379,7 @@ func (ec *executionContext) _DirectMessages_hasPrePage(ctx context.Context, fiel
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessages_hasPrePage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessages_hasPrePage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessages",
 		Field:      field,
@@ -7069,7 +8423,7 @@ func (ec *executionContext) _DirectMessages_hasNextPage(ctx context.Context, fie
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessages_hasNextPage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessages_hasNextPage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessages",
 		Field:      field,
@@ -7110,7 +8464,7 @@ func (ec *executionContext) _DirectMessages_currentPageNumber(ctx context.Contex
 	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessages_currentPageNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessages_currentPageNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessages",
 		Field:      field,
@@ -7154,7 +8508,7 @@ func (ec *executionContext) _DirectMessages_isDesc(ctx context.Context, field gr
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessages_isDesc(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessages_isDesc(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessages",
 		Field:      field,
@@ -7198,7 +8552,7 @@ func (ec *executionContext) _DirectMessages_isLatest(ctx context.Context, field 
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessages_isLatest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessages_isLatest(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessages",
 		Field:      field,
@@ -7242,7 +8596,7 @@ func (ec *executionContext) _DirectMessages_latestUnixTimeMilli(ctx context.Cont
 	return ec.marshalNLong2uint64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_DirectMessages_latestUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_DirectMessages_latestUnixTimeMilli(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DirectMessages",
 		Field:      field,
@@ -7286,7 +8640,7 @@ func (ec *executionContext) _Game_id(ctx context.Context, field graphql.Collecte
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Game_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Game_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Game",
 		Field:      field,
@@ -7330,7 +8684,7 @@ func (ec *executionContext) _Game_name(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Game_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Game_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Game",
 		Field:      field,
@@ -7374,7 +8728,7 @@ func (ec *executionContext) _Game_status(ctx context.Context, field graphql.Coll
 	return ec.marshalNGameStatus2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameStatus(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Game_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Game_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Game",
 		Field:      field,
@@ -7418,7 +8772,7 @@ func (ec *executionContext) _Game_labels(ctx context.Context, field graphql.Coll
 	return ec.marshalNGameLabel2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameLabelᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Game_labels(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Game_labels(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Game",
 		Field:      field,
@@ -7470,7 +8824,7 @@ func (ec *executionContext) _Game_gameMasters(ctx context.Context, field graphql
 	return ec.marshalNGameMaster2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameMasterᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Game_gameMasters(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Game_gameMasters(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Game",
 		Field:      field,
@@ -7603,7 +8957,7 @@ func (ec *executionContext) _Game_periods(ctx context.Context, field graphql.Col
 	return ec.marshalNGamePeriod2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGamePeriodᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Game_periods(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Game_periods(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Game",
 		Field:      field,
@@ -7659,7 +9013,7 @@ func (ec *executionContext) _Game_settings(ctx context.Context, field graphql.Co
 	return ec.marshalNGameSettings2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameSettings(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Game_settings(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Game_settings(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Game",
 		Field:      field,
@@ -7714,7 +9068,7 @@ func (ec *executionContext) _GameBackgroundSetting_introduction(ctx context.Cont
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameBackgroundSetting_introduction(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameBackgroundSetting_introduction(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameBackgroundSetting",
 		Field:      field,
@@ -7755,7 +9109,7 @@ func (ec *executionContext) _GameBackgroundSetting_catchImageUrl(ctx context.Con
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameBackgroundSetting_catchImageUrl(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameBackgroundSetting_catchImageUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameBackgroundSetting",
 		Field:      field,
@@ -7799,7 +9153,7 @@ func (ec *executionContext) _GameCapacity_min(ctx context.Context, field graphql
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameCapacity_min(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameCapacity_min(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameCapacity",
 		Field:      field,
@@ -7843,7 +9197,7 @@ func (ec *executionContext) _GameCapacity_max(ctx context.Context, field graphql
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameCapacity_max(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameCapacity_max(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameCapacity",
 		Field:      field,
@@ -7887,7 +9241,7 @@ func (ec *executionContext) _GameCharaSetting_charachips(ctx context.Context, fi
 	return ec.marshalNCharachip2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐCharachipᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameCharaSetting_charachips(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameCharaSetting_charachips(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameCharaSetting",
 		Field:      field,
@@ -7945,7 +9299,7 @@ func (ec *executionContext) _GameCharaSetting_canOriginalCharacter(ctx context.C
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameCharaSetting_canOriginalCharacter(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameCharaSetting_canOriginalCharacter(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameCharaSetting",
 		Field:      field,
@@ -7989,7 +9343,7 @@ func (ec *executionContext) _GameLabel_id(ctx context.Context, field graphql.Col
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameLabel_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameLabel_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameLabel",
 		Field:      field,
@@ -8033,7 +9387,7 @@ func (ec *executionContext) _GameLabel_name(ctx context.Context, field graphql.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameLabel_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameLabel_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameLabel",
 		Field:      field,
@@ -8077,7 +9431,7 @@ func (ec *executionContext) _GameLabel_type(ctx context.Context, field graphql.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameLabel_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameLabel_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameLabel",
 		Field:      field,
@@ -8121,7 +9475,7 @@ func (ec *executionContext) _GameMaster_id(ctx context.Context, field graphql.Co
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameMaster_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameMaster_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameMaster",
 		Field:      field,
@@ -8165,7 +9519,7 @@ func (ec *executionContext) _GameMaster_player(ctx context.Context, field graphq
 	return ec.marshalNPlayer2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayer(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameMaster_player(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameMaster_player(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameMaster",
 		Field:      field,
@@ -8221,7 +9575,7 @@ func (ec *executionContext) _GameMaster_isProducer(ctx context.Context, field gr
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameMaster_isProducer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameMaster_isProducer(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameMaster",
 		Field:      field,
@@ -8265,7 +9619,7 @@ func (ec *executionContext) _GameNotificationCondition_participate(ctx context.C
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameNotificationCondition_participate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameNotificationCondition_participate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameNotificationCondition",
 		Field:      field,
@@ -8309,7 +9663,7 @@ func (ec *executionContext) _GameNotificationCondition_start(ctx context.Context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameNotificationCondition_start(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameNotificationCondition_start(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameNotificationCondition",
 		Field:      field,
@@ -8353,7 +9707,7 @@ func (ec *executionContext) _GameParticipant_id(ctx context.Context, field graph
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8397,7 +9751,7 @@ func (ec *executionContext) _GameParticipant_name(ctx context.Context, field gra
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8441,7 +9795,7 @@ func (ec *executionContext) _GameParticipant_entryNumber(ctx context.Context, fi
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_entryNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_entryNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8485,7 +9839,7 @@ func (ec *executionContext) _GameParticipant_player(ctx context.Context, field g
 	return ec.marshalNPlayer2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayer(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_player(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_player(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8538,7 +9892,7 @@ func (ec *executionContext) _GameParticipant_chara(ctx context.Context, field gr
 	return ec.marshalOChara2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐChara(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_chara(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_chara(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8589,7 +9943,7 @@ func (ec *executionContext) _GameParticipant_memo(ctx context.Context, field gra
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_memo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_memo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8630,7 +9984,7 @@ func (ec *executionContext) _GameParticipant_profileIcon(ctx context.Context, fi
 	return ec.marshalOGameParticipantIcon2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIcon(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_profileIcon(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_profileIcon(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8686,7 +10040,7 @@ func (ec *executionContext) _GameParticipant_lastAccessedAt(ctx context.Context,
 	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_lastAccessedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_lastAccessedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8730,7 +10084,7 @@ func (ec *executionContext) _GameParticipant_isGone(ctx context.Context, field g
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_isGone(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_isGone(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8774,7 +10128,7 @@ func (ec *executionContext) _GameParticipant_canChangeName(ctx context.Context, 
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_canChangeName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_canChangeName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8818,7 +10172,7 @@ func (ec *executionContext) _GameParticipant_followParticipantIds(ctx context.Co
 	return ec.marshalNID2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_followParticipantIds(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_followParticipantIds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8862,7 +10216,7 @@ func (ec *executionContext) _GameParticipant_followerParticipantIds(ctx context.
 	return ec.marshalNID2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipant_followerParticipantIds(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipant_followerParticipantIds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipant",
 		Field:      field,
@@ -8906,7 +10260,7 @@ func (ec *executionContext) _GameParticipantDiary_id(ctx context.Context, field 
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantDiary_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantDiary_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantDiary",
 		Field:      field,
@@ -8950,7 +10304,7 @@ func (ec *executionContext) _GameParticipantDiary_participant(ctx context.Contex
 	return ec.marshalNGameParticipant2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipant(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantDiary_participant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantDiary_participant(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantDiary",
 		Field:      field,
@@ -9020,7 +10374,7 @@ func (ec *executionContext) _GameParticipantDiary_period(ctx context.Context, fi
 	return ec.marshalNGamePeriod2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGamePeriod(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantDiary_period(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantDiary_period(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantDiary",
 		Field:      field,
@@ -9076,7 +10430,7 @@ func (ec *executionContext) _GameParticipantDiary_title(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantDiary_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantDiary_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantDiary",
 		Field:      field,
@@ -9120,7 +10474,7 @@ func (ec *executionContext) _GameParticipantDiary_body(ctx context.Context, fiel
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantDiary_body(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantDiary_body(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantDiary",
 		Field:      field,
@@ -9164,7 +10518,7 @@ func (ec *executionContext) _GameParticipantGroup_id(ctx context.Context, field 
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantGroup_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantGroup_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantGroup",
 		Field:      field,
@@ -9208,7 +10562,7 @@ func (ec *executionContext) _GameParticipantGroup_name(ctx context.Context, fiel
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantGroup_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantGroup_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantGroup",
 		Field:      field,
@@ -9252,7 +10606,7 @@ func (ec *executionContext) _GameParticipantGroup_participants(ctx context.Conte
 	return ec.marshalNGameParticipant2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantGroup_participants(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantGroup_participants(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantGroup",
 		Field:      field,
@@ -9322,7 +10676,7 @@ func (ec *executionContext) _GameParticipantGroup_latestUnixTimeMilli(ctx contex
 	return ec.marshalNLong2uint64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantGroup_latestUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantGroup_latestUnixTimeMilli(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantGroup",
 		Field:      field,
@@ -9366,7 +10720,7 @@ func (ec *executionContext) _GameParticipantIcon_id(ctx context.Context, field g
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantIcon_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantIcon_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantIcon",
 		Field:      field,
@@ -9410,7 +10764,7 @@ func (ec *executionContext) _GameParticipantIcon_url(ctx context.Context, field 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantIcon_url(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantIcon_url(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantIcon",
 		Field:      field,
@@ -9454,7 +10808,7 @@ func (ec *executionContext) _GameParticipantIcon_width(ctx context.Context, fiel
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantIcon_width(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantIcon_width(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantIcon",
 		Field:      field,
@@ -9498,7 +10852,7 @@ func (ec *executionContext) _GameParticipantIcon_height(ctx context.Context, fie
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantIcon_height(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantIcon_height(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantIcon",
 		Field:      field,
@@ -9542,7 +10896,7 @@ func (ec *executionContext) _GameParticipantIcon_displayOrder(ctx context.Contex
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantIcon_displayOrder(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantIcon_displayOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantIcon",
 		Field:      field,
@@ -9586,7 +10940,7 @@ func (ec *executionContext) _GameParticipantProfile_participantId(ctx context.Co
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantProfile_participantId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantProfile_participantId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantProfile",
 		Field:      field,
@@ -9630,7 +10984,7 @@ func (ec *executionContext) _GameParticipantProfile_name(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantProfile_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantProfile_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantProfile",
 		Field:      field,
@@ -9674,7 +11028,7 @@ func (ec *executionContext) _GameParticipantProfile_entryNumber(ctx context.Cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantProfile_entryNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantProfile_entryNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantProfile",
 		Field:      field,
@@ -9718,7 +11072,7 @@ func (ec *executionContext) _GameParticipantProfile_isGone(ctx context.Context, 
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantProfile_isGone(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantProfile_isGone(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantProfile",
 		Field:      field,
@@ -9759,7 +11113,7 @@ func (ec *executionContext) _GameParticipantProfile_profileImageUrl(ctx context.
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantProfile_profileImageUrl(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantProfile_profileImageUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantProfile",
 		Field:      field,
@@ -9800,7 +11154,7 @@ func (ec *executionContext) _GameParticipantProfile_introduction(ctx context.Con
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantProfile_introduction(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantProfile_introduction(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantProfile",
 		Field:      field,
@@ -9844,7 +11198,7 @@ func (ec *executionContext) _GameParticipantProfile_followsCount(ctx context.Con
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantProfile_followsCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantProfile_followsCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantProfile",
 		Field:      field,
@@ -9888,7 +11242,7 @@ func (ec *executionContext) _GameParticipantProfile_followersCount(ctx context.C
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantProfile_followersCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantProfile_followersCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantProfile",
 		Field:      field,
@@ -9932,7 +11286,7 @@ func (ec *executionContext) _GameParticipantProfile_isPlayerOpen(ctx context.Con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantProfile_isPlayerOpen(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantProfile_isPlayerOpen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantProfile",
 		Field:      field,
@@ -9973,7 +11327,7 @@ func (ec *executionContext) _GameParticipantProfile_playerName(ctx context.Conte
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantProfile_playerName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantProfile_playerName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantProfile",
 		Field:      field,
@@ -10017,7 +11371,7 @@ func (ec *executionContext) _GameParticipantSetting_notification(ctx context.Con
 	return ec.marshalNNotificationCondition2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNotificationCondition(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameParticipantSetting_notification(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameParticipantSetting_notification(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameParticipantSetting",
 		Field:      field,
@@ -10069,7 +11423,7 @@ func (ec *executionContext) _GamePasswordSetting_hasPassword(ctx context.Context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GamePasswordSetting_hasPassword(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GamePasswordSetting_hasPassword(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GamePasswordSetting",
 		Field:      field,
@@ -10113,7 +11467,7 @@ func (ec *executionContext) _GamePeriod_id(ctx context.Context, field graphql.Co
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GamePeriod_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GamePeriod_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GamePeriod",
 		Field:      field,
@@ -10157,7 +11511,7 @@ func (ec *executionContext) _GamePeriod_count(ctx context.Context, field graphql
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GamePeriod_count(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GamePeriod_count(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GamePeriod",
 		Field:      field,
@@ -10201,7 +11555,7 @@ func (ec *executionContext) _GamePeriod_name(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GamePeriod_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GamePeriod_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GamePeriod",
 		Field:      field,
@@ -10245,7 +11599,7 @@ func (ec *executionContext) _GamePeriod_startAt(ctx context.Context, field graph
 	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GamePeriod_startAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GamePeriod_startAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GamePeriod",
 		Field:      field,
@@ -10289,7 +11643,7 @@ func (ec *executionContext) _GamePeriod_endAt(ctx context.Context, field graphql
 	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GamePeriod_endAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GamePeriod_endAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GamePeriod",
 		Field:      field,
@@ -10333,7 +11687,7 @@ func (ec *executionContext) _GameRuleSetting_isGameMasterProducer(ctx context.Co
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameRuleSetting_isGameMasterProducer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameRuleSetting_isGameMasterProducer(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameRuleSetting",
 		Field:      field,
@@ -10377,7 +11731,7 @@ func (ec *executionContext) _GameRuleSetting_canShorten(ctx context.Context, fie
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameRuleSetting_canShorten(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameRuleSetting_canShorten(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameRuleSetting",
 		Field:      field,
@@ -10421,7 +11775,7 @@ func (ec *executionContext) _GameRuleSetting_canSendDirectMessage(ctx context.Co
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameRuleSetting_canSendDirectMessage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameRuleSetting_canSendDirectMessage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameRuleSetting",
 		Field:      field,
@@ -10462,7 +11816,7 @@ func (ec *executionContext) _GameRuleSetting_theme(ctx context.Context, field gr
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameRuleSetting_theme(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameRuleSetting_theme(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameRuleSetting",
 		Field:      field,
@@ -10506,7 +11860,7 @@ func (ec *executionContext) _GameSettings_background(ctx context.Context, field 
 	return ec.marshalNGameBackgroundSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameBackgroundSetting(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameSettings_background(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameSettings_background(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameSettings",
 		Field:      field,
@@ -10556,7 +11910,7 @@ func (ec *executionContext) _GameSettings_chara(ctx context.Context, field graph
 	return ec.marshalNGameCharaSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameCharaSetting(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameSettings_chara(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameSettings_chara(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameSettings",
 		Field:      field,
@@ -10606,7 +11960,7 @@ func (ec *executionContext) _GameSettings_capacity(ctx context.Context, field gr
 	return ec.marshalNGameCapacity2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameCapacity(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameSettings_capacity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameSettings_capacity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameSettings",
 		Field:      field,
@@ -10656,7 +12010,7 @@ func (ec *executionContext) _GameSettings_time(ctx context.Context, field graphq
 	return ec.marshalNGameTimeSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameTimeSetting(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameSettings_time(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameSettings_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameSettings",
 		Field:      field,
@@ -10718,7 +12072,7 @@ func (ec *executionContext) _GameSettings_rule(ctx context.Context, field graphq
 	return ec.marshalNGameRuleSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameRuleSetting(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameSettings_rule(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameSettings_rule(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameSettings",
 		Field:      field,
@@ -10772,7 +12126,7 @@ func (ec *executionContext) _GameSettings_password(ctx context.Context, field gr
 	return ec.marshalNGamePasswordSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGamePasswordSetting(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameSettings_password(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameSettings_password(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameSettings",
 		Field:      field,
@@ -10817,7 +12171,7 @@ func (ec *executionContext) _GameTimeSetting_periodPrefix(ctx context.Context, f
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameTimeSetting_periodPrefix(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameTimeSetting_periodPrefix(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameTimeSetting",
 		Field:      field,
@@ -10858,7 +12212,7 @@ func (ec *executionContext) _GameTimeSetting_periodSuffix(ctx context.Context, f
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameTimeSetting_periodSuffix(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameTimeSetting_periodSuffix(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameTimeSetting",
 		Field:      field,
@@ -10902,7 +12256,7 @@ func (ec *executionContext) _GameTimeSetting_periodIntervalSeconds(ctx context.C
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameTimeSetting_periodIntervalSeconds(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameTimeSetting_periodIntervalSeconds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameTimeSetting",
 		Field:      field,
@@ -10946,7 +12300,7 @@ func (ec *executionContext) _GameTimeSetting_openAt(ctx context.Context, field g
 	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameTimeSetting_openAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameTimeSetting_openAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameTimeSetting",
 		Field:      field,
@@ -10990,7 +12344,7 @@ func (ec *executionContext) _GameTimeSetting_startParticipateAt(ctx context.Cont
 	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameTimeSetting_startParticipateAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameTimeSetting_startParticipateAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameTimeSetting",
 		Field:      field,
@@ -11034,7 +12388,7 @@ func (ec *executionContext) _GameTimeSetting_startGameAt(ctx context.Context, fi
 	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameTimeSetting_startGameAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameTimeSetting_startGameAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameTimeSetting",
 		Field:      field,
@@ -11078,7 +12432,7 @@ func (ec *executionContext) _GameTimeSetting_epilogueGameAt(ctx context.Context,
 	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameTimeSetting_epilogueGameAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameTimeSetting_epilogueGameAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameTimeSetting",
 		Field:      field,
@@ -11122,7 +12476,7 @@ func (ec *executionContext) _GameTimeSetting_finishGameAt(ctx context.Context, f
 	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_GameTimeSetting_finishGameAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GameTimeSetting_finishGameAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GameTimeSetting",
 		Field:      field,
@@ -11166,7 +12520,7 @@ func (ec *executionContext) _Message_id(ctx context.Context, field graphql.Colle
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -11210,7 +12564,7 @@ func (ec *executionContext) _Message_content(ctx context.Context, field graphql.
 	return ec.marshalNMessageContent2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageContent(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_content(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_content(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -11264,7 +12618,7 @@ func (ec *executionContext) _Message_time(ctx context.Context, field graphql.Col
 	return ec.marshalNMessageTime2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_time(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -11311,7 +12665,7 @@ func (ec *executionContext) _Message_sender(ctx context.Context, field graphql.C
 	return ec.marshalOMessageSender2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageSender(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_sender(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_sender(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -11362,7 +12716,7 @@ func (ec *executionContext) _Message_receiver(ctx context.Context, field graphql
 	return ec.marshalOMessageReceiver2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageReceiver(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_receiver(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_receiver(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -11411,7 +12765,7 @@ func (ec *executionContext) _Message_replyTo(ctx context.Context, field graphql.
 	return ec.marshalOMessageRecipient2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageRecipient(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_replyTo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_replyTo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -11461,7 +12815,7 @@ func (ec *executionContext) _Message_reactions(ctx context.Context, field graphq
 	return ec.marshalNMessageReactions2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageReactions(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_reactions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_reactions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -11513,7 +12867,7 @@ func (ec *executionContext) _MessageContent_type(ctx context.Context, field grap
 	return ec.marshalNMessageType2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageContent_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageContent_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageContent",
 		Field:      field,
@@ -11557,7 +12911,7 @@ func (ec *executionContext) _MessageContent_number(ctx context.Context, field gr
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageContent_number(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageContent_number(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageContent",
 		Field:      field,
@@ -11601,7 +12955,7 @@ func (ec *executionContext) _MessageContent_text(ctx context.Context, field grap
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageContent_text(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageContent_text(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageContent",
 		Field:      field,
@@ -11645,7 +12999,7 @@ func (ec *executionContext) _MessageContent_isConvertDisabled(ctx context.Contex
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageContent_isConvertDisabled(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageContent_isConvertDisabled(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageContent",
 		Field:      field,
@@ -11689,7 +13043,7 @@ func (ec *executionContext) _MessageNotificationCondition_reply(ctx context.Cont
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageNotificationCondition_reply(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageNotificationCondition_reply(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageNotificationCondition",
 		Field:      field,
@@ -11733,7 +13087,7 @@ func (ec *executionContext) _MessageNotificationCondition_secret(ctx context.Con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageNotificationCondition_secret(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageNotificationCondition_secret(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageNotificationCondition",
 		Field:      field,
@@ -11777,7 +13131,7 @@ func (ec *executionContext) _MessageNotificationCondition_directMessage(ctx cont
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageNotificationCondition_directMessage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageNotificationCondition_directMessage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageNotificationCondition",
 		Field:      field,
@@ -11821,7 +13175,7 @@ func (ec *executionContext) _MessageNotificationCondition_keywords(ctx context.C
 	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageNotificationCondition_keywords(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageNotificationCondition_keywords(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageNotificationCondition",
 		Field:      field,
@@ -11865,7 +13219,7 @@ func (ec *executionContext) _MessageReactions_replyCount(ctx context.Context, fi
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageReactions_replyCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageReactions_replyCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageReactions",
 		Field:      field,
@@ -11909,7 +13263,7 @@ func (ec *executionContext) _MessageReactions_favoriteCount(ctx context.Context,
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageReactions_favoriteCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageReactions_favoriteCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageReactions",
 		Field:      field,
@@ -11953,7 +13307,7 @@ func (ec *executionContext) _MessageReactions_favoriteParticipantIds(ctx context
 	return ec.marshalNID2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageReactions_favoriteParticipantIds(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageReactions_favoriteParticipantIds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageReactions",
 		Field:      field,
@@ -11997,7 +13351,7 @@ func (ec *executionContext) _MessageReceiver_participantId(ctx context.Context, 
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageReceiver_participantId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageReceiver_participantId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageReceiver",
 		Field:      field,
@@ -12041,7 +13395,7 @@ func (ec *executionContext) _MessageReceiver_name(ctx context.Context, field gra
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageReceiver_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageReceiver_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageReceiver",
 		Field:      field,
@@ -12085,7 +13439,7 @@ func (ec *executionContext) _MessageReceiver_entryNumber(ctx context.Context, fi
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageReceiver_entryNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageReceiver_entryNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageReceiver",
 		Field:      field,
@@ -12129,7 +13483,7 @@ func (ec *executionContext) _MessageRecipient_messageId(ctx context.Context, fie
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageRecipient_messageId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageRecipient_messageId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageRecipient",
 		Field:      field,
@@ -12173,7 +13527,7 @@ func (ec *executionContext) _MessageRecipient_participantId(ctx context.Context,
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageRecipient_participantId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageRecipient_participantId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageRecipient",
 		Field:      field,
@@ -12217,7 +13571,7 @@ func (ec *executionContext) _MessageSender_participantId(ctx context.Context, fi
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageSender_participantId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageSender_participantId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageSender",
 		Field:      field,
@@ -12261,7 +13615,7 @@ func (ec *executionContext) _MessageSender_name(ctx context.Context, field graph
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageSender_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageSender_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageSender",
 		Field:      field,
@@ -12305,7 +13659,7 @@ func (ec *executionContext) _MessageSender_entryNumber(ctx context.Context, fiel
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageSender_entryNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageSender_entryNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageSender",
 		Field:      field,
@@ -12346,7 +13700,7 @@ func (ec *executionContext) _MessageSender_icon(ctx context.Context, field graph
 	return ec.marshalOGameParticipantIcon2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIcon(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageSender_icon(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageSender_icon(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageSender",
 		Field:      field,
@@ -12402,7 +13756,7 @@ func (ec *executionContext) _MessageTime_sendAt(ctx context.Context, field graph
 	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageTime_sendAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageTime_sendAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageTime",
 		Field:      field,
@@ -12446,7 +13800,7 @@ func (ec *executionContext) _MessageTime_sendUnixTimeMilli(ctx context.Context, 
 	return ec.marshalNLong2uint64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MessageTime_sendUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MessageTime_sendUnixTimeMilli(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MessageTime",
 		Field:      field,
@@ -12490,7 +13844,7 @@ func (ec *executionContext) _Messages_list(ctx context.Context, field graphql.Co
 	return ec.marshalNMessage2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Messages_list(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Messages_list(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Messages",
 		Field:      field,
@@ -12550,7 +13904,7 @@ func (ec *executionContext) _Messages_allPageCount(ctx context.Context, field gr
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Messages_allPageCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Messages_allPageCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Messages",
 		Field:      field,
@@ -12594,7 +13948,7 @@ func (ec *executionContext) _Messages_hasPrePage(ctx context.Context, field grap
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Messages_hasPrePage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Messages_hasPrePage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Messages",
 		Field:      field,
@@ -12638,7 +13992,7 @@ func (ec *executionContext) _Messages_hasNextPage(ctx context.Context, field gra
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Messages_hasNextPage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Messages_hasNextPage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Messages",
 		Field:      field,
@@ -12679,7 +14033,7 @@ func (ec *executionContext) _Messages_currentPageNumber(ctx context.Context, fie
 	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Messages_currentPageNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Messages_currentPageNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Messages",
 		Field:      field,
@@ -12723,7 +14077,7 @@ func (ec *executionContext) _Messages_isDesc(ctx context.Context, field graphql.
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Messages_isDesc(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Messages_isDesc(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Messages",
 		Field:      field,
@@ -12767,7 +14121,7 @@ func (ec *executionContext) _Messages_isLatest(ctx context.Context, field graphq
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Messages_isLatest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Messages_isLatest(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Messages",
 		Field:      field,
@@ -12811,7 +14165,7 @@ func (ec *executionContext) _Messages_latestUnixTimeMilli(ctx context.Context, f
 	return ec.marshalNLong2uint64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Messages_latestUnixTimeMilli(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Messages_latestUnixTimeMilli(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Messages",
 		Field:      field,
@@ -12841,9 +14195,11 @@ func (ec *executionContext) _Mutation_registerGame(ctx context.Context, field gr
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterGame(rctx, fc.Args["input"].(gqlmodel.NewGame))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterGamePayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -12920,9 +14276,11 @@ func (ec *executionContext) _Mutation_registerGameMaster(ctx context.Context, fi
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterGameMaster(rctx, fc.Args["input"].(gqlmodel.NewGameMaster))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterGameMasterPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -12999,9 +14357,11 @@ func (ec *executionContext) _Mutation_updateGameMaster(ctx context.Context, fiel
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateGameMaster(rctx, fc.Args["input"].(gqlmodel.UpdateGameMaster))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdateGameMasterPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13078,9 +14438,11 @@ func (ec *executionContext) _Mutation_deleteGameMaster(ctx context.Context, fiel
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().DeleteGameMaster(rctx, fc.Args["input"].(gqlmodel.DeleteGameMaster))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.DeleteGameMasterPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13157,9 +14519,11 @@ func (ec *executionContext) _Mutation_updateGameStatus(ctx context.Context, fiel
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateGameStatus(rctx, fc.Args["input"].(gqlmodel.UpdateGameStatus))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdateGameStatusPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13236,9 +14600,11 @@ func (ec *executionContext) _Mutation_updateGameSetting(ctx context.Context, fie
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateGameSetting(rctx, fc.Args["input"].(gqlmodel.UpdateGameSetting))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdateGameSettingPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13315,9 +14681,11 @@ func (ec *executionContext) _Mutation_updateGamePeriod(ctx context.Context, fiel
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateGamePeriod(rctx, fc.Args["input"].(gqlmodel.UpdateGamePeriod))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdateGamePeriodPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13394,9 +14762,11 @@ func (ec *executionContext) _Mutation_deleteGamePeriod(ctx context.Context, fiel
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().DeleteGamePeriod(rctx, fc.Args["input"].(gqlmodel.DeleteGamePeriod))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.DeleteGamePeriodPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13473,9 +14843,11 @@ func (ec *executionContext) _Mutation_changePeriodIfNeeded(ctx context.Context, 
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().ChangePeriodIfNeeded(rctx, fc.Args["input"].(gqlmodel.ChangePeriod))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.ChangePeriodIfNeededPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13552,9 +14924,11 @@ func (ec *executionContext) _Mutation_registerGameParticipant(ctx context.Contex
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterGameParticipant(rctx, fc.Args["input"].(gqlmodel.NewGameParticipant))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterGameParticipantPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13631,9 +15005,11 @@ func (ec *executionContext) _Mutation_updateGameParticipantProfile(ctx context.C
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateGameParticipantProfile(rctx, fc.Args["input"].(gqlmodel.UpdateGameParticipantProfile))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdateGameParticipantProfilePayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13710,9 +15086,11 @@ func (ec *executionContext) _Mutation_registerGameParticipantIcon(ctx context.Co
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterGameParticipantIcon(rctx, fc.Args["input"].(gqlmodel.NewGameParticipantIcon))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterGameParticipantIconPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13789,9 +15167,11 @@ func (ec *executionContext) _Mutation_registerGameParticipantIcons(ctx context.C
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterGameParticipantIcons(rctx, fc.Args["input"].(gqlmodel.NewGameParticipantIcons))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterGameParticipantIconsPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13868,9 +15248,11 @@ func (ec *executionContext) _Mutation_updateGameParticipantIcon(ctx context.Cont
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateGameParticipantIcon(rctx, fc.Args["input"].(gqlmodel.UpdateGameParticipantIcon))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdateGameParticipantIconPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -13947,9 +15329,11 @@ func (ec *executionContext) _Mutation_deleteGameParticipantIcon(ctx context.Cont
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().DeleteGameParticipantIcon(rctx, fc.Args["input"].(gqlmodel.DeleteGameParticipantIcon))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.DeleteGameParticipantIconPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14026,9 +15410,11 @@ func (ec *executionContext) _Mutation_updateGameParticipantSetting(ctx context.C
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateGameParticipantSetting(rctx, fc.Args["input"].(gqlmodel.UpdateGameParticipantSetting))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdateGameParticipantSettingPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14105,9 +15491,11 @@ func (ec *executionContext) _Mutation_deleteGameParticipant(ctx context.Context,
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().DeleteGameParticipant(rctx, fc.Args["input"].(gqlmodel.DeleteGameParticipant))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.DeleteGameParticipantPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14184,9 +15572,11 @@ func (ec *executionContext) _Mutation_registerGameParticipantFollow(ctx context.
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterGameParticipantFollow(rctx, fc.Args["input"].(gqlmodel.NewGameParticipantFollow))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterGameParticipantFollowPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14263,9 +15653,11 @@ func (ec *executionContext) _Mutation_deleteGameParticipantFollow(ctx context.Co
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().DeleteGameParticipantFollow(rctx, fc.Args["input"].(gqlmodel.DeleteGameParticipantFollow))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.DeleteGameParticipantFollowPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14342,9 +15734,11 @@ func (ec *executionContext) _Mutation_registerGameParticipantDiary(ctx context.C
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterGameParticipantDiary(rctx, fc.Args["input"].(gqlmodel.NewGameParticipantDiary))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterGameParticipantDiaryPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14421,9 +15815,11 @@ func (ec *executionContext) _Mutation_updateGameParticipantDiary(ctx context.Con
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateGameParticipantDiary(rctx, fc.Args["input"].(gqlmodel.UpdateGameParticipantDiary))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdateGameParticipantDiaryPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14500,9 +15896,11 @@ func (ec *executionContext) _Mutation_updatePlayerProfile(ctx context.Context, f
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdatePlayerProfile(rctx, fc.Args["input"].(gqlmodel.UpdatePlayerProfile))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdatePlayerProfilePayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14579,9 +15977,11 @@ func (ec *executionContext) _Mutation_registerPlayerSnsAccount(ctx context.Conte
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterPlayerSnsAccount(rctx, fc.Args["input"].(gqlmodel.NewPlayerSnsAccount))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterPlayerSnsAccountPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14658,9 +16058,11 @@ func (ec *executionContext) _Mutation_updatePlayerSnsAccount(ctx context.Context
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdatePlayerSnsAccount(rctx, fc.Args["input"].(gqlmodel.UpdatePlayerSnsAccount))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdatePlayerSnsAccountPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14737,9 +16139,11 @@ func (ec *executionContext) _Mutation_deletePlayerSnsAccount(ctx context.Context
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().DeletePlayerSnsAccount(rctx, fc.Args["input"].(gqlmodel.DeletePlayerSnsAccount))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.DeletePlayerSnsAccountPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14816,9 +16220,11 @@ func (ec *executionContext) _Mutation_registerMessageDryRun(ctx context.Context,
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterMessageDryRun(rctx, fc.Args["input"].(gqlmodel.NewMessage))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterMessageDryRunPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14895,9 +16301,11 @@ func (ec *executionContext) _Mutation_registerMessage(ctx context.Context, field
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterMessage(rctx, fc.Args["input"].(gqlmodel.NewMessage))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterMessagePayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -14974,9 +16382,11 @@ func (ec *executionContext) _Mutation_registerMessageFavorite(ctx context.Contex
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterMessageFavorite(rctx, fc.Args["input"].(gqlmodel.NewMessageFavorite))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterMessageFavoritePayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -15053,9 +16463,11 @@ func (ec *executionContext) _Mutation_deleteMessageFavorite(ctx context.Context,
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().DeleteMessageFavorite(rctx, fc.Args["input"].(gqlmodel.DeleteMessageFavorite))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.DeleteMessageFavoritePayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -15132,9 +16544,11 @@ func (ec *executionContext) _Mutation_registerDirectMessageDryRun(ctx context.Co
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterDirectMessageDryRun(rctx, fc.Args["input"].(gqlmodel.NewDirectMessage))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterDirectMessageDryRunPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -15211,9 +16625,11 @@ func (ec *executionContext) _Mutation_registerDirectMessage(ctx context.Context,
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterDirectMessage(rctx, fc.Args["input"].(gqlmodel.NewDirectMessage))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterDirectMessagePayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -15290,9 +16706,11 @@ func (ec *executionContext) _Mutation_registerDirectMessageFavorite(ctx context.
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterDirectMessageFavorite(rctx, fc.Args["input"].(gqlmodel.NewDirectMessageFavorite))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterDirectMessageFavoritePayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -15369,9 +16787,11 @@ func (ec *executionContext) _Mutation_deleteDirectMessageFavorite(ctx context.Co
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().DeleteDirectMessageFavorite(rctx, fc.Args["input"].(gqlmodel.DeleteDirectMessageFavorite))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.DeleteDirectMessageFavoritePayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -15448,9 +16868,11 @@ func (ec *executionContext) _Mutation_registerGameParticipantGroup(ctx context.C
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterGameParticipantGroup(rctx, fc.Args["input"].(gqlmodel.NewGameParticipantGroup))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterGameParticipantGroupPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -15527,9 +16949,11 @@ func (ec *executionContext) _Mutation_updateGameParticipantGroup(ctx context.Con
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().UpdateGameParticipantGroup(rctx, fc.Args["input"].(gqlmodel.UpdateGameParticipantGroup))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.UpdateGameParticipantGroupPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -15606,9 +17030,11 @@ func (ec *executionContext) _Mutation_registerDebugMessages(ctx context.Context,
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().RegisterDebugMessages(rctx, fc.Args["input"].(gqlmodel.RegisterDebugMessages))
 		}
+
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
-				return nil, errors.New("directive isAuthenticated is not implemented")
+				var zeroVal *gqlmodel.RegisterDebugMessagesPayload
+				return zeroVal, errors.New("directive isAuthenticated is not implemented")
 			}
 			return ec.directives.IsAuthenticated(ctx, nil, directive0)
 		}
@@ -15696,7 +17122,7 @@ func (ec *executionContext) _NotificationCondition_discordWebhookUrl(ctx context
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_NotificationCondition_discordWebhookUrl(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_NotificationCondition_discordWebhookUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "NotificationCondition",
 		Field:      field,
@@ -15740,7 +17166,7 @@ func (ec *executionContext) _NotificationCondition_game(ctx context.Context, fie
 	return ec.marshalNGameNotificationCondition2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameNotificationCondition(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_NotificationCondition_game(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_NotificationCondition_game(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "NotificationCondition",
 		Field:      field,
@@ -15790,7 +17216,7 @@ func (ec *executionContext) _NotificationCondition_message(ctx context.Context, 
 	return ec.marshalNMessageNotificationCondition2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageNotificationCondition(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_NotificationCondition_message(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_NotificationCondition_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "NotificationCondition",
 		Field:      field,
@@ -15844,7 +17270,7 @@ func (ec *executionContext) _Player_id(ctx context.Context, field graphql.Collec
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Player_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Player_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Player",
 		Field:      field,
@@ -15888,7 +17314,7 @@ func (ec *executionContext) _Player_name(ctx context.Context, field graphql.Coll
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Player_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Player_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Player",
 		Field:      field,
@@ -15929,7 +17355,7 @@ func (ec *executionContext) _Player_profile(ctx context.Context, field graphql.C
 	return ec.marshalOPlayerProfile2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayerProfile(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Player_profile(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Player_profile(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Player",
 		Field:      field,
@@ -15978,7 +17404,7 @@ func (ec *executionContext) _Player_designer(ctx context.Context, field graphql.
 	return ec.marshalODesigner2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDesigner(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Player_designer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Player_designer(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Player",
 		Field:      field,
@@ -16028,7 +17454,7 @@ func (ec *executionContext) _Player_authorityCodes(ctx context.Context, field gr
 	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Player_authorityCodes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Player_authorityCodes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Player",
 		Field:      field,
@@ -16069,7 +17495,7 @@ func (ec *executionContext) _PlayerProfile_profileImageUrl(ctx context.Context, 
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PlayerProfile_profileImageUrl(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PlayerProfile_profileImageUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PlayerProfile",
 		Field:      field,
@@ -16110,7 +17536,7 @@ func (ec *executionContext) _PlayerProfile_introduction(ctx context.Context, fie
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PlayerProfile_introduction(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PlayerProfile_introduction(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PlayerProfile",
 		Field:      field,
@@ -16154,7 +17580,7 @@ func (ec *executionContext) _PlayerProfile_snsAccounts(ctx context.Context, fiel
 	return ec.marshalNPlayerSnsAccount2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayerSnsAccountᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PlayerProfile_snsAccounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PlayerProfile_snsAccounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PlayerProfile",
 		Field:      field,
@@ -16208,7 +17634,7 @@ func (ec *executionContext) _PlayerSnsAccount_id(ctx context.Context, field grap
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PlayerSnsAccount_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PlayerSnsAccount_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PlayerSnsAccount",
 		Field:      field,
@@ -16252,7 +17678,7 @@ func (ec *executionContext) _PlayerSnsAccount_type(ctx context.Context, field gr
 	return ec.marshalNSnsType2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐSnsType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PlayerSnsAccount_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PlayerSnsAccount_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PlayerSnsAccount",
 		Field:      field,
@@ -16293,7 +17719,7 @@ func (ec *executionContext) _PlayerSnsAccount_name(ctx context.Context, field gr
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PlayerSnsAccount_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PlayerSnsAccount_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PlayerSnsAccount",
 		Field:      field,
@@ -16337,7 +17763,7 @@ func (ec *executionContext) _PlayerSnsAccount_url(ctx context.Context, field gra
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PlayerSnsAccount_url(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PlayerSnsAccount_url(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PlayerSnsAccount",
 		Field:      field,
@@ -17540,7 +18966,7 @@ func (ec *executionContext) _Query_myPlayer(ctx context.Context, field graphql.C
 	return ec.marshalOPlayer2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayer(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_myPlayer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_myPlayer(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -18426,7 +19852,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -18484,7 +19910,7 @@ func (ec *executionContext) _RegisterDebugMessagesPayload_ok(ctx context.Context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterDebugMessagesPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterDebugMessagesPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterDebugMessagesPayload",
 		Field:      field,
@@ -18528,7 +19954,7 @@ func (ec *executionContext) _RegisterDirectMessageDryRunPayload_directMessage(ct
 	return ec.marshalNDirectMessage2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐDirectMessage(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterDirectMessageDryRunPayload_directMessage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterDirectMessageDryRunPayload_directMessage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterDirectMessageDryRunPayload",
 		Field:      field,
@@ -18586,7 +20012,7 @@ func (ec *executionContext) _RegisterDirectMessageFavoritePayload_ok(ctx context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterDirectMessageFavoritePayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterDirectMessageFavoritePayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterDirectMessageFavoritePayload",
 		Field:      field,
@@ -18630,7 +20056,7 @@ func (ec *executionContext) _RegisterDirectMessagePayload_ok(ctx context.Context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterDirectMessagePayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterDirectMessagePayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterDirectMessagePayload",
 		Field:      field,
@@ -18674,7 +20100,7 @@ func (ec *executionContext) _RegisterGameMasterPayload_gameMaster(ctx context.Co
 	return ec.marshalNGameMaster2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameMaster(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterGameMasterPayload_gameMaster(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterGameMasterPayload_gameMaster(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterGameMasterPayload",
 		Field:      field,
@@ -18726,7 +20152,7 @@ func (ec *executionContext) _RegisterGameParticipantDiaryPayload_gameParticipant
 	return ec.marshalNGameParticipantDiary2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantDiary(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterGameParticipantDiaryPayload_gameParticipantDiary(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterGameParticipantDiaryPayload_gameParticipantDiary(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterGameParticipantDiaryPayload",
 		Field:      field,
@@ -18782,7 +20208,7 @@ func (ec *executionContext) _RegisterGameParticipantFollowPayload_ok(ctx context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterGameParticipantFollowPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterGameParticipantFollowPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterGameParticipantFollowPayload",
 		Field:      field,
@@ -18826,7 +20252,7 @@ func (ec *executionContext) _RegisterGameParticipantGroupPayload_gameParticipant
 	return ec.marshalNGameParticipantGroup2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantGroup(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterGameParticipantGroupPayload_gameParticipantGroup(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterGameParticipantGroupPayload_gameParticipantGroup(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterGameParticipantGroupPayload",
 		Field:      field,
@@ -18880,7 +20306,7 @@ func (ec *executionContext) _RegisterGameParticipantIconPayload_gameParticipantI
 	return ec.marshalNGameParticipantIcon2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIcon(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterGameParticipantIconPayload_gameParticipantIcon(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterGameParticipantIconPayload_gameParticipantIcon(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterGameParticipantIconPayload",
 		Field:      field,
@@ -18933,7 +20359,7 @@ func (ec *executionContext) _RegisterGameParticipantIconsPayload_gameParticipant
 	return ec.marshalOGameParticipantIcon2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipantIconᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterGameParticipantIconsPayload_gameParticipantIcons(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterGameParticipantIconsPayload_gameParticipantIcons(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterGameParticipantIconsPayload",
 		Field:      field,
@@ -18989,7 +20415,7 @@ func (ec *executionContext) _RegisterGameParticipantPayload_gameParticipant(ctx 
 	return ec.marshalNGameParticipant2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameParticipant(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterGameParticipantPayload_gameParticipant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterGameParticipantPayload_gameParticipant(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterGameParticipantPayload",
 		Field:      field,
@@ -19059,7 +20485,7 @@ func (ec *executionContext) _RegisterGamePayload_game(ctx context.Context, field
 	return ec.marshalNGame2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGame(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterGamePayload_game(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterGamePayload_game(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterGamePayload",
 		Field:      field,
@@ -19121,7 +20547,7 @@ func (ec *executionContext) _RegisterMessageDryRunPayload_message(ctx context.Co
 	return ec.marshalNMessage2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessage(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterMessageDryRunPayload_message(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterMessageDryRunPayload_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterMessageDryRunPayload",
 		Field:      field,
@@ -19181,7 +20607,7 @@ func (ec *executionContext) _RegisterMessageFavoritePayload_ok(ctx context.Conte
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterMessageFavoritePayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterMessageFavoritePayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterMessageFavoritePayload",
 		Field:      field,
@@ -19225,7 +20651,7 @@ func (ec *executionContext) _RegisterMessagePayload_ok(ctx context.Context, fiel
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterMessagePayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterMessagePayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterMessagePayload",
 		Field:      field,
@@ -19269,7 +20695,7 @@ func (ec *executionContext) _RegisterPlayerProfilePayload_playerProfile(ctx cont
 	return ec.marshalNPlayerProfile2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayerProfile(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterPlayerProfilePayload_playerProfile(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterPlayerProfilePayload_playerProfile(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterPlayerProfilePayload",
 		Field:      field,
@@ -19321,7 +20747,7 @@ func (ec *executionContext) _RegisterPlayerSnsAccountPayload_playerSnsAccount(ct
 	return ec.marshalNPlayerSnsAccount2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayerSnsAccount(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterPlayerSnsAccountPayload_playerSnsAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterPlayerSnsAccountPayload_playerSnsAccount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterPlayerSnsAccountPayload",
 		Field:      field,
@@ -19375,7 +20801,7 @@ func (ec *executionContext) _SimpleGame_id(ctx context.Context, field graphql.Co
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SimpleGame_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SimpleGame_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SimpleGame",
 		Field:      field,
@@ -19419,7 +20845,7 @@ func (ec *executionContext) _SimpleGame_name(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SimpleGame_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SimpleGame_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SimpleGame",
 		Field:      field,
@@ -19463,7 +20889,7 @@ func (ec *executionContext) _SimpleGame_status(ctx context.Context, field graphq
 	return ec.marshalNGameStatus2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameStatus(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SimpleGame_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SimpleGame_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SimpleGame",
 		Field:      field,
@@ -19507,7 +20933,7 @@ func (ec *executionContext) _SimpleGame_labels(ctx context.Context, field graphq
 	return ec.marshalNGameLabel2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameLabelᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SimpleGame_labels(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SimpleGame_labels(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SimpleGame",
 		Field:      field,
@@ -19559,7 +20985,7 @@ func (ec *executionContext) _SimpleGame_participantsCount(ctx context.Context, f
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SimpleGame_participantsCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SimpleGame_participantsCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SimpleGame",
 		Field:      field,
@@ -19603,7 +21029,7 @@ func (ec *executionContext) _SimpleGame_periods(ctx context.Context, field graph
 	return ec.marshalNGamePeriod2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGamePeriodᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SimpleGame_periods(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SimpleGame_periods(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SimpleGame",
 		Field:      field,
@@ -19659,7 +21085,7 @@ func (ec *executionContext) _SimpleGame_settings(ctx context.Context, field grap
 	return ec.marshalNGameSettings2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameSettings(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_SimpleGame_settings(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_SimpleGame_settings(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SimpleGame",
 		Field:      field,
@@ -19717,7 +21143,7 @@ func (ec *executionContext) _UpdateGameMasterPayload_ok(ctx context.Context, fie
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdateGameMasterPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdateGameMasterPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdateGameMasterPayload",
 		Field:      field,
@@ -19761,7 +21187,7 @@ func (ec *executionContext) _UpdateGameParticipantDiaryPayload_ok(ctx context.Co
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdateGameParticipantDiaryPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdateGameParticipantDiaryPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdateGameParticipantDiaryPayload",
 		Field:      field,
@@ -19805,7 +21231,7 @@ func (ec *executionContext) _UpdateGameParticipantGroupPayload_ok(ctx context.Co
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdateGameParticipantGroupPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdateGameParticipantGroupPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdateGameParticipantGroupPayload",
 		Field:      field,
@@ -19849,7 +21275,7 @@ func (ec *executionContext) _UpdateGameParticipantIconPayload_ok(ctx context.Con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdateGameParticipantIconPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdateGameParticipantIconPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdateGameParticipantIconPayload",
 		Field:      field,
@@ -19893,7 +21319,7 @@ func (ec *executionContext) _UpdateGameParticipantProfilePayload_ok(ctx context.
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdateGameParticipantProfilePayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdateGameParticipantProfilePayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdateGameParticipantProfilePayload",
 		Field:      field,
@@ -19937,7 +21363,7 @@ func (ec *executionContext) _UpdateGameParticipantSettingPayload_ok(ctx context.
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdateGameParticipantSettingPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdateGameParticipantSettingPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdateGameParticipantSettingPayload",
 		Field:      field,
@@ -19981,7 +21407,7 @@ func (ec *executionContext) _UpdateGamePeriodPayload_ok(ctx context.Context, fie
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdateGamePeriodPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdateGamePeriodPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdateGamePeriodPayload",
 		Field:      field,
@@ -20025,7 +21451,7 @@ func (ec *executionContext) _UpdateGameSettingPayload_ok(ctx context.Context, fi
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdateGameSettingPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdateGameSettingPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdateGameSettingPayload",
 		Field:      field,
@@ -20069,7 +21495,7 @@ func (ec *executionContext) _UpdateGameStatusPayload_ok(ctx context.Context, fie
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdateGameStatusPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdateGameStatusPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdateGameStatusPayload",
 		Field:      field,
@@ -20113,7 +21539,7 @@ func (ec *executionContext) _UpdatePlayerProfilePayload_ok(ctx context.Context, 
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdatePlayerProfilePayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdatePlayerProfilePayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdatePlayerProfilePayload",
 		Field:      field,
@@ -20157,7 +21583,7 @@ func (ec *executionContext) _UpdatePlayerSnsAccountPayload_ok(ctx context.Contex
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UpdatePlayerSnsAccountPayload_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UpdatePlayerSnsAccountPayload_ok(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UpdatePlayerSnsAccountPayload",
 		Field:      field,
@@ -20201,7 +21627,7 @@ func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -20242,7 +21668,7 @@ func (ec *executionContext) ___Directive_description(ctx context.Context, field 
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -20286,7 +21712,7 @@ func (ec *executionContext) ___Directive_locations(ctx context.Context, field gr
 	return ec.marshalN__DirectiveLocation2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_locations(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_locations(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -20330,7 +21756,7 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_args(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_args(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -20384,7 +21810,7 @@ func (ec *executionContext) ___Directive_isRepeatable(ctx context.Context, field
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_isRepeatable(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_isRepeatable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -20428,7 +21854,7 @@ func (ec *executionContext) ___EnumValue_name(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -20469,7 +21895,7 @@ func (ec *executionContext) ___EnumValue_description(ctx context.Context, field 
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -20513,7 +21939,7 @@ func (ec *executionContext) ___EnumValue_isDeprecated(ctx context.Context, field
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_isDeprecated(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -20554,7 +21980,7 @@ func (ec *executionContext) ___EnumValue_deprecationReason(ctx context.Context, 
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_deprecationReason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -20598,7 +22024,7 @@ func (ec *executionContext) ___Field_name(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -20639,7 +22065,7 @@ func (ec *executionContext) ___Field_description(ctx context.Context, field grap
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -20683,7 +22109,7 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_args(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_args(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -20737,7 +22163,7 @@ func (ec *executionContext) ___Field_type(ctx context.Context, field graphql.Col
 	return ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -20803,7 +22229,7 @@ func (ec *executionContext) ___Field_isDeprecated(ctx context.Context, field gra
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_isDeprecated(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -20844,7 +22270,7 @@ func (ec *executionContext) ___Field_deprecationReason(ctx context.Context, fiel
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_deprecationReason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -20888,7 +22314,7 @@ func (ec *executionContext) ___InputValue_name(ctx context.Context, field graphq
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -20929,7 +22355,7 @@ func (ec *executionContext) ___InputValue_description(ctx context.Context, field
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -20973,7 +22399,7 @@ func (ec *executionContext) ___InputValue_type(ctx context.Context, field graphq
 	return ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -21036,7 +22462,7 @@ func (ec *executionContext) ___InputValue_defaultValue(ctx context.Context, fiel
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_defaultValue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_defaultValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -21077,7 +22503,7 @@ func (ec *executionContext) ___Schema_description(ctx context.Context, field gra
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -21121,7 +22547,7 @@ func (ec *executionContext) ___Schema_types(ctx context.Context, field graphql.C
 	return ec.marshalN__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_types(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_types(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -21187,7 +22613,7 @@ func (ec *executionContext) ___Schema_queryType(ctx context.Context, field graph
 	return ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_queryType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_queryType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -21250,7 +22676,7 @@ func (ec *executionContext) ___Schema_mutationType(ctx context.Context, field gr
 	return ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_mutationType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_mutationType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -21313,7 +22739,7 @@ func (ec *executionContext) ___Schema_subscriptionType(ctx context.Context, fiel
 	return ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_subscriptionType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_subscriptionType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -21379,7 +22805,7 @@ func (ec *executionContext) ___Schema_directives(ctx context.Context, field grap
 	return ec.marshalN__Directive2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirectiveᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_directives(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_directives(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -21435,7 +22861,7 @@ func (ec *executionContext) ___Type_kind(ctx context.Context, field graphql.Coll
 	return ec.marshalN__TypeKind2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_kind(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_kind(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -21476,7 +22902,7 @@ func (ec *executionContext) ___Type_name(ctx context.Context, field graphql.Coll
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -21517,7 +22943,7 @@ func (ec *executionContext) ___Type_description(ctx context.Context, field graph
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -21624,7 +23050,7 @@ func (ec *executionContext) ___Type_interfaces(ctx context.Context, field graphq
 	return ec.marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_interfaces(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_interfaces(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -21687,7 +23113,7 @@ func (ec *executionContext) ___Type_possibleTypes(ctx context.Context, field gra
 	return ec.marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_possibleTypes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_possibleTypes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -21812,7 +23238,7 @@ func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graph
 	return ec.marshalO__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_inputFields(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_inputFields(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -21863,7 +23289,7 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 	return ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_ofType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_ofType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -21926,7 +23352,7 @@ func (ec *executionContext) ___Type_specifiedByURL(ctx context.Context, field gr
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -21958,8 +23384,6 @@ func (ec *executionContext) unmarshalInputChangePeriod(ctx context.Context, obj 
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -21987,8 +23411,6 @@ func (ec *executionContext) unmarshalInputCharachipsQuery(ctx context.Context, o
 		}
 		switch k {
 		case "ids":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -21996,8 +23418,6 @@ func (ec *executionContext) unmarshalInputCharachipsQuery(ctx context.Context, o
 			}
 			it.Ids = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -22005,8 +23425,6 @@ func (ec *executionContext) unmarshalInputCharachipsQuery(ctx context.Context, o
 			}
 			it.Name = data
 		case "paging":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paging"))
 			data, err := ec.unmarshalOPageableQuery2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPageableQuery(ctx, v)
 			if err != nil {
@@ -22034,8 +23452,6 @@ func (ec *executionContext) unmarshalInputDeleteDirectMessageFavorite(ctx contex
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22043,8 +23459,6 @@ func (ec *executionContext) unmarshalInputDeleteDirectMessageFavorite(ctx contex
 			}
 			it.GameID = data
 		case "directMessageId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("directMessageId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22072,8 +23486,6 @@ func (ec *executionContext) unmarshalInputDeleteGameMaster(ctx context.Context, 
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22081,8 +23493,6 @@ func (ec *executionContext) unmarshalInputDeleteGameMaster(ctx context.Context, 
 			}
 			it.GameID = data
 		case "id":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22110,8 +23520,6 @@ func (ec *executionContext) unmarshalInputDeleteGameParticipant(ctx context.Cont
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22139,8 +23547,6 @@ func (ec *executionContext) unmarshalInputDeleteGameParticipantFollow(ctx contex
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22148,8 +23554,6 @@ func (ec *executionContext) unmarshalInputDeleteGameParticipantFollow(ctx contex
 			}
 			it.GameID = data
 		case "targetGameParticipantId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targetGameParticipantId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22177,8 +23581,6 @@ func (ec *executionContext) unmarshalInputDeleteGameParticipantIcon(ctx context.
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22186,8 +23588,6 @@ func (ec *executionContext) unmarshalInputDeleteGameParticipantIcon(ctx context.
 			}
 			it.GameID = data
 		case "iconId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22215,8 +23615,6 @@ func (ec *executionContext) unmarshalInputDeleteGamePeriod(ctx context.Context, 
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22224,8 +23622,6 @@ func (ec *executionContext) unmarshalInputDeleteGamePeriod(ctx context.Context, 
 			}
 			it.GameID = data
 		case "targetPeriodId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targetPeriodId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22233,8 +23629,6 @@ func (ec *executionContext) unmarshalInputDeleteGamePeriod(ctx context.Context, 
 			}
 			it.TargetPeriodID = data
 		case "destPeriodId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("destPeriodId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22262,8 +23656,6 @@ func (ec *executionContext) unmarshalInputDeleteMessageFavorite(ctx context.Cont
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22271,8 +23663,6 @@ func (ec *executionContext) unmarshalInputDeleteMessageFavorite(ctx context.Cont
 			}
 			it.GameID = data
 		case "messageId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22300,8 +23690,6 @@ func (ec *executionContext) unmarshalInputDeletePlayerSnsAccount(ctx context.Con
 		}
 		switch k {
 		case "id":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22329,8 +23717,6 @@ func (ec *executionContext) unmarshalInputDesignersQuery(ctx context.Context, ob
 		}
 		switch k {
 		case "ids":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -22338,8 +23724,6 @@ func (ec *executionContext) unmarshalInputDesignersQuery(ctx context.Context, ob
 			}
 			it.Ids = data
 		case "Name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Name"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -22347,8 +23731,6 @@ func (ec *executionContext) unmarshalInputDesignersQuery(ctx context.Context, ob
 			}
 			it.Name = data
 		case "paging":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paging"))
 			data, err := ec.unmarshalOPageableQuery2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPageableQuery(ctx, v)
 			if err != nil {
@@ -22376,8 +23758,6 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 		}
 		switch k {
 		case "ids":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -22385,8 +23765,6 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 			}
 			it.Ids = data
 		case "participantGroupId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("participantGroupId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22394,8 +23772,6 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 			}
 			it.ParticipantGroupID = data
 		case "periodId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -22403,8 +23779,6 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 			}
 			it.PeriodID = data
 		case "types":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("types"))
 			data, err := ec.unmarshalOMessageType2ᚕchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageTypeᚄ(ctx, v)
 			if err != nil {
@@ -22412,8 +23786,6 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 			}
 			it.Types = data
 		case "senderIds":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("senderIds"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -22421,8 +23793,6 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 			}
 			it.SenderIds = data
 		case "keywords":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keywords"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -22430,8 +23800,6 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 			}
 			it.Keywords = data
 		case "sinceAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sinceAt"))
 			data, err := ec.unmarshalODateTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
@@ -22439,8 +23807,6 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 			}
 			it.SinceAt = data
 		case "untilAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("untilAt"))
 			data, err := ec.unmarshalODateTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
@@ -22448,8 +23814,6 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 			}
 			it.UntilAt = data
 		case "offsetUnixTimeMilli":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offsetUnixTimeMilli"))
 			data, err := ec.unmarshalOLong2ᚖuint64(ctx, v)
 			if err != nil {
@@ -22457,8 +23821,6 @@ func (ec *executionContext) unmarshalInputDirectMessagesQuery(ctx context.Contex
 			}
 			it.OffsetUnixTimeMilli = data
 		case "paging":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paging"))
 			data, err := ec.unmarshalOPageableQuery2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPageableQuery(ctx, v)
 			if err != nil {
@@ -22486,8 +23848,6 @@ func (ec *executionContext) unmarshalInputGameDiariesQuery(ctx context.Context, 
 		}
 		switch k {
 		case "participantId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("participantId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -22495,8 +23855,6 @@ func (ec *executionContext) unmarshalInputGameDiariesQuery(ctx context.Context, 
 			}
 			it.ParticipantID = data
 		case "periodId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -22524,8 +23882,6 @@ func (ec *executionContext) unmarshalInputGameParticipantGroupsQuery(ctx context
 		}
 		switch k {
 		case "memberParticipantId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("memberParticipantId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -22553,8 +23909,6 @@ func (ec *executionContext) unmarshalInputGamesQuery(ctx context.Context, obj in
 		}
 		switch k {
 		case "ids":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -22562,8 +23916,6 @@ func (ec *executionContext) unmarshalInputGamesQuery(ctx context.Context, obj in
 			}
 			it.Ids = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -22571,8 +23923,6 @@ func (ec *executionContext) unmarshalInputGamesQuery(ctx context.Context, obj in
 			}
 			it.Name = data
 		case "statuses":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statuses"))
 			data, err := ec.unmarshalOGameStatus2ᚕchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameStatusᚄ(ctx, v)
 			if err != nil {
@@ -22580,8 +23930,6 @@ func (ec *executionContext) unmarshalInputGamesQuery(ctx context.Context, obj in
 			}
 			it.Statuses = data
 		case "paging":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paging"))
 			data, err := ec.unmarshalOPageableQuery2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPageableQuery(ctx, v)
 			if err != nil {
@@ -22609,8 +23957,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 		}
 		switch k {
 		case "ids":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -22618,8 +23964,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			}
 			it.Ids = data
 		case "periodId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -22627,8 +23971,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			}
 			it.PeriodID = data
 		case "types":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("types"))
 			data, err := ec.unmarshalOMessageType2ᚕchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageTypeᚄ(ctx, v)
 			if err != nil {
@@ -22636,8 +23978,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			}
 			it.Types = data
 		case "senderIds":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("senderIds"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -22645,8 +23985,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			}
 			it.SenderIds = data
 		case "recipientIds":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("recipientIds"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -22654,8 +23992,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			}
 			it.RecipientIds = data
 		case "replyToMessageId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("replyToMessageId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -22663,8 +23999,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			}
 			it.ReplyToMessageID = data
 		case "keywords":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keywords"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -22672,8 +24006,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			}
 			it.Keywords = data
 		case "sinceAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sinceAt"))
 			data, err := ec.unmarshalODateTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
@@ -22681,8 +24013,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			}
 			it.SinceAt = data
 		case "untilAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("untilAt"))
 			data, err := ec.unmarshalODateTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
@@ -22690,8 +24020,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			}
 			it.UntilAt = data
 		case "offsetUnixTimeMilli":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offsetUnixTimeMilli"))
 			data, err := ec.unmarshalOLong2ᚖuint64(ctx, v)
 			if err != nil {
@@ -22699,8 +24027,6 @@ func (ec *executionContext) unmarshalInputMessagesQuery(ctx context.Context, obj
 			}
 			it.OffsetUnixTimeMilli = data
 		case "paging":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paging"))
 			data, err := ec.unmarshalOPageableQuery2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPageableQuery(ctx, v)
 			if err != nil {
@@ -22728,8 +24054,6 @@ func (ec *executionContext) unmarshalInputNewDirectMessage(ctx context.Context, 
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22737,8 +24061,6 @@ func (ec *executionContext) unmarshalInputNewDirectMessage(ctx context.Context, 
 			}
 			it.GameID = data
 		case "gameParticipantGroupId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameParticipantGroupId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22746,8 +24068,6 @@ func (ec *executionContext) unmarshalInputNewDirectMessage(ctx context.Context, 
 			}
 			it.GameParticipantGroupID = data
 		case "type":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			data, err := ec.unmarshalNMessageType2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageType(ctx, v)
 			if err != nil {
@@ -22755,8 +24075,6 @@ func (ec *executionContext) unmarshalInputNewDirectMessage(ctx context.Context, 
 			}
 			it.Type = data
 		case "iconId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22764,8 +24082,6 @@ func (ec *executionContext) unmarshalInputNewDirectMessage(ctx context.Context, 
 			}
 			it.IconID = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -22773,8 +24089,6 @@ func (ec *executionContext) unmarshalInputNewDirectMessage(ctx context.Context, 
 			}
 			it.Name = data
 		case "text":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -22782,8 +24096,6 @@ func (ec *executionContext) unmarshalInputNewDirectMessage(ctx context.Context, 
 			}
 			it.Text = data
 		case "isConvertDisabled":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isConvertDisabled"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -22811,8 +24123,6 @@ func (ec *executionContext) unmarshalInputNewDirectMessageFavorite(ctx context.C
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22820,8 +24130,6 @@ func (ec *executionContext) unmarshalInputNewDirectMessageFavorite(ctx context.C
 			}
 			it.GameID = data
 		case "directMessageId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("directMessageId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -22849,8 +24157,6 @@ func (ec *executionContext) unmarshalInputNewGame(ctx context.Context, obj inter
 		}
 		switch k {
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -22858,8 +24164,6 @@ func (ec *executionContext) unmarshalInputNewGame(ctx context.Context, obj inter
 			}
 			it.Name = data
 		case "labels":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("labels"))
 			data, err := ec.unmarshalNNewGameLabel2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameLabelᚄ(ctx, v)
 			if err != nil {
@@ -22867,8 +24171,6 @@ func (ec *executionContext) unmarshalInputNewGame(ctx context.Context, obj inter
 			}
 			it.Labels = data
 		case "settings":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("settings"))
 			data, err := ec.unmarshalNNewGameSettings2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameSettings(ctx, v)
 			if err != nil {
@@ -22896,8 +24198,6 @@ func (ec *executionContext) unmarshalInputNewGameBackgroundSetting(ctx context.C
 		}
 		switch k {
 		case "introduction":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("introduction"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -22905,8 +24205,6 @@ func (ec *executionContext) unmarshalInputNewGameBackgroundSetting(ctx context.C
 			}
 			it.Introduction = data
 		case "catchImageFile":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("catchImageFile"))
 			data, err := ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
 			if err != nil {
@@ -22914,8 +24212,6 @@ func (ec *executionContext) unmarshalInputNewGameBackgroundSetting(ctx context.C
 			}
 			it.CatchImageFile = data
 		case "catchImageUrl":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("catchImageUrl"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -22943,8 +24239,6 @@ func (ec *executionContext) unmarshalInputNewGameCapacity(ctx context.Context, o
 		}
 		switch k {
 		case "min":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("min"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -22952,8 +24246,6 @@ func (ec *executionContext) unmarshalInputNewGameCapacity(ctx context.Context, o
 			}
 			it.Min = data
 		case "max":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("max"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -22981,8 +24273,6 @@ func (ec *executionContext) unmarshalInputNewGameCharaSetting(ctx context.Contex
 		}
 		switch k {
 		case "charachipIds":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("charachipIds"))
 			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -22990,8 +24280,6 @@ func (ec *executionContext) unmarshalInputNewGameCharaSetting(ctx context.Contex
 			}
 			it.CharachipIds = data
 		case "canOriginalCharacter":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("canOriginalCharacter"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -23019,8 +24307,6 @@ func (ec *executionContext) unmarshalInputNewGameLabel(ctx context.Context, obj 
 		}
 		switch k {
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -23028,8 +24314,6 @@ func (ec *executionContext) unmarshalInputNewGameLabel(ctx context.Context, obj 
 			}
 			it.Name = data
 		case "type":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -23057,8 +24341,6 @@ func (ec *executionContext) unmarshalInputNewGameMaster(ctx context.Context, obj
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23066,8 +24348,6 @@ func (ec *executionContext) unmarshalInputNewGameMaster(ctx context.Context, obj
 			}
 			it.GameID = data
 		case "playerId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("playerId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23075,8 +24355,6 @@ func (ec *executionContext) unmarshalInputNewGameMaster(ctx context.Context, obj
 			}
 			it.PlayerID = data
 		case "isProducer":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isProducer"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -23104,8 +24382,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipant(ctx context.Context
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23113,8 +24389,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipant(ctx context.Context
 			}
 			it.GameID = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -23122,8 +24396,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipant(ctx context.Context
 			}
 			it.Name = data
 		case "charaId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("charaId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -23131,8 +24403,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipant(ctx context.Context
 			}
 			it.CharaID = data
 		case "password":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -23160,8 +24430,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantDiary(ctx context.Co
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23169,8 +24437,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantDiary(ctx context.Co
 			}
 			it.GameID = data
 		case "periodId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23178,8 +24444,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantDiary(ctx context.Co
 			}
 			it.PeriodID = data
 		case "title":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -23187,8 +24451,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantDiary(ctx context.Co
 			}
 			it.Title = data
 		case "body":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("body"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -23216,8 +24478,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantFollow(ctx context.C
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23225,8 +24485,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantFollow(ctx context.C
 			}
 			it.GameID = data
 		case "targetGameParticipantId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targetGameParticipantId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23254,8 +24512,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantGroup(ctx context.Co
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23263,8 +24519,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantGroup(ctx context.Co
 			}
 			it.GameID = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -23272,8 +24526,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantGroup(ctx context.Co
 			}
 			it.Name = data
 		case "gameParticipantIds":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameParticipantIds"))
 			data, err := ec.unmarshalNID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -23301,8 +24553,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantIcon(ctx context.Con
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23310,8 +24560,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantIcon(ctx context.Con
 			}
 			it.GameID = data
 		case "iconFile":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconFile"))
 			data, err := ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
 			if err != nil {
@@ -23319,8 +24567,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantIcon(ctx context.Con
 			}
 			it.IconFile = data
 		case "width":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("width"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -23328,8 +24574,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantIcon(ctx context.Con
 			}
 			it.Width = data
 		case "height":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("height"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -23357,8 +24601,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantIcons(ctx context.Co
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23366,8 +24608,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantIcons(ctx context.Co
 			}
 			it.GameID = data
 		case "iconFiles":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconFiles"))
 			data, err := ec.unmarshalNUpload2ᚕᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUploadᚄ(ctx, v)
 			if err != nil {
@@ -23375,8 +24615,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantIcons(ctx context.Co
 			}
 			it.IconFiles = data
 		case "width":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("width"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -23384,8 +24622,6 @@ func (ec *executionContext) unmarshalInputNewGameParticipantIcons(ctx context.Co
 			}
 			it.Width = data
 		case "height":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("height"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -23413,8 +24649,6 @@ func (ec *executionContext) unmarshalInputNewGamePasswordSetting(ctx context.Con
 		}
 		switch k {
 		case "password":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -23442,8 +24676,6 @@ func (ec *executionContext) unmarshalInputNewGameRuleSetting(ctx context.Context
 		}
 		switch k {
 		case "isGameMasterProducer":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isGameMasterProducer"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -23451,8 +24683,6 @@ func (ec *executionContext) unmarshalInputNewGameRuleSetting(ctx context.Context
 			}
 			it.IsGameMasterProducer = data
 		case "canShorten":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("canShorten"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -23460,8 +24690,6 @@ func (ec *executionContext) unmarshalInputNewGameRuleSetting(ctx context.Context
 			}
 			it.CanShorten = data
 		case "canSendDirectMessage":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("canSendDirectMessage"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -23469,8 +24697,6 @@ func (ec *executionContext) unmarshalInputNewGameRuleSetting(ctx context.Context
 			}
 			it.CanSendDirectMessage = data
 		case "theme":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("theme"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -23498,8 +24724,6 @@ func (ec *executionContext) unmarshalInputNewGameSettings(ctx context.Context, o
 		}
 		switch k {
 		case "background":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("background"))
 			data, err := ec.unmarshalNNewGameBackgroundSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameBackgroundSetting(ctx, v)
 			if err != nil {
@@ -23507,8 +24731,6 @@ func (ec *executionContext) unmarshalInputNewGameSettings(ctx context.Context, o
 			}
 			it.Background = data
 		case "chara":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("chara"))
 			data, err := ec.unmarshalNNewGameCharaSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameCharaSetting(ctx, v)
 			if err != nil {
@@ -23516,8 +24738,6 @@ func (ec *executionContext) unmarshalInputNewGameSettings(ctx context.Context, o
 			}
 			it.Chara = data
 		case "capacity":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("capacity"))
 			data, err := ec.unmarshalNNewGameCapacity2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameCapacity(ctx, v)
 			if err != nil {
@@ -23525,8 +24745,6 @@ func (ec *executionContext) unmarshalInputNewGameSettings(ctx context.Context, o
 			}
 			it.Capacity = data
 		case "time":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time"))
 			data, err := ec.unmarshalNNewGameTimeSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameTimeSetting(ctx, v)
 			if err != nil {
@@ -23534,8 +24752,6 @@ func (ec *executionContext) unmarshalInputNewGameSettings(ctx context.Context, o
 			}
 			it.Time = data
 		case "rule":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rule"))
 			data, err := ec.unmarshalNNewGameRuleSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGameRuleSetting(ctx, v)
 			if err != nil {
@@ -23543,8 +24759,6 @@ func (ec *executionContext) unmarshalInputNewGameSettings(ctx context.Context, o
 			}
 			it.Rule = data
 		case "password":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			data, err := ec.unmarshalNNewGamePasswordSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐNewGamePasswordSetting(ctx, v)
 			if err != nil {
@@ -23572,8 +24786,6 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 		}
 		switch k {
 		case "periodPrefix":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodPrefix"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -23581,8 +24793,6 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 			}
 			it.PeriodPrefix = data
 		case "periodSuffix":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodSuffix"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -23590,8 +24800,6 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 			}
 			it.PeriodSuffix = data
 		case "periodIntervalSeconds":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodIntervalSeconds"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -23599,8 +24807,6 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 			}
 			it.PeriodIntervalSeconds = data
 		case "openAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("openAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -23608,8 +24814,6 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 			}
 			it.OpenAt = data
 		case "startParticipateAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startParticipateAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -23617,8 +24821,6 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 			}
 			it.StartParticipateAt = data
 		case "startGameAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startGameAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -23626,8 +24828,6 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 			}
 			it.StartGameAt = data
 		case "epilogueGameAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("epilogueGameAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -23635,8 +24835,6 @@ func (ec *executionContext) unmarshalInputNewGameTimeSetting(ctx context.Context
 			}
 			it.EpilogueGameAt = data
 		case "finishGameAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finishGameAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -23664,8 +24862,6 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23673,8 +24869,6 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 			}
 			it.GameID = data
 		case "type":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			data, err := ec.unmarshalNMessageType2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐMessageType(ctx, v)
 			if err != nil {
@@ -23682,8 +24876,6 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 			}
 			it.Type = data
 		case "iconId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -23691,8 +24883,6 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 			}
 			it.IconID = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -23700,8 +24890,6 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 			}
 			it.Name = data
 		case "receiverParticipantId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receiverParticipantId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -23709,8 +24897,6 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 			}
 			it.ReceiverParticipantID = data
 		case "replyToMessageId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("replyToMessageId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -23718,8 +24904,6 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 			}
 			it.ReplyToMessageID = data
 		case "text":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -23727,8 +24911,6 @@ func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj in
 			}
 			it.Text = data
 		case "isConvertDisabled":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isConvertDisabled"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -23756,8 +24938,6 @@ func (ec *executionContext) unmarshalInputNewMessageFavorite(ctx context.Context
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23765,8 +24945,6 @@ func (ec *executionContext) unmarshalInputNewMessageFavorite(ctx context.Context
 			}
 			it.GameID = data
 		case "messageId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("messageId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -23794,8 +24972,6 @@ func (ec *executionContext) unmarshalInputNewPlayerProfile(ctx context.Context, 
 		}
 		switch k {
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -23803,8 +24979,6 @@ func (ec *executionContext) unmarshalInputNewPlayerProfile(ctx context.Context, 
 			}
 			it.Name = data
 		case "profileImageFile":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profileImageFile"))
 			data, err := ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
 			if err != nil {
@@ -23812,8 +24986,6 @@ func (ec *executionContext) unmarshalInputNewPlayerProfile(ctx context.Context, 
 			}
 			it.ProfileImageFile = data
 		case "introduction":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("introduction"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -23841,8 +25013,6 @@ func (ec *executionContext) unmarshalInputNewPlayerSnsAccount(ctx context.Contex
 		}
 		switch k {
 		case "type":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			data, err := ec.unmarshalNSnsType2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐSnsType(ctx, v)
 			if err != nil {
@@ -23850,8 +25020,6 @@ func (ec *executionContext) unmarshalInputNewPlayerSnsAccount(ctx context.Contex
 			}
 			it.Type = data
 		case "accountName":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accountName"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -23859,8 +25027,6 @@ func (ec *executionContext) unmarshalInputNewPlayerSnsAccount(ctx context.Contex
 			}
 			it.AccountName = data
 		case "accountUrl":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accountUrl"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -23888,8 +25054,6 @@ func (ec *executionContext) unmarshalInputPageableQuery(ctx context.Context, obj
 		}
 		switch k {
 		case "pageSize":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -23897,8 +25061,6 @@ func (ec *executionContext) unmarshalInputPageableQuery(ctx context.Context, obj
 			}
 			it.PageSize = data
 		case "pageNumber":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageNumber"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -23906,8 +25068,6 @@ func (ec *executionContext) unmarshalInputPageableQuery(ctx context.Context, obj
 			}
 			it.PageNumber = data
 		case "isDesc":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isDesc"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -23915,8 +25075,6 @@ func (ec *executionContext) unmarshalInputPageableQuery(ctx context.Context, obj
 			}
 			it.IsDesc = data
 		case "isLatest":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isLatest"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -23944,8 +25102,6 @@ func (ec *executionContext) unmarshalInputParticipantsQuery(ctx context.Context,
 		}
 		switch k {
 		case "ids":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -23953,8 +25109,6 @@ func (ec *executionContext) unmarshalInputParticipantsQuery(ctx context.Context,
 			}
 			it.Ids = data
 		case "playerIds":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("playerIds"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -23962,8 +25116,6 @@ func (ec *executionContext) unmarshalInputParticipantsQuery(ctx context.Context,
 			}
 			it.PlayerIds = data
 		case "paging":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paging"))
 			data, err := ec.unmarshalOPageableQuery2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPageableQuery(ctx, v)
 			if err != nil {
@@ -23991,8 +25143,6 @@ func (ec *executionContext) unmarshalInputPlayersQuery(ctx context.Context, obj 
 		}
 		switch k {
 		case "ids":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
 			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -24000,8 +25150,6 @@ func (ec *executionContext) unmarshalInputPlayersQuery(ctx context.Context, obj 
 			}
 			it.Ids = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -24009,8 +25157,6 @@ func (ec *executionContext) unmarshalInputPlayersQuery(ctx context.Context, obj 
 			}
 			it.Name = data
 		case "paging":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paging"))
 			data, err := ec.unmarshalOPageableQuery2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPageableQuery(ctx, v)
 			if err != nil {
@@ -24038,8 +25184,6 @@ func (ec *executionContext) unmarshalInputRegisterDebugMessages(ctx context.Cont
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24067,8 +25211,6 @@ func (ec *executionContext) unmarshalInputUpdateCharaSetting(ctx context.Context
 		}
 		switch k {
 		case "charachipIds":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("charachipIds"))
 			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -24076,8 +25218,6 @@ func (ec *executionContext) unmarshalInputUpdateCharaSetting(ctx context.Context
 			}
 			it.CharachipIds = data
 		case "canOriginalCharacter":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("canOriginalCharacter"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -24105,8 +25245,6 @@ func (ec *executionContext) unmarshalInputUpdateGameBackgroundSetting(ctx contex
 		}
 		switch k {
 		case "introduction":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("introduction"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -24114,8 +25252,6 @@ func (ec *executionContext) unmarshalInputUpdateGameBackgroundSetting(ctx contex
 			}
 			it.Introduction = data
 		case "catchImageFile":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("catchImageFile"))
 			data, err := ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
 			if err != nil {
@@ -24123,8 +25259,6 @@ func (ec *executionContext) unmarshalInputUpdateGameBackgroundSetting(ctx contex
 			}
 			it.CatchImageFile = data
 		case "catchImageUrl":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("catchImageUrl"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -24152,8 +25286,6 @@ func (ec *executionContext) unmarshalInputUpdateGameCapacity(ctx context.Context
 		}
 		switch k {
 		case "min":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("min"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -24161,8 +25293,6 @@ func (ec *executionContext) unmarshalInputUpdateGameCapacity(ctx context.Context
 			}
 			it.Min = data
 		case "max":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("max"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -24190,8 +25320,6 @@ func (ec *executionContext) unmarshalInputUpdateGameLabel(ctx context.Context, o
 		}
 		switch k {
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -24199,8 +25327,6 @@ func (ec *executionContext) unmarshalInputUpdateGameLabel(ctx context.Context, o
 			}
 			it.Name = data
 		case "type":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -24228,8 +25354,6 @@ func (ec *executionContext) unmarshalInputUpdateGameMaster(ctx context.Context, 
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24237,8 +25361,6 @@ func (ec *executionContext) unmarshalInputUpdateGameMaster(ctx context.Context, 
 			}
 			it.GameID = data
 		case "id":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24246,8 +25368,6 @@ func (ec *executionContext) unmarshalInputUpdateGameMaster(ctx context.Context, 
 			}
 			it.ID = data
 		case "isProducer":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isProducer"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -24275,8 +25395,6 @@ func (ec *executionContext) unmarshalInputUpdateGameNotificationCondition(ctx co
 		}
 		switch k {
 		case "participate":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("participate"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -24284,8 +25402,6 @@ func (ec *executionContext) unmarshalInputUpdateGameNotificationCondition(ctx co
 			}
 			it.Participate = data
 		case "start":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("start"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -24313,8 +25429,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantDiary(ctx context
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24322,8 +25436,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantDiary(ctx context
 			}
 			it.GameID = data
 		case "id":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24331,8 +25443,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantDiary(ctx context
 			}
 			it.ID = data
 		case "title":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -24340,8 +25450,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantDiary(ctx context
 			}
 			it.Title = data
 		case "body":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("body"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -24369,8 +25477,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantGroup(ctx context
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24378,8 +25484,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantGroup(ctx context
 			}
 			it.GameID = data
 		case "id":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24387,8 +25491,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantGroup(ctx context
 			}
 			it.ID = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -24416,8 +25518,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantIcon(ctx context.
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24425,8 +25525,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantIcon(ctx context.
 			}
 			it.GameID = data
 		case "id":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24434,8 +25532,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantIcon(ctx context.
 			}
 			it.ID = data
 		case "displayOrder":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("displayOrder"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -24463,8 +25559,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantProfile(ctx conte
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24472,8 +25566,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantProfile(ctx conte
 			}
 			it.GameID = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -24481,8 +25573,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantProfile(ctx conte
 			}
 			it.Name = data
 		case "profileImageFile":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profileImageFile"))
 			data, err := ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
 			if err != nil {
@@ -24490,8 +25580,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantProfile(ctx conte
 			}
 			it.ProfileImageFile = data
 		case "profileImageUrl":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profileImageUrl"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -24499,8 +25587,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantProfile(ctx conte
 			}
 			it.ProfileImageURL = data
 		case "profileIconId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profileIconId"))
 			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
@@ -24508,8 +25594,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantProfile(ctx conte
 			}
 			it.ProfileIconID = data
 		case "introduction":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("introduction"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -24517,8 +25601,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantProfile(ctx conte
 			}
 			it.Introduction = data
 		case "memo":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("memo"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -24526,8 +25608,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantProfile(ctx conte
 			}
 			it.Memo = data
 		case "isPlayerOpen":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isPlayerOpen"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -24555,8 +25635,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantSetting(ctx conte
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24564,8 +25642,6 @@ func (ec *executionContext) unmarshalInputUpdateGameParticipantSetting(ctx conte
 			}
 			it.GameID = data
 		case "notification":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notification"))
 			data, err := ec.unmarshalOUpdateNotificationCondition2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateNotificationCondition(ctx, v)
 			if err != nil {
@@ -24593,8 +25669,6 @@ func (ec *executionContext) unmarshalInputUpdateGamePasswordSetting(ctx context.
 		}
 		switch k {
 		case "password":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -24622,8 +25696,6 @@ func (ec *executionContext) unmarshalInputUpdateGamePeriod(ctx context.Context, 
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24631,8 +25703,6 @@ func (ec *executionContext) unmarshalInputUpdateGamePeriod(ctx context.Context, 
 			}
 			it.GameID = data
 		case "periodId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24640,8 +25710,6 @@ func (ec *executionContext) unmarshalInputUpdateGamePeriod(ctx context.Context, 
 			}
 			it.PeriodID = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -24649,8 +25717,6 @@ func (ec *executionContext) unmarshalInputUpdateGamePeriod(ctx context.Context, 
 			}
 			it.Name = data
 		case "startAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -24658,8 +25724,6 @@ func (ec *executionContext) unmarshalInputUpdateGamePeriod(ctx context.Context, 
 			}
 			it.StartAt = data
 		case "endAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("endAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -24687,8 +25751,6 @@ func (ec *executionContext) unmarshalInputUpdateGameRuleSetting(ctx context.Cont
 		}
 		switch k {
 		case "isGameMasterProducer":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isGameMasterProducer"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -24696,8 +25758,6 @@ func (ec *executionContext) unmarshalInputUpdateGameRuleSetting(ctx context.Cont
 			}
 			it.IsGameMasterProducer = data
 		case "canShorten":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("canShorten"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -24705,8 +25765,6 @@ func (ec *executionContext) unmarshalInputUpdateGameRuleSetting(ctx context.Cont
 			}
 			it.CanShorten = data
 		case "canSendDirectMessage":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("canSendDirectMessage"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -24714,8 +25772,6 @@ func (ec *executionContext) unmarshalInputUpdateGameRuleSetting(ctx context.Cont
 			}
 			it.CanSendDirectMessage = data
 		case "theme":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("theme"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -24743,8 +25799,6 @@ func (ec *executionContext) unmarshalInputUpdateGameSetting(ctx context.Context,
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24752,8 +25806,6 @@ func (ec *executionContext) unmarshalInputUpdateGameSetting(ctx context.Context,
 			}
 			it.GameID = data
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -24761,8 +25813,6 @@ func (ec *executionContext) unmarshalInputUpdateGameSetting(ctx context.Context,
 			}
 			it.Name = data
 		case "labels":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("labels"))
 			data, err := ec.unmarshalNUpdateGameLabel2ᚕᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameLabelᚄ(ctx, v)
 			if err != nil {
@@ -24770,8 +25820,6 @@ func (ec *executionContext) unmarshalInputUpdateGameSetting(ctx context.Context,
 			}
 			it.Labels = data
 		case "settings":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("settings"))
 			data, err := ec.unmarshalNUpdateGameSettings2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameSettings(ctx, v)
 			if err != nil {
@@ -24799,8 +25847,6 @@ func (ec *executionContext) unmarshalInputUpdateGameSettings(ctx context.Context
 		}
 		switch k {
 		case "background":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("background"))
 			data, err := ec.unmarshalNUpdateGameBackgroundSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameBackgroundSetting(ctx, v)
 			if err != nil {
@@ -24808,8 +25854,6 @@ func (ec *executionContext) unmarshalInputUpdateGameSettings(ctx context.Context
 			}
 			it.Background = data
 		case "chara":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("chara"))
 			data, err := ec.unmarshalNUpdateCharaSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateCharaSetting(ctx, v)
 			if err != nil {
@@ -24817,8 +25861,6 @@ func (ec *executionContext) unmarshalInputUpdateGameSettings(ctx context.Context
 			}
 			it.Chara = data
 		case "capacity":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("capacity"))
 			data, err := ec.unmarshalNUpdateGameCapacity2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameCapacity(ctx, v)
 			if err != nil {
@@ -24826,8 +25868,6 @@ func (ec *executionContext) unmarshalInputUpdateGameSettings(ctx context.Context
 			}
 			it.Capacity = data
 		case "time":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time"))
 			data, err := ec.unmarshalNUpdateGameTimeSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameTimeSetting(ctx, v)
 			if err != nil {
@@ -24835,8 +25875,6 @@ func (ec *executionContext) unmarshalInputUpdateGameSettings(ctx context.Context
 			}
 			it.Time = data
 		case "rule":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rule"))
 			data, err := ec.unmarshalNUpdateGameRuleSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameRuleSetting(ctx, v)
 			if err != nil {
@@ -24844,8 +25882,6 @@ func (ec *executionContext) unmarshalInputUpdateGameSettings(ctx context.Context
 			}
 			it.Rule = data
 		case "password":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			data, err := ec.unmarshalNUpdateGamePasswordSetting2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGamePasswordSetting(ctx, v)
 			if err != nil {
@@ -24873,8 +25909,6 @@ func (ec *executionContext) unmarshalInputUpdateGameStatus(ctx context.Context, 
 		}
 		switch k {
 		case "gameId":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gameId"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -24882,8 +25916,6 @@ func (ec *executionContext) unmarshalInputUpdateGameStatus(ctx context.Context, 
 			}
 			it.GameID = data
 		case "status":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
 			data, err := ec.unmarshalNGameStatus2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐGameStatus(ctx, v)
 			if err != nil {
@@ -24911,8 +25943,6 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 		}
 		switch k {
 		case "periodPrefix":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodPrefix"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -24920,8 +25950,6 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 			}
 			it.PeriodPrefix = data
 		case "periodSuffix":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodSuffix"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -24929,8 +25957,6 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 			}
 			it.PeriodSuffix = data
 		case "periodIntervalSeconds":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("periodIntervalSeconds"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -24938,8 +25964,6 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 			}
 			it.PeriodIntervalSeconds = data
 		case "openAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("openAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -24947,8 +25971,6 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 			}
 			it.OpenAt = data
 		case "startParticipateAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startParticipateAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -24956,8 +25978,6 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 			}
 			it.StartParticipateAt = data
 		case "startGameAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startGameAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -24965,8 +25985,6 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 			}
 			it.StartGameAt = data
 		case "epilogueGameAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("epilogueGameAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -24974,8 +25992,6 @@ func (ec *executionContext) unmarshalInputUpdateGameTimeSetting(ctx context.Cont
 			}
 			it.EpilogueGameAt = data
 		case "finishGameAt":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("finishGameAt"))
 			data, err := ec.unmarshalNDateTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -25003,8 +26019,6 @@ func (ec *executionContext) unmarshalInputUpdateMessageNotificationCondition(ctx
 		}
 		switch k {
 		case "reply":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reply"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -25012,8 +26026,6 @@ func (ec *executionContext) unmarshalInputUpdateMessageNotificationCondition(ctx
 			}
 			it.Reply = data
 		case "secret":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("secret"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -25021,8 +26033,6 @@ func (ec *executionContext) unmarshalInputUpdateMessageNotificationCondition(ctx
 			}
 			it.Secret = data
 		case "directMessage":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("directMessage"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -25030,8 +26040,6 @@ func (ec *executionContext) unmarshalInputUpdateMessageNotificationCondition(ctx
 			}
 			it.DirectMessage = data
 		case "keywords":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keywords"))
 			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -25059,8 +26067,6 @@ func (ec *executionContext) unmarshalInputUpdateNotificationCondition(ctx contex
 		}
 		switch k {
 		case "discordWebhookUrl":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("discordWebhookUrl"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -25068,8 +26074,6 @@ func (ec *executionContext) unmarshalInputUpdateNotificationCondition(ctx contex
 			}
 			it.DiscordWebhookURL = data
 		case "game":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("game"))
 			data, err := ec.unmarshalNUpdateGameNotificationCondition2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateGameNotificationCondition(ctx, v)
 			if err != nil {
@@ -25077,8 +26081,6 @@ func (ec *executionContext) unmarshalInputUpdateNotificationCondition(ctx contex
 			}
 			it.Game = data
 		case "message":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("message"))
 			data, err := ec.unmarshalNUpdateMessageNotificationCondition2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐUpdateMessageNotificationCondition(ctx, v)
 			if err != nil {
@@ -25106,8 +26108,6 @@ func (ec *executionContext) unmarshalInputUpdatePlayerProfile(ctx context.Contex
 		}
 		switch k {
 		case "name":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -25115,8 +26115,6 @@ func (ec *executionContext) unmarshalInputUpdatePlayerProfile(ctx context.Contex
 			}
 			it.Name = data
 		case "profileImageFile":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profileImageFile"))
 			data, err := ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
 			if err != nil {
@@ -25124,8 +26122,6 @@ func (ec *executionContext) unmarshalInputUpdatePlayerProfile(ctx context.Contex
 			}
 			it.ProfileImageFile = data
 		case "profileImageUrl":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profileImageUrl"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -25133,8 +26129,6 @@ func (ec *executionContext) unmarshalInputUpdatePlayerProfile(ctx context.Contex
 			}
 			it.ProfileImageURL = data
 		case "introduction":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("introduction"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -25162,8 +26156,6 @@ func (ec *executionContext) unmarshalInputUpdatePlayerSnsAccount(ctx context.Con
 		}
 		switch k {
 		case "id":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -25171,8 +26163,6 @@ func (ec *executionContext) unmarshalInputUpdatePlayerSnsAccount(ctx context.Con
 			}
 			it.ID = data
 		case "type":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			data, err := ec.unmarshalNSnsType2chatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐSnsType(ctx, v)
 			if err != nil {
@@ -25180,8 +26170,6 @@ func (ec *executionContext) unmarshalInputUpdatePlayerSnsAccount(ctx context.Con
 			}
 			it.Type = data
 		case "accountName":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accountName"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -25189,8 +26177,6 @@ func (ec *executionContext) unmarshalInputUpdatePlayerSnsAccount(ctx context.Con
 			}
 			it.AccountName = data
 		case "accountUrl":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accountUrl"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -26488,7 +27474,7 @@ func (ec *executionContext) _GameParticipant(ctx context.Context, sel ast.Select
 		case "chara":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -26523,7 +27509,7 @@ func (ec *executionContext) _GameParticipant(ctx context.Context, sel ast.Select
 		case "profileIcon":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -27662,7 +28648,7 @@ func (ec *executionContext) _MessageSender(ctx context.Context, sel ast.Selectio
 		case "icon":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -28361,7 +29347,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "designer":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -28402,7 +29388,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "charachip":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -28421,7 +29407,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "chara":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -28462,7 +29448,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "game":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -28481,7 +29467,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "myGameParticipant":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -28632,7 +29618,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "gameDiary":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -28673,7 +29659,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "player":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -28692,7 +29678,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "myPlayer":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -28755,7 +29741,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "message":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -28906,7 +29892,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "directMessage":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
