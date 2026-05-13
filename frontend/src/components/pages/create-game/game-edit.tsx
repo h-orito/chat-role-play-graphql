@@ -126,10 +126,9 @@ export default function GameEdit(props: Props) {
           <hr />
           <div className='my-4'>
             <FormLabel label='公開設定' required>
-              「非公開」を選ぶと、ゲーム終了/中止になるまでトップページ等の一覧に表示されなくなります。
+              「非公開」を選ぶと、ゲームのステータスにかかわらず、ゲーム終了/中止になるまでトップページやゲーム一覧に表示されなくなります。
               <br />
-              URL
-              を直接知っている人は引き続き閲覧できます（認可は変わりません）。
+              URL を直接知っている人は引き続き閲覧できます。
             </FormLabel>
             <div className='mt-1 flex justify-center'>
               <RadioGroup
