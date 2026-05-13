@@ -271,6 +271,7 @@ type GameRuleSetting struct {
 	CanShorten           bool    `json:"canShorten"`
 	CanSendDirectMessage bool    `json:"canSendDirectMessage"`
 	Theme                *string `json:"theme,omitempty"`
+	IsHidden             bool    `json:"isHidden"`
 }
 
 type GameSettings struct {
@@ -477,6 +478,7 @@ type NewGameRuleSetting struct {
 	CanShorten           bool    `json:"canShorten"`
 	CanSendDirectMessage bool    `json:"canSendDirectMessage"`
 	Theme                *string `json:"theme,omitempty"`
+	IsHidden             bool    `json:"isHidden"`
 }
 
 type NewGameSettings struct {
@@ -770,6 +772,7 @@ type UpdateGameRuleSetting struct {
 	CanShorten           bool    `json:"canShorten"`
 	CanSendDirectMessage bool    `json:"canSendDirectMessage"`
 	Theme                *string `json:"theme,omitempty"`
+	IsHidden             bool    `json:"isHidden"`
 }
 
 type UpdateGameSetting struct {

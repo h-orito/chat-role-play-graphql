@@ -42,6 +42,8 @@ type Props = {
   setCatchImageUrl: (url: string | null) => void
   catchImages: File[]
   setCatchImages: Dispatch<SetStateAction<File[]>>
+  isHidden: boolean
+  setIsHidden: Dispatch<SetStateAction<boolean>>
 }
 
 export interface GameFormInput {
@@ -120,6 +122,28 @@ export default function GameEdit(props: Props) {
                 }
               }}
             />
+          </div>
+          <hr />
+          <div className='my-4'>
+            <FormLabel label='公開設定' required>
+              「非公開」を選ぶと、ゲーム終了/中止になるまでトップページ等の一覧に表示されなくなります。
+              <br />
+              URL
+              を直接知っている人は引き続き閲覧できます（認可は変わりません）。
+            </FormLabel>
+            <div className='mt-1 flex justify-center'>
+              <RadioGroup
+                name='isHidden'
+                candidates={[
+                  { label: '公開', value: 'false' },
+                  { label: '非公開', value: 'true' }
+                ]}
+                selected={props.isHidden ? 'true' : 'false'}
+                setSelected={(value: string) =>
+                  props.setIsHidden(value === 'true')
+                }
+              />
+            </div>
           </div>
           <hr />
           <div className='my-4'>

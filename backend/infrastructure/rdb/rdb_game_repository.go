@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type GameRepository struct {
@@ -337,6 +338,16 @@ func findRdbGames(db *gorm.DB, query model.GamesQuery) (games []Game, err error)
 		})
 		result = result.Where("game_status_code in (?)", statuses)
 	}
+	// 非公開ゲームは Finished / Cancelled 以外の状態では一覧から除外する。
+	// IsHidden 設定が無い既存ゲーム（subquery にヒットしない）はそのまま表示される。
+	finishedStatuses := []string{
+		model.GameStatusFinished.String(),
+		model.GameStatusCancelled.String(),
+	}
+	hiddenGameIDs := db.Model(&GameSetting{}).
+		Select("game_id").
+		Where("game_setting_key = ? and game_setting_value = ?", GameSettingKeyIsHidden.String(), "true")
+	result = result.Where("game_status_code in (?) or id not in (?)", finishedStatuses, hiddenGameIDs)
 	result = result.Find(&rdbGames)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -587,6 +598,9 @@ func registerGameSettings(db *gorm.DB, ID uint32, settings model.GameSettings) (
 	if err := registerGameSetting(db, ID, GameSettingKeyPassword, orEmpty(settings.Password.Password)); err != nil {
 		return err
 	}
+	if err := registerGameSetting(db, ID, GameSettingKeyIsHidden, boolToString(settings.Rule.IsHidden)); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -642,6 +656,10 @@ func updateGameSettings(db *gorm.DB, gameID uint32, settings model.GameSettings)
 	if err := updateGameSetting(db, gameID, GameSettingKeyPassword, orEmpty(settings.Password.Password)); err != nil {
 		return err
 	}
+	// IsHidden は後から追加されたキーで、既存ゲームには行が無いため upsert する
+	if err := upsertGameSetting(db, gameID, GameSettingKeyIsHidden, boolToString(settings.Rule.IsHidden)); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -663,6 +681,17 @@ func updateGameSetting(db *gorm.DB, gameID uint32, key GameSettingKey, value str
 		return err
 	}
 	return nil
+}
+
+func upsertGameSetting(db *gorm.DB, gameID uint32, key GameSettingKey, value string) (err error) {
+	return db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "game_id"}, {Name: "game_setting_key"}},
+		DoUpdates: clause.AssignmentColumns([]string{"game_setting_value"}),
+	}).Create(&GameSetting{
+		GameID:           gameID,
+		GameSettingKey:   key.String(),
+		GameSettingValue: value,
+	}).Error
 }
 
 func boolToString(b bool) string {

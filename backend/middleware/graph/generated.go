@@ -261,6 +261,7 @@ type ComplexityRoot struct {
 		CanSendDirectMessage func(childComplexity int) int
 		CanShorten           func(childComplexity int) int
 		IsGameMasterProducer func(childComplexity int) int
+		IsHidden             func(childComplexity int) int
 		Theme                func(childComplexity int) int
 	}
 
@@ -1457,6 +1458,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GameRuleSetting.IsGameMasterProducer(childComplexity), true
+
+	case "GameRuleSetting.isHidden":
+		if e.complexity.GameRuleSetting.IsHidden == nil {
+			break
+		}
+
+		return e.complexity.GameRuleSetting.IsHidden(childComplexity), true
 
 	case "GameRuleSetting.theme":
 		if e.complexity.GameRuleSetting.Theme == nil {
@@ -3324,6 +3332,7 @@ type GameRuleSetting {
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
   theme: String
+  isHidden: Boolean!
 }
 
 type GamePasswordSetting {
@@ -3756,6 +3765,7 @@ input NewGameRuleSetting {
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
   theme: String
+  isHidden: Boolean!
 }
 
 input NewGamePasswordSetting {
@@ -3848,6 +3858,7 @@ input UpdateGameRuleSetting {
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
   theme: String
+  isHidden: Boolean!
 }
 
 input UpdateGamePasswordSetting {
@@ -11829,6 +11840,50 @@ func (ec *executionContext) fieldContext_GameRuleSetting_theme(_ context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _GameRuleSetting_isHidden(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameRuleSetting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GameRuleSetting_isHidden(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsHidden, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GameRuleSetting_isHidden(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameRuleSetting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _GameSettings_background(ctx context.Context, field graphql.CollectedField, obj *gqlmodel.GameSettings) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_GameSettings_background(ctx, field)
 	if err != nil {
@@ -12088,6 +12143,8 @@ func (ec *executionContext) fieldContext_GameSettings_rule(_ context.Context, fi
 				return ec.fieldContext_GameRuleSetting_canSendDirectMessage(ctx, field)
 			case "theme":
 				return ec.fieldContext_GameRuleSetting_theme(ctx, field)
+			case "isHidden":
+				return ec.fieldContext_GameRuleSetting_isHidden(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GameRuleSetting", field.Name)
 		},
@@ -24668,7 +24725,7 @@ func (ec *executionContext) unmarshalInputNewGameRuleSetting(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"isGameMasterProducer", "canShorten", "canSendDirectMessage", "theme"}
+	fieldsInOrder := [...]string{"isGameMasterProducer", "canShorten", "canSendDirectMessage", "theme", "isHidden"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24703,6 +24760,13 @@ func (ec *executionContext) unmarshalInputNewGameRuleSetting(ctx context.Context
 				return it, err
 			}
 			it.Theme = data
+		case "isHidden":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isHidden"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsHidden = data
 		}
 	}
 
@@ -25743,7 +25807,7 @@ func (ec *executionContext) unmarshalInputUpdateGameRuleSetting(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"isGameMasterProducer", "canShorten", "canSendDirectMessage", "theme"}
+	fieldsInOrder := [...]string{"isGameMasterProducer", "canShorten", "canSendDirectMessage", "theme", "isHidden"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25778,6 +25842,13 @@ func (ec *executionContext) unmarshalInputUpdateGameRuleSetting(ctx context.Cont
 				return it, err
 			}
 			it.Theme = data
+		case "isHidden":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isHidden"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsHidden = data
 		}
 	}
 
@@ -28154,6 +28225,11 @@ func (ec *executionContext) _GameRuleSetting(ctx context.Context, sel ast.Select
 			}
 		case "theme":
 			out.Values[i] = ec._GameRuleSetting_theme(ctx, field, obj)
+		case "isHidden":
+			out.Values[i] = ec._GameRuleSetting_isHidden(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

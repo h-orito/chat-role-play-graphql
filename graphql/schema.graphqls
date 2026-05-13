@@ -206,6 +206,7 @@ type GameRuleSetting {
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
   theme: String
+  isHidden: Boolean!
 }
 
 type GamePasswordSetting {
@@ -638,6 +639,7 @@ input NewGameRuleSetting {
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
   theme: String
+  isHidden: Boolean!
 }
 
 input NewGamePasswordSetting {
@@ -730,6 +732,7 @@ input UpdateGameRuleSetting {
   canShorten: Boolean!
   canSendDirectMessage: Boolean!
   theme: String
+  isHidden: Boolean!
 }
 
 input UpdateGamePasswordSetting {

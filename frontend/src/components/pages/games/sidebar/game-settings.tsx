@@ -91,6 +91,12 @@ export default function GameSettings({ close }: GameSettingsProps) {
     value: iso2display(settings.time.finishGameAt)
   })
   items.push({
+    name: '公開設定',
+    value: settings.rule.isHidden
+      ? '非公開（終了/中止までトップページに表示しない）'
+      : '公開'
+  })
+  items.push({
     name: 'ダイレクトメッセージ',
     value: settings.rule.canSendDirectMessage ? '可能' : '不可'
   })

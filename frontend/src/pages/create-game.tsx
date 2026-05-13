@@ -50,6 +50,7 @@ export default function CreateGame() {
   // 新規作成画面では submit 時に catchImageFile のみ送信するため、
   // この state はプレビュー表示と削除ボタン制御のために InputImage に渡すだけ。
   const [catchImageUrl, setCatchImageUrl] = useState<string | null>(null)
+  const [isHidden, setIsHidden] = useState(false)
 
   const [registerGame] = useMutation<
     RegisterGameMutation,
@@ -116,7 +117,8 @@ export default function CreateGame() {
                 isGameMasterProducer: false,
                 canShorten: true,
                 canSendDirectMessage: true,
-                theme: null
+                theme: null,
+                isHidden: isHidden
               },
               password: {
                 password: data.password.length > 0 ? data.password : null
@@ -131,7 +133,15 @@ export default function CreateGame() {
       }
       router.push(`/games/${base64ToId(id)}`)
     },
-    [registerGame, charachipIds, target, rating, catchImageFiles, router]
+    [
+      registerGame,
+      charachipIds,
+      target,
+      rating,
+      catchImageFiles,
+      isHidden,
+      router
+    ]
   )
 
   return (
@@ -156,6 +166,8 @@ export default function CreateGame() {
           setCatchImageUrl={setCatchImageUrl}
           catchImages={catchImageFiles}
           setCatchImages={setCatchImageFiles}
+          isHidden={isHidden}
+          setIsHidden={setIsHidden}
         />
       </article>
     </main>

@@ -72,6 +72,7 @@ query Game($id: ID!) {
         canShorten
         canSendDirectMessage
         theme
+        isHidden
       }
       time {
         periodPrefix

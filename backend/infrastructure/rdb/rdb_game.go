@@ -287,6 +287,7 @@ const (
 	GameSettingKeyCanSendDirectMessage
 	GameSettingKeyTheme
 	GameSettingKeyPassword
+	GameSettingKeyIsHidden
 )
 
 func (pa GameSettingKey) String() string {
@@ -325,6 +326,8 @@ func (pa GameSettingKey) String() string {
 		return "Theme"
 	case GameSettingKeyPassword:
 		return "Password"
+	case GameSettingKeyIsHidden:
+		return "IsHidden"
 	default:
 		return ""
 	}
@@ -351,6 +354,7 @@ func GameSettingKeyValues() []GameSettingKey {
 		GameSettingKeyCanSendDirectMessage,
 		GameSettingKeyTheme,
 		GameSettingKeyPassword,
+		GameSettingKeyIsHidden,
 	}
 }
 
@@ -389,6 +393,7 @@ func ToGameSettingsModel(
 			EpilogueGameAt:        gameSettingsToTime(settings, GameSettingKeyEpilogueGameAt, time.Now()),
 		},
 		Rule: model.GameRuleSettings{
+			IsHidden:             gameSettingsToBool(settings, GameSettingKeyIsHidden, false),
 			CanShorten:           gameSettingsToBool(settings, GameSettingKeyCanShorten, false),
 			CanSendDirectMessage: gameSettingsToBool(settings, GameSettingKeyCanSendDirectMessage, false),
 			Theme:                gameSettingsToString(settings, GameSettingKeyTheme, nil),
