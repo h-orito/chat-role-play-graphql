@@ -4,7 +4,6 @@ import { LoginButton } from '@/components/auth/auth'
 import PrimaryButton from '@/components/button/primary-button'
 import { useModal } from '@/components/hooks/use-modal'
 import {
-  isGameMaster as _isGameMaster,
   participateInvitation,
   useGameValue,
   useMyPlayerValue,
@@ -16,8 +15,7 @@ const ParticipatePanel = () => {
   const game = useGameValue()
   const myPlayer = useMyPlayerValue()
   const myself = useMyselfValue()
-  const isGameMaster = _isGameMaster(myPlayer, game)
-  const invitation = participateInvitation(game, myPlayer, myself, isGameMaster)
+  const invitation = participateInvitation(game, myPlayer, myself)
 
   if (invitation === 'hide') return null
 

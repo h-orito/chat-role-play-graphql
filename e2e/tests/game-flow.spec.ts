@@ -165,7 +165,10 @@ test('複数ユーザーシナリオ：ゲーム作成・参加・発言・リ�
 
 async function participateWithCharachip(page: Page): Promise<void> {
   // メッセージエリアの「参加登録」パネル内ボタン（モーダル外）
-  await page.getByRole('button', { name: '参加登録する' }).first().click()
+  await page
+    .locator('#article')
+    .getByRole('button', { name: '参加登録する' })
+    .click()
   // モーダル内の操作
   const dialog = page.getByRole('dialog')
   await expect(dialog).toBeVisible()

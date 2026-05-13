@@ -72,17 +72,16 @@ export const canParticipate = (
 export type ParticipateInvitation = 'hide' | 'login-required' | 'participate'
 // 参加登録パネルの表示状態
 // - 参加済み → 'hide'
-// - ログイン済み: canParticipate に従う
+// - ログイン済み: canParticipate に従う（GM 判定込み）
 // - 未ログイン: プレイヤー参加可能ステータスのみ案内（GM 判定はログイン後）
 export const participateInvitation = (
   game: Game,
   player: Player | null,
-  myself: GameParticipant | null,
-  isGameMasterValue: boolean
+  myself: GameParticipant | null
 ): ParticipateInvitation => {
   if (myself) return 'hide'
   if (player) {
-    return canParticipate(game, player, myself, isGameMasterValue)
+    return canParticipate(game, player, null, isGameMaster(player, game))
       ? 'participate'
       : 'hide'
   }
