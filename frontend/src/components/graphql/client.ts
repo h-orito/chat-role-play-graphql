@@ -58,9 +58,13 @@ export const createClient = async (
 let innerClient: ApolloClient<NormalizedCacheObject> | null = null
 export const createInnerClient = () => {
   if (innerClient) return innerClient
+  const uri = process.env.GRAPHQL_INNER_ENDPOINT
+  if (!uri) {
+    throw new Error('GRAPHQL_INNER_ENDPOINT is not set')
+  }
   innerClient = new ApolloClient({
     ssrMode: true,
-    link: new HttpLink({ uri: process.env.GRAPHQL_INNER_ENDPOINT }),
+    link: new HttpLink({ uri }),
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {
