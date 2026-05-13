@@ -1,6 +1,6 @@
 module chat-role-play
 
-go 1.23
+go 1.23.5
 
 require (
 	github.com/99designs/gqlgen v0.17.55
@@ -20,7 +20,7 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sosodev/duration v1.3.1 // indirect
-	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
+	golang.org/x/crypto v0.39.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )
 
