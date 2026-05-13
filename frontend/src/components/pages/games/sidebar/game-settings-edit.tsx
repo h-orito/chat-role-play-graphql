@@ -65,6 +65,8 @@ export default function GameSettingsEdit() {
     game.settings.background.catchImageUrl ?? null
   )
   const [isHidden, setIsHidden] = useState(game.settings.rule.isHidden)
+  const [isGameMasterViewAllMessages, setIsGameMasterViewAllMessages] =
+    useState(game.settings.rule.isGameMasterViewAllMessages)
 
   const [updateGameSettings] = useMutation<
     UpdateGameSettingsMutation,
@@ -135,7 +137,8 @@ export default function GameSettingsEdit() {
                 canShorten: true,
                 canSendDirectMessage: true,
                 theme: theme,
-                isHidden: isHidden
+                isHidden: isHidden,
+                isGameMasterViewAllMessages: isGameMasterViewAllMessages
               },
               password: {
                 password: data.password.length > 0 ? data.password : null
@@ -155,6 +158,7 @@ export default function GameSettingsEdit() {
       catchImageUrl,
       charachipIds,
       isHidden,
+      isGameMasterViewAllMessages,
       game.id,
       router
     ]
@@ -182,6 +186,8 @@ export default function GameSettingsEdit() {
         setCatchImages={setCatchImageFiles}
         isHidden={isHidden}
         setIsHidden={setIsHidden}
+        isGameMasterViewAllMessages={isGameMasterViewAllMessages}
+        setIsGameMasterViewAllMessages={setIsGameMasterViewAllMessages}
       />
     </div>
   )

@@ -57,10 +57,11 @@ func (g NewGame) MapToGame(imageURL *string) model.Game {
 				FinishGameAt:          g.Settings.Time.FinishGameAt,
 			},
 			Rule: model.GameRuleSettings{
-				IsHidden:             g.Settings.Rule.IsHidden,
-				CanShorten:           g.Settings.Rule.CanShorten,
-				CanSendDirectMessage: g.Settings.Rule.CanSendDirectMessage,
-				Theme:                g.Settings.Rule.Theme,
+				IsHidden:                    g.Settings.Rule.IsHidden,
+				IsGameMasterViewAllMessages: g.Settings.Rule.IsGameMasterViewAllMessages,
+				CanShorten:                  g.Settings.Rule.CanShorten,
+				CanSendDirectMessage:        g.Settings.Rule.CanSendDirectMessage,
+				Theme:                       g.Settings.Rule.Theme,
 			},
 			Password: model.GamePasswordSettings{
 				HasPassword: g.Settings.Password.Password != nil,

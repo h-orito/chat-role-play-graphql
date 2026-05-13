@@ -92,13 +92,14 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 		return nil, nil, err
 	}
 	var myself *model.GameParticipant = nil
+	var player *model.Player = nil
 	authorities := []model.PlayerAuthority{}
 	if user != nil {
 		myself, err = s.findMyGameParticipant(gameID, *user)
 		if err != nil {
 			return nil, nil, err
 		}
-		player, err := s.playerService.FindByUserName(user.UserName)
+		player, err = s.playerService.FindByUserName(user.UserName)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -115,6 +116,11 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 		requestMessageTypes = *query.Types
 	}
 	viewableMessageTypes := s.messageDomainService.GetViewableMessageTypes(*game, authorities)
+	// GM 全発言閲覧設定が ON のゲームでは、GM は monologue / secret を含む全タイプを閲覧可能。
+	// これにより以降の type フィルタが自然に全タイプを許容し、独り言/秘話の "自分宛のみ" 拡張も不要になる。
+	if game.Settings.Rule.IsGameMasterViewAllMessages && player != nil && isGameMaster(*game, *player) {
+		viewableMessageTypes = model.MessageTypeValues()
+	}
 	types := array.Filter(requestMessageTypes, func(t model.MessageType) bool {
 		return array.Any(viewableMessageTypes, func(v model.MessageType) bool {
 			return v == t
@@ -132,6 +138,12 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 	query.IncludeSecret = &shouldIncludeSecret
 
 	return &query, myself, nil
+}
+
+func isGameMaster(game model.Game, player model.Player) bool {
+	return array.Any(game.GameMasters, func(gm model.GameMaster) bool {
+		return gm.PlayerID == player.ID
+	})
 }
 
 func shouldIncludeMonologue(

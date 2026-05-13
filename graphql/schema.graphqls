@@ -207,6 +207,7 @@ type GameRuleSetting {
   canSendDirectMessage: Boolean!
   theme: String
   isHidden: Boolean!
+  isGameMasterViewAllMessages: Boolean!
 }
 
 type GamePasswordSetting {
@@ -640,6 +641,7 @@ input NewGameRuleSetting {
   canSendDirectMessage: Boolean!
   theme: String
   isHidden: Boolean!
+  isGameMasterViewAllMessages: Boolean!
 }
 
 input NewGamePasswordSetting {
@@ -733,6 +735,7 @@ input UpdateGameRuleSetting {
   canSendDirectMessage: Boolean!
   theme: String
   isHidden: Boolean!
+  isGameMasterViewAllMessages: Boolean!
 }
 
 input UpdateGamePasswordSetting {

@@ -238,10 +238,11 @@ type GameTimeSettings struct {
 }
 
 type GameRuleSettings struct {
-	IsHidden             bool
-	CanShorten           bool
-	CanSendDirectMessage bool
-	Theme                *string
+	IsHidden                    bool
+	IsGameMasterViewAllMessages bool
+	CanShorten                  bool
+	CanSendDirectMessage        bool
+	Theme                       *string
 }
 
 type GamePasswordSettings struct {

@@ -97,6 +97,12 @@ export default function GameSettings({ close }: GameSettingsProps) {
       : '公開'
   })
   items.push({
+    name: 'GMの発言閲覧範囲',
+    value: settings.rule.isGameMasterViewAllMessages
+      ? '全て閲覧可（独り言・秘話・DM 含む）'
+      : '通常（参加者と同じ）'
+  })
+  items.push({
     name: 'ダイレクトメッセージ',
     value: settings.rule.canSendDirectMessage ? '可能' : '不可'
   })
