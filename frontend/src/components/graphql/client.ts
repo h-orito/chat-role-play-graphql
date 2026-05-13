@@ -60,7 +60,7 @@ export const createInnerClient = () => {
   if (innerClient) return innerClient
   innerClient = new ApolloClient({
     ssrMode: true,
-    link: new HttpLink({ uri: process.env.NEXT_PUBLIC_GRAPHQL_INNER_ENDPOINT }),
+    link: new HttpLink({ uri: process.env.GRAPHQL_INNER_ENDPOINT }),
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {
