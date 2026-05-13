@@ -338,16 +338,20 @@ func findRdbGames(db *gorm.DB, query model.GamesQuery) (games []Game, err error)
 		})
 		result = result.Where("game_status_code in (?)", statuses)
 	}
-	// 非公開ゲームは Finished / Cancelled 以外の状態では一覧から除外する。
+	// 非公開ゲームは Finished / Cancelled 以外の状態では一覧から除外する（公開一覧向けフィルタ）。
+	// query.IDs 指定時（= ID を知っている前提の明示的な検索）は除外しない。
+	// query.Statuses に Finished/Cancelled を明示指定した場合は非公開でも返る（仕様どおり、終了後は自動公開扱い）。
 	// IsHidden 設定が無い既存ゲーム（subquery にヒットしない）はそのまま表示される。
-	finishedStatuses := []string{
-		model.GameStatusFinished.String(),
-		model.GameStatusCancelled.String(),
+	if query.IDs == nil {
+		finishedStatuses := []string{
+			model.GameStatusFinished.String(),
+			model.GameStatusCancelled.String(),
+		}
+		hiddenGameIDs := db.Model(&GameSetting{}).
+			Select("game_id").
+			Where("game_setting_key = ? and game_setting_value = ?", GameSettingKeyIsHidden.String(), "true")
+		result = result.Where("game_status_code in (?) or id not in (?)", finishedStatuses, hiddenGameIDs)
 	}
-	hiddenGameIDs := db.Model(&GameSetting{}).
-		Select("game_id").
-		Where("game_setting_key = ? and game_setting_value = ?", GameSettingKeyIsHidden.String(), "true")
-	result = result.Where("game_status_code in (?) or id not in (?)", finishedStatuses, hiddenGameIDs)
 	result = result.Find(&rdbGames)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -683,6 +687,9 @@ func updateGameSetting(db *gorm.DB, gameID uint32, key GameSettingKey, value str
 	return nil
 }
 
+// upsertGameSetting は UNIQUE 制約 (game_id, game_setting_key) に対する upsert。
+// MySQL では `INSERT ... ON DUPLICATE KEY UPDATE game_setting_value = VALUES(...)` が生成されるため
+// `clause.OnConflict.Columns` は実質無視されるが、PostgreSQL 等の他 DB に切り替える際の意図表明として残す。
 func upsertGameSetting(db *gorm.DB, gameID uint32, key GameSettingKey, value string) (err error) {
 	return db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "game_id"}, {Name: "game_setting_key"}},

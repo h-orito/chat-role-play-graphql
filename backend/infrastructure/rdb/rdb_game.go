@@ -337,8 +337,6 @@ func GameSettingKeyValues() []GameSettingKey {
 	return []GameSettingKey{
 		GameSettingKeyBackgroundIntroduction,
 		GameSettingKeyBackgroundCatchImageUrl,
-		GameSettingKeyBackgroundIntroduction,
-		GameSettingKeyBackgroundCatchImageUrl,
 		GameSettingKeyCanOriginalCharacter,
 		GameSettingKeyCapacityMin,
 		GameSettingKeyCapacityMax,
