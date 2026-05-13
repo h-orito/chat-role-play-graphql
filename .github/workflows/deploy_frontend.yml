@@ -10,6 +10,9 @@ on:
 jobs:
   delivery:
     runs-on: [self-hosted]
+    permissions:
+      contents: read
+      packages: write
     env:
       IMAGE_NAME: chat-role-play-frontend
     steps:
@@ -31,9 +34,10 @@ jobs:
           --build-arg GRAPHQL_INNER_ENDPOINT=${{ secrets.GRAPHQL_INNER_ENDPOINT }}
       - name: deploy
         env:
-          PACKAGE_PAT: ${{ secrets.PACKAGE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTOR: ${{ github.actor }}
         run: |
-          echo "$PACKAGE_PAT" | docker login ghcr.io -u h-orito --password-stdin
+          echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin
           docker push ghcr.io/h-orito/${{ env.IMAGE_NAME }}
       - name: release
         run: |
