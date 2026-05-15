@@ -46,4 +46,4 @@ jobs:
           version: latest
 
       - name: release
-        run: kubectl rollout restart deployment/chat-role-play-backend
+        run: kubectl rollout restart deployment/chat-role-play-backend -n default
