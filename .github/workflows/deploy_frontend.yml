@@ -42,7 +42,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, k8s]
     steps:
       - name: release
         run: kubectl rollout restart deployment/chat-role-play-frontend
