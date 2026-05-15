@@ -7,13 +7,16 @@ on:
       - main
     paths:
       - "backend/**"
+      - ".github/workflows/deploy_backend.yml"
 
 jobs:
-  delivery:
-    runs-on: [self-hosted]
+  build:
+    runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
       packages: write
+    env:
+      IMAGE_NAME: chat-role-play-backend
     steps:
       - name: clone repository
         uses: actions/checkout@v4
@@ -21,14 +24,21 @@ jobs:
       - name: build
         run: |
           cd backend
-          docker build -t ghcr.io/h-orito/chat-role-play-backend .
-      - name: deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ACTOR: ${{ github.actor }}
-        run: |
-          echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin
-          docker push ghcr.io/h-orito/chat-role-play-backend
+          docker build -t ghcr.io/h-orito/${{ env.IMAGE_NAME }} .
+
+      - name: login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: push image
+        run: docker push ghcr.io/h-orito/${{ env.IMAGE_NAME }}
+
+  deploy:
+    needs: build
+    runs-on: [self-hosted]
+    steps:
       - name: release
-        run: |
-          kubectl delete pod -l app=chat-role-play-backend
+        run: kubectl rollout restart deployment/chat-role-play-backend
