@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -48,6 +49,16 @@ func NewDB() DB {
 	if err != nil {
 		panic(err.Error())
 	}
+
+	// wolf-db は全アプリ共有・max_connections=200 のため、DB への同時接続数に蓋をする
+	// (database/sql のデフォルトは MaxOpenConns 無制限)
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic(err.Error())
+	}
+	sqlDB.SetMaxOpenConns(5)
+	sqlDB.SetMaxIdleConns(2)
+	sqlDB.SetConnMaxLifetime(30 * time.Minute)
 
 	return DB{
 		Connection: db,
