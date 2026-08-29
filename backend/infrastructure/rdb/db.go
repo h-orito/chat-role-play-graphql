@@ -51,12 +51,14 @@ func NewDB() DB {
 	}
 
 	// wolf-db は全アプリ共有・max_connections=200 のため、DB への同時接続数に蓋をする
-	// (database/sql のデフォルトは MaxOpenConns 無制限)
+	// (database/sql のデフォルトは MaxOpenConns 無制限)。
+	// DoInTx 内の読み取りは tx と別接続を使うため 1 ミューテーションで最大 2 本必要になる。
+	// 5 だと同時 5 ミューテーションで枯渇→相互待ちになりうるので 10 にしている
 	sqlDB, err := db.DB()
 	if err != nil {
 		panic(err.Error())
 	}
-	sqlDB.SetMaxOpenConns(5)
+	sqlDB.SetMaxOpenConns(10)
 	sqlDB.SetMaxIdleConns(2)
 	sqlDB.SetConnMaxLifetime(30 * time.Minute)
 
