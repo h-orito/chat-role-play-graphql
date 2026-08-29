@@ -50,10 +50,11 @@ func NewDB() DB {
 		panic(err.Error())
 	}
 
-	// wolf-db は全アプリ共有・max_connections=200 のため、DB への同時接続数に蓋をする
-	// (database/sql のデフォルトは MaxOpenConns 無制限)。
-	// DoInTx 内の読み取りは tx と別接続を使うため 1 ミューテーションで最大 2 本必要になる。
-	// 5 だと同時 5 ミューテーションで枯渇→相互待ちになりうるので 10 にしている
+	// wolf-db は全アプリで共有しており接続数上限も有限なため、プール上限を明示して
+	// DB への同時接続数を固定する (database/sql のデフォルトは MaxOpenConns 無制限)。
+	// 注意: DoInTx 内の読み取りは tx と別接続を使うため 1 ミューテーションで最大 2 本必要になり、
+	// 同時ミューテーション数が MaxOpenConns に達すると相互待ちになる構造が残っている。
+	// 根本対処 (tx 内読み取りの GetTx(ctx) 化 / context timeout) は別 Issue。
 	sqlDB, err := db.DB()
 	if err != nil {
 		panic(err.Error())
