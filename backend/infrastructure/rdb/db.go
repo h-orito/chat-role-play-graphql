@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -48,6 +49,19 @@ func NewDB() DB {
 	if err != nil {
 		panic(err.Error())
 	}
+
+	// wolf-db は全アプリで共有しており接続数上限も有限なため、プール上限を明示して
+	// DB への同時接続数を固定する (database/sql のデフォルトは MaxOpenConns 無制限)。全アプリの配分は #46 参照。
+	// 注意: DoInTx 内の読み取りは tx と別接続を使うため 1 ミューテーションで最大 2 本必要になり、
+	// 同時ミューテーション数が MaxOpenConns に達すると相互待ちになる構造が残っている。
+	// 根本対処 (tx 内読み取りの GetTx(ctx) 化 / context timeout) は #47。
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic(err.Error())
+	}
+	sqlDB.SetMaxOpenConns(10)
+	sqlDB.SetMaxIdleConns(2)
+	sqlDB.SetConnMaxLifetime(30 * time.Minute)
 
 	return DB{
 		Connection: db,
