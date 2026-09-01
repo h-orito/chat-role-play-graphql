@@ -25,6 +25,12 @@ export default function CreateGame() {
 
           <hr />
 
+          <ReleaseContent label='機能拡張' date='2026/09/01'>
+            <li>
+              改善: 年齢制限が R18 / R18G のゲームでは広告を表示しないよう変更
+            </li>
+          </ReleaseContent>
+
           <ReleaseContent label='機能拡張' date='2026/05/14'>
             <li>
               改善:
