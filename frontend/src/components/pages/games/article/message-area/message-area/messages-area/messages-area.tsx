@@ -13,7 +13,7 @@ import GamePeriodLinks from './game-period-links'
 import { GoogleAdsense } from '@/components/adsense/google-adsense'
 import { useLazyQuery } from '@apollo/client'
 import { usePollingMessages } from '@/components/hooks/use-polling-messages'
-import { useGameValue } from '@/components/pages/games/game-hook'
+import { shouldShowAd, useGameValue } from '@/components/pages/games/game-hook'
 import { useTalkPanel } from '@/components/pages/games/talk/use-talk-panel'
 
 type Props = {
@@ -110,7 +110,7 @@ const MessagesArea = (props: Props) => {
           />
         ))}
         <div id={`${props.talkAreaId}-bottom-preview`}></div>
-        {isViewing && (
+        {isViewing && shouldShowAd(game) && (
           <div className='p-4'>
             <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
           </div>

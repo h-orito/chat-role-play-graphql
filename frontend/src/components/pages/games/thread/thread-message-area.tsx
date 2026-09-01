@@ -9,6 +9,7 @@ import {
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import MessageComponent from '../article/message-area/message-area/messages-area/message/message'
 import {
+  shouldShowAd,
   talkableGameStatuses,
   useGameValue,
   useMyselfValue
@@ -118,6 +119,7 @@ const ThreadMessagesArea = ({
   messages,
   handleReply
 }: ThreadMessagesAreaProps) => {
+  const game = useGameValue()
   return (
     <div className='relative flex-1'>
       <div id='talk-area-top'></div>
@@ -131,9 +133,11 @@ const ThreadMessagesArea = ({
         />
       ))}
       <div id='talk-area-bottom-preview'></div>
-      <div className='p-4'>
-        <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
-      </div>
+      {shouldShowAd(game) && (
+        <div className='p-4'>
+          <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
+        </div>
+      )}
       <div id='talk-area-bottom'></div>
     </div>
   )

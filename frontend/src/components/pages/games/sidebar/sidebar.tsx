@@ -28,6 +28,7 @@ import { GameIntroButton } from './game-intro-modal'
 import { DebugMenu } from './debug-menu'
 import {
   canModifyGameSetting,
+  shouldShowAd,
   useGameValue,
   useMyPlayerValue,
   useMyselfValue,
@@ -76,7 +77,7 @@ export default function Sidebar() {
         <div className='base-border border-t py-2'>
           <TopPageButton />
         </div>
-        {isSidebarOpen && (
+        {isSidebarOpen && shouldShowAd(game) && (
           <div className='my-4'>
             <GoogleAdsense slot='1577139382' format='auto' responsive='true' />
           </div>

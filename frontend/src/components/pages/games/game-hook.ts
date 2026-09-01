@@ -104,6 +104,13 @@ const isAdmin = (myPlayer: Player | null) => {
   return myPlayer && myPlayer.authorityCodes.includes('AuthorityAdmin')
 }
 
+// 広告を表示しない年齢制限ラベル
+const adRestrictedRatings = ['R18', 'R18G']
+// 広告を表示可能か
+export const shouldShowAd = (game: Game) => {
+  return !game.labels.some((l) => adRestrictedRatings.includes(l.name))
+}
+
 // ゲーム更新チェック
 const periodChangeStatuses = [
   'Closed',
