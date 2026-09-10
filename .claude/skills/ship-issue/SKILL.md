@@ -67,7 +67,7 @@ git checkout -b <type>/<番号>-<slug>
 - 同パターンが他にないか必ず grep して **面で修正**（PR #24/#26 教訓）
 - 設定変更は dead config を疑い、grep で利用箇所を確認（PR #21 教訓）
 - `frontend/src/lib/generated/` / `backend/middleware/graph/` は触らない。schema 変更がある場合は codegen で再生成
-- backend の `Find*` メソッドは TX 外接続。同一 TX 内 read-modify-write が必要なら専用 Update メソッドを新設（PR #33 教訓）
+- backend のリポジトリメソッドは全て `ctx` を受け取り、読み取りは `repo.db.Conn(ctx)`（ctx に tx があれば tx、なければベース接続）を使う（#47）。`DoInTx` 内の `Find*` は tx 上で実行され未コミットの書き込みが見える。書き込みは従来どおり `GetTx(ctx)` 必須（例外: `UserRepository.Signup` は認証ミドルウェアから tx 外で呼ばれるため `Conn(ctx)` 経由・非アトミック）
 - GORM の `tx.Update(...)` 系を新設する場合は `RowsAffected == 0` チェックを忘れない
 
 ### GraphQL schema 変更を含む場合

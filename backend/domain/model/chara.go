@@ -1,5 +1,7 @@
 package model
 
+import "context"
+
 type Designer struct {
 	ID   uint32
 	Name string
@@ -67,14 +69,14 @@ type CharaImageQuery struct {
 
 type CharaRepository interface {
 	// designer
-	FindDesigners(query DesignerQuery) (designers []Designer, err error)
-	FindDesigner(ID uint32) (designer *Designer, err error)
+	FindDesigners(ctx context.Context, query DesignerQuery) (designers []Designer, err error)
+	FindDesigner(ctx context.Context, ID uint32) (designer *Designer, err error)
 	// charachip
-	FindCharachips(query CharachipQuery) (charachips []Charachip, err error)
-	FindCharachip(ID uint32) (charachip *Charachip, err error)
+	FindCharachips(ctx context.Context, query CharachipQuery) (charachips []Charachip, err error)
+	FindCharachip(ctx context.Context, ID uint32) (charachip *Charachip, err error)
 	// chara
-	FindCharas(query CharaQuery) (charas []Chara, err error)
-	FindChara(ID uint32) (chara *Chara, err error)
+	FindCharas(ctx context.Context, query CharaQuery) (charas []Chara, err error)
+	FindChara(ctx context.Context, ID uint32) (chara *Chara, err error)
 	// chara image
-	FindCharaImages(query CharaImageQuery) (images []CharaImage, err error)
+	FindCharaImages(ctx context.Context, query CharaImageQuery) (images []CharaImage, err error)
 }

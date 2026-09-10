@@ -34,7 +34,7 @@ func (r *queryResolver) designers(ctx context.Context, query gqlmodel.DesignersQ
 			Latest:     query.Paging.IsLatest,
 		}
 	}
-	designers, err := r.charaUsecase.FindDesigners(model.DesignerQuery{
+	designers, err := r.charaUsecase.FindDesigners(ctx, model.DesignerQuery{
 		IDs:    ids,
 		Name:   query.Name,
 		Paging: pq,
@@ -52,7 +52,7 @@ func (r *queryResolver) designer(ctx context.Context, id string) (*gqlmodel.Desi
 	if err != nil {
 		return nil, err
 	}
-	d, err := r.charaUsecase.FindDesigner(uint32id)
+	d, err := r.charaUsecase.FindDesigner(ctx, uint32id)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (r *queryResolver) charachips(ctx context.Context, query gqlmodel.Charachip
 			Latest:     query.Paging.IsLatest,
 		}
 	}
-	charachips, err := r.charaUsecase.FindCharachips(model.CharachipQuery{
+	charachips, err := r.charaUsecase.FindCharachips(ctx, model.CharachipQuery{
 		IDs:    ids,
 		Name:   query.Name,
 		Paging: pq,
@@ -102,7 +102,7 @@ func (r *queryResolver) charachip(ctx context.Context, id string) (*gqlmodel.Cha
 	if err != nil {
 		return nil, err
 	}
-	charachip, err := r.charaUsecase.FindCharachip(intid)
+	charachip, err := r.charaUsecase.FindCharachip(ctx, intid)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (r *queryResolver) chara(ctx context.Context, id string) (*gqlmodel.Chara, 
 	if err != nil {
 		return nil, err
 	}
-	chara, err := r.charaUsecase.FindChara(intid)
+	chara, err := r.charaUsecase.FindChara(ctx, intid)
 	if err != nil {
 		return nil, err
 	}

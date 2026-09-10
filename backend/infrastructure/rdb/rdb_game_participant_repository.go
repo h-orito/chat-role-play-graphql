@@ -22,12 +22,12 @@ func NewGameParticipantRepository(db *DB) model.GameParticipantRepository {
 	}
 }
 
-func (repo *GameParticipantRepository) FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error) {
-	return findGameParticipants(repo.db.Connection, query)
+func (repo *GameParticipantRepository) FindGameParticipants(ctx context.Context, query model.GameParticipantsQuery) (participants model.GameParticipants, err error) {
+	return findGameParticipants(repo.db.Conn(ctx), query)
 }
 
-func (repo *GameParticipantRepository) FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error) {
-	return findGameParticipant(repo.db.Connection, query)
+func (repo *GameParticipantRepository) FindGameParticipant(ctx context.Context, query model.GameParticipantQuery) (participant *model.GameParticipant, err error) {
+	return findGameParticipant(repo.db.Conn(ctx), query)
 }
 
 func (*GameParticipantRepository) RegisterGameParticipant(ctx context.Context, gameID uint32, participant model.GameParticipant) (saved *model.GameParticipant, err error) {
@@ -80,8 +80,8 @@ func (*GameParticipantRepository) DeleteGameParticipant(ctx context.Context, ID 
 	return nil
 }
 
-func (repo *GameParticipantRepository) FindGameParticipantProfile(gameParticipantID uint32) (profile *model.GameParticipantProfile, err error) {
-	return findGameParticipantProfile(repo.db.Connection, gameParticipantID)
+func (repo *GameParticipantRepository) FindGameParticipantProfile(ctx context.Context, gameParticipantID uint32) (profile *model.GameParticipantProfile, err error) {
+	return findGameParticipantProfile(repo.db.Conn(ctx), gameParticipantID)
 }
 
 func (*GameParticipantRepository) UpdateGameParticipantProfile(ctx context.Context, ID uint32, profile model.GameParticipantProfile) (err error) {
@@ -112,8 +112,8 @@ func (*GameParticipantRepository) UpdateGameParticipantProfileIconID(ctx context
 	return nil
 }
 
-func (repo *GameParticipantRepository) FindGameParticipantIcons(query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {
-	return findGameParticipantIcons(repo.db.Connection, query)
+func (repo *GameParticipantRepository) FindGameParticipantIcons(ctx context.Context, query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {
+	return findGameParticipantIcons(repo.db.Conn(ctx), query)
 }
 
 func (*GameParticipantRepository) RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error) {
@@ -140,12 +140,12 @@ func (*GameParticipantRepository) DeleteGameParticipantIcon(ctx context.Context,
 	return deleteGameParticipantIcon(tx, iconID)
 }
 
-func (repo *GameParticipantRepository) FindGameParticipantNotificationSettings(gameParticipantIDs []uint32) (settings []model.GameParticipantNotification, err error) {
-	return findGameParticipantNotifications(repo.db.Connection, gameParticipantIDs)
+func (repo *GameParticipantRepository) FindGameParticipantNotificationSettings(ctx context.Context, gameParticipantIDs []uint32) (settings []model.GameParticipantNotification, err error) {
+	return findGameParticipantNotifications(repo.db.Conn(ctx), gameParticipantIDs)
 }
 
-func (repo *GameParticipantRepository) FindGameParticipantNotificationSetting(gameParticipantID uint32) (setting *model.GameParticipantNotification, err error) {
-	return findGameParticipantNotification(repo.db.Connection, gameParticipantID)
+func (repo *GameParticipantRepository) FindGameParticipantNotificationSetting(ctx context.Context, gameParticipantID uint32) (setting *model.GameParticipantNotification, err error) {
+	return findGameParticipantNotification(repo.db.Conn(ctx), gameParticipantID)
 }
 
 func (*GameParticipantRepository) UpdateGameParticipantNotificationSetting(ctx context.Context, ID uint32, setting model.GameParticipantNotification) (err error) {
@@ -159,12 +159,12 @@ func (*GameParticipantRepository) UpdateGameParticipantNotificationSetting(ctx c
 	return nil
 }
 
-func (repo *GameParticipantRepository) FindGameParticipantFollows(gameParticipantID uint32) (follows []model.GameParticipantFollow, err error) {
-	return findGameParticipantFollows(repo.db.Connection, gameParticipantID)
+func (repo *GameParticipantRepository) FindGameParticipantFollows(ctx context.Context, gameParticipantID uint32) (follows []model.GameParticipantFollow, err error) {
+	return findGameParticipantFollows(repo.db.Conn(ctx), gameParticipantID)
 }
 
-func (repo *GameParticipantRepository) FindGameParticipantFollowers(gameParticipantID uint32) (followers []model.GameParticipantFollow, err error) {
-	return findGameParticipantFollowers(repo.db.Connection, gameParticipantID)
+func (repo *GameParticipantRepository) FindGameParticipantFollowers(ctx context.Context, gameParticipantID uint32) (followers []model.GameParticipantFollow, err error) {
+	return findGameParticipantFollowers(repo.db.Conn(ctx), gameParticipantID)
 }
 
 func (*GameParticipantRepository) RegisterGameParticipantFollow(ctx context.Context, myGameParticipantID uint32, targetGameParticipantID uint32) (err error) {
@@ -201,12 +201,12 @@ func (*GameParticipantRepository) DeleteGameParticipantFollow(ctx context.Contex
 	return nil
 }
 
-func (repo *GameParticipantRepository) FindGameParticipantDiaries(query model.GameParticipantDiariesQuery) (diaries []model.GameParticipantDiary, err error) {
-	return findGameParticipantDiaries(repo.db.Connection, query)
+func (repo *GameParticipantRepository) FindGameParticipantDiaries(ctx context.Context, query model.GameParticipantDiariesQuery) (diaries []model.GameParticipantDiary, err error) {
+	return findGameParticipantDiaries(repo.db.Conn(ctx), query)
 }
 
-func (repo *GameParticipantRepository) FindGameParticipantDiary(ID uint32) (diary *model.GameParticipantDiary, err error) {
-	return findGameParticipantDiary(repo.db.Connection, ID)
+func (repo *GameParticipantRepository) FindGameParticipantDiary(ctx context.Context, ID uint32) (diary *model.GameParticipantDiary, err error) {
+	return findGameParticipantDiary(repo.db.Conn(ctx), ID)
 }
 
 func (*GameParticipantRepository) UpsertGameParticipantDiary(ctx context.Context, gameID uint32, diary model.GameParticipantDiary) (saved *model.GameParticipantDiary, err error) {

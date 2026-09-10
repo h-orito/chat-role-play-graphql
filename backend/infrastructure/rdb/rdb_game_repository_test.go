@@ -15,7 +15,7 @@ func newGameRepository() model.GameRepository {
 
 func TestFindGames(t *testing.T) {
 	repo := newGameRepository()
-	got, err := repo.FindGames(model.GamesQuery{
+	got, err := repo.FindGames(context.Background(), model.GamesQuery{
 		Paging: &model.PagingQuery{
 			PageSize:   10,
 			PageNumber: 1,
@@ -33,7 +33,7 @@ func TestFindGames(t *testing.T) {
 
 func TestFindGame(t *testing.T) {
 	repo := newGameRepository()
-	got, err := repo.FindGame(1)
+	got, err := repo.FindGame(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find game: %s", err)
 	}

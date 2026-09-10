@@ -16,7 +16,7 @@ func newGameParticipantRepository() model.GameParticipantRepository {
 func TestFindGameParticipants(t *testing.T) {
 	repo := newGameParticipantRepository()
 	var gameID uint32 = 1
-	got, err := repo.FindGameParticipants(model.GameParticipantsQuery{
+	got, err := repo.FindGameParticipants(context.Background(), model.GameParticipantsQuery{
 		GameID: &gameID,
 	})
 	if err != nil {
@@ -32,7 +32,7 @@ func TestFindGameParticipant(t *testing.T) {
 	repo := newGameParticipantRepository()
 	var ID uint32 = 1
 	var gameID uint32 = 1
-	got, err := repo.FindGameParticipant(model.GameParticipantQuery{
+	got, err := repo.FindGameParticipant(context.Background(), model.GameParticipantQuery{
 		GameID: &gameID,
 		ID:     &ID,
 	})
@@ -81,7 +81,7 @@ func TestUpdateGameParticipant(t *testing.T) {
 
 func TestFindGameParticipantProfile(t *testing.T) {
 	repo := newGameParticipantRepository()
-	got, err := repo.FindGameParticipantProfile(1)
+	got, err := repo.FindGameParticipantProfile(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find participant profile: %s", err)
 	}
@@ -114,7 +114,7 @@ func TestUpdateGameParticipantProfile(t *testing.T) {
 
 func TestFindGameParticipantNotificationSetting(t *testing.T) {
 	repo := newGameParticipantRepository()
-	got, err := repo.FindGameParticipantNotificationSetting(1)
+	got, err := repo.FindGameParticipantNotificationSetting(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find participant notification settings: %s", err)
 	}
@@ -152,7 +152,7 @@ func TestUpdateGameParticipantNotificationSetting(t *testing.T) {
 
 func TestFindGameParticipantFollows(t *testing.T) {
 	repo := newGameParticipantRepository()
-	got, err := repo.FindGameParticipantFollows(1)
+	got, err := repo.FindGameParticipantFollows(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find participant follows: %s", err)
 	}
@@ -163,7 +163,7 @@ func TestFindGameParticipantFollows(t *testing.T) {
 
 func TestFindGameParticipantFollowers(t *testing.T) {
 	repo := newGameParticipantRepository()
-	got, err := repo.FindGameParticipantFollowers(1)
+	got, err := repo.FindGameParticipantFollowers(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find participant followers: %s", err)
 	}
@@ -201,7 +201,7 @@ func TestDeleteGameParticipantFollow(t *testing.T) {
 func TestFindGameParticipantDiaries(t *testing.T) {
 	repo := newGameParticipantRepository()
 	var gameParticipantID uint32 = 1
-	got, err := repo.FindGameParticipantDiaries(model.GameParticipantDiariesQuery{
+	got, err := repo.FindGameParticipantDiaries(context.Background(), model.GameParticipantDiariesQuery{
 		GameParticipantID: &gameParticipantID,
 	})
 	if err != nil {
@@ -214,7 +214,7 @@ func TestFindGameParticipantDiaries(t *testing.T) {
 
 func TestFindGameParticipantDiary(t *testing.T) {
 	repo := newGameParticipantRepository()
-	got, err := repo.FindGameParticipantDiary(1)
+	got, err := repo.FindGameParticipantDiary(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find participant diary: %s", err)
 	}

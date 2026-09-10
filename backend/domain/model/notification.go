@@ -1,5 +1,7 @@
 package model
 
+import "context"
+
 type NotificationRepository interface {
-	Notify(webookUrl string, gameID uint32, text string, shouldContainUrl bool) error
+	Notify(ctx context.Context, webookUrl string, gameID uint32, text string, shouldContainUrl bool) error
 }

@@ -5,6 +5,7 @@ import (
 	"chat-role-play/domain/model"
 	"chat-role-play/util/array"
 	"context"
+	"time"
 
 	"github.com/graph-gophers/dataloader"
 )
@@ -17,6 +18,17 @@ type Loaders struct {
 	CharachipLoader       *dataloader.Loader
 	CharaLoader           *dataloader.Loader
 	CharaImageLoader      *dataloader.Loader
+}
+
+// batchTimeout はバッチ 1 回の DB 読み取りの上限。main.go の requestTimeout と同じ値
+const batchTimeout = 30 * time.Second
+
+// batchContext はバッチ関数用の ctx を返す。
+// ローダーはプロセス全体で共有されるため、バッチ関数に渡る ctx は同じバッチ窓で最初に Load したリクエストのもの。
+// そのリクエストが既にキャンセル済み (クライアント切断や timeout) でも同じバッチに乗った他リクエスト分の
+// 読み取りを失敗させないよう、キャンセルを切り離してバッチ独自の timeout を付ける。
+func batchContext(ctx context.Context) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.WithoutCancel(ctx), batchTimeout)
 }
 
 func NewLoaders(
@@ -69,6 +81,8 @@ func NewCharaBatcher(charaUsecase usecase.CharaUsecase) *charaBatcher {
 }
 
 func (g *gameBatcher) batchLoadPeriod(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -80,7 +94,7 @@ func (g *gameBatcher) batchLoadPeriod(ctx context.Context, keys dataloader.Keys)
 	if err != nil {
 		return nil
 	}
-	periods, err := g.gameUsecase.FindGamePeriods(intids)
+	periods, err := g.gameUsecase.FindGamePeriods(ctx, intids)
 	if err != nil {
 		return nil
 	}
@@ -96,6 +110,8 @@ func (g *gameBatcher) batchLoadPeriod(ctx context.Context, keys dataloader.Keys)
 }
 
 func (g *gameBatcher) batchLoadParticipant(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -107,7 +123,7 @@ func (g *gameBatcher) batchLoadParticipant(ctx context.Context, keys dataloader.
 	if err != nil {
 		return nil
 	}
-	participants, err := g.gameUsecase.FindGameParticipants(model.GameParticipantsQuery{IDs: &intids})
+	participants, err := g.gameUsecase.FindGameParticipants(ctx, model.GameParticipantsQuery{IDs: &intids})
 	if err != nil {
 		return nil
 	}
@@ -123,6 +139,8 @@ func (g *gameBatcher) batchLoadParticipant(ctx context.Context, keys dataloader.
 }
 
 func (g *gameBatcher) batchLoadParticipantIcon(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -135,7 +153,7 @@ func (g *gameBatcher) batchLoadParticipantIcon(ctx context.Context, keys dataloa
 		return nil
 	}
 	isContainDeleted := true
-	icons, err := g.gameUsecase.FindGameParticipantIcons(model.GameParticipantIconsQuery{
+	icons, err := g.gameUsecase.FindGameParticipantIcons(ctx, model.GameParticipantIconsQuery{
 		IDs:              &intids,
 		IsContainDeleted: &isContainDeleted,
 	})
@@ -154,6 +172,8 @@ func (g *gameBatcher) batchLoadParticipantIcon(ctx context.Context, keys dataloa
 }
 
 func (p *playerBatcher) batchLoadPlayer(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -165,7 +185,7 @@ func (p *playerBatcher) batchLoadPlayer(ctx context.Context, keys dataloader.Key
 	if err != nil {
 		return nil
 	}
-	players, err := p.playerUsecase.FindPlayers(model.PlayersQuery{
+	players, err := p.playerUsecase.FindPlayers(ctx, model.PlayersQuery{
 		IDs: &intids,
 	})
 	if err != nil {
@@ -183,6 +203,8 @@ func (p *playerBatcher) batchLoadPlayer(ctx context.Context, keys dataloader.Key
 }
 
 func (p *charaBatcher) batchLoadCharachip(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -194,7 +216,7 @@ func (p *charaBatcher) batchLoadCharachip(ctx context.Context, keys dataloader.K
 	if err != nil {
 		return nil
 	}
-	charachips, err := p.charaUsecase.FindCharachips(model.CharachipQuery{
+	charachips, err := p.charaUsecase.FindCharachips(ctx, model.CharachipQuery{
 		IDs: &intids,
 	})
 	if err != nil {
@@ -212,6 +234,8 @@ func (p *charaBatcher) batchLoadCharachip(ctx context.Context, keys dataloader.K
 }
 
 func (p *charaBatcher) batchLoadChara(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -223,7 +247,7 @@ func (p *charaBatcher) batchLoadChara(ctx context.Context, keys dataloader.Keys)
 	if err != nil {
 		return nil
 	}
-	charas, err := p.charaUsecase.FindCharas(intids)
+	charas, err := p.charaUsecase.FindCharas(ctx, intids)
 	if err != nil {
 		return nil
 	}
@@ -239,6 +263,8 @@ func (p *charaBatcher) batchLoadChara(ctx context.Context, keys dataloader.Keys)
 }
 
 func (p *charaBatcher) batchLoadCharaImage(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -250,7 +276,7 @@ func (p *charaBatcher) batchLoadCharaImage(ctx context.Context, keys dataloader.
 	if err != nil {
 		return nil
 	}
-	charaImages, err := p.charaUsecase.FindCharaImages(model.CharaImageQuery{
+	charaImages, err := p.charaUsecase.FindCharaImages(ctx, model.CharaImageQuery{
 		IDs: &intids,
 	})
 	if err != nil {

@@ -270,7 +270,7 @@ func (r *queryResolver) gameParticipantIcons(ctx context.Context, participantID 
 		return nil, err
 	}
 	isContainDeleted := false
-	icons, err := r.gameUsecase.FindGameParticipantIcons(model.GameParticipantIconsQuery{
+	icons, err := r.gameUsecase.FindGameParticipantIcons(ctx, model.GameParticipantIconsQuery{
 		GameParticipantID: &pID,
 		IsContainDeleted:  &isContainDeleted,
 	})
@@ -532,7 +532,7 @@ func (r *queryResolver) games(ctx context.Context, query gqlmodel.GamesQuery) ([
 	if err != nil {
 		return nil, err
 	}
-	games, err := r.gameUsecase.FindGames(*q)
+	games, err := r.gameUsecase.FindGames(ctx, *q)
 	if err != nil {
 		return nil, err
 	}
@@ -546,7 +546,7 @@ func (r *queryResolver) game(ctx context.Context, id string) (*gqlmodel.Game, er
 	if err != nil {
 		return nil, err
 	}
-	return r.findGame(intid)
+	return r.findGame(ctx, intid)
 }
 
 func (r *queryResolver) myGameParticipant(ctx context.Context, gameID string) (*gqlmodel.GameParticipant, error) {
@@ -558,7 +558,7 @@ func (r *queryResolver) myGameParticipant(ctx context.Context, gameID string) (*
 	if user == nil {
 		return nil, nil
 	}
-	p, err := r.gameUsecase.FindMyGameParticipant(gameId, *user)
+	p, err := r.gameUsecase.FindMyGameParticipant(ctx, gameId, *user)
 	if err != nil {
 		return nil, err
 	}
@@ -574,7 +574,7 @@ func (r *gameParticipantResolver) followParticipantIds(ctx context.Context, obj 
 	if err != nil {
 		return nil, err
 	}
-	pts, err := r.gameUsecase.FindParticipantFollows(participantId)
+	pts, err := r.gameUsecase.FindParticipantFollows(ctx, participantId)
 	if err != nil {
 		return nil, err
 	}
@@ -589,7 +589,7 @@ func (r *gameParticipantResolver) followerParticipantIds(ctx context.Context, ob
 	if err != nil {
 		return nil, err
 	}
-	pts, err := r.gameUsecase.FindParticipantFollowers(participantId)
+	pts, err := r.gameUsecase.FindParticipantFollowers(ctx, participantId)
 	if err != nil {
 		return nil, err
 	}
@@ -603,7 +603,7 @@ func (r *queryResolver) gameParticipantProfile(ctx context.Context, participantI
 	if err != nil {
 		return nil, err
 	}
-	profile, participant, player, err := r.gameUsecase.FindParticipantProfile(participantId)
+	profile, participant, player, err := r.gameUsecase.FindParticipantProfile(ctx, participantId)
 	if err != nil {
 		return nil, err
 	}
@@ -615,7 +615,7 @@ func (r *queryResolver) gameParticipantFollows(ctx context.Context, participantI
 	if err != nil {
 		return nil, err
 	}
-	pts, err := r.gameUsecase.FindParticipantFollows(participantId)
+	pts, err := r.gameUsecase.FindParticipantFollows(ctx, participantId)
 	if err != nil {
 		return nil, err
 	}
@@ -627,7 +627,7 @@ func (r *queryResolver) gameParticipantFollowers(ctx context.Context, participan
 	if err != nil {
 		return nil, err
 	}
-	pts, err := r.gameUsecase.FindParticipantFollowers(participantId)
+	pts, err := r.gameUsecase.FindParticipantFollowers(ctx, participantId)
 	if err != nil {
 		return nil, err
 	}
@@ -643,7 +643,7 @@ func (r *queryResolver) gameParticipantSetting(ctx context.Context, gameID strin
 	if user == nil {
 		return nil, nil
 	}
-	ps, err := r.gameUsecase.FindParticipantSetting(gID, *user)
+	ps, err := r.gameUsecase.FindParticipantSetting(ctx, gID, *user)
 
 	return MapToGameParticipantSetting(*ps), nil
 }
@@ -653,7 +653,7 @@ func (r *queryResolver) gameDiaries(ctx context.Context, query gqlmodel.GameDiar
 	if err != nil {
 		return nil, err
 	}
-	diaries, err := r.gameUsecase.FindParticipantDiaries(*q)
+	diaries, err := r.gameUsecase.FindParticipantDiaries(ctx, *q)
 	if err != nil {
 		return nil, err
 	}
@@ -665,7 +665,7 @@ func (r *queryResolver) gameDiary(ctx context.Context, diaryID string) (*gqlmode
 	if err != nil {
 		return nil, err
 	}
-	diary, err := r.gameUsecase.FindParticipantDiary(dID)
+	diary, err := r.gameUsecase.FindParticipantDiary(ctx, dID)
 	if err != nil {
 		return nil, err
 	}
@@ -743,8 +743,8 @@ func (r *gameParticipantResolver) profileIcon(ctx context.Context, obj *gqlmodel
 
 // ----------------------------
 
-func (r *Resolver) findGame(id uint32) (*gqlmodel.Game, error) {
-	g, err := r.gameUsecase.FindGame(id)
+func (r *Resolver) findGame(ctx context.Context, id uint32) (*gqlmodel.Game, error) {
+	g, err := r.gameUsecase.FindGame(ctx, id)
 	if err != nil {
 		return nil, err
 	}

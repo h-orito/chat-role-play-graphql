@@ -11,9 +11,9 @@ import (
 
 type GameService interface {
 	// game
-	FindGames(query model.GamesQuery) (games []model.Game, err error)
-	FindGame(ID uint32) (game *model.Game, err error)
-	FindGamePeriods(IDs []uint32) (periods []model.GamePeriod, err error)
+	FindGames(ctx context.Context, query model.GamesQuery) (games []model.Game, err error)
+	FindGame(ctx context.Context, ID uint32) (game *model.Game, err error)
+	FindGamePeriods(ctx context.Context, IDs []uint32) (periods []model.GamePeriod, err error)
 	RegisterGame(ctx context.Context, game model.Game) (saved *model.Game, err error)
 	RegisterGameMaster(ctx context.Context, gameID uint32, playerID uint32, isProducer bool) (gameMaster *model.GameMaster, err error)
 	UpdateGameMaster(ctx context.Context, gameMaster model.GameMaster) (err error)
@@ -24,31 +24,31 @@ type GameService interface {
 	UpdateGameSettings(ctx context.Context, gameID uint32, gameName string, labels []model.GameLabel, settings model.GameSettings) (err error)
 	ChangePeriodIfNeeded(ctx context.Context, gameID uint32) (err error)
 	// game participant
-	FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
-	FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error)
+	FindGameParticipants(ctx context.Context, query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
+	FindGameParticipant(ctx context.Context, query model.GameParticipantQuery) (participant *model.GameParticipant, err error)
 	Participate(ctx context.Context, gameID uint32, participant model.GameParticipant) (saved *model.GameParticipant, err error)
 	Leave(ctx context.Context, participantID uint32) (err error)
 	UpdateParticipant(ctx context.Context, participantID uint32, name string, memo *string, iconId *uint32) (err error)
 	// game participant profile
-	FindGameParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, err error)
+	FindGameParticipantProfile(ctx context.Context, participantID uint32) (profile *model.GameParticipantProfile, err error)
 	UpdateGameParticipantProfile(ctx context.Context, participantID uint32, profile model.GameParticipantProfile) (err error)
 	UpdateGameParticipantProfileIconID(ctx context.Context, participantID uint32, profileIconID uint32) (err error)
 	// game participant icon
-	FindGameParticipantIcons(query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error)
+	FindGameParticipantIcons(ctx context.Context, query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error)
 	RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error)
 	UpdateGameParticipantIcon(ctx context.Context, icon model.GameParticipantIcon) (err error)
 	DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error)
 	// participant notification
-	FindGameParticipantNotificationSetting(ID uint32) (notification *model.GameParticipantNotification, err error)
+	FindGameParticipantNotificationSetting(ctx context.Context, ID uint32) (notification *model.GameParticipantNotification, err error)
 	UpdateGameParticipantNotificationSetting(ctx context.Context, participantID uint32, notification model.GameParticipantNotification) (err error)
 	// participant follow
-	FindGameParticipantFollows(participantID uint32) (follows []model.GameParticipant, err error)
-	FindGameParticipantFollowers(participantID uint32) (follows []model.GameParticipant, err error)
+	FindGameParticipantFollows(ctx context.Context, participantID uint32) (follows []model.GameParticipant, err error)
+	FindGameParticipantFollowers(ctx context.Context, participantID uint32) (follows []model.GameParticipant, err error)
 	FollowGameParticipant(ctx context.Context, participantID uint32, targetParticipantID uint32) (err error)
 	UnfollowGameParticipant(ctx context.Context, participantID uint32, targetParticipantID uint32) (err error)
 	// participant diary
-	FindGameParticipantDiaries(query model.GameParticipantDiariesQuery) (diaries []model.GameParticipantDiary, err error)
-	FindGameParticipantDiary(ID uint32) (diary *model.GameParticipantDiary, err error)
+	FindGameParticipantDiaries(ctx context.Context, query model.GameParticipantDiariesQuery) (diaries []model.GameParticipantDiary, err error)
+	FindGameParticipantDiary(ctx context.Context, ID uint32) (diary *model.GameParticipantDiary, err error)
 	UpsertGameParticipantDiary(ctx context.Context, gameID uint32, diary model.GameParticipantDiary) (saved *model.GameParticipantDiary, err error)
 }
 
@@ -70,16 +70,16 @@ func NewGameService(
 	}
 }
 
-func (g *gameService) FindGames(query model.GamesQuery) (games []model.Game, err error) {
-	return g.gameRepository.FindGames(query)
+func (g *gameService) FindGames(ctx context.Context, query model.GamesQuery) (games []model.Game, err error) {
+	return g.gameRepository.FindGames(ctx, query)
 }
 
-func (g *gameService) FindGame(ID uint32) (game *model.Game, err error) {
-	return g.gameRepository.FindGame(ID)
+func (g *gameService) FindGame(ctx context.Context, ID uint32) (game *model.Game, err error) {
+	return g.gameRepository.FindGame(ctx, ID)
 }
 
-func (g *gameService) FindGamePeriods(IDs []uint32) (periods []model.GamePeriod, err error) {
-	return g.gameRepository.FindGamePeriods(IDs)
+func (g *gameService) FindGamePeriods(ctx context.Context, IDs []uint32) (periods []model.GamePeriod, err error) {
+	return g.gameRepository.FindGamePeriods(ctx, IDs)
 }
 
 func (g *gameService) RegisterGame(ctx context.Context, game model.Game) (saved *model.Game, err error) {
@@ -129,7 +129,7 @@ func (g *gameService) UpdateGameSettings(
 }
 
 func (g *gameService) ChangePeriodIfNeeded(ctx context.Context, gameID uint32) (err error) {
-	game, err := g.gameRepository.FindGame(gameID)
+	game, err := g.gameRepository.FindGame(ctx, gameID)
 	if err != nil {
 		return err
 	}
@@ -192,7 +192,7 @@ func (g *gameService) startGame(ctx context.Context, game model.Game) error {
 		return err
 	}
 	// 開始通知
-	g.notifyService.NotifyGameStart(game)
+	g.notifyService.NotifyGameStart(ctx, game)
 
 	return nil
 }
@@ -221,11 +221,11 @@ func (g *gameService) epilogueGame(ctx context.Context, game model.Game) error {
 	return nil
 }
 
-func (g *gameService) FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error) {
-	return g.gameParticipantRepository.FindGameParticipants(query)
+func (g *gameService) FindGameParticipants(ctx context.Context, query model.GameParticipantsQuery) (participants model.GameParticipants, err error) {
+	return g.gameParticipantRepository.FindGameParticipants(ctx, query)
 }
-func (g *gameService) FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error) {
-	return g.gameParticipantRepository.FindGameParticipant(query)
+func (g *gameService) FindGameParticipant(ctx context.Context, query model.GameParticipantQuery) (participant *model.GameParticipant, err error) {
+	return g.gameParticipantRepository.FindGameParticipant(ctx, query)
 }
 
 func (g *gameService) Participate(ctx context.Context, gameID uint32, participant model.GameParticipant) (saved *model.GameParticipant, err error) {
@@ -240,8 +240,8 @@ func (g *gameService) UpdateParticipant(ctx context.Context, participantID uint3
 	return g.gameParticipantRepository.UpdateGameParticipant(ctx, participantID, name, memo, iconId)
 }
 
-func (g *gameService) FindGameParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, err error) {
-	return g.gameParticipantRepository.FindGameParticipantProfile(participantID)
+func (g *gameService) FindGameParticipantProfile(ctx context.Context, participantID uint32) (profile *model.GameParticipantProfile, err error) {
+	return g.gameParticipantRepository.FindGameParticipantProfile(ctx, participantID)
 }
 
 func (g *gameService) UpdateGameParticipantProfile(ctx context.Context, participantID uint32, profile model.GameParticipantProfile) (err error) {
@@ -252,8 +252,8 @@ func (g *gameService) UpdateGameParticipantProfileIconID(ctx context.Context, pa
 	return g.gameParticipantRepository.UpdateGameParticipantProfileIconID(ctx, participantID, profileIconID)
 }
 
-func (g *gameService) FindGameParticipantIcons(query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {
-	return g.gameParticipantRepository.FindGameParticipantIcons(query)
+func (g *gameService) FindGameParticipantIcons(ctx context.Context, query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {
+	return g.gameParticipantRepository.FindGameParticipantIcons(ctx, query)
 }
 
 func (g *gameService) RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error) {
@@ -268,16 +268,16 @@ func (g *gameService) DeleteGameParticipantIcon(ctx context.Context, iconID uint
 	return g.gameParticipantRepository.DeleteGameParticipantIcon(ctx, iconID)
 }
 
-func (g *gameService) FindGameParticipantNotificationSetting(ID uint32) (notification *model.GameParticipantNotification, err error) {
-	return g.gameParticipantRepository.FindGameParticipantNotificationSetting(ID)
+func (g *gameService) FindGameParticipantNotificationSetting(ctx context.Context, ID uint32) (notification *model.GameParticipantNotification, err error) {
+	return g.gameParticipantRepository.FindGameParticipantNotificationSetting(ctx, ID)
 }
 
 func (g *gameService) UpdateGameParticipantNotificationSetting(ctx context.Context, participantID uint32, notification model.GameParticipantNotification) (err error) {
 	return g.gameParticipantRepository.UpdateGameParticipantNotificationSetting(ctx, participantID, notification)
 }
 
-func (g *gameService) FindGameParticipantFollows(participantID uint32) (follows []model.GameParticipant, err error) {
-	fs, err := g.gameParticipantRepository.FindGameParticipantFollows(participantID)
+func (g *gameService) FindGameParticipantFollows(ctx context.Context, participantID uint32) (follows []model.GameParticipant, err error) {
+	fs, err := g.gameParticipantRepository.FindGameParticipantFollows(ctx, participantID)
 	if err != nil {
 		return nil, err
 	}
@@ -287,7 +287,7 @@ func (g *gameService) FindGameParticipantFollows(participantID uint32) (follows 
 	if (len(ids)) == 0 {
 		return []model.GameParticipant{}, nil
 	}
-	pts, err := g.gameParticipantRepository.FindGameParticipants(model.GameParticipantsQuery{
+	pts, err := g.gameParticipantRepository.FindGameParticipants(ctx, model.GameParticipantsQuery{
 		IDs: &ids,
 	})
 	if err != nil {
@@ -296,8 +296,8 @@ func (g *gameService) FindGameParticipantFollows(participantID uint32) (follows 
 	return pts.List, nil
 }
 
-func (g *gameService) FindGameParticipantFollowers(participantID uint32) (follows []model.GameParticipant, err error) {
-	fs, err := g.gameParticipantRepository.FindGameParticipantFollowers(participantID)
+func (g *gameService) FindGameParticipantFollowers(ctx context.Context, participantID uint32) (follows []model.GameParticipant, err error) {
+	fs, err := g.gameParticipantRepository.FindGameParticipantFollowers(ctx, participantID)
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +307,7 @@ func (g *gameService) FindGameParticipantFollowers(participantID uint32) (follow
 	if (len(ids)) == 0 {
 		return []model.GameParticipant{}, nil
 	}
-	pts, err := g.gameParticipantRepository.FindGameParticipants(model.GameParticipantsQuery{
+	pts, err := g.gameParticipantRepository.FindGameParticipants(ctx, model.GameParticipantsQuery{
 		IDs: &ids,
 	})
 	if err != nil {
@@ -324,12 +324,12 @@ func (g *gameService) UnfollowGameParticipant(ctx context.Context, participantID
 	return g.gameParticipantRepository.DeleteGameParticipantFollow(ctx, participantID, targetParticipantID)
 }
 
-func (g *gameService) FindGameParticipantDiaries(query model.GameParticipantDiariesQuery) (diaries []model.GameParticipantDiary, err error) {
-	return g.gameParticipantRepository.FindGameParticipantDiaries(query)
+func (g *gameService) FindGameParticipantDiaries(ctx context.Context, query model.GameParticipantDiariesQuery) (diaries []model.GameParticipantDiary, err error) {
+	return g.gameParticipantRepository.FindGameParticipantDiaries(ctx, query)
 }
 
-func (g *gameService) FindGameParticipantDiary(ID uint32) (diary *model.GameParticipantDiary, err error) {
-	return g.gameParticipantRepository.FindGameParticipantDiary(ID)
+func (g *gameService) FindGameParticipantDiary(ctx context.Context, ID uint32) (diary *model.GameParticipantDiary, err error) {
+	return g.gameParticipantRepository.FindGameParticipantDiary(ctx, ID)
 }
 
 func (g *gameService) UpsertGameParticipantDiary(ctx context.Context, gameID uint32, diary model.GameParticipantDiary) (saved *model.GameParticipantDiary, err error) {

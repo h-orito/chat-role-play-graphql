@@ -20,16 +20,16 @@ func NewPlayerRepository(db *DB) model.PlayerRepository {
 	}
 }
 
-func (repo *PlayerRepository) FindPlayers(query model.PlayersQuery) ([]model.Player, error) {
-	return repo.findPlayers(repo.db.Connection, query)
+func (repo *PlayerRepository) FindPlayers(ctx context.Context, query model.PlayersQuery) ([]model.Player, error) {
+	return repo.findPlayers(repo.db.Conn(ctx), query)
 }
 
-func (repo *PlayerRepository) Find(ID uint32) (_ *model.Player, err error) {
-	return repo.findPlayer(repo.db.Connection, ID)
+func (repo *PlayerRepository) Find(ctx context.Context, ID uint32) (_ *model.Player, err error) {
+	return repo.findPlayer(repo.db.Conn(ctx), ID)
 }
 
-func (repo *PlayerRepository) FindByName(name string) (_ *model.Player, err error) {
-	rdbPlayer, err := repo.findRdbPlayerByName(repo.db.Connection, name)
+func (repo *PlayerRepository) FindByName(ctx context.Context, name string) (_ *model.Player, err error) {
+	rdbPlayer, err := repo.findRdbPlayerByName(repo.db.Conn(ctx), name)
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +39,8 @@ func (repo *PlayerRepository) FindByName(name string) (_ *model.Player, err erro
 	return rdbPlayer.ToModel(), nil
 }
 
-func (repo *PlayerRepository) FindByUserName(username string) (_ *model.Player, err error) {
-	return repo.findByUserName(repo.db.Connection, username)
+func (repo *PlayerRepository) FindByUserName(ctx context.Context, username string) (_ *model.Player, err error) {
+	return repo.findByUserName(repo.db.Conn(ctx), username)
 }
 
 func (repo *PlayerRepository) Save(ctx context.Context, p *model.Player) (_ *model.Player, err error) {
@@ -64,8 +64,8 @@ func (repo *PlayerRepository) Save(ctx context.Context, p *model.Player) (_ *mod
 	return repo.findPlayer(tx, rdbPlayer.ID)
 }
 
-func (repo *PlayerRepository) FindProfile(ID uint32) (profile *model.PlayerProfile, err error) {
-	return repo.findProfile(repo.db.Connection, ID)
+func (repo *PlayerRepository) FindProfile(ctx context.Context, ID uint32) (profile *model.PlayerProfile, err error) {
+	return repo.findProfile(repo.db.Conn(ctx), ID)
 }
 
 func (repo *PlayerRepository) SaveProfile(ctx context.Context, name string, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error) {
@@ -242,7 +242,7 @@ func (repo *PlayerRepository) findRdbPlayerByName(db *gorm.DB, name string) (_ *
 
 func (repo *PlayerRepository) findByUserName(db *gorm.DB, username string) (_ *model.Player, err error) {
 	var rdbPlayerAccount PlayerAccount
-	result := repo.db.Connection.
+	result := db.
 		Model(&PlayerAccount{}).
 		Where("user_name = ?", username).
 		First(&rdbPlayerAccount)

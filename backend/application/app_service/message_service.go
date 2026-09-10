@@ -7,24 +7,24 @@ import (
 )
 
 type MessageService interface {
-	FindMessages(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (model.Messages, error)
-	FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error)
-	FindMessage(gameID uint32, ID uint64) (*model.Message, error)
-	FindMessageReplies(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error)
-	FindThreadMessages(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error)
-	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error)
+	FindMessages(ctx context.Context, gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (model.Messages, error)
+	FindMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error)
+	FindMessage(ctx context.Context, gameID uint32, ID uint64) (*model.Message, error)
+	FindMessageReplies(ctx context.Context, gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error)
+	FindThreadMessages(ctx context.Context, gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error)
+	FindMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, messageID uint64) (model.GameParticipants, error)
 	RegisterMessage(ctx context.Context, game model.Game, message model.Message) error
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error
 	DeleteMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error
 	// participant group
-	FindGameParticipantGroups(query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error)
+	FindGameParticipantGroups(ctx context.Context, query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error)
 	RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error)
 	UpdateGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) error
 	// direct message
-	FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error)
-	FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error)
-	FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error)
-	FindDirectMessageFavoriteGameParticipants(gameID uint32, directMessageID uint64) (model.GameParticipants, error)
+	FindDirectMessages(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error)
+	FindDirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (uint64, error)
+	FindDirectMessage(ctx context.Context, gameID uint32, ID uint64) (*model.DirectMessage, error)
+	FindDirectMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, directMessageID uint64) (model.GameParticipants, error)
 	RegisterDirectMessage(ctx context.Context, game model.Game, message model.DirectMessage) error
 	RegisterDirectMessageFavorite(ctx context.Context, gameID uint32, directMessageID uint64, gameParticipantID uint32) error
 	DeleteDirectMessageFavorite(ctx context.Context, gameID uint32, directMessageID uint64, gameParticipantID uint32) error
@@ -49,33 +49,33 @@ func NewMessageService(
 }
 
 // FindMessages implements MessageService.
-func (s *messageService) FindMessages(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (model.Messages, error) {
-	return s.messageRepository.FindMessages(gameID, query, myself)
+func (s *messageService) FindMessages(ctx context.Context, gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (model.Messages, error) {
+	return s.messageRepository.FindMessages(ctx, gameID, query, myself)
 }
 
 // FindMessagesLatestUnixTimeMilli implements MessageService.
-func (s *messageService) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error) {
-	return s.messageRepository.FindMessagesLatestUnixTimeMilli(gameID, query, myself)
+func (s *messageService) FindMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error) {
+	return s.messageRepository.FindMessagesLatestUnixTimeMilli(ctx, gameID, query, myself)
 }
 
 // FindMessage implements MessageService.
-func (s *messageService) FindMessage(gameID uint32, ID uint64) (*model.Message, error) {
-	return s.messageRepository.FindMessage(gameID, ID)
+func (s *messageService) FindMessage(ctx context.Context, gameID uint32, ID uint64) (*model.Message, error) {
+	return s.messageRepository.FindMessage(ctx, gameID, ID)
 }
 
 // FindMessageReplies implements MessageService.
-func (s *messageService) FindMessageReplies(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
-	return s.messageRepository.FindMessageReplies(gameID, messageID, myself)
+func (s *messageService) FindMessageReplies(ctx context.Context, gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
+	return s.messageRepository.FindMessageReplies(ctx, gameID, messageID, myself)
 }
 
 // FindThreadMessages implements MessageService.
-func (s *messageService) FindThreadMessages(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
-	return s.messageRepository.FindThreadMessages(gameID, messageID, myself)
+func (s *messageService) FindThreadMessages(ctx context.Context, gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
+	return s.messageRepository.FindThreadMessages(ctx, gameID, messageID, myself)
 }
 
 // FindMessageFavoriteGameParticipants implements MessageService.
-func (s *messageService) FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error) {
-	return s.messageRepository.FindMessageFavoriteGameParticipants(gameID, messageID)
+func (s *messageService) FindMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, messageID uint64) (model.GameParticipants, error) {
+	return s.messageRepository.FindMessageFavoriteGameParticipants(ctx, gameID, messageID)
 }
 
 // RegisterMessage implements MessageService.
@@ -89,7 +89,7 @@ func (s *messageService) RegisterMessage(ctx context.Context, game model.Game, m
 	if err != nil {
 		return err
 	}
-	return s.notifyService.NotifyMessage(game, message)
+	return s.notifyService.NotifyMessage(ctx, game, message)
 }
 
 // RegisterMessageFavorite implements MessageService.
@@ -103,8 +103,8 @@ func (s *messageService) DeleteMessageFavorite(ctx context.Context, gameID uint3
 }
 
 // FindGameParticipantGroups implements MessageService.
-func (s *messageService) FindGameParticipantGroups(query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error) {
-	return s.messageRepository.FindGameParticipantGroups(query)
+func (s *messageService) FindGameParticipantGroups(ctx context.Context, query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error) {
+	return s.messageRepository.FindGameParticipantGroups(ctx, query)
 }
 
 // RegisterGameParticipantGroup implements MessageService.
@@ -117,23 +117,23 @@ func (s *messageService) UpdateGameParticipantGroup(ctx context.Context, gameID 
 }
 
 // FindDirectMessages implements MessageService.
-func (s *messageService) FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
-	return s.messageRepository.FindDirectMessages(gameID, query)
+func (s *messageService) FindDirectMessages(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
+	return s.messageRepository.FindDirectMessages(ctx, gameID, query)
 }
 
 // FindDirectMessagesLatestUnixTimeMilli implements MessageService.
-func (s *messageService) FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
-	return s.messageRepository.FindDirectMessagesLatestUnixTimeMilli(gameID, query)
+func (s *messageService) FindDirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
+	return s.messageRepository.FindDirectMessagesLatestUnixTimeMilli(ctx, gameID, query)
 }
 
 // FindDirectMessage implements MessageService.
-func (s *messageService) FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error) {
-	return s.messageRepository.FindDirectMessage(gameID, ID)
+func (s *messageService) FindDirectMessage(ctx context.Context, gameID uint32, ID uint64) (*model.DirectMessage, error) {
+	return s.messageRepository.FindDirectMessage(ctx, gameID, ID)
 }
 
 // FindDirectMessageFavoriteGameParticipants implements MessageService.
-func (s *messageService) FindDirectMessageFavoriteGameParticipants(gameID uint32, directMessageID uint64) (model.GameParticipants, error) {
-	return s.messageRepository.FindDirectMessageFavoriteGameParticipants(gameID, directMessageID)
+func (s *messageService) FindDirectMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, directMessageID uint64) (model.GameParticipants, error) {
+	return s.messageRepository.FindDirectMessageFavoriteGameParticipants(ctx, gameID, directMessageID)
 }
 
 // RegisterDirectMessage implements MessageService.
@@ -147,7 +147,7 @@ func (s *messageService) RegisterDirectMessage(ctx context.Context, game model.G
 	if err != nil {
 		return err
 	}
-	return s.notifyService.NotifyDirectMessage(game, message)
+	return s.notifyService.NotifyDirectMessage(ctx, game, message)
 }
 
 // RegisterDirectMessageFavorite implements MessageService.

@@ -21,20 +21,20 @@ func NewMessageRepository(db *DB) *MessageRepository {
 	return &MessageRepository{db: db}
 }
 
-func (repo *MessageRepository) FindMessages(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (model.Messages, error) {
-	return findMessages(repo.db.Connection, gameID, query, myself)
+func (repo *MessageRepository) FindMessages(ctx context.Context, gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (model.Messages, error) {
+	return findMessages(repo.db.Conn(ctx), gameID, query, myself)
 }
 
-func (repo *MessageRepository) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error) {
-	return selectMaxMessageSendUnixTimeMilli(repo.db.Connection, gameID, query, myself)
+func (repo *MessageRepository) FindMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.MessagesQuery, myself *model.GameParticipant) (uint64, error) {
+	return selectMaxMessageSendUnixTimeMilli(repo.db.Conn(ctx), gameID, query, myself)
 }
 
-func (repo *MessageRepository) FindMessage(gameID uint32, ID uint64) (*model.Message, error) {
-	return findMessage(repo.db.Connection, gameID, ID)
+func (repo *MessageRepository) FindMessage(ctx context.Context, gameID uint32, ID uint64) (*model.Message, error) {
+	return findMessage(repo.db.Conn(ctx), gameID, ID)
 }
 
-func (repo *MessageRepository) FindMessageReplies(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
-	messages, err := findMessages(repo.db.Connection, gameID, model.MessagesQuery{
+func (repo *MessageRepository) FindMessageReplies(ctx context.Context, gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
+	messages, err := findMessages(repo.db.Conn(ctx), gameID, model.MessagesQuery{
 		ReplyToMessageID: &messageID,
 	}, myself)
 	if err != nil {
@@ -43,9 +43,9 @@ func (repo *MessageRepository) FindMessageReplies(gameID uint32, messageID uint6
 	return messages.List, nil
 }
 
-func (repo *MessageRepository) FindThreadMessages(gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
+func (repo *MessageRepository) FindThreadMessages(ctx context.Context, gameID uint32, messageID uint64, myself *model.GameParticipant) ([]model.Message, error) {
 	// スレッド対象のメッセージを取得
-	firstMessage, err := findMessage(repo.db.Connection, gameID, messageID)
+	firstMessage, err := findMessage(repo.db.Conn(ctx), gameID, messageID)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (repo *MessageRepository) FindThreadMessages(gameID uint32, messageID uint6
 		if message.ReplyTo == nil {
 			break
 		}
-		mes, err := findMessage(repo.db.Connection, gameID, message.ReplyTo.MessageID)
+		mes, err := findMessage(repo.db.Conn(ctx), gameID, message.ReplyTo.MessageID)
 		if err != nil {
 			return nil, err
 		}
@@ -71,7 +71,7 @@ func (repo *MessageRepository) FindThreadMessages(gameID uint32, messageID uint6
 		message = mes
 	}
 	// リプライ先を辿って追加する
-	return repo.findAllRepliesRecursively(repo.db.Connection, messages, gameID, *firstMessage, myself)
+	return repo.findAllRepliesRecursively(repo.db.Conn(ctx), messages, gameID, *firstMessage, myself)
 }
 
 func (repo *MessageRepository) findAllRepliesRecursively(
@@ -84,7 +84,7 @@ func (repo *MessageRepository) findAllRepliesRecursively(
 	if message.Reactions.ReplyCount == 0 {
 		return messages, nil
 	}
-	replies, err := findMessages(repo.db.Connection, gameID, model.MessagesQuery{
+	replies, err := findMessages(db, gameID, model.MessagesQuery{
 		ReplyToMessageID: &message.ID,
 	}, myself)
 	if err != nil {
@@ -102,11 +102,11 @@ func (repo *MessageRepository) findAllRepliesRecursively(
 	return messages, nil
 }
 
-func (repo *MessageRepository) FindMessageFavoriteGameParticipants(
+func (repo *MessageRepository) FindMessageFavoriteGameParticipants(ctx context.Context,
 	gameID uint32,
 	messageID uint64,
 ) (model.GameParticipants, error) {
-	return findMessageFavoriteGameParticipants(repo.db.Connection, gameID, messageID)
+	return findMessageFavoriteGameParticipants(repo.db.Conn(ctx), gameID, messageID)
 }
 
 func (repo *MessageRepository) RegisterMessage(ctx context.Context, gameID uint32, message model.Message) error {
@@ -133,8 +133,8 @@ func (repo *MessageRepository) DeleteMessageFavorite(ctx context.Context, gameID
 	return deleteMessageFavorite(tx, gameID, messageID, gameParticipantID)
 }
 
-func (repo *MessageRepository) FindGameParticipantGroups(query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error) {
-	return findGameParticipantGroups(repo.db.Connection, query)
+func (repo *MessageRepository) FindGameParticipantGroups(ctx context.Context, query model.GameParticipantGroupsQuery) ([]model.GameParticipantGroup, error) {
+	return findGameParticipantGroups(repo.db.Conn(ctx), query)
 }
 
 func (repo *MessageRepository) RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error) {
@@ -153,23 +153,23 @@ func (repo *MessageRepository) UpdateGameParticipantGroup(ctx context.Context, g
 	return updateGameParticipantGroup(tx, gameID, group)
 }
 
-func (repo *MessageRepository) FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
-	return findDirectMessages(repo.db.Connection, gameID, query)
+func (repo *MessageRepository) FindDirectMessages(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
+	return findDirectMessages(repo.db.Conn(ctx), gameID, query)
 }
 
-func (repo *MessageRepository) FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
-	return selectMaxDirectMessageSendUnixTimeMilli(repo.db.Connection, gameID, query)
+func (repo *MessageRepository) FindDirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
+	return selectMaxDirectMessageSendUnixTimeMilli(repo.db.Conn(ctx), gameID, query)
 }
 
-func (repo *MessageRepository) FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error) {
-	return findDirectMessage(repo.db.Connection, gameID, ID)
+func (repo *MessageRepository) FindDirectMessage(ctx context.Context, gameID uint32, ID uint64) (*model.DirectMessage, error) {
+	return findDirectMessage(repo.db.Conn(ctx), gameID, ID)
 }
 
-func (repo *MessageRepository) FindDirectMessageFavoriteGameParticipants(
+func (repo *MessageRepository) FindDirectMessageFavoriteGameParticipants(ctx context.Context,
 	gameID uint32,
 	directMessageID uint64,
 ) (model.GameParticipants, error) {
-	return findDirectMessageFavoriteGameParticipants(repo.db.Connection, gameID, directMessageID)
+	return findDirectMessageFavoriteGameParticipants(repo.db.Conn(ctx), gameID, directMessageID)
 }
 
 func (repo *MessageRepository) RegisterDirectMessage(ctx context.Context, gameID uint32, message model.DirectMessage) error {
