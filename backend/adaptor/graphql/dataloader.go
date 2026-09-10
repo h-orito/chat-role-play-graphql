@@ -5,6 +5,7 @@ import (
 	"chat-role-play/domain/model"
 	"chat-role-play/util/array"
 	"context"
+	"time"
 
 	"github.com/graph-gophers/dataloader"
 )
@@ -17,6 +18,13 @@ type Loaders struct {
 	CharachipLoader       *dataloader.Loader
 	CharaLoader           *dataloader.Loader
 	CharaImageLoader      *dataloader.Loader
+}
+
+// batchTimeout はバッチ 1 回の DB 読み取りの上限。main.go の requestTimeout と同じ値
+const batchTimeout = 30 * time.Second
+
+func batchContext(ctx context.Context) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.WithoutCancel(ctx), batchTimeout)
 }
 
 func NewLoaders(
@@ -69,6 +77,11 @@ func NewCharaBatcher(charaUsecase usecase.CharaUsecase) *charaBatcher {
 }
 
 func (g *gameBatcher) batchLoadPeriod(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
+	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
+	// キャンセルを切り離してバッチ独自の timeout を付ける
+	ctx, cancel := batchContext(ctx)
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -96,6 +109,11 @@ func (g *gameBatcher) batchLoadPeriod(ctx context.Context, keys dataloader.Keys)
 }
 
 func (g *gameBatcher) batchLoadParticipant(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
+	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
+	// キャンセルを切り離してバッチ独自の timeout を付ける
+	ctx, cancel := batchContext(ctx)
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -123,6 +141,11 @@ func (g *gameBatcher) batchLoadParticipant(ctx context.Context, keys dataloader.
 }
 
 func (g *gameBatcher) batchLoadParticipantIcon(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
+	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
+	// キャンセルを切り離してバッチ独自の timeout を付ける
+	ctx, cancel := batchContext(ctx)
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -154,6 +177,11 @@ func (g *gameBatcher) batchLoadParticipantIcon(ctx context.Context, keys dataloa
 }
 
 func (p *playerBatcher) batchLoadPlayer(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
+	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
+	// キャンセルを切り離してバッチ独自の timeout を付ける
+	ctx, cancel := batchContext(ctx)
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -183,6 +211,11 @@ func (p *playerBatcher) batchLoadPlayer(ctx context.Context, keys dataloader.Key
 }
 
 func (p *charaBatcher) batchLoadCharachip(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
+	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
+	// キャンセルを切り離してバッチ独自の timeout を付ける
+	ctx, cancel := batchContext(ctx)
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -212,6 +245,11 @@ func (p *charaBatcher) batchLoadCharachip(ctx context.Context, keys dataloader.K
 }
 
 func (p *charaBatcher) batchLoadChara(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
+	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
+	// キャンセルを切り離してバッチ独自の timeout を付ける
+	ctx, cancel := batchContext(ctx)
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())
@@ -239,6 +277,11 @@ func (p *charaBatcher) batchLoadChara(ctx context.Context, keys dataloader.Keys)
 }
 
 func (p *charaBatcher) batchLoadCharaImage(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
+	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
+	// キャンセルを切り離してバッチ独自の timeout を付ける
+	ctx, cancel := batchContext(ctx)
+	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
 		intid, e := idToUint32(ID.String())

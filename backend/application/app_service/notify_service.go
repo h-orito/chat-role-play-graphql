@@ -50,6 +50,7 @@ func (s *notifyService) NotifyGameStart(ctx context.Context, game model.Game) er
 		return ns.DiscordWebhookUrl != nil && ns.Game.Start
 	}), func(ns model.GameParticipantNotification) {
 		s.notificationRepository.Notify(
+			ctx,
 			*ns.DiscordWebhookUrl,
 			game.ID,
 			"ゲームが開始されました",
@@ -124,6 +125,7 @@ func (s *notifyService) notifySecret(
 		return []uint32{}, nil
 	}
 	s.notificationRepository.Notify(
+		ctx,
 		*setting.DiscordWebhookUrl,
 		game.ID,
 		fmt.Sprintf("%sから秘話が届きました。", message.Sender.SenderName),
@@ -160,6 +162,7 @@ func (s *notifyService) notifyMessageKeyword(
 			text = fmt.Sprintf("%sの%s", message.Sender.SenderName, text)
 		}
 		s.notificationRepository.Notify(
+			ctx,
 			*ns.DiscordWebhookUrl,
 			game.ID,
 			text,
@@ -197,6 +200,7 @@ func (s *notifyService) notifyDirectMessageKeyword(
 			group.Name,
 		)
 		s.notificationRepository.Notify(
+			ctx,
 			*ns.DiscordWebhookUrl,
 			game.ID,
 			text,
@@ -234,6 +238,7 @@ func (s *notifyService) notifyReply(
 		return nil
 	}
 	s.notificationRepository.Notify(
+		ctx,
 		*settings.DiscordWebhookUrl,
 		game.ID,
 		fmt.Sprintf("%sがあなたの発言に返信しました。", message.Sender.SenderName),
@@ -268,6 +273,7 @@ func (s *notifyService) notifyDirectMessage(
 		return ns.DiscordWebhookUrl != nil && ns.Message.DirectMessage
 	}), func(ns model.GameParticipantNotification) {
 		s.notificationRepository.Notify(
+			ctx,
 			*ns.DiscordWebhookUrl,
 			game.ID,
 			fmt.Sprintf("%sがDMグループ[%s]にDMを送信しました。",

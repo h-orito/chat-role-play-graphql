@@ -92,7 +92,7 @@ func NewTransaction(db *gorm.DB) usecase.Transaction {
 func (t *tx) DoInTx(ctx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error) {
 	var result interface{} = nil
 	var err error = nil
-	t.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	txErr := t.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		// contextにトランザクションを保存
 		ctx = context.WithValue(ctx, &txKey, tx)
 
@@ -103,6 +103,11 @@ func (t *tx) DoInTx(ctx context.Context, f func(ctx context.Context) (interface{
 		}
 		return nil // commit
 	})
+	// Begin (プール待ちの ctx timeout など) や Commit の失敗は f の err には入らないため、
+	// 取りこぼすと「何も実行されていない / ロールバック済み」なのに成功として返してしまう
+	if err == nil && txErr != nil {
+		return nil, txErr
+	}
 	return result, err
 }
 

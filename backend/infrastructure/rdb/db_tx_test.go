@@ -19,8 +19,9 @@ func TestConnSharesTxConnectionInsideDoInTx(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// NewTestDB はテストごとに独立したプールを開くので、後片付けは Close で行う
 	sqlDB.SetMaxOpenConns(1)
-	defer sqlDB.SetMaxOpenConns(0)
+	defer sqlDB.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -98,8 +99,9 @@ func TestSeparateConnectionInsideTxWaitsForPool(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// NewTestDB はテストごとに独立したプールを開くので、後片付けは Close で行う
 	sqlDB.SetMaxOpenConns(1)
-	defer sqlDB.SetMaxOpenConns(0)
+	defer sqlDB.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
@@ -112,5 +114,44 @@ func TestSeparateConnectionInsideTxWaitsForPool(t *testing.T) {
 	})
 	if !errors.Is(err, context.DeadlineExceeded) {
 		t.Fatalf("expected pool wait to be cut by context.DeadlineExceeded, got %v", err)
+	}
+}
+
+// Begin がプール待ちで ctx timeout になった場合、DoInTx はエラーを返すこと (成功扱いにしない)。
+func TestDoInTxReturnsErrorWhenBeginTimesOut(t *testing.T) {
+	database := NewTestDB()
+	sqlDB, err := database.Connection.DB()
+	if err != nil {
+		t.Fatal(err)
+	}
+	sqlDB.SetMaxOpenConns(1)
+	defer sqlDB.Close()
+
+	// 唯一の接続を別 goroutine が握ったままにする
+	holderCtx, releaseHolder := context.WithCancel(context.Background())
+	defer releaseHolder()
+	conn, err := sqlDB.Conn(holderCtx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+	defer cancel()
+
+	called := false
+	transaction := db.NewTransaction(database.Connection)
+	result, err := transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
+		called = true
+		return "should not run", nil
+	})
+	if called {
+		t.Fatal("f should not be called when Begin fails")
+	}
+	if result != nil {
+		t.Fatalf("expected nil result, got %v", result)
+	}
+	if !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("expected context.DeadlineExceeded from Begin, got %v", err)
 	}
 }

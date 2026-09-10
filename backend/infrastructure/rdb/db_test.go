@@ -4,6 +4,7 @@ import (
 	"chat-role-play/application/usecase"
 	db "chat-role-play/infrastructure/rdb"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"testing"
@@ -58,7 +59,7 @@ func (t *testTx) DoInTx(ctx context.Context, f func(ctx context.Context) (interf
 		}
 		return nil, errRollback // テストなので必ずロールバック
 	})
-	if txErr != nil && txErr != errRollback {
+	if txErr != nil && !errors.Is(txErr, errRollback) {
 		return result, txErr
 	}
 	return result, err
