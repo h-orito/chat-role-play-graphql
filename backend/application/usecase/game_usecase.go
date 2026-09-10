@@ -125,7 +125,7 @@ func (g *gameUsecase) RegisterGameMaster(
 		if err != nil {
 			return nil, err
 		}
-		if g == nil {
+		if game == nil {
 			return nil, fmt.Errorf("game not found")
 		}
 		player, err := g.playerService.FindByUserName(ctx, user.UserName)
@@ -162,7 +162,7 @@ func (g *gameUsecase) UpdateGameMaster(
 		if err != nil {
 			return nil, err
 		}
-		if g == nil {
+		if game == nil {
 			return nil, fmt.Errorf("game not found")
 		}
 		player, err := g.playerService.FindByUserName(ctx, user.UserName)
@@ -199,7 +199,7 @@ func (g *gameUsecase) DeleteGameMaster(
 		if err != nil {
 			return nil, err
 		}
-		if g == nil {
+		if game == nil {
 			return nil, fmt.Errorf("game not found")
 		}
 		player, err := g.playerService.FindByUserName(ctx, user.UserName)
@@ -235,7 +235,7 @@ func (g *gameUsecase) UpdateGameStatus(
 		if err != nil {
 			return nil, err
 		}
-		if g == nil {
+		if game == nil {
 			return nil, fmt.Errorf("game not found")
 		}
 		player, err := g.playerService.FindByUserName(ctx, user.UserName)
@@ -271,7 +271,7 @@ func (g *gameUsecase) UpdateGameSetting(
 		if err != nil {
 			return nil, err
 		}
-		if g == nil {
+		if game == nil {
 			return nil, fmt.Errorf("game not found")
 		}
 		player, err := g.playerService.FindByUserName(ctx, user.UserName)
@@ -305,7 +305,7 @@ func (g *gameUsecase) UpdateGamePeriod(
 		if err != nil {
 			return nil, err
 		}
-		if g == nil {
+		if game == nil {
 			return nil, fmt.Errorf("game not found")
 		}
 		player, err := g.playerService.FindByUserName(ctx, user.UserName)
@@ -341,7 +341,7 @@ func (g *gameUsecase) DeleteGamePeriod(
 		if err != nil {
 			return nil, err
 		}
-		if g == nil {
+		if game == nil {
 			return nil, fmt.Errorf("game not found")
 		}
 		player, err := g.playerService.FindByUserName(ctx, user.UserName)
