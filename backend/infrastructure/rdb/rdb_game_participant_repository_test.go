@@ -17,7 +17,7 @@ func TestFindGameParticipants(t *testing.T) {
 			t.Fatalf("failed to find game participants: %s", err)
 		}
 		if got.Count != 2 || len(got.List) != 2 {
-			t.Fatalf("got %d participants, want 2", len(got.List))
+			t.Fatalf("got count=%d list=%d participants, want 2", got.Count, len(got.List))
 		}
 		ids := map[uint32]bool{got.List[0].ID: true, got.List[1].ID: true}
 		if !ids[f.participant.ID] || !ids[f.participant2.ID] {

@@ -37,6 +37,8 @@ func TestFindGamesByStatus(t *testing.T) {
 	runInRollbackTx(t, func(ctx context.Context, database db.DB) {
 		f := newFixture(ctx, t, database)
 		repo := db.NewGameRepository(&database)
+		// Statuses フィルタの検証。他テストと違い DB 全体の Progress ゲームを対象にするため、
+		// fixture が含まれることと全件が Progress であることだけを見る
 		statuses := []model.GameStatus{model.GameStatusProgress}
 		got, err := repo.FindGames(ctx, model.GamesQuery{
 			Statuses: &statuses,
