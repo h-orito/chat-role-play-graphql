@@ -24,6 +24,17 @@ type DB struct {
 	Connection *gorm.DB
 }
 
+// Conn は ctx にトランザクションが保存されていればそれを、なければベース接続を返す。
+// 読み取り系リポジトリメソッドはこれを使うことで、DoInTx 内では tx の接続を共有し
+// (ミューテーション 1 件あたりプール接続 1 本で済む)、tx 外では通常の接続を使う。
+// どちらも ctx を引き継ぐため、リクエストの context timeout でプール待ちやクエリを打ち切れる。
+func (d *DB) Conn(ctx context.Context) *gorm.DB {
+	if tx, ok := GetTx(ctx); ok {
+		return tx
+	}
+	return d.Connection.WithContext(ctx)
+}
+
 func NewDB() DB {
 	cfg, err := config.Load()
 	if err != nil {
@@ -52,9 +63,7 @@ func NewDB() DB {
 
 	// wolf-db は全アプリで共有しており接続数上限も有限なため、プール上限を明示して
 	// DB への同時接続数を固定する (database/sql のデフォルトは MaxOpenConns 無制限)。全アプリの配分は #46 参照。
-	// 注意: DoInTx 内の読み取りは tx と別接続を使うため 1 ミューテーションで最大 2 本必要になり、
-	// 同時ミューテーション数が MaxOpenConns に達すると相互待ちになる構造が残っている。
-	// 根本対処 (tx 内読み取りの GetTx(ctx) 化 / context timeout) は #47。
+	// DoInTx 内の読み取りも Conn(ctx) 経由で tx の接続を使うため、1 ミューテーションで必要な接続は 1 本 (#47)。
 	sqlDB, err := db.DB()
 	if err != nil {
 		panic(err.Error())
@@ -83,7 +92,7 @@ func NewTransaction(db *gorm.DB) usecase.Transaction {
 func (t *tx) DoInTx(ctx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error) {
 	var result interface{} = nil
 	var err error = nil
-	t.db.Transaction(func(tx *gorm.DB) error {
+	t.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		// contextにトランザクションを保存
 		ctx = context.WithValue(ctx, &txKey, tx)
 

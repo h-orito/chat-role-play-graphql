@@ -56,7 +56,7 @@ func (r *queryResolver) players(ctx context.Context, query gqlmodel.PlayersQuery
 			Latest:     query.Paging.IsLatest,
 		}
 	}
-	players, err := r.playerUsecase.FindPlayers(model.PlayersQuery{
+	players, err := r.playerUsecase.FindPlayers(ctx, model.PlayersQuery{
 		IDs:    intids,
 		Name:   query.Name,
 		Paging: paging,
@@ -74,15 +74,15 @@ func (r *queryResolver) player(ctx context.Context, id string) (*gqlmodel.Player
 	if err != nil {
 		return nil, err
 	}
-	p, err := r.playerUsecase.Find(playerID)
+	p, err := r.playerUsecase.Find(ctx, playerID)
 	if err != nil {
 		return nil, err
 	}
-	profile, err := r.playerUsecase.FindProfile(playerID)
+	profile, err := r.playerUsecase.FindProfile(ctx, playerID)
 	if err != nil {
 		return nil, err
 	}
-	authorities, err := r.playerUsecase.FindAuthorities(playerID)
+	authorities, err := r.playerUsecase.FindAuthorities(ctx, playerID)
 	if err != nil {
 		return nil, err
 	}
@@ -94,15 +94,15 @@ func (r *queryResolver) myPlayer(ctx context.Context) (*gqlmodel.Player, error) 
 	if user == nil {
 		return nil, fmt.Errorf("user not found")
 	}
-	p, err := r.playerUsecase.FindByUserName(user.UserName)
+	p, err := r.playerUsecase.FindByUserName(ctx, user.UserName)
 	if err != nil {
 		return nil, err
 	}
-	profile, err := r.playerUsecase.FindProfile(p.ID)
+	profile, err := r.playerUsecase.FindProfile(ctx, p.ID)
 	if err != nil {
 		return nil, err
 	}
-	authorities, err := r.playerUsecase.FindAuthorities(p.ID)
+	authorities, err := r.playerUsecase.FindAuthorities(ctx, p.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (r *mutationResolver) updatePlayerProfile(ctx context.Context, input gqlmod
 	if user == nil {
 		return nil, fmt.Errorf("user not found")
 	}
-	player, err := r.playerUsecase.FindByUserName(user.UserName)
+	player, err := r.playerUsecase.FindByUserName(ctx, user.UserName)
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (r *mutationResolver) registerPlayerSnsAccount(ctx context.Context, input g
 	if user == nil {
 		return nil, fmt.Errorf("user not found")
 	}
-	player, err := r.playerUsecase.FindByUserName(user.UserName)
+	player, err := r.playerUsecase.FindByUserName(ctx, user.UserName)
 	if err != nil {
 		return nil, err
 	}
@@ -168,11 +168,11 @@ func (r *mutationResolver) updatePlayerSnsAccount(ctx context.Context, input gql
 	if user == nil {
 		return nil, fmt.Errorf("user not found")
 	}
-	player, err := r.playerUsecase.FindByUserName(user.UserName)
+	player, err := r.playerUsecase.FindByUserName(ctx, user.UserName)
 	if err != nil {
 		return nil, err
 	}
-	profile, err := r.playerUsecase.FindProfile(player.ID)
+	profile, err := r.playerUsecase.FindProfile(ctx, player.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -205,11 +205,11 @@ func (r *mutationResolver) deletePlayerSnsAccount(ctx context.Context, input gql
 	if user == nil {
 		return nil, fmt.Errorf("user not found")
 	}
-	player, err := r.playerUsecase.FindByUserName(user.UserName)
+	player, err := r.playerUsecase.FindByUserName(ctx, user.UserName)
 	if err != nil {
 		return nil, err
 	}
-	profile, err := r.playerUsecase.FindProfile(player.ID)
+	profile, err := r.playerUsecase.FindProfile(ctx, player.ID)
 	if err != nil {
 		return nil, err
 	}

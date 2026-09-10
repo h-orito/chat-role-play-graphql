@@ -32,41 +32,36 @@ func NewTestDB() db.DB {
 	}
 }
 
-var txKey = struct{}{}
+var errRollback = fmt.Errorf("rollback")
 
-type tx struct {
-	db *gorm.DB
+type testTx struct {
+	tx usecase.Transaction
 }
 
-func NewTestTransaction(db *gorm.DB) usecase.Transaction {
-	return &tx{
-		db: db,
+// NewTestTransaction は本番の db.NewTransaction に委譲しつつ、テスト用に必ずロールバックするトランザクションを返す。
+// ctx に保存される tx のキーを本番と共有するため、リポジトリ側の GetTx / Conn(ctx) がテストでもそのまま動く。
+func NewTestTransaction(database *gorm.DB) usecase.Transaction {
+	return &testTx{
+		tx: db.NewTransaction(database),
 	}
 }
 
-func (t *tx) DoInTx(ctx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error) {
+func (t *testTx) DoInTx(ctx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error) {
 	var result interface{} = nil
 	var err error = nil
-	t.db.Transaction(func(tx *gorm.DB) error {
+	_, txErr := t.tx.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
 		log.Println("start transaction.")
-
-		// contextにトランザクションを保存
-		ctx = context.WithValue(ctx, &txKey, tx)
-
-		// トランザクションの対象処理へコンテキストを引き継ぎ
 		result, err = f(ctx)
 		if err != nil {
 			log.Println("transaction rollbacked.")
-			return err // rollback
+			return nil, err // rollback
 		}
-		return fmt.Errorf("rollback") // テストなので必ずロールバック
+		return nil, errRollback // テストなので必ずロールバック
 	})
+	if txErr != nil && txErr != errRollback {
+		return result, txErr
+	}
 	return result, err
-}
-
-func GetTx(ctx context.Context) (*gorm.DB, bool) {
-	tx, ok := ctx.Value(&txKey).(*gorm.DB)
-	return tx, ok
 }
 
 func TestNewDB(t *testing.T) {

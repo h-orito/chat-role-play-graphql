@@ -12,25 +12,25 @@ import (
 )
 
 type MessageUsecase interface {
-	FindMessages(gameID uint32, query model.MessagesQuery, user *model.User) (model.Messages, error)
-	FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, user *model.User) (uint64, error)
-	FindMessage(gameID uint32, ID uint64) (*model.Message, error)
-	FindMessageReplies(gameID uint32, messageID uint64, user *model.User) ([]model.Message, error)
-	FindThreadMessages(gameID uint32, messageID uint64, user *model.User) ([]model.Message, error)
-	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error)
+	FindMessages(ctx context.Context, gameID uint32, query model.MessagesQuery, user *model.User) (model.Messages, error)
+	FindMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.MessagesQuery, user *model.User) (uint64, error)
+	FindMessage(ctx context.Context, gameID uint32, ID uint64) (*model.Message, error)
+	FindMessageReplies(ctx context.Context, gameID uint32, messageID uint64, user *model.User) ([]model.Message, error)
+	FindThreadMessages(ctx context.Context, gameID uint32, messageID uint64, user *model.User) ([]model.Message, error)
+	FindMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, messageID uint64) (model.GameParticipants, error)
 	RegisterMessage(ctx context.Context, gameID uint32, user model.User, message model.Message) error
 	RegisterMessageDryRun(ctx context.Context, gameID uint32, user model.User, message model.Message) (*model.Message, error)
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, user model.User, messageID uint64) error
 	DeleteMessageFavorite(ctx context.Context, gameID uint32, user model.User, messageID uint64) error
 	// participant group
-	FindGameParticipantGroups(query model.GameParticipantGroupsQuery, user *model.User) ([]model.GameParticipantGroup, error)
+	FindGameParticipantGroups(ctx context.Context, query model.GameParticipantGroupsQuery, user *model.User) ([]model.GameParticipantGroup, error)
 	RegisterGameParticipantGroup(ctx context.Context, user model.User, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error)
 	UpdateGameParticipantGroup(ctx context.Context, user model.User, gameID uint32, group model.GameParticipantGroup) error
 	// direct message
-	FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error)
-	FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error)
-	FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error)
-	FindDirectMessageFavoriteGameParticipants(gameID uint32, directMessageID uint64) (model.GameParticipants, error)
+	FindDirectMessages(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error)
+	FindDirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (uint64, error)
+	FindDirectMessage(ctx context.Context, gameID uint32, ID uint64) (*model.DirectMessage, error)
+	FindDirectMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, directMessageID uint64) (model.GameParticipants, error)
 	RegisterDirectMessage(ctx context.Context, gameID uint32, user model.User, message model.DirectMessage) error
 	RegisterDirectMessageDryRun(ctx context.Context, gameID uint32, user model.User, message model.DirectMessage) (*model.DirectMessage, error)
 	RegisterDirectMessageFavorite(ctx context.Context, gameID uint32, user model.User, directMessageID uint64) error
@@ -38,12 +38,12 @@ type MessageUsecase interface {
 }
 
 type messageUsecase struct {
-	messageService           app_service.MessageService
-	gameService              app_service.GameService
-	playerService            app_service.PlayerService
-	messageDomainService     dom_service.MessageDomainService
-	gameMasterDomainService  dom_service.GameMasterDomainService
-	transaction              Transaction
+	messageService          app_service.MessageService
+	gameService             app_service.GameService
+	playerService           app_service.PlayerService
+	messageDomainService    dom_service.MessageDomainService
+	gameMasterDomainService dom_service.GameMasterDomainService
+	transaction             Transaction
 }
 
 func NewMessageUsecase(
@@ -65,8 +65,8 @@ func NewMessageUsecase(
 }
 
 // FindMessages implements MessageService.
-func (s *messageUsecase) FindMessages(gameID uint32, query model.MessagesQuery, user *model.User) (model.Messages, error) {
-	mergedQuery, myself, err := s.MergeQuery(gameID, query, user)
+func (s *messageUsecase) FindMessages(ctx context.Context, gameID uint32, query model.MessagesQuery, user *model.User) (model.Messages, error) {
+	mergedQuery, myself, err := s.MergeQuery(ctx, gameID, query, user)
 	if err != nil {
 		return model.Messages{}, err
 	}
@@ -74,23 +74,23 @@ func (s *messageUsecase) FindMessages(gameID uint32, query model.MessagesQuery, 
 		return model.Messages{}, nil
 	}
 
-	return s.messageService.FindMessages(gameID, *mergedQuery, myself)
+	return s.messageService.FindMessages(ctx, gameID, *mergedQuery, myself)
 }
 
 // FindMessagesLatestUnixTimeMilli implements MessageUsecase.
-func (s *messageUsecase) FindMessagesLatestUnixTimeMilli(gameID uint32, query model.MessagesQuery, user *model.User) (uint64, error) {
-	mergedQuery, myself, err := s.MergeQuery(gameID, query, user)
+func (s *messageUsecase) FindMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.MessagesQuery, user *model.User) (uint64, error) {
+	mergedQuery, myself, err := s.MergeQuery(ctx, gameID, query, user)
 	if err != nil {
 		return 0, err
 	}
 	if mergedQuery == nil {
 		return 0, nil
 	}
-	return s.messageService.FindMessagesLatestUnixTimeMilli(gameID, *mergedQuery, myself)
+	return s.messageService.FindMessagesLatestUnixTimeMilli(ctx, gameID, *mergedQuery, myself)
 }
 
-func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, user *model.User) (*model.MessagesQuery, *model.GameParticipant, error) {
-	game, err := s.gameService.FindGame(gameID)
+func (s *messageUsecase) MergeQuery(ctx context.Context, gameID uint32, query model.MessagesQuery, user *model.User) (*model.MessagesQuery, *model.GameParticipant, error) {
+	game, err := s.gameService.FindGame(ctx, gameID)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -98,16 +98,16 @@ func (s *messageUsecase) MergeQuery(gameID uint32, query model.MessagesQuery, us
 	var player *model.Player = nil
 	authorities := []model.PlayerAuthority{}
 	if user != nil {
-		myself, err = s.findMyGameParticipant(gameID, *user)
+		myself, err = s.findMyGameParticipant(ctx, gameID, *user)
 		if err != nil {
 			return nil, nil, err
 		}
-		player, err = s.playerService.FindByUserName(user.UserName)
+		player, err = s.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, nil, err
 		}
 		if player != nil {
-			authorities, err = s.playerService.FindAuthorities(player.ID)
+			authorities, err = s.playerService.FindAuthorities(ctx, player.ID)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -206,39 +206,39 @@ func shouldIncludeSecret(
 }
 
 // FindMessage implements MessageService.
-func (s *messageUsecase) FindMessage(gameID uint32, ID uint64) (*model.Message, error) {
-	return s.messageService.FindMessage(gameID, ID)
+func (s *messageUsecase) FindMessage(ctx context.Context, gameID uint32, ID uint64) (*model.Message, error) {
+	return s.messageService.FindMessage(ctx, gameID, ID)
 }
 
 // FindMessageReplies implements MessageService.
-func (s *messageUsecase) FindMessageReplies(gameID uint32, messageID uint64, user *model.User) ([]model.Message, error) {
+func (s *messageUsecase) FindMessageReplies(ctx context.Context, gameID uint32, messageID uint64, user *model.User) ([]model.Message, error) {
 	var myself *model.GameParticipant = nil
 	if user != nil {
-		m, err := s.findMyGameParticipant(gameID, *user)
+		m, err := s.findMyGameParticipant(ctx, gameID, *user)
 		if err != nil {
 			return nil, err
 		}
 		myself = m
 	}
-	return s.messageService.FindMessageReplies(gameID, messageID, myself)
+	return s.messageService.FindMessageReplies(ctx, gameID, messageID, myself)
 }
 
 // FindThreadMessages implements MessageService.
-func (s *messageUsecase) FindThreadMessages(gameID uint32, messageID uint64, user *model.User) ([]model.Message, error) {
+func (s *messageUsecase) FindThreadMessages(ctx context.Context, gameID uint32, messageID uint64, user *model.User) ([]model.Message, error) {
 	var myself *model.GameParticipant = nil
 	if user != nil {
-		m, err := s.findMyGameParticipant(gameID, *user)
+		m, err := s.findMyGameParticipant(ctx, gameID, *user)
 		if err != nil {
 			return nil, err
 		}
 		myself = m
 	}
-	return s.messageService.FindThreadMessages(gameID, messageID, myself)
+	return s.messageService.FindThreadMessages(ctx, gameID, messageID, myself)
 }
 
 // FindMessageFavoriteGameParticipants implements MessageService.
-func (s *messageUsecase) FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (model.GameParticipants, error) {
-	return s.messageService.FindMessageFavoriteGameParticipants(gameID, messageID)
+func (s *messageUsecase) FindMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, messageID uint64) (model.GameParticipants, error) {
+	return s.messageService.FindMessageFavoriteGameParticipants(ctx, gameID, messageID)
 }
 
 // RegisterMessage implements MessageService.
@@ -249,16 +249,16 @@ func (s *messageUsecase) RegisterMessage(
 	message model.Message,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		msg, err := s.assertRegisterMessage(gameID, user, message)
+		msg, err := s.assertRegisterMessage(ctx, gameID, user, message)
 		if err != nil {
 			return nil, err
 		}
-		game, err := s.gameService.FindGame(gameID)
+		game, err := s.gameService.FindGame(ctx, gameID)
 		if err != nil {
 			return nil, err
 		}
 		if message.ReplyTo != nil {
-			replyToMessage, err := s.messageService.FindMessage(gameID, message.ReplyTo.MessageID)
+			replyToMessage, err := s.messageService.FindMessage(ctx, gameID, message.ReplyTo.MessageID)
 			if err != nil {
 				return nil, err
 			}
@@ -283,7 +283,7 @@ func (s *messageUsecase) RegisterMessageDryRun(
 	user model.User,
 	message model.Message,
 ) (*model.Message, error) {
-	msg, err := s.assertRegisterMessage(gameID, user, message)
+	msg, err := s.assertRegisterMessage(ctx, gameID, user, message)
 	if err != nil {
 		return nil, err
 	}
@@ -297,19 +297,20 @@ func (s *messageUsecase) RegisterMessageDryRun(
 }
 
 func (s *messageUsecase) assertRegisterMessage(
+	ctx context.Context,
 	gameID uint32,
 	user model.User,
 	message model.Message,
 ) (*model.Message, error) {
-	game, err := s.gameService.FindGame(gameID)
+	game, err := s.gameService.FindGame(ctx, gameID)
 	if err != nil {
 		return nil, err
 	}
-	player, err := s.playerService.FindByUserName(user.UserName)
+	player, err := s.playerService.FindByUserName(ctx, user.UserName)
 	if err != nil {
 		return nil, err
 	}
-	myself, err := s.findMyGameParticipant(gameID, user)
+	myself, err := s.findMyGameParticipant(ctx, gameID, user)
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +326,7 @@ func (s *messageUsecase) assertRegisterMessage(
 	}
 	var receiver *model.MessageReceiver
 	if message.Receiver != nil {
-		receiverParticipant, err := s.gameService.FindGameParticipant(model.GameParticipantQuery{
+		receiverParticipant, err := s.gameService.FindGameParticipant(ctx, model.GameParticipantQuery{
 			GameID: &gameID,
 			ID:     &message.Receiver.GameParticipantID,
 		})
@@ -361,7 +362,7 @@ func (s *messageUsecase) RegisterMessageFavorite(
 	messageID uint64,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := s.findMyGameParticipant(gameID, user)
+		myself, err := s.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -381,7 +382,7 @@ func (s *messageUsecase) DeleteMessageFavorite(
 	messageID uint64,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := s.findMyGameParticipant(gameID, user)
+		myself, err := s.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -393,7 +394,7 @@ func (s *messageUsecase) DeleteMessageFavorite(
 	return err
 }
 
-func (s *messageUsecase) FindGameParticipantGroups(query model.GameParticipantGroupsQuery, user *model.User) ([]model.GameParticipantGroup, error) {
+func (s *messageUsecase) FindGameParticipantGroups(ctx context.Context, query model.GameParticipantGroupsQuery, user *model.User) ([]model.GameParticipantGroup, error) {
 	// MemberGroupParticipantID 未指定は「全 DM グループ一覧」リクエスト。
 	// プライバシー保護のため GM / Admin のみ許可する。
 	// フロント (direct-message-groups-area.tsx) は GM 全発言閲覧 ON ゲームの GM のみこの形式で呼ぶ。
@@ -401,18 +402,18 @@ func (s *messageUsecase) FindGameParticipantGroups(query model.GameParticipantGr
 		if user == nil {
 			return nil, fmt.Errorf("not authenticated")
 		}
-		player, err := s.playerService.FindByUserName(user.UserName)
+		player, err := s.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, err
 		}
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		authorities, err := s.playerService.FindAuthorities(player.ID)
+		authorities, err := s.playerService.FindAuthorities(ctx, player.ID)
 		if err != nil {
 			return nil, err
 		}
-		game, err := s.gameService.FindGame(query.GameID)
+		game, err := s.gameService.FindGame(ctx, query.GameID)
 		if err != nil {
 			return nil, err
 		}
@@ -429,7 +430,7 @@ func (s *messageUsecase) FindGameParticipantGroups(query model.GameParticipantGr
 			return nil, fmt.Errorf("forbidden: isGameMasterViewAllMessages is not enabled for this game")
 		}
 	}
-	return s.messageService.FindGameParticipantGroups(query)
+	return s.messageService.FindGameParticipantGroups(ctx, query)
 }
 
 func (s *messageUsecase) RegisterGameParticipantGroup(
@@ -439,7 +440,7 @@ func (s *messageUsecase) RegisterGameParticipantGroup(
 	group model.GameParticipantGroup,
 ) (*model.GameParticipantGroup, error) {
 	saved, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := s.findMyGameParticipant(gameID, user)
+		myself, err := s.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -452,7 +453,7 @@ func (s *messageUsecase) RegisterGameParticipantGroup(
 		}) {
 			return nil, errors.New("自分が含まれていません")
 		}
-		groups, err := s.messageService.FindGameParticipantGroups(model.GameParticipantGroupsQuery{
+		groups, err := s.messageService.FindGameParticipantGroups(ctx, model.GameParticipantGroupsQuery{
 			GameID:                   gameID,
 			MemberGroupParticipantID: &myself.ID,
 		})
@@ -484,14 +485,14 @@ func (s *messageUsecase) UpdateGameParticipantGroup(
 	group model.GameParticipantGroup,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := s.findMyGameParticipant(gameID, user)
+		myself, err := s.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
 		if myself == nil {
 			return nil, errors.New("ゲームに参加していません")
 		}
-		groups, err := s.messageService.FindGameParticipantGroups(model.GameParticipantGroupsQuery{
+		groups, err := s.messageService.FindGameParticipantGroups(ctx, model.GameParticipantGroupsQuery{
 			GameID: gameID,
 			IDs:    &[]uint32{group.ID},
 		})
@@ -513,23 +514,23 @@ func (s *messageUsecase) UpdateGameParticipantGroup(
 }
 
 // FindDirectMessages implements MessageService.
-func (s *messageUsecase) FindDirectMessages(gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
-	return s.messageService.FindDirectMessages(gameID, query)
+func (s *messageUsecase) FindDirectMessages(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
+	return s.messageService.FindDirectMessages(ctx, gameID, query)
 }
 
 // FindDirectMessagesLatestUnixTimeMilli implements MessageUsecase.
-func (s *messageUsecase) FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
-	return s.messageService.FindDirectMessagesLatestUnixTimeMilli(gameID, query)
+func (s *messageUsecase) FindDirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
+	return s.messageService.FindDirectMessagesLatestUnixTimeMilli(ctx, gameID, query)
 }
 
 // FindDirectMessage implements MessageService.
-func (s *messageUsecase) FindDirectMessage(gameID uint32, ID uint64) (*model.DirectMessage, error) {
-	return s.messageService.FindDirectMessage(gameID, ID)
+func (s *messageUsecase) FindDirectMessage(ctx context.Context, gameID uint32, ID uint64) (*model.DirectMessage, error) {
+	return s.messageService.FindDirectMessage(ctx, gameID, ID)
 }
 
 // FindDirectMessageFavoriteGameParticipants implements MessageService.
-func (s *messageUsecase) FindDirectMessageFavoriteGameParticipants(gameID uint32, directMessageID uint64) (model.GameParticipants, error) {
-	return s.messageService.FindDirectMessageFavoriteGameParticipants(gameID, directMessageID)
+func (s *messageUsecase) FindDirectMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, directMessageID uint64) (model.GameParticipants, error) {
+	return s.messageService.FindDirectMessageFavoriteGameParticipants(ctx, gameID, directMessageID)
 }
 
 // RegisterDirectMessage implements MessageService.
@@ -540,11 +541,11 @@ func (s *messageUsecase) RegisterDirectMessage(
 	message model.DirectMessage,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		msg, err := s.assertRegisterDirectMessage(gameID, user, message)
+		msg, err := s.assertRegisterDirectMessage(ctx, gameID, user, message)
 		if err != nil {
 			return nil, err
 		}
-		game, err := s.gameService.FindGame(gameID)
+		game, err := s.gameService.FindGame(ctx, gameID)
 		return nil, s.messageService.RegisterDirectMessage(ctx, *game, *msg)
 	})
 	return err
@@ -552,7 +553,7 @@ func (s *messageUsecase) RegisterDirectMessage(
 
 // RegisterDirectMessageDryRun implements MessageUsecase.
 func (s *messageUsecase) RegisterDirectMessageDryRun(ctx context.Context, gameID uint32, user model.User, message model.DirectMessage) (*model.DirectMessage, error) {
-	msg, err := s.assertRegisterDirectMessage(gameID, user, message)
+	msg, err := s.assertRegisterDirectMessage(ctx, gameID, user, message)
 	if err != nil {
 		return nil, err
 	}
@@ -566,19 +567,20 @@ func (s *messageUsecase) RegisterDirectMessageDryRun(ctx context.Context, gameID
 }
 
 func (s *messageUsecase) assertRegisterDirectMessage(
+	ctx context.Context,
 	gameID uint32,
 	user model.User,
 	message model.DirectMessage,
 ) (*model.DirectMessage, error) {
-	game, err := s.gameService.FindGame(gameID)
+	game, err := s.gameService.FindGame(ctx, gameID)
 	if err != nil {
 		return nil, err
 	}
-	player, err := s.playerService.FindByUserName(user.UserName)
+	player, err := s.playerService.FindByUserName(ctx, user.UserName)
 	if err != nil {
 		return nil, err
 	}
-	myself, err := s.findMyGameParticipant(gameID, user)
+	myself, err := s.findMyGameParticipant(ctx, gameID, user)
 	if err != nil {
 		return nil, err
 	}
@@ -615,7 +617,7 @@ func (s *messageUsecase) RegisterDirectMessageFavorite(
 	directMessageID uint64,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := s.findMyGameParticipant(gameID, user)
+		myself, err := s.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -635,7 +637,7 @@ func (s *messageUsecase) DeleteDirectMessageFavorite(
 	directMessageID uint64,
 ) error {
 	_, err := s.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := s.findMyGameParticipant(gameID, user)
+		myself, err := s.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -647,13 +649,13 @@ func (s *messageUsecase) DeleteDirectMessageFavorite(
 	return err
 }
 
-func (m *messageUsecase) findMyGameParticipant(gameID uint32, user model.User) (*model.GameParticipant, error) {
-	player, err := m.playerService.FindByUserName(user.UserName)
+func (m *messageUsecase) findMyGameParticipant(ctx context.Context, gameID uint32, user model.User) (*model.GameParticipant, error) {
+	player, err := m.playerService.FindByUserName(ctx, user.UserName)
 	if err != nil {
 		return nil, err
 	}
 	isEx := true
-	return m.gameService.FindGameParticipant(model.GameParticipantQuery{
+	return m.gameService.FindGameParticipant(ctx, model.GameParticipantQuery{
 		GameID:        &gameID,
 		PlayerID:      &(player.ID),
 		IsExcludeGone: &isEx,

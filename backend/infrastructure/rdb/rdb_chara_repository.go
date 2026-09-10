@@ -3,6 +3,7 @@ package db
 import (
 	model "chat-role-play/domain/model"
 	"chat-role-play/util/array"
+	"context"
 	"errors"
 	"fmt"
 
@@ -19,32 +20,32 @@ func NewCharaRepository(db *DB) model.CharaRepository {
 	}
 }
 
-func (repo *CharaRepository) FindDesigners(query model.DesignerQuery) (designers []model.Designer, err error) {
-	return findDesigners(repo.db.Connection, query)
+func (repo *CharaRepository) FindDesigners(ctx context.Context, query model.DesignerQuery) (designers []model.Designer, err error) {
+	return findDesigners(repo.db.Conn(ctx), query)
 }
 
-func (repo *CharaRepository) FindDesigner(ID uint32) (designer *model.Designer, err error) {
-	return findDesigner(repo.db.Connection, ID)
+func (repo *CharaRepository) FindDesigner(ctx context.Context, ID uint32) (designer *model.Designer, err error) {
+	return findDesigner(repo.db.Conn(ctx), ID)
 }
 
-func (repo *CharaRepository) FindCharachips(query model.CharachipQuery) (charachips []model.Charachip, err error) {
-	return findCharachips(repo.db.Connection, query)
+func (repo *CharaRepository) FindCharachips(ctx context.Context, query model.CharachipQuery) (charachips []model.Charachip, err error) {
+	return findCharachips(repo.db.Conn(ctx), query)
 }
 
-func (repo *CharaRepository) FindCharachip(ID uint32) (charachip *model.Charachip, err error) {
-	return findCharachip(repo.db.Connection, ID)
+func (repo *CharaRepository) FindCharachip(ctx context.Context, ID uint32) (charachip *model.Charachip, err error) {
+	return findCharachip(repo.db.Conn(ctx), ID)
 }
 
-func (repo *CharaRepository) FindCharas(query model.CharaQuery) (charas []model.Chara, err error) {
-	return findCharas(repo.db.Connection, query)
+func (repo *CharaRepository) FindCharas(ctx context.Context, query model.CharaQuery) (charas []model.Chara, err error) {
+	return findCharas(repo.db.Conn(ctx), query)
 }
 
-func (repo *CharaRepository) FindChara(ID uint32) (chara *model.Chara, err error) {
-	return findChara(repo.db.Connection, ID)
+func (repo *CharaRepository) FindChara(ctx context.Context, ID uint32) (chara *model.Chara, err error) {
+	return findChara(repo.db.Conn(ctx), ID)
 }
 
-func (repo *CharaRepository) FindCharaImages(query model.CharaImageQuery) (images []model.CharaImage, err error) {
-	return findCharaImages(repo.db.Connection, query)
+func (repo *CharaRepository) FindCharaImages(ctx context.Context, query model.CharaImageQuery) (images []model.CharaImage, err error) {
+	return findCharaImages(repo.db.Conn(ctx), query)
 }
 
 // designer

@@ -4,14 +4,15 @@ import (
 	"chat-role-play/domain/dom_service"
 	"chat-role-play/domain/model"
 	"chat-role-play/util/array"
+	"context"
 	"fmt"
 	"strings"
 )
 
 type NotifyService interface {
-	NotifyGameStart(game model.Game) error
-	NotifyMessage(game model.Game, message model.Message) error
-	NotifyDirectMessage(game model.Game, message model.DirectMessage) error
+	NotifyGameStart(ctx context.Context, game model.Game) error
+	NotifyMessage(ctx context.Context, game model.Game, message model.Message) error
+	NotifyDirectMessage(ctx context.Context, game model.Game, message model.DirectMessage) error
 }
 
 type notifyService struct {
@@ -35,13 +36,13 @@ func NewNotifyService(
 	}
 }
 
-func (s *notifyService) NotifyGameStart(game model.Game) error {
+func (s *notifyService) NotifyGameStart(ctx context.Context, game model.Game) error {
 	participantIDs := array.Map(array.Filter(game.Participants.List, func(p model.GameParticipant) bool {
 		return !p.IsGone
 	}), func(p model.GameParticipant) uint32 {
 		return p.ID
 	})
-	notificationSettings, err := s.gameParticipantRepository.FindGameParticipantNotificationSettings(participantIDs)
+	notificationSettings, err := s.gameParticipantRepository.FindGameParticipantNotificationSettings(ctx, participantIDs)
 	if err != nil {
 		return err
 	}
@@ -59,11 +60,11 @@ func (s *notifyService) NotifyGameStart(game model.Game) error {
 	return nil
 }
 
-func (s *notifyService) NotifyMessage(game model.Game, message model.Message) error {
+func (s *notifyService) NotifyMessage(ctx context.Context, game model.Game, message model.Message) error {
 	var pIDs []uint32
 	// 秘話
 	if message.Type == model.MessageTypeSecret {
-		ids, err := s.notifySecret(game, message)
+		ids, err := s.notifySecret(ctx, game, message)
 		if err != nil {
 			return err
 		}
@@ -78,16 +79,16 @@ func (s *notifyService) NotifyMessage(game model.Game, message model.Message) er
 	}
 
 	// keyword
-	pIDs, err := s.notifyMessageKeyword(game, message, pIDs)
+	pIDs, err := s.notifyMessageKeyword(ctx, game, message, pIDs)
 	if err != nil {
 		return err
 	}
 	// reply
-	return s.notifyReply(game, message, pIDs)
+	return s.notifyReply(ctx, game, message, pIDs)
 }
 
-func (s *notifyService) NotifyDirectMessage(game model.Game, message model.DirectMessage) error {
-	groups, err := s.messageRepository.FindGameParticipantGroups(model.GameParticipantGroupsQuery{
+func (s *notifyService) NotifyDirectMessage(ctx context.Context, game model.Game, message model.DirectMessage) error {
+	groups, err := s.messageRepository.FindGameParticipantGroups(ctx, model.GameParticipantGroupsQuery{
 		GameID: game.ID,
 		IDs:    &[]uint32{message.GameParticipantGroupID},
 	})
@@ -100,21 +101,22 @@ func (s *notifyService) NotifyDirectMessage(game model.Game, message model.Direc
 	group := groups[0]
 
 	// keyword
-	pIDs, err := s.notifyDirectMessageKeyword(game, message, group)
+	pIDs, err := s.notifyDirectMessageKeyword(ctx, game, message, group)
 	if err != nil {
 		return err
 	}
 	// direct message
-	return s.notifyDirectMessage(game, message, group, pIDs)
+	return s.notifyDirectMessage(ctx, game, message, group, pIDs)
 }
 
 // ---
 
 func (s *notifyService) notifySecret(
+	ctx context.Context,
 	game model.Game,
 	message model.Message,
 ) ([]uint32, error) {
-	setting, err := s.gameParticipantRepository.FindGameParticipantNotificationSetting(message.Receiver.GameParticipantID)
+	setting, err := s.gameParticipantRepository.FindGameParticipantNotificationSetting(ctx, message.Receiver.GameParticipantID)
 	if err != nil {
 		return []uint32{}, err
 	}
@@ -131,6 +133,7 @@ func (s *notifyService) notifySecret(
 }
 
 func (s *notifyService) notifyMessageKeyword(
+	ctx context.Context,
 	game model.Game,
 	message model.Message,
 	alreadyNotifiedPIDs []uint32,
@@ -145,7 +148,7 @@ func (s *notifyService) notifyMessageKeyword(
 		return p.ID
 	})
 
-	notificationSettings, err := s.gameParticipantRepository.FindGameParticipantNotificationSettings(participantIDs)
+	notificationSettings, err := s.gameParticipantRepository.FindGameParticipantNotificationSettings(ctx, participantIDs)
 	if err != nil {
 		return []uint32{}, err
 	}
@@ -167,6 +170,7 @@ func (s *notifyService) notifyMessageKeyword(
 }
 
 func (s *notifyService) notifyDirectMessageKeyword(
+	ctx context.Context,
 	game model.Game,
 	message model.DirectMessage,
 	group model.GameParticipantGroup,
@@ -181,7 +185,7 @@ func (s *notifyService) notifyDirectMessageKeyword(
 			(message.Sender == nil || id != message.Sender.GameParticipantID)
 	})
 
-	notificationSettings, err := s.gameParticipantRepository.FindGameParticipantNotificationSettings(targetParticipantIDs)
+	notificationSettings, err := s.gameParticipantRepository.FindGameParticipantNotificationSettings(ctx, targetParticipantIDs)
 	if err != nil {
 		return []uint32{}, err
 	}
@@ -203,6 +207,7 @@ func (s *notifyService) notifyDirectMessageKeyword(
 }
 
 func (s *notifyService) notifyReply(
+	ctx context.Context,
 	game model.Game,
 	message model.Message,
 	alreadyNotifiedPIDs []uint32,
@@ -221,7 +226,7 @@ func (s *notifyService) notifyReply(
 	if participant == nil || participant.IsGone {
 		return nil
 	}
-	settings, err := s.gameParticipantRepository.FindGameParticipantNotificationSetting(message.ReplyTo.GameParticipantID)
+	settings, err := s.gameParticipantRepository.FindGameParticipantNotificationSetting(ctx, message.ReplyTo.GameParticipantID)
 	if err != nil {
 		return err
 	}
@@ -238,6 +243,7 @@ func (s *notifyService) notifyReply(
 }
 
 func (s *notifyService) notifyDirectMessage(
+	ctx context.Context,
 	game model.Game,
 	message model.DirectMessage,
 	group model.GameParticipantGroup,
@@ -254,7 +260,7 @@ func (s *notifyService) notifyDirectMessage(
 				return pid == id
 			})
 	})
-	settings, err := s.gameParticipantRepository.FindGameParticipantNotificationSettings(targetParticipantIDs)
+	settings, err := s.gameParticipantRepository.FindGameParticipantNotificationSettings(ctx, targetParticipantIDs)
 	if err != nil {
 		return err
 	}

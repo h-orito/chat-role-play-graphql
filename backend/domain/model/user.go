@@ -2,6 +2,7 @@ package model
 
 import (
 	"chat-role-play/util/array"
+	"context"
 )
 
 type User struct {
@@ -47,7 +48,7 @@ func (pa PlayerAuthority) IsAdmin() bool {
 var DefaultAuthorites = []PlayerAuthority{AuthorityPlayer}
 
 type UserRepository interface {
-	FindByUserName(userName string) (user *User, err error)
-	FindPlayerAuthorities(playerID uint32) (authorities []PlayerAuthority, err error)
-	Signup(userName string) (saved *User, err error)
+	FindByUserName(ctx context.Context, userName string) (user *User, err error)
+	FindPlayerAuthorities(ctx context.Context, playerID uint32) (authorities []PlayerAuthority, err error)
+	Signup(ctx context.Context, userName string) (saved *User, err error)
 }

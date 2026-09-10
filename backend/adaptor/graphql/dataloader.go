@@ -80,7 +80,7 @@ func (g *gameBatcher) batchLoadPeriod(ctx context.Context, keys dataloader.Keys)
 	if err != nil {
 		return nil
 	}
-	periods, err := g.gameUsecase.FindGamePeriods(intids)
+	periods, err := g.gameUsecase.FindGamePeriods(ctx, intids)
 	if err != nil {
 		return nil
 	}
@@ -107,7 +107,7 @@ func (g *gameBatcher) batchLoadParticipant(ctx context.Context, keys dataloader.
 	if err != nil {
 		return nil
 	}
-	participants, err := g.gameUsecase.FindGameParticipants(model.GameParticipantsQuery{IDs: &intids})
+	participants, err := g.gameUsecase.FindGameParticipants(ctx, model.GameParticipantsQuery{IDs: &intids})
 	if err != nil {
 		return nil
 	}
@@ -135,7 +135,7 @@ func (g *gameBatcher) batchLoadParticipantIcon(ctx context.Context, keys dataloa
 		return nil
 	}
 	isContainDeleted := true
-	icons, err := g.gameUsecase.FindGameParticipantIcons(model.GameParticipantIconsQuery{
+	icons, err := g.gameUsecase.FindGameParticipantIcons(ctx, model.GameParticipantIconsQuery{
 		IDs:              &intids,
 		IsContainDeleted: &isContainDeleted,
 	})
@@ -165,7 +165,7 @@ func (p *playerBatcher) batchLoadPlayer(ctx context.Context, keys dataloader.Key
 	if err != nil {
 		return nil
 	}
-	players, err := p.playerUsecase.FindPlayers(model.PlayersQuery{
+	players, err := p.playerUsecase.FindPlayers(ctx, model.PlayersQuery{
 		IDs: &intids,
 	})
 	if err != nil {
@@ -194,7 +194,7 @@ func (p *charaBatcher) batchLoadCharachip(ctx context.Context, keys dataloader.K
 	if err != nil {
 		return nil
 	}
-	charachips, err := p.charaUsecase.FindCharachips(model.CharachipQuery{
+	charachips, err := p.charaUsecase.FindCharachips(ctx, model.CharachipQuery{
 		IDs: &intids,
 	})
 	if err != nil {
@@ -223,7 +223,7 @@ func (p *charaBatcher) batchLoadChara(ctx context.Context, keys dataloader.Keys)
 	if err != nil {
 		return nil
 	}
-	charas, err := p.charaUsecase.FindCharas(intids)
+	charas, err := p.charaUsecase.FindCharas(ctx, intids)
 	if err != nil {
 		return nil
 	}
@@ -250,7 +250,7 @@ func (p *charaBatcher) batchLoadCharaImage(ctx context.Context, keys dataloader.
 	if err != nil {
 		return nil
 	}
-	charaImages, err := p.charaUsecase.FindCharaImages(model.CharaImageQuery{
+	charaImages, err := p.charaUsecase.FindCharaImages(ctx, model.CharaImageQuery{
 		IDs: &intids,
 	})
 	if err != nil {

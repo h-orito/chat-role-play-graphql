@@ -273,9 +273,9 @@ func (g *Game) ShouldChangeStatus(now time.Time) (bool, GameStatus) {
 
 type GameRepository interface {
 	// game
-	FindGames(query GamesQuery) (games []Game, err error)
-	FindGame(ID uint32) (game *Game, err error)
-	FindGamePeriods(IDs []uint32) (periods []GamePeriod, err error)
+	FindGames(ctx context.Context, query GamesQuery) (games []Game, err error)
+	FindGame(ctx context.Context, ID uint32) (game *Game, err error)
+	FindGamePeriods(ctx context.Context, IDs []uint32) (periods []GamePeriod, err error)
 	RegisterGame(ctx context.Context, game Game) (saved *Game, err error)
 	RegisterGameMaster(ctx context.Context, gameID uint32, master GameMaster) (saved *GameMaster, err error)
 	UpdateGameMaster(ctx context.Context, master GameMaster) (err error)
@@ -295,31 +295,31 @@ type GameRepository interface {
 
 type GameParticipantRepository interface {
 	// participant
-	FindGameParticipants(query GameParticipantsQuery) (participants GameParticipants, err error)
-	FindGameParticipant(query GameParticipantQuery) (participant *GameParticipant, err error)
+	FindGameParticipants(ctx context.Context, query GameParticipantsQuery) (participants GameParticipants, err error)
+	FindGameParticipant(ctx context.Context, query GameParticipantQuery) (participant *GameParticipant, err error)
 	RegisterGameParticipant(ctx context.Context, gameID uint32, participant GameParticipant) (saved *GameParticipant, err error)
 	UpdateGameParticipant(ctx context.Context, ID uint32, name string, memo *string, iconId *uint32) (err error)
 	DeleteGameParticipant(ctx context.Context, ID uint32) (err error)
 	// participant profile
-	FindGameParticipantProfile(gameParticipantID uint32) (profile *GameParticipantProfile, err error)
+	FindGameParticipantProfile(ctx context.Context, gameParticipantID uint32) (profile *GameParticipantProfile, err error)
 	UpdateGameParticipantProfile(ctx context.Context, ID uint32, profile GameParticipantProfile) (err error)
 	UpdateGameParticipantProfileIconID(ctx context.Context, ID uint32, profileIconID uint32) (err error)
 	// participant icon
-	FindGameParticipantIcons(query GameParticipantIconsQuery) (icons []GameParticipantIcon, err error)
+	FindGameParticipantIcons(ctx context.Context, query GameParticipantIconsQuery) (icons []GameParticipantIcon, err error)
 	RegisterGameParticipantIcon(ctx context.Context, gameParticipantID uint32, icon GameParticipantIcon) (saved *GameParticipantIcon, err error)
 	UpdateGameParticipantIcon(ctx context.Context, icon GameParticipantIcon) (err error)
 	DeleteGameParticipantIcon(ctx context.Context, iconID uint32) (err error)
 	// participant notification
-	FindGameParticipantNotificationSettings(gameParticipantIDs []uint32) (settings []GameParticipantNotification, err error)
-	FindGameParticipantNotificationSetting(gameParticipantID uint32) (notification *GameParticipantNotification, err error)
+	FindGameParticipantNotificationSettings(ctx context.Context, gameParticipantIDs []uint32) (settings []GameParticipantNotification, err error)
+	FindGameParticipantNotificationSetting(ctx context.Context, gameParticipantID uint32) (notification *GameParticipantNotification, err error)
 	UpdateGameParticipantNotificationSetting(ctx context.Context, ID uint32, setting GameParticipantNotification) (err error)
 	// participant follow
-	FindGameParticipantFollows(gameParticipantID uint32) (follows []GameParticipantFollow, err error)
-	FindGameParticipantFollowers(gameParticipantID uint32) (followers []GameParticipantFollow, err error)
+	FindGameParticipantFollows(ctx context.Context, gameParticipantID uint32) (follows []GameParticipantFollow, err error)
+	FindGameParticipantFollowers(ctx context.Context, gameParticipantID uint32) (followers []GameParticipantFollow, err error)
 	RegisterGameParticipantFollow(ctx context.Context, myGameParticipantID uint32, targetGameParticipantID uint32) (err error)
 	DeleteGameParticipantFollow(ctx context.Context, myGameParticipantID uint32, targetGameParticipantID uint32) (err error)
 	// participant diary
-	FindGameParticipantDiaries(query GameParticipantDiariesQuery) (diaries []GameParticipantDiary, err error)
-	FindGameParticipantDiary(ID uint32) (diary *GameParticipantDiary, err error)
+	FindGameParticipantDiaries(ctx context.Context, query GameParticipantDiariesQuery) (diaries []GameParticipantDiary, err error)
+	FindGameParticipantDiary(ctx context.Context, ID uint32) (diary *GameParticipantDiary, err error)
 	UpsertGameParticipantDiary(ctx context.Context, gameID uint32, diary GameParticipantDiary) (saved *GameParticipantDiary, err error)
 }

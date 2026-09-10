@@ -13,9 +13,9 @@ import (
 
 type GameUsecase interface {
 	// game
-	FindGames(query model.GamesQuery) (games []model.Game, err error)
-	FindGame(ID uint32) (game *model.Game, err error)
-	FindGamePeriods(IDs []uint32) (periods []model.GamePeriod, err error)
+	FindGames(ctx context.Context, query model.GamesQuery) (games []model.Game, err error)
+	FindGame(ctx context.Context, ID uint32) (game *model.Game, err error)
+	FindGamePeriods(ctx context.Context, IDs []uint32) (periods []model.GamePeriod, err error)
 	RegisterGame(ctx context.Context, user model.User, game model.Game) (registered *model.Game, err error)
 	RegisterGameMaster(ctx context.Context, user model.User, gameID uint32, playerID uint32, isProducer bool) (gameMaster *model.GameMaster, err error)
 	UpdateGameMaster(ctx context.Context, user model.User, gameID uint32, gameMasterID uint32, isProducer bool) (err error)
@@ -26,30 +26,30 @@ type GameUsecase interface {
 	DeleteGamePeriod(ctx context.Context, user model.User, gameID uint32, targetPeriodID uint32, destPeriodID uint32) (err error)
 	ChangePeriodIfNeeded(ctx context.Context, gameID uint32) error
 	// game participant
-	FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
-	FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error)
-	FindMyGameParticipant(gameID uint32, user model.User) (participant *model.GameParticipant, err error)
+	FindGameParticipants(ctx context.Context, query model.GameParticipantsQuery) (participants model.GameParticipants, err error)
+	FindGameParticipant(ctx context.Context, query model.GameParticipantQuery) (participant *model.GameParticipant, err error)
+	FindMyGameParticipant(ctx context.Context, gameID uint32, user model.User) (participant *model.GameParticipant, err error)
 	Participate(ctx context.Context, gameID uint32, user model.User, participant model.GameParticipant, password *string) (saved *model.GameParticipant, err error)
 	Leave(ctx context.Context, gameID uint32, user model.User) (err error)
 	// game participant profile
-	FindParticipantProfile(participantID uint32) (profile *model.GameParticipantProfile, participant *model.GameParticipant, player *model.Player, err error)
+	FindParticipantProfile(ctx context.Context, participantID uint32) (profile *model.GameParticipantProfile, participant *model.GameParticipant, player *model.Player, err error)
 	UpdateParticipantProfile(ctx context.Context, gameID uint32, user model.User, name string, memo *string, iconId *uint32, profile model.GameParticipantProfile) (err error)
 	// game participant icon
-	FindGameParticipantIcons(model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error)
+	FindGameParticipantIcons(ctx context.Context, query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error)
 	RegisterGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error)
 	UpdateGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, icon model.GameParticipantIcon) error
 	DeleteGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, iconID uint32) (err error)
 	// game participant setting
-	FindParticipantSetting(gameID uint32, user model.User) (setting *model.GameParticipantNotification, err error)
+	FindParticipantSetting(ctx context.Context, gameID uint32, user model.User) (setting *model.GameParticipantNotification, err error)
 	UpdateParticipantSetting(ctx context.Context, gameID uint32, user model.User, setting model.GameParticipantNotification) (err error)
 	// game participant follow
-	FindParticipantFollows(participantID uint32) (follows []model.GameParticipant, err error)
-	FindParticipantFollowers(participantID uint32) (follows []model.GameParticipant, err error)
+	FindParticipantFollows(ctx context.Context, participantID uint32) (follows []model.GameParticipant, err error)
+	FindParticipantFollowers(ctx context.Context, participantID uint32) (follows []model.GameParticipant, err error)
 	FollowParticipant(ctx context.Context, gameID uint32, user model.User, targetParticipantID uint32) (err error)
 	UnfollowParticipant(ctx context.Context, gameID uint32, user model.User, targetParticipantID uint32) (err error)
 	// game participant diary
-	FindParticipantDiaries(query model.GameParticipantDiariesQuery) (diaries []model.GameParticipantDiary, err error)
-	FindParticipantDiary(ID uint32) (diary *model.GameParticipantDiary, err error)
+	FindParticipantDiaries(ctx context.Context, query model.GameParticipantDiariesQuery) (diaries []model.GameParticipantDiary, err error)
+	FindParticipantDiary(ctx context.Context, ID uint32) (diary *model.GameParticipantDiary, err error)
 	RegisterParticipantDiary(ctx context.Context, gameID uint32, user model.User, diary model.GameParticipantDiary) (*model.GameParticipantDiary, error)
 	UpdateParticipantDiary(ctx context.Context, gameID uint32, user model.User, diaryID uint32, diary model.GameParticipantDiary) error
 }
@@ -81,21 +81,21 @@ func NewGameUsecase(
 	}
 }
 
-func (g *gameUsecase) FindGames(query model.GamesQuery) (games []model.Game, err error) {
-	return g.gameService.FindGames(query)
+func (g *gameUsecase) FindGames(ctx context.Context, query model.GamesQuery) (games []model.Game, err error) {
+	return g.gameService.FindGames(ctx, query)
 }
 
-func (g *gameUsecase) FindGame(ID uint32) (game *model.Game, err error) {
-	return g.gameService.FindGame(ID)
+func (g *gameUsecase) FindGame(ctx context.Context, ID uint32) (game *model.Game, err error) {
+	return g.gameService.FindGame(ctx, ID)
 }
 
-func (g *gameUsecase) FindGamePeriods(IDs []uint32) (periods []model.GamePeriod, err error) {
-	return g.gameService.FindGamePeriods(IDs)
+func (g *gameUsecase) FindGamePeriods(ctx context.Context, IDs []uint32) (periods []model.GamePeriod, err error) {
+	return g.gameService.FindGamePeriods(ctx, IDs)
 }
 
 func (g *gameUsecase) RegisterGame(ctx context.Context, user model.User, game model.Game) (registered *model.Game, err error) {
 	gm, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		player, err := g.playerService.FindByUserName(user.UserName)
+		player, err := g.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, err
 		}
@@ -121,21 +121,21 @@ func (g *gameUsecase) RegisterGameMaster(
 	isProducer bool,
 ) (gameMaster *model.GameMaster, err error) {
 	gm, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := g.gameService.FindGame(gameID)
+		game, err := g.gameService.FindGame(ctx, gameID)
 		if err != nil {
 			return nil, err
 		}
 		if g == nil {
 			return nil, fmt.Errorf("game not found")
 		}
-		player, err := g.playerService.FindByUserName(user.UserName)
+		player, err := g.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, err
 		}
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		authorities, err := g.playerService.FindAuthorities(player.ID)
+		authorities, err := g.playerService.FindAuthorities(ctx, player.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -158,21 +158,21 @@ func (g *gameUsecase) UpdateGameMaster(
 	isProducer bool,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := g.gameService.FindGame(gameID)
+		game, err := g.gameService.FindGame(ctx, gameID)
 		if err != nil {
 			return nil, err
 		}
 		if g == nil {
 			return nil, fmt.Errorf("game not found")
 		}
-		player, err := g.playerService.FindByUserName(user.UserName)
+		player, err := g.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, err
 		}
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		authorities, err := g.playerService.FindAuthorities(player.ID)
+		authorities, err := g.playerService.FindAuthorities(ctx, player.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -195,21 +195,21 @@ func (g *gameUsecase) DeleteGameMaster(
 	gameMasterID uint32,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := g.gameService.FindGame(gameID)
+		game, err := g.gameService.FindGame(ctx, gameID)
 		if err != nil {
 			return nil, err
 		}
 		if g == nil {
 			return nil, fmt.Errorf("game not found")
 		}
-		player, err := g.playerService.FindByUserName(user.UserName)
+		player, err := g.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, err
 		}
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		authorities, err := g.playerService.FindAuthorities(player.ID)
+		authorities, err := g.playerService.FindAuthorities(ctx, player.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -231,21 +231,21 @@ func (g *gameUsecase) UpdateGameStatus(
 	status model.GameStatus,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := g.gameService.FindGame(gameID)
+		game, err := g.gameService.FindGame(ctx, gameID)
 		if err != nil {
 			return nil, err
 		}
 		if g == nil {
 			return nil, fmt.Errorf("game not found")
 		}
-		player, err := g.playerService.FindByUserName(user.UserName)
+		player, err := g.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, err
 		}
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		authorities, err := g.playerService.FindAuthorities(player.ID)
+		authorities, err := g.playerService.FindAuthorities(ctx, player.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -267,21 +267,21 @@ func (g *gameUsecase) UpdateGameSetting(
 	settings model.GameSettings,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := g.gameService.FindGame(gameID)
+		game, err := g.gameService.FindGame(ctx, gameID)
 		if err != nil {
 			return nil, err
 		}
 		if g == nil {
 			return nil, fmt.Errorf("game not found")
 		}
-		player, err := g.playerService.FindByUserName(user.UserName)
+		player, err := g.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, err
 		}
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		authorities, err := g.playerService.FindAuthorities(player.ID)
+		authorities, err := g.playerService.FindAuthorities(ctx, player.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -301,21 +301,21 @@ func (g *gameUsecase) UpdateGamePeriod(
 	period model.GamePeriod,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := g.gameService.FindGame(gameID)
+		game, err := g.gameService.FindGame(ctx, gameID)
 		if err != nil {
 			return nil, err
 		}
 		if g == nil {
 			return nil, fmt.Errorf("game not found")
 		}
-		player, err := g.playerService.FindByUserName(user.UserName)
+		player, err := g.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, err
 		}
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		authorities, err := g.playerService.FindAuthorities(player.ID)
+		authorities, err := g.playerService.FindAuthorities(ctx, player.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -337,21 +337,21 @@ func (g *gameUsecase) DeleteGamePeriod(
 	destPeriodID uint32,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := g.gameService.FindGame(gameID)
+		game, err := g.gameService.FindGame(ctx, gameID)
 		if err != nil {
 			return nil, err
 		}
 		if g == nil {
 			return nil, fmt.Errorf("game not found")
 		}
-		player, err := g.playerService.FindByUserName(user.UserName)
+		player, err := g.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, err
 		}
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		authorities, err := g.playerService.FindAuthorities(player.ID)
+		authorities, err := g.playerService.FindAuthorities(ctx, player.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -391,16 +391,16 @@ func (g *gameUsecase) ChangePeriodIfNeeded(ctx context.Context, gameID uint32) e
 	return err
 }
 
-func (g *gameUsecase) FindGameParticipants(query model.GameParticipantsQuery) (participants model.GameParticipants, err error) {
-	return g.gameService.FindGameParticipants(query)
+func (g *gameUsecase) FindGameParticipants(ctx context.Context, query model.GameParticipantsQuery) (participants model.GameParticipants, err error) {
+	return g.gameService.FindGameParticipants(ctx, query)
 }
 
-func (g *gameUsecase) FindGameParticipant(query model.GameParticipantQuery) (participant *model.GameParticipant, err error) {
-	return g.gameService.FindGameParticipant(query)
+func (g *gameUsecase) FindGameParticipant(ctx context.Context, query model.GameParticipantQuery) (participant *model.GameParticipant, err error) {
+	return g.gameService.FindGameParticipant(ctx, query)
 }
 
-func (g *gameUsecase) FindMyGameParticipant(gameID uint32, user model.User) (participant *model.GameParticipant, err error) {
-	return g.findMyGameParticipant(gameID, user)
+func (g *gameUsecase) FindMyGameParticipant(ctx context.Context, gameID uint32, user model.User) (participant *model.GameParticipant, err error) {
+	return g.findMyGameParticipant(ctx, gameID, user)
 }
 
 func (g *gameUsecase) Participate(
@@ -411,27 +411,27 @@ func (g *gameUsecase) Participate(
 	password *string,
 ) (saved *model.GameParticipant, err error) {
 	p, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := g.gameService.FindGame(gameID)
+		game, err := g.gameService.FindGame(ctx, gameID)
 		if err != nil {
 			return nil, err
 		}
 		if game == nil {
 			return nil, fmt.Errorf("game not found")
 		}
-		player, err := g.playerService.FindByUserName(user.UserName)
+		player, err := g.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
 			return nil, err
 		}
 		if player == nil {
 			return nil, fmt.Errorf("player not found")
 		}
-		authorities, err := g.playerService.FindAuthorities(player.ID)
+		authorities, err := g.playerService.FindAuthorities(ctx, player.ID)
 		if err != nil {
 			return nil, err
 		}
 		canChangeName := true
 		if participant.CharaID != nil {
-			charachips, err := g.charaService.FindCharachips(model.CharachipQuery{
+			charachips, err := g.charaService.FindCharachips(ctx, model.CharachipQuery{
 				IDs: &game.Settings.Chara.CharachipIDs,
 			})
 			if err != nil {
@@ -463,7 +463,7 @@ func (g *gameUsecase) Participate(
 		if participant.CharaID == nil {
 			return myself, nil
 		}
-		chara, err := g.charaService.FindChara(*participant.CharaID)
+		chara, err := g.charaService.FindChara(ctx, *participant.CharaID)
 		if err != nil {
 			return nil, err
 		}
@@ -505,14 +505,14 @@ func (g *gameUsecase) Participate(
 
 func (g *gameUsecase) Leave(ctx context.Context, gameID uint32, user model.User) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		game, err := g.gameService.FindGame(gameID)
+		game, err := g.gameService.FindGame(ctx, gameID)
 		if err != nil {
 			return nil, err
 		}
 		if game == nil {
 			return nil, fmt.Errorf("game not found")
 		}
-		myself, err := g.findMyGameParticipant(gameID, user)
+		myself, err := g.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -531,17 +531,17 @@ func (g *gameUsecase) Leave(ctx context.Context, gameID uint32, user model.User)
 	return nil
 }
 
-func (g *gameUsecase) FindParticipantProfile(participantID uint32) (
+func (g *gameUsecase) FindParticipantProfile(ctx context.Context, participantID uint32) (
 	profile *model.GameParticipantProfile,
 	participant *model.GameParticipant,
 	player *model.Player,
 	err error,
 ) {
-	profile, err = g.gameService.FindGameParticipantProfile(participantID)
+	profile, err = g.gameService.FindGameParticipantProfile(ctx, participantID)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	participant, err = g.gameService.FindGameParticipant(model.GameParticipantQuery{
+	participant, err = g.gameService.FindGameParticipant(ctx, model.GameParticipantQuery{
 		ID: &participantID,
 	})
 	if err != nil {
@@ -550,7 +550,7 @@ func (g *gameUsecase) FindParticipantProfile(participantID uint32) (
 	if participant == nil {
 		return profile, participant, nil, nil
 	}
-	player, err = g.playerService.Find(participant.PlayerID)
+	player, err = g.playerService.Find(ctx, participant.PlayerID)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -567,7 +567,7 @@ func (g *gameUsecase) UpdateParticipantProfile(
 	profile model.GameParticipantProfile,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := g.findMyGameParticipant(gameID, user)
+		myself, err := g.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -587,13 +587,13 @@ func (g *gameUsecase) UpdateParticipantProfile(
 	return err
 }
 
-func (g *gameUsecase) FindGameParticipantIcons(query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {
-	return g.gameService.FindGameParticipantIcons(query)
+func (g *gameUsecase) FindGameParticipantIcons(ctx context.Context, query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error) {
+	return g.gameService.FindGameParticipantIcons(ctx, query)
 }
 
 func (g *gameUsecase) RegisterGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, icon model.GameParticipantIcon) (saved *model.GameParticipantIcon, err error) {
 	i, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := g.findMyGameParticipant(gameID, user)
+		myself, err := g.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -622,7 +622,7 @@ func (g *gameUsecase) RegisterGameParticipantIcon(ctx context.Context, gameID ui
 
 func (g *gameUsecase) UpdateGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, icon model.GameParticipantIcon) error {
 	_, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := g.findMyGameParticipant(gameID, user)
+		myself, err := g.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -636,14 +636,14 @@ func (g *gameUsecase) UpdateGameParticipantIcon(ctx context.Context, gameID uint
 
 func (g *gameUsecase) DeleteGameParticipantIcon(ctx context.Context, gameID uint32, user model.User, iconID uint32) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := g.findMyGameParticipant(gameID, user)
+		myself, err := g.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
 		if myself == nil {
 			return nil, fmt.Errorf("you are not participating in this game")
 		}
-		icons, err := g.gameService.FindGameParticipantIcons(model.GameParticipantIconsQuery{
+		icons, err := g.gameService.FindGameParticipantIcons(ctx, model.GameParticipantIconsQuery{
 			GameParticipantID: &myself.ID,
 		})
 		if err != nil {
@@ -659,15 +659,15 @@ func (g *gameUsecase) DeleteGameParticipantIcon(ctx context.Context, gameID uint
 	return err
 }
 
-func (g *gameUsecase) FindParticipantSetting(gameID uint32, user model.User) (setting *model.GameParticipantNotification, err error) {
-	myself, err := g.findMyGameParticipant(gameID, user)
+func (g *gameUsecase) FindParticipantSetting(ctx context.Context, gameID uint32, user model.User) (setting *model.GameParticipantNotification, err error) {
+	myself, err := g.findMyGameParticipant(ctx, gameID, user)
 	if err != nil {
 		return nil, err
 	}
 	if myself == nil {
 		return nil, fmt.Errorf("not found")
 	}
-	return g.gameService.FindGameParticipantNotificationSetting(myself.ID)
+	return g.gameService.FindGameParticipantNotificationSetting(ctx, myself.ID)
 }
 
 func (g *gameUsecase) UpdateParticipantSetting(
@@ -677,7 +677,7 @@ func (g *gameUsecase) UpdateParticipantSetting(
 	setting model.GameParticipantNotification,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := g.findMyGameParticipant(gameID, user)
+		myself, err := g.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -689,12 +689,12 @@ func (g *gameUsecase) UpdateParticipantSetting(
 	return err
 }
 
-func (g *gameUsecase) FindParticipantFollows(participantID uint32) (follows []model.GameParticipant, err error) {
-	return g.gameService.FindGameParticipantFollows(participantID)
+func (g *gameUsecase) FindParticipantFollows(ctx context.Context, participantID uint32) (follows []model.GameParticipant, err error) {
+	return g.gameService.FindGameParticipantFollows(ctx, participantID)
 }
 
-func (g *gameUsecase) FindParticipantFollowers(participantID uint32) (follows []model.GameParticipant, err error) {
-	return g.gameService.FindGameParticipantFollowers(participantID)
+func (g *gameUsecase) FindParticipantFollowers(ctx context.Context, participantID uint32) (follows []model.GameParticipant, err error) {
+	return g.gameService.FindGameParticipantFollowers(ctx, participantID)
 }
 
 func (g *gameUsecase) FollowParticipant(
@@ -704,7 +704,7 @@ func (g *gameUsecase) FollowParticipant(
 	targetParticipantID uint32,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := g.findMyGameParticipant(gameID, user)
+		myself, err := g.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -723,7 +723,7 @@ func (g *gameUsecase) UnfollowParticipant(
 	targetParticipantID uint32,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := g.findMyGameParticipant(gameID, user)
+		myself, err := g.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -735,12 +735,12 @@ func (g *gameUsecase) UnfollowParticipant(
 	return err
 }
 
-func (g *gameUsecase) FindParticipantDiaries(query model.GameParticipantDiariesQuery) (diaries []model.GameParticipantDiary, err error) {
-	return g.gameService.FindGameParticipantDiaries(query)
+func (g *gameUsecase) FindParticipantDiaries(ctx context.Context, query model.GameParticipantDiariesQuery) (diaries []model.GameParticipantDiary, err error) {
+	return g.gameService.FindGameParticipantDiaries(ctx, query)
 }
 
-func (g *gameUsecase) FindParticipantDiary(ID uint32) (*model.GameParticipantDiary, error) {
-	return g.gameService.FindGameParticipantDiary(ID)
+func (g *gameUsecase) FindParticipantDiary(ctx context.Context, ID uint32) (*model.GameParticipantDiary, error) {
+	return g.gameService.FindGameParticipantDiary(ctx, ID)
 }
 
 func (g *gameUsecase) RegisterParticipantDiary(
@@ -750,7 +750,7 @@ func (g *gameUsecase) RegisterParticipantDiary(
 	diary model.GameParticipantDiary,
 ) (*model.GameParticipantDiary, error) {
 	d, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := g.findMyGameParticipant(gameID, user)
+		myself, err := g.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
@@ -778,14 +778,14 @@ func (g *gameUsecase) UpdateParticipantDiary(
 	diary model.GameParticipantDiary,
 ) (err error) {
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
-		myself, err := g.findMyGameParticipant(gameID, user)
+		myself, err := g.findMyGameParticipant(ctx, gameID, user)
 		if err != nil {
 			return nil, err
 		}
 		if myself == nil {
 			return nil, fmt.Errorf("you are not participating in this game")
 		}
-		existing, err := g.FindParticipantDiary(diaryID)
+		existing, err := g.FindParticipantDiary(ctx, diaryID)
 		if err != nil {
 			return nil, err
 		}
@@ -802,13 +802,13 @@ func (g *gameUsecase) UpdateParticipantDiary(
 	return err
 }
 
-func (g *gameUsecase) findMyGameParticipant(gameID uint32, user model.User) (*model.GameParticipant, error) {
-	player, err := g.playerService.FindByUserName(user.UserName)
+func (g *gameUsecase) findMyGameParticipant(ctx context.Context, gameID uint32, user model.User) (*model.GameParticipant, error) {
+	player, err := g.playerService.FindByUserName(ctx, user.UserName)
 	if err != nil {
 		return nil, err
 	}
 	isEx := true
-	return g.gameService.FindGameParticipant(model.GameParticipantQuery{
+	return g.gameService.FindGameParticipant(ctx, model.GameParticipantQuery{
 		GameID:        &gameID,
 		PlayerID:      &(player.ID),
 		IsExcludeGone: &isEx,

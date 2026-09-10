@@ -14,7 +14,7 @@ func newPlayerRepository() model.PlayerRepository {
 
 func TestFind(t *testing.T) {
 	repo := newPlayerRepository()
-	got, err := repo.Find(1)
+	got, err := repo.Find(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find player: %s", err)
 	}
@@ -25,7 +25,7 @@ func TestFind(t *testing.T) {
 
 func TestFindByName(t *testing.T) {
 	repo := newPlayerRepository()
-	got, err := repo.FindByName("player name 1")
+	got, err := repo.FindByName(context.Background(), "player name 1")
 	if err != nil {
 		t.Errorf("failed to find player: %s", err)
 	}
@@ -36,7 +36,7 @@ func TestFindByName(t *testing.T) {
 
 func TestFindByUserName(t *testing.T) {
 	repo := newPlayerRepository()
-	got, err := repo.FindByUserName("user name 1")
+	got, err := repo.FindByUserName(context.Background(), "user name 1")
 	if err != nil {
 		t.Errorf("failed to find player: %s", err)
 	}
@@ -70,7 +70,7 @@ func TestSave(t *testing.T) {
 
 func TestFindProfile(t *testing.T) {
 	repo := newPlayerRepository()
-	got, err := repo.FindProfile(1)
+	got, err := repo.FindProfile(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find profile: %s", err)
 	}

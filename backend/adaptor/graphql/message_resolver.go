@@ -267,7 +267,7 @@ func (r *queryResolver) messages(ctx context.Context, gameID string, query gqlmo
 		return nil, err
 	}
 	user := auth.GetUser(ctx)
-	messages, err := r.messageUsecase.FindMessages(gID, *q, user)
+	messages, err := r.messageUsecase.FindMessages(ctx, gID, *q, user)
 	if err != nil {
 		return nil, err
 	}
@@ -285,7 +285,7 @@ func (r *queryResolver) messagesLatestUnixTimeMilli(ctx context.Context, gameID 
 		return 0, err
 	}
 	user := auth.GetUser(ctx)
-	latest, err := r.messageUsecase.FindMessagesLatestUnixTimeMilli(gID, *q, user)
+	latest, err := r.messageUsecase.FindMessagesLatestUnixTimeMilli(ctx, gID, *q, user)
 	if err != nil {
 		return 0, err
 	}
@@ -396,7 +396,7 @@ func (r *queryResolver) message(ctx context.Context, gameID string, messageID st
 	if err != nil {
 		return nil, err
 	}
-	message, err := r.messageUsecase.FindMessage(gID, mID)
+	message, err := r.messageUsecase.FindMessage(ctx, gID, mID)
 	if err != nil {
 		return nil, err
 	}
@@ -413,7 +413,7 @@ func (r *queryResolver) messageReplies(ctx context.Context, gameID string, messa
 		return nil, err
 	}
 	user := auth.GetUser(ctx)
-	messages, err := r.messageUsecase.FindMessageReplies(gID, mID, user)
+	messages, err := r.messageUsecase.FindMessageReplies(ctx, gID, mID, user)
 	if err != nil {
 		return nil, err
 	}
@@ -432,7 +432,7 @@ func (r *queryResolver) threadMessages(ctx context.Context, gameID string, messa
 		return nil, err
 	}
 	user := auth.GetUser(ctx)
-	messages, err := r.messageUsecase.FindThreadMessages(gID, mID, user)
+	messages, err := r.messageUsecase.FindThreadMessages(ctx, gID, mID, user)
 	if err != nil {
 		return nil, err
 	}
@@ -450,7 +450,7 @@ func (r *queryResolver) messageFavoriteGameParticipants(ctx context.Context, gam
 	if err != nil {
 		return nil, err
 	}
-	pts, err := r.messageUsecase.FindMessageFavoriteGameParticipants(gID, mID)
+	pts, err := r.messageUsecase.FindMessageFavoriteGameParticipants(ctx, gID, mID)
 	if err != nil {
 		return nil, err
 	}
@@ -466,7 +466,7 @@ func (r *queryResolver) directMessages(ctx context.Context, gameID string, query
 	if err != nil {
 		return nil, err
 	}
-	messages, err := r.messageUsecase.FindDirectMessages(gID, *q)
+	messages, err := r.messageUsecase.FindDirectMessages(ctx, gID, *q)
 	if err != nil {
 		return nil, err
 	}
@@ -483,7 +483,7 @@ func (r *queryResolver) directMessagesLatestUnixTimeMilli(ctx context.Context, g
 	if err != nil {
 		return 0, err
 	}
-	latest, err := r.messageUsecase.FindDirectMessagesLatestUnixTimeMilli(gID, *q)
+	latest, err := r.messageUsecase.FindDirectMessagesLatestUnixTimeMilli(ctx, gID, *q)
 	if err != nil {
 		return 0, err
 	}
@@ -575,7 +575,7 @@ func (r *queryResolver) directMessage(ctx context.Context, gameID string, direct
 	if err != nil {
 		return nil, err
 	}
-	message, err := r.messageUsecase.FindDirectMessage(gID, mID)
+	message, err := r.messageUsecase.FindDirectMessage(ctx, gID, mID)
 	if err != nil {
 		return nil, err
 	}
@@ -591,7 +591,7 @@ func (r *queryResolver) directMessageFavoriteGameParticipants(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
-	pts, err := r.messageUsecase.FindDirectMessageFavoriteGameParticipants(gID, mID)
+	pts, err := r.messageUsecase.FindDirectMessageFavoriteGameParticipants(ctx, gID, mID)
 	if err != nil {
 		return nil, err
 	}
@@ -612,7 +612,7 @@ func (r *queryResolver) gameParticipantGroups(ctx context.Context, gameID string
 		memberID = &id
 	}
 	user := auth.GetUser(ctx)
-	groups, err := r.messageUsecase.FindGameParticipantGroups(model.GameParticipantGroupsQuery{
+	groups, err := r.messageUsecase.FindGameParticipantGroups(ctx, model.GameParticipantGroupsQuery{
 		GameID:                   gID,
 		MemberGroupParticipantID: memberID,
 	}, user)

@@ -213,24 +213,24 @@ type DirectMessagesQuery struct {
 
 type MessageRepository interface {
 	// message
-	FindMessages(gameID uint32, query MessagesQuery, myself *GameParticipant) (Messages, error)
-	FindMessagesLatestUnixTimeMilli(gameID uint32, query MessagesQuery, myself *GameParticipant) (uint64, error)
-	FindMessage(gameID uint32, ID uint64) (*Message, error)
-	FindMessageReplies(gameID uint32, messageID uint64, myself *GameParticipant) ([]Message, error)
-	FindThreadMessages(gameID uint32, messageID uint64, myself *GameParticipant) ([]Message, error)
-	FindMessageFavoriteGameParticipants(gameID uint32, messageID uint64) (GameParticipants, error)
+	FindMessages(ctx context.Context, gameID uint32, query MessagesQuery, myself *GameParticipant) (Messages, error)
+	FindMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query MessagesQuery, myself *GameParticipant) (uint64, error)
+	FindMessage(ctx context.Context, gameID uint32, ID uint64) (*Message, error)
+	FindMessageReplies(ctx context.Context, gameID uint32, messageID uint64, myself *GameParticipant) ([]Message, error)
+	FindThreadMessages(ctx context.Context, gameID uint32, messageID uint64, myself *GameParticipant) ([]Message, error)
+	FindMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, messageID uint64) (GameParticipants, error)
 	RegisterMessage(ctx context.Context, gameID uint32, message Message) error
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error
 	DeleteMessageFavorite(ctx context.Context, gameID uint32, messageID uint64, gameParticipantID uint32) error
 	// participant group
-	FindGameParticipantGroups(query GameParticipantGroupsQuery) ([]GameParticipantGroup, error)
+	FindGameParticipantGroups(ctx context.Context, query GameParticipantGroupsQuery) ([]GameParticipantGroup, error)
 	RegisterGameParticipantGroup(ctx context.Context, gameID uint32, group GameParticipantGroup) (*GameParticipantGroup, error)
 	UpdateGameParticipantGroup(ctx context.Context, gameID uint32, group GameParticipantGroup) error
 	// direct message
-	FindDirectMessages(gameID uint32, query DirectMessagesQuery) (DirectMessages, error)
-	FindDirectMessagesLatestUnixTimeMilli(gameID uint32, query DirectMessagesQuery) (uint64, error)
-	FindDirectMessage(gameID uint32, ID uint64) (*DirectMessage, error)
-	FindDirectMessageFavoriteGameParticipants(gameID uint32, directMessageID uint64) (GameParticipants, error)
+	FindDirectMessages(ctx context.Context, gameID uint32, query DirectMessagesQuery) (DirectMessages, error)
+	FindDirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query DirectMessagesQuery) (uint64, error)
+	FindDirectMessage(ctx context.Context, gameID uint32, ID uint64) (*DirectMessage, error)
+	FindDirectMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, directMessageID uint64) (GameParticipants, error)
 	RegisterDirectMessage(ctx context.Context, gameID uint32, message DirectMessage) error
 	RegisterDirectMessageFavorite(ctx context.Context, gameID uint32, directMessageID uint64, gameParticipantID uint32) error
 	DeleteDirectMessageFavorite(ctx context.Context, gameID uint32, directMessageID uint64, gameParticipantID uint32) error

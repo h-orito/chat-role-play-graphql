@@ -33,15 +33,16 @@ func AuthMiddleware(next http.Handler, userRepository model.UserRepository) http
 
 		token := rawToken.(*validator.ValidatedClaims)
 		username := token.RegisteredClaims.Subject
+		reqCtx := req.Context()
 
-		user, err := userRepository.FindByUserName(username)
+		user, err := userRepository.FindByUserName(reqCtx, username)
 		if err != nil {
 			log.Println(err)
 			next.ServeHTTP(w, req)
 			return
 		}
 		if user == nil {
-			user, err = userRepository.Signup(username)
+			user, err = userRepository.Signup(reqCtx, username)
 			if err != nil {
 				log.Println(err)
 				next.ServeHTTP(w, req)
@@ -49,7 +50,7 @@ func AuthMiddleware(next http.Handler, userRepository model.UserRepository) http
 			}
 		}
 
-		ctx := context.WithValue(req.Context(), userKey{}, user)
+		ctx := context.WithValue(reqCtx, userKey{}, user)
 		next.ServeHTTP(w, req.WithContext(ctx))
 	})
 }

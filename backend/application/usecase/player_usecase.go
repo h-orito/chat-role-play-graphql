@@ -7,13 +7,13 @@ import (
 )
 
 type PlayerUsecase interface {
-	FindPlayers(query model.PlayersQuery) ([]model.Player, error)
-	Find(ID uint32) (player *model.Player, err error)
-	FindByName(name string) (player *model.Player, err error)
-	FindByUserName(username string) (player *model.Player, err error)
-	FindProfile(ID uint32) (profile *model.PlayerProfile, err error)
+	FindPlayers(ctx context.Context, query model.PlayersQuery) ([]model.Player, error)
+	Find(ctx context.Context, ID uint32) (player *model.Player, err error)
+	FindByName(ctx context.Context, name string) (player *model.Player, err error)
+	FindByUserName(ctx context.Context, username string) (player *model.Player, err error)
+	FindProfile(ctx context.Context, ID uint32) (profile *model.PlayerProfile, err error)
 	SaveProfile(ctx context.Context, name string, profile *model.PlayerProfile) (saved *model.PlayerProfile, err error)
-	FindAuthorities(ID uint32) (authorities []model.PlayerAuthority, err error)
+	FindAuthorities(ctx context.Context, ID uint32) (authorities []model.PlayerAuthority, err error)
 	RegisterSnsAccount(ctx context.Context, playerID uint32, account *model.PlayerSnsAccount) (saved *model.PlayerSnsAccount, err error)
 	UpdateSnsAccount(ctx context.Context, ID uint32, account *model.PlayerSnsAccount) error
 	DeleteSnsAccount(ctx context.Context, ID uint32) error
@@ -32,25 +32,25 @@ func NewPlayerUsecase(playerService app_service.PlayerService,
 	}
 }
 
-func (s *playerUsecase) FindPlayers(query model.PlayersQuery) ([]model.Player, error) {
-	return s.playerService.FindPlayers(query)
+func (s *playerUsecase) FindPlayers(ctx context.Context, query model.PlayersQuery) ([]model.Player, error) {
+	return s.playerService.FindPlayers(ctx, query)
 }
 
-func (s *playerUsecase) Find(ID uint32) (player *model.Player, err error) {
-	return s.playerService.Find(ID)
+func (s *playerUsecase) Find(ctx context.Context, ID uint32) (player *model.Player, err error) {
+	return s.playerService.Find(ctx, ID)
 }
 
-func (s *playerUsecase) FindByName(name string) (player *model.Player, err error) {
-	return s.playerService.FindByName(name)
+func (s *playerUsecase) FindByName(ctx context.Context, name string) (player *model.Player, err error) {
+	return s.playerService.FindByName(ctx, name)
 }
 
-func (s *playerUsecase) FindByUserName(username string) (player *model.Player, err error) {
-	return s.playerService.FindByUserName(username)
+func (s *playerUsecase) FindByUserName(ctx context.Context, username string) (player *model.Player, err error) {
+	return s.playerService.FindByUserName(ctx, username)
 }
 
 // FindProfile implements PlayerUsecase.
-func (s *playerUsecase) FindProfile(ID uint32) (profile *model.PlayerProfile, err error) {
-	return s.playerService.FindProfile(ID)
+func (s *playerUsecase) FindProfile(ctx context.Context, ID uint32) (profile *model.PlayerProfile, err error) {
+	return s.playerService.FindProfile(ctx, ID)
 }
 
 // SaveProfile implements PlayerUsecase.
@@ -65,8 +65,8 @@ func (s *playerUsecase) SaveProfile(ctx context.Context, name string, profile *m
 }
 
 // FindAuthorities implements PlayerUsecase.
-func (s *playerUsecase) FindAuthorities(ID uint32) (authorities []model.PlayerAuthority, err error) {
-	return s.playerService.FindAuthorities(ID)
+func (s *playerUsecase) FindAuthorities(ctx context.Context, ID uint32) (authorities []model.PlayerAuthority, err error) {
+	return s.playerService.FindAuthorities(ctx, ID)
 }
 
 // RegisterSnsAccount implements PlayerUsecase.

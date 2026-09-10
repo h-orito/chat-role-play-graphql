@@ -23,16 +23,16 @@ func NewGameRepository(db *DB) model.GameRepository {
 	}
 }
 
-func (repo *GameRepository) FindGames(query model.GamesQuery) (games []model.Game, err error) {
-	return findGames(repo.db.Connection, query)
+func (repo *GameRepository) FindGames(ctx context.Context, query model.GamesQuery) (games []model.Game, err error) {
+	return findGames(repo.db.Conn(ctx), query)
 }
 
-func (repo *GameRepository) FindGame(ID uint32) (_ *model.Game, err error) {
-	return findGame(repo.db.Connection, ID)
+func (repo *GameRepository) FindGame(ctx context.Context, ID uint32) (_ *model.Game, err error) {
+	return findGame(repo.db.Conn(ctx), ID)
 }
 
-func (repo *GameRepository) FindGamePeriods(IDs []uint32) (periods []model.GamePeriod, err error) {
-	return findGamePeriods(repo.db.Connection, IDs)
+func (repo *GameRepository) FindGamePeriods(ctx context.Context, IDs []uint32) (periods []model.GamePeriod, err error) {
+	return findGamePeriods(repo.db.Conn(ctx), IDs)
 }
 
 func (repo *GameRepository) RegisterGame(ctx context.Context, game model.Game) (saved *model.Game, err error) {

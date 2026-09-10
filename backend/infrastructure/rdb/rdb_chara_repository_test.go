@@ -3,6 +3,7 @@ package db_test
 import (
 	"chat-role-play/domain/model"
 	db "chat-role-play/infrastructure/rdb"
+	"context"
 	"testing"
 )
 
@@ -13,7 +14,7 @@ func newCharaRepository() model.CharaRepository {
 
 func TestFindDesigners(t *testing.T) {
 	repo := newCharaRepository()
-	got, err := repo.FindDesigners(model.DesignerQuery{})
+	got, err := repo.FindDesigners(context.Background(), model.DesignerQuery{})
 	if err != nil {
 		t.Errorf("failed to find designers: %s", err)
 	}
@@ -25,7 +26,7 @@ func TestFindDesigners(t *testing.T) {
 
 func TestFindDesigner(t *testing.T) {
 	repo := newCharaRepository()
-	got, err := repo.FindDesigner(1)
+	got, err := repo.FindDesigner(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find designer: %s", err)
 	}
@@ -36,7 +37,7 @@ func TestFindDesigner(t *testing.T) {
 
 func TestFindCharachips(t *testing.T) {
 	repo := newCharaRepository()
-	got, err := repo.FindCharachips(model.CharachipQuery{})
+	got, err := repo.FindCharachips(context.Background(), model.CharachipQuery{})
 	if err != nil {
 		t.Errorf("failed to find charachips: %s", err)
 	}
@@ -48,7 +49,7 @@ func TestFindCharachips(t *testing.T) {
 
 func TestFindCharachip(t *testing.T) {
 	repo := newCharaRepository()
-	got, err := repo.FindCharachip(1)
+	got, err := repo.FindCharachip(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find charachip: %s", err)
 	}
@@ -59,7 +60,7 @@ func TestFindCharachip(t *testing.T) {
 
 func TestFindCharas(t *testing.T) {
 	repo := newCharaRepository()
-	got, err := repo.FindCharas(model.CharaQuery{})
+	got, err := repo.FindCharas(context.Background(), model.CharaQuery{})
 	if err != nil {
 		t.Errorf("failed to find charas: %s", err)
 	}
@@ -71,7 +72,7 @@ func TestFindCharas(t *testing.T) {
 
 func TestFindChara(t *testing.T) {
 	repo := newCharaRepository()
-	got, err := repo.FindChara(1)
+	got, err := repo.FindChara(context.Background(), 1)
 	if err != nil {
 		t.Errorf("failed to find chara: %s", err)
 	}
@@ -82,7 +83,7 @@ func TestFindChara(t *testing.T) {
 
 func TestFindCharaImages(t *testing.T) {
 	repo := newCharaRepository()
-	got, err := repo.FindCharaImages(model.CharaImageQuery{})
+	got, err := repo.FindCharaImages(context.Background(), model.CharaImageQuery{})
 	if err != nil {
 		t.Errorf("failed to find chara images: %s", err)
 	}
