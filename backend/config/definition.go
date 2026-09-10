@@ -35,7 +35,7 @@ type Image struct {
 func Load() (*Config, error) {
 	err := godotenv.Load(".env")
 	if err != nil {
-		fmt.Printf(".env file not exist.", err)
+		fmt.Printf(".env file not exist. %v\n", err)
 	}
 
 	return &Config{

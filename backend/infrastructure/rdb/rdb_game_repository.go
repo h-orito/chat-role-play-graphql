@@ -272,6 +272,9 @@ func findGame(db *gorm.DB, ID uint32) (_ *model.Game, err error) {
 	if err != nil {
 		return nil, err
 	}
+	if rdbGame == nil {
+		return nil, nil
+	}
 	gameMasters, err := findGameMasterPlayers(db, ID)
 	if err != nil {
 		return nil, err
