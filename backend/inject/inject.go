@@ -3,6 +3,7 @@ package inject
 import (
 	"chat-role-play/adaptor/auth"
 	"chat-role-play/adaptor/graphql"
+	"chat-role-play/adaptor/health"
 	"chat-role-play/application/app_service"
 	"chat-role-play/application/usecase"
 	"chat-role-play/domain/dom_service"
@@ -16,7 +17,15 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 )
 
-func InjectServer() http.Handler {
+// Handlers は HTTP サーバーに登録するハンドラ群。
+type Handlers struct {
+	// GraphQL は /crp-server/query 用 (認証ミドルウェア込み)
+	GraphQL http.Handler
+	// Health は /crp-server/health 用 (GraphQL と同じ DB プールの疎通を確認する)
+	Health http.Handler
+}
+
+func InjectServer() Handlers {
 	database := injectDb()
 	userRepository := injectUserRepository(database)
 	resolver := injectResolver(database, userRepository)
@@ -29,7 +38,14 @@ func InjectServer() http.Handler {
 		),
 	)
 	handler := auth.AuthMiddleware(srv, userRepository)
-	return auth0.JwtMiddleware()(handler)
+	sqlDB, err := database.Connection.DB()
+	if err != nil {
+		panic(err.Error())
+	}
+	return Handlers{
+		GraphQL: auth0.JwtMiddleware()(handler),
+		Health:  health.NewHandler(sqlDB),
+	}
 }
 
 // resolver
