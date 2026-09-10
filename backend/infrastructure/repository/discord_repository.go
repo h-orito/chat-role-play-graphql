@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -57,6 +58,11 @@ func (nr *NotificationRepository) Notify(
 		return nil
 	}
 	defer res.Body.Close()
+	// body を読み切らないと keep-alive 接続が再利用されない
+	io.Copy(io.Discard, res.Body)
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		log.Printf("discord webhook returned status %d (game %d)", res.StatusCode, gameID)
+	}
 
 	return nil
 }

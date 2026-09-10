@@ -23,6 +23,10 @@ type Loaders struct {
 // batchTimeout はバッチ 1 回の DB 読み取りの上限。main.go の requestTimeout と同じ値
 const batchTimeout = 30 * time.Second
 
+// batchContext はバッチ関数用の ctx を返す。
+// ローダーはプロセス全体で共有されるため、バッチ関数に渡る ctx は同じバッチ窓で最初に Load したリクエストのもの。
+// そのリクエストが既にキャンセル済み (クライアント切断や timeout) でも同じバッチに乗った他リクエスト分の
+// 読み取りを失敗させないよう、キャンセルを切り離してバッチ独自の timeout を付ける。
 func batchContext(ctx context.Context) (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.WithoutCancel(ctx), batchTimeout)
 }
@@ -77,10 +81,7 @@ func NewCharaBatcher(charaUsecase usecase.CharaUsecase) *charaBatcher {
 }
 
 func (g *gameBatcher) batchLoadPeriod(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
-	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
-	// キャンセルを切り離してバッチ独自の timeout を付ける
-	ctx, cancel := batchContext(ctx)
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
 	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
@@ -109,10 +110,7 @@ func (g *gameBatcher) batchLoadPeriod(ctx context.Context, keys dataloader.Keys)
 }
 
 func (g *gameBatcher) batchLoadParticipant(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
-	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
-	// キャンセルを切り離してバッチ独自の timeout を付ける
-	ctx, cancel := batchContext(ctx)
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
 	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
@@ -141,10 +139,7 @@ func (g *gameBatcher) batchLoadParticipant(ctx context.Context, keys dataloader.
 }
 
 func (g *gameBatcher) batchLoadParticipantIcon(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
-	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
-	// キャンセルを切り離してバッチ独自の timeout を付ける
-	ctx, cancel := batchContext(ctx)
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
 	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
@@ -177,10 +172,7 @@ func (g *gameBatcher) batchLoadParticipantIcon(ctx context.Context, keys dataloa
 }
 
 func (p *playerBatcher) batchLoadPlayer(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
-	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
-	// キャンセルを切り離してバッチ独自の timeout を付ける
-	ctx, cancel := batchContext(ctx)
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
 	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
@@ -211,10 +203,7 @@ func (p *playerBatcher) batchLoadPlayer(ctx context.Context, keys dataloader.Key
 }
 
 func (p *charaBatcher) batchLoadCharachip(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
-	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
-	// キャンセルを切り離してバッチ独自の timeout を付ける
-	ctx, cancel := batchContext(ctx)
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
 	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
@@ -245,10 +234,7 @@ func (p *charaBatcher) batchLoadCharachip(ctx context.Context, keys dataloader.K
 }
 
 func (p *charaBatcher) batchLoadChara(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
-	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
-	// キャンセルを切り離してバッチ独自の timeout を付ける
-	ctx, cancel := batchContext(ctx)
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
 	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
@@ -277,10 +263,7 @@ func (p *charaBatcher) batchLoadChara(ctx context.Context, keys dataloader.Keys)
 }
 
 func (p *charaBatcher) batchLoadCharaImage(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-	// ローダーはプロセス全体で共有されるため、この ctx は同じバッチ窓で最初に Load したリクエストのもの。
-	// そのリクエストが既にキャンセル済みでも他リクエスト分の読み取りを失敗させないよう、
-	// キャンセルを切り離してバッチ独自の timeout を付ける
-	ctx, cancel := batchContext(ctx)
+	ctx, cancel := batchContext(ctx) // 最初に Load したリクエストのキャンセルに引きずられないようにする
 	defer cancel()
 	var err error
 	intids := array.Map(keys, func(ID dataloader.Key) uint32 {
