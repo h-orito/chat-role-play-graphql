@@ -29,9 +29,10 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := h.sqlDB.PingContext(ctx); err != nil {
+		// 認証なしで公開されるため、内部ホスト名や DB ユーザー名を含みうるエラー詳細はログにだけ出す
 		log.Printf("health check failed: %v", err)
 		w.WriteHeader(http.StatusServiceUnavailable)
-		json.NewEncoder(w).Encode(map[string]string{"status": "ng", "error": err.Error()})
+		json.NewEncoder(w).Encode(map[string]string{"status": "ng"})
 		return
 	}
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
