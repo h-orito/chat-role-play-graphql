@@ -33,15 +33,17 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := inject.InjectServer()
+	handlers := inject.InjectServer()
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:3001"},
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
-	}).Handler(srv)
+	}).Handler(handlers.GraphQL)
 	http.Handle("/crp-server/", playground.Handler("GraphQL playground", "/crp-server/query"))
 	http.Handle("/crp-server/query", withTimeout(handler, requestTimeout))
+	// k8s の readiness / liveness probe 用。DB プールの疎通を確認する
+	http.Handle("/crp-server/health", handlers.Health)
 	log.Printf("connect to http://localhost:%s/crp-server/ for GraphQL playground", port)
 	server := &http.Server{
 		Addr:              ":" + port,
