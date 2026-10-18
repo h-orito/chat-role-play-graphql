@@ -27,10 +27,10 @@ type MessageUsecase interface {
 	RegisterGameParticipantGroup(ctx context.Context, user model.User, gameID uint32, group model.GameParticipantGroup) (*model.GameParticipantGroup, error)
 	UpdateGameParticipantGroup(ctx context.Context, user model.User, gameID uint32, group model.GameParticipantGroup) error
 	// direct message
-	FindDirectMessages(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error)
-	FindDirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (uint64, error)
-	FindDirectMessage(ctx context.Context, gameID uint32, ID uint64) (*model.DirectMessage, error)
-	FindDirectMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, directMessageID uint64) (model.GameParticipants, error)
+	FindDirectMessages(ctx context.Context, gameID uint32, query model.DirectMessagesQuery, user *model.User) (model.DirectMessages, error)
+	FindDirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.DirectMessagesQuery, user *model.User) (uint64, error)
+	FindDirectMessage(ctx context.Context, gameID uint32, ID uint64, user *model.User) (*model.DirectMessage, error)
+	FindDirectMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, directMessageID uint64, user *model.User) (model.GameParticipants, error)
 	RegisterDirectMessage(ctx context.Context, gameID uint32, user model.User, message model.DirectMessage) error
 	RegisterDirectMessageDryRun(ctx context.Context, gameID uint32, user model.User, message model.DirectMessage) (*model.DirectMessage, error)
 	RegisterDirectMessageFavorite(ctx context.Context, gameID uint32, user model.User, directMessageID uint64) error
@@ -514,23 +514,100 @@ func (s *messageUsecase) UpdateGameParticipantGroup(
 }
 
 // FindDirectMessages implements MessageService.
-func (s *messageUsecase) FindDirectMessages(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (model.DirectMessages, error) {
+func (s *messageUsecase) FindDirectMessages(ctx context.Context, gameID uint32, query model.DirectMessagesQuery, user *model.User) (model.DirectMessages, error) {
+	if query.GameParticipantGroupID == nil {
+		return model.DirectMessages{}, errors.New("participant group is required")
+	}
+	if err := s.assertViewableDirectMessageGroup(ctx, gameID, *query.GameParticipantGroupID, user); err != nil {
+		return model.DirectMessages{}, err
+	}
 	return s.messageService.FindDirectMessages(ctx, gameID, query)
 }
 
 // FindDirectMessagesLatestUnixTimeMilli implements MessageUsecase.
-func (s *messageUsecase) FindDirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.DirectMessagesQuery) (uint64, error) {
+func (s *messageUsecase) FindDirectMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.DirectMessagesQuery, user *model.User) (uint64, error) {
+	if query.GameParticipantGroupID == nil {
+		return 0, errors.New("participant group is required")
+	}
+	if err := s.assertViewableDirectMessageGroup(ctx, gameID, *query.GameParticipantGroupID, user); err != nil {
+		return 0, err
+	}
 	return s.messageService.FindDirectMessagesLatestUnixTimeMilli(ctx, gameID, query)
 }
 
 // FindDirectMessage implements MessageService.
-func (s *messageUsecase) FindDirectMessage(ctx context.Context, gameID uint32, ID uint64) (*model.DirectMessage, error) {
-	return s.messageService.FindDirectMessage(ctx, gameID, ID)
+func (s *messageUsecase) FindDirectMessage(ctx context.Context, gameID uint32, ID uint64, user *model.User) (*model.DirectMessage, error) {
+	dm, err := s.messageService.FindDirectMessage(ctx, gameID, ID)
+	if err != nil || dm == nil {
+		return nil, err
+	}
+	if err := s.assertViewableDirectMessageGroup(ctx, gameID, dm.GameParticipantGroupID, user); err != nil {
+		return nil, err
+	}
+	return dm, nil
 }
 
 // FindDirectMessageFavoriteGameParticipants implements MessageService.
-func (s *messageUsecase) FindDirectMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, directMessageID uint64) (model.GameParticipants, error) {
+func (s *messageUsecase) FindDirectMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, directMessageID uint64, user *model.User) (model.GameParticipants, error) {
+	dm, err := s.FindDirectMessage(ctx, gameID, directMessageID, user)
+	if err != nil {
+		return model.GameParticipants{}, err
+	}
+	if dm == nil {
+		return model.GameParticipants{}, nil
+	}
 	return s.messageService.FindDirectMessageFavoriteGameParticipants(ctx, gameID, directMessageID)
+}
+
+// assertViewableDirectMessageGroup は DM グループの閲覧可否を判定する。
+// 閲覧できるのはグループのメンバーと、GM 全発言閲覧設定が ON のゲームの GM (Admin 含む) のみ。
+// (画面 direct-message-groups-area.tsx で一覧に出す範囲と揃えている)
+func (s *messageUsecase) assertViewableDirectMessageGroup(ctx context.Context, gameID uint32, groupID uint32, user *model.User) error {
+	if user == nil {
+		return errors.New("not authenticated")
+	}
+	player, err := s.playerService.FindByUserName(ctx, user.UserName)
+	if err != nil {
+		return err
+	}
+	if player == nil {
+		return errors.New("player not found")
+	}
+	game, err := s.gameService.FindGame(ctx, gameID)
+	if err != nil {
+		return err
+	}
+	if game == nil {
+		return errors.New("game not found")
+	}
+	if game.Settings.Rule.IsGameMasterViewAllMessages {
+		authorities, err := s.playerService.FindAuthorities(ctx, player.ID)
+		if err != nil {
+			return err
+		}
+		if s.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
+			return nil
+		}
+	}
+	myself, err := s.findMyGameParticipant(ctx, gameID, *user)
+	if err != nil {
+		return err
+	}
+	if myself == nil {
+		return errors.New("forbidden: not a member of this group")
+	}
+	groups, err := s.messageService.FindGameParticipantGroups(ctx, model.GameParticipantGroupsQuery{
+		GameID:                   gameID,
+		IDs:                      &[]uint32{groupID},
+		MemberGroupParticipantID: &myself.ID,
+	})
+	if err != nil {
+		return err
+	}
+	if len(groups) == 0 {
+		return errors.New("forbidden: not a member of this group")
+	}
+	return nil
 }
 
 // RegisterDirectMessage implements MessageService.
