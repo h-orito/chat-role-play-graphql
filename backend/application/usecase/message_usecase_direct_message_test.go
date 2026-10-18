@@ -209,3 +209,42 @@ func TestFindDirectMessagesRequiresGroup(t *testing.T) {
 		t.Errorf("want error when participant group is not specified")
 	}
 }
+
+func TestFindGameParticipantGroupsPermission(t *testing.T) {
+	memberID := uint32(1) // member の参加者 ID
+	outsiderID := uint32(2)
+	cases := []struct {
+		name     string
+		user     *model.User
+		viewAll  bool
+		memberID *uint32
+		viewable bool
+	}{
+		{"未ログインは参加者指定でも見られない", nil, true, &memberID, false},
+		{"自分の参加者 ID なら見られる", &model.User{UserName: "member"}, false, &memberID, true},
+		{"他人の参加者 ID は見られない", &model.User{UserName: "outsider"}, false, &memberID, false},
+		{"ゲーム未参加者は参加者指定でも見られない", &model.User{UserName: "stranger"}, false, &memberID, false},
+		{"参加者でも全件一覧は見られない", &model.User{UserName: "member"}, true, nil, false},
+		{"GM は全発言閲覧 ON なら全件一覧を見られる", &model.User{UserName: "gm"}, true, nil, true},
+		{"GM は全発言閲覧 ON なら他人の参加者指定も見られる", &model.User{UserName: "gm"}, true, &memberID, true},
+		{"GM でも全発言閲覧 OFF なら全件一覧は見られない", &model.User{UserName: "gm"}, false, nil, false},
+		{"GM でも全発言閲覧 OFF なら他人の参加者指定は見られない", &model.User{UserName: "gm"}, false, &outsiderID, false},
+		{"管理者は全発言閲覧 ON なら全件一覧を見られる", &model.User{UserName: "admin"}, true, nil, true},
+		{"管理者でも全発言閲覧 OFF なら全件一覧は見られない", &model.User{UserName: "admin"}, false, nil, false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			u := newDirectMessageTestUsecase(c.viewAll)
+			groups, err := u.FindGameParticipantGroups(context.Background(), model.GameParticipantGroupsQuery{
+				GameID:                   dmTestGameID,
+				MemberGroupParticipantID: c.memberID,
+			}, c.user)
+			if c.viewable && (err != nil || len(groups) != 1) {
+				t.Errorf("want 1 group, got %v, err=%v", groups, err)
+			}
+			if !c.viewable && (err == nil || len(groups) != 0) {
+				t.Errorf("want error, got %v, err=%v", groups, err)
+			}
+		})
+	}
+}
