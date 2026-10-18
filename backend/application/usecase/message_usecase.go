@@ -126,16 +126,19 @@ func (s *messageUsecase) MergeQuery(ctx context.Context, gameID uint32, query mo
 		s.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
 		viewableMessageTypes = model.MessageTypeValues()
 	}
-	types := array.Filter(requestMessageTypes, func(t model.MessageType) bool {
-		return array.Any(viewableMessageTypes, func(v model.MessageType) bool {
+	// viewable 側を基準に絞り込むことで、リクエストに同じタイプが重複していても結果は重複しない
+	// (重複を残すと下の件数判定で全タイプ扱いになり、type フィルタが外れてしまう)
+	types := array.Filter(viewableMessageTypes, func(v model.MessageType) bool {
+		return array.Any(requestMessageTypes, func(t model.MessageType) bool {
 			return v == t
 		})
 	})
-	// 全タイプが viewable な場合は query.Types を nil のまま維持し、type フィルタ自体を無効化する。
+	// 全タイプが viewable な場合は query.Types を nil にし、type フィルタ自体を無効化する。
 	// （GM 全発言閲覧 ON 時はここで全タイプが残るため、後段の DB クエリで type 制約が付かない）
-	if len(types) == 0 {
-		query.Types = &types
-	} else if len(types) != len(model.MessageTypeValues()) {
+	// それ以外は必ず絞り込んだ結果で上書きする (クライアント指定のリストを残さない)
+	if len(types) == len(model.MessageTypeValues()) {
+		query.Types = nil
+	} else {
 		query.Types = &types
 	}
 	// 独り言を取得するか
