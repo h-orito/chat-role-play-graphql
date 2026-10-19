@@ -398,39 +398,30 @@ func (s *messageUsecase) DeleteMessageFavorite(
 }
 
 func (s *messageUsecase) FindGameParticipantGroups(ctx context.Context, query model.GameParticipantGroupsQuery, user *model.User) ([]model.GameParticipantGroup, error) {
-	// MemberGroupParticipantID 未指定は「全 DM グループ一覧」リクエスト。
-	// プライバシー保護のため GM / Admin のみ許可する。
-	// フロント (direct-message-groups-area.tsx) は GM 全発言閲覧 ON ゲームの GM のみこの形式で呼ぶ。
-	if query.MemberGroupParticipantID == nil {
-		if user == nil {
-			return nil, fmt.Errorf("not authenticated")
-		}
-		player, err := s.playerService.FindByUserName(ctx, user.UserName)
-		if err != nil {
-			return nil, err
-		}
-		if player == nil {
-			return nil, fmt.Errorf("player not found")
-		}
-		authorities, err := s.playerService.FindAuthorities(ctx, player.ID)
-		if err != nil {
-			return nil, err
-		}
-		game, err := s.gameService.FindGame(ctx, query.GameID)
-		if err != nil {
-			return nil, err
-		}
-		if game == nil {
-			return nil, fmt.Errorf("game not found")
-		}
-		if !s.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
-			return nil, fmt.Errorf("forbidden: only game masters can list all groups")
-		}
-		// GM 全発言閲覧設定が OFF のゲームでは GM であっても全グループ列挙は許可しない。
+	// グループ名とメンバーも非公開情報なので、未ログインでは返さない
+	if user == nil {
+		return nil, fmt.Errorf("not authenticated")
+	}
+	canViewAll, err := s.canViewAllDirectMessages(ctx, query.GameID, *user)
+	if err != nil {
+		return nil, err
+	}
+	if !canViewAll {
+		// MemberGroupParticipantID 未指定は「全 DM グループ一覧」リクエスト。
+		// GM 全発言閲覧設定が ON のゲームの GM / Admin のみ許可する。
+		// フロント (direct-message-groups-area.tsx) は GM 全発言閲覧 ON ゲームの GM のみこの形式で呼ぶ。
 		// （admin はゲーム設定によらず常に許可、というポリシーも考えられるが、
 		//   IsGameMaster で admin も GM として扱う以上、設定 OFF のゲームでは admin も含めて禁止する）
-		if !game.Settings.Rule.IsGameMasterViewAllMessages {
-			return nil, fmt.Errorf("forbidden: isGameMasterViewAllMessages is not enabled for this game")
+		if query.MemberGroupParticipantID == nil {
+			return nil, fmt.Errorf("forbidden: only game masters can list all groups when isGameMasterViewAllMessages is enabled")
+		}
+		// 参加者を指定した一覧は自分の分だけ。他人が入っているグループの名前・メンバーは返さない
+		myself, err := s.findMyGameParticipant(ctx, query.GameID, *user)
+		if err != nil {
+			return nil, err
+		}
+		if myself == nil || myself.ID != *query.MemberGroupParticipantID {
+			return nil, fmt.Errorf("forbidden: can only list your own groups")
 		}
 	}
 	return s.messageService.FindGameParticipantGroups(ctx, query)
@@ -562,6 +553,32 @@ func (s *messageUsecase) FindDirectMessageFavoriteGameParticipants(ctx context.C
 	return s.messageService.FindDirectMessageFavoriteGameParticipants(ctx, gameID, directMessageID)
 }
 
+// canViewAllDirectMessages は全 DM グループを閲覧できるか (GM 全発言閲覧設定が ON のゲームの GM / Admin か) を返す。
+func (s *messageUsecase) canViewAllDirectMessages(ctx context.Context, gameID uint32, user model.User) (bool, error) {
+	player, err := s.playerService.FindByUserName(ctx, user.UserName)
+	if err != nil {
+		return false, err
+	}
+	if player == nil {
+		return false, errors.New("player not found")
+	}
+	game, err := s.gameService.FindGame(ctx, gameID)
+	if err != nil {
+		return false, err
+	}
+	if game == nil {
+		return false, errors.New("game not found")
+	}
+	if !game.Settings.Rule.IsGameMasterViewAllMessages {
+		return false, nil
+	}
+	authorities, err := s.playerService.FindAuthorities(ctx, player.ID)
+	if err != nil {
+		return false, err
+	}
+	return s.gameMasterDomainService.IsGameMaster(*game, *player, authorities), nil
+}
+
 // assertViewableDirectMessageGroup は DM グループの閲覧可否を判定する。
 // 閲覧できるのはグループのメンバーと、GM 全発言閲覧設定が ON のゲームの GM (Admin 含む) のみ。
 // (画面 direct-message-groups-area.tsx で一覧に出す範囲と揃えている)
@@ -569,28 +586,12 @@ func (s *messageUsecase) assertViewableDirectMessageGroup(ctx context.Context, g
 	if user == nil {
 		return errors.New("not authenticated")
 	}
-	player, err := s.playerService.FindByUserName(ctx, user.UserName)
+	canViewAll, err := s.canViewAllDirectMessages(ctx, gameID, *user)
 	if err != nil {
 		return err
 	}
-	if player == nil {
-		return errors.New("player not found")
-	}
-	game, err := s.gameService.FindGame(ctx, gameID)
-	if err != nil {
-		return err
-	}
-	if game == nil {
-		return errors.New("game not found")
-	}
-	if game.Settings.Rule.IsGameMasterViewAllMessages {
-		authorities, err := s.playerService.FindAuthorities(ctx, player.ID)
-		if err != nil {
-			return err
-		}
-		if s.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
-			return nil
-		}
+	if canViewAll {
+		return nil
 	}
 	myself, err := s.findMyGameParticipant(ctx, gameID, *user)
 	if err != nil {
