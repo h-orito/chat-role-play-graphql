@@ -82,20 +82,20 @@ func (*GameRepository) RegisterGameMaster(ctx context.Context, gameID uint32, ma
 	return registerGameMaster(tx, gameID, master)
 }
 
-func (*GameRepository) UpdateGameMaster(ctx context.Context, master model.GameMaster) (err error) {
+func (*GameRepository) UpdateGameMaster(ctx context.Context, gameID uint32, master model.GameMaster) (err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get tx from context")
 	}
-	return updateGameMaster(tx, master)
+	return updateGameMaster(tx, gameID, master)
 }
 
-func (*GameRepository) DeleteGameMaster(ctx context.Context, gameMasterID uint32) (err error) {
+func (*GameRepository) DeleteGameMaster(ctx context.Context, gameID uint32, gameMasterID uint32) (err error) {
 	tx, ok := GetTx(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get tx from context")
 	}
-	return deleteGameMaster(tx, gameMasterID)
+	return deleteGameMaster(tx, gameID, gameMasterID)
 }
 
 func (repo *GameRepository) UpdateGameStatus(ctx context.Context, ID uint32, status model.GameStatus) (err error) {
@@ -162,7 +162,7 @@ func (repo *GameRepository) DeleteGamePeriod(
 		return fmt.Errorf("failed to get tx from context")
 	}
 	// 日記やメッセージを移動先の期間に変更し、削除対象の期間を削除
-	err = deleteGamePeriod(tx, targetPeriodID, destPeriodID)
+	err = deleteGamePeriod(tx, gameID, targetPeriodID, destPeriodID)
 	if err != nil {
 		return err
 	}
@@ -412,15 +412,21 @@ func registerGameMaster(db *gorm.DB, gameID uint32, master model.GameMaster) (sa
 	return gm.ToModel(), nil
 }
 
-func updateGameMaster(db *gorm.DB, master model.GameMaster) (err error) {
-	if err := db.Model(&GameMasterPlayer{}).Where("id = ?", master.ID).Update("is_producer", master.IsProducer).Error; err != nil {
+func updateGameMaster(db *gorm.DB, gameID uint32, master model.GameMaster) (err error) {
+	// 他ゲームの GM を更新できないよう game_id でも絞る
+	if err := db.Model(&GameMasterPlayer{}).
+		Where("id = ? and game_id = ?", master.ID, gameID).
+		Update("is_producer", master.IsProducer).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func deleteGameMaster(db *gorm.DB, id uint32) (err error) {
-	db.Where("id = ?", id).Delete(&GameMasterPlayer{})
+func deleteGameMaster(db *gorm.DB, gameID uint32, id uint32) (err error) {
+	// 他ゲームの GM を削除できないよう game_id でも絞る
+	if err := db.Where("id = ? and game_id = ?", id, gameID).Delete(&GameMasterPlayer{}).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -495,25 +501,35 @@ func registerGamePeriod(db *gorm.DB, gameID uint32, gm model.GamePeriod) (err er
 	return nil
 }
 
-func deleteGamePeriod(db *gorm.DB, targetGamePeriodID uint32, destGamePeriodID uint32) (err error) {
+func deleteGamePeriod(db *gorm.DB, gameID uint32, targetGamePeriodID uint32, destGamePeriodID uint32) (err error) {
+	// 他ゲームの期間を操作できないよう、削除対象・移動先ともに同じゲームの期間であることを確認する
+	var count int64
+	if err := db.Model(&GamePeriod{}).
+		Where("game_id = ? and id in (?)", gameID, []uint32{targetGamePeriodID, destGamePeriodID}).
+		Count(&count).Error; err != nil {
+		return err
+	}
+	if targetGamePeriodID == destGamePeriodID || count != 2 {
+		return errors.New("game period not found")
+	}
 	// 日記とメッセージを移動
 	if err := db.Model(&Message{}).
-		Where("game_period_id = ?", targetGamePeriodID).
+		Where("game_id = ? and game_period_id = ?", gameID, targetGamePeriodID).
 		Update("game_period_id", destGamePeriodID).Error; err != nil {
 		return err
 	}
 	if err := db.Model(&DirectMessage{}).
-		Where("game_period_id = ?", targetGamePeriodID).
+		Where("game_id = ? and game_period_id = ?", gameID, targetGamePeriodID).
 		Update("game_period_id", destGamePeriodID).Error; err != nil {
 		return err
 	}
 	if err := db.Model(&GameParticipantDiary{}).
-		Where("game_period_id = ?", targetGamePeriodID).
+		Where("game_id = ? and game_period_id = ?", gameID, targetGamePeriodID).
 		Update("game_period_id", destGamePeriodID).Error; err != nil {
 		return err
 	}
 	// 削除対象の期間を削除
-	if err := db.Where("id = ?", targetGamePeriodID).Delete(&GamePeriod{}).Error; err != nil {
+	if err := db.Where("id = ? and game_id = ?", targetGamePeriodID, gameID).Delete(&GamePeriod{}).Error; err != nil {
 		return err
 	}
 	return nil
