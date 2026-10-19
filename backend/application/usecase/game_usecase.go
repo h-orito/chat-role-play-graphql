@@ -180,7 +180,10 @@ func (g *gameUsecase) UpdateGameMaster(
 		if err != nil {
 			return nil, err
 		}
-		return nil, g.gameService.UpdateGameMaster(ctx, model.GameMaster{
+		if !containsGameMaster(*game, gameMasterID) {
+			return nil, fmt.Errorf("game master not found")
+		}
+		return nil, g.gameService.UpdateGameMaster(ctx, gameID, model.GameMaster{
 			ID:         gameMasterID,
 			IsProducer: isProducer,
 		})
@@ -217,9 +220,12 @@ func (g *gameUsecase) DeleteGameMaster(
 		if err != nil {
 			return nil, err
 		}
+		if !containsGameMaster(*game, gameMasterID) {
+			return nil, fmt.Errorf("game master not found")
+		}
 		log.Printf("player id: %d delete game master id %d", player.ID, gameMasterID)
 
-		return nil, g.gameService.DeleteGameMaster(ctx, gameMasterID)
+		return nil, g.gameService.DeleteGameMaster(ctx, gameID, gameMasterID)
 	})
 	return err
 }
@@ -359,21 +365,11 @@ func (g *gameUsecase) DeleteGamePeriod(
 		if err != nil {
 			return nil, err
 		}
-		// 削除対象の期間のindex
-		var targetIndex int
-		for i, p := range game.Periods {
-			if p.ID == targetPeriodID {
-				targetIndex = i
-				break
-			}
-		}
-		// 移行先の期間のindex
-		var destIndex int
-		for i, p := range game.Periods {
-			if p.ID == destPeriodID {
-				destIndex = i
-				break
-			}
+		// 削除対象・移行先の期間の index (このゲームの期間でなければエラー)
+		targetIndex := indexOfGamePeriod(*game, targetPeriodID)
+		destIndex := indexOfGamePeriod(*game, destPeriodID)
+		if targetIndex < 0 || destIndex < 0 {
+			return nil, errors.New("game period not found")
 		}
 		// 一つ前か後の期間のみ指定可能
 		if targetIndex != destIndex-1 && targetIndex != destIndex+1 {
@@ -813,4 +809,19 @@ func (g *gameUsecase) findMyGameParticipant(ctx context.Context, gameID uint32, 
 		PlayerID:      &(player.ID),
 		IsExcludeGone: &isEx,
 	})
+}
+
+func containsGameMaster(game model.Game, gameMasterID uint32) bool {
+	return array.Any(game.GameMasters, func(gm model.GameMaster) bool {
+		return gm.ID == gameMasterID
+	})
+}
+
+func indexOfGamePeriod(game model.Game, periodID uint32) int {
+	for i, p := range game.Periods {
+		if p.ID == periodID {
+			return i
+		}
+	}
+	return -1
 }

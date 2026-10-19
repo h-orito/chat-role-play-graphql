@@ -16,8 +16,8 @@ type GameService interface {
 	FindGamePeriods(ctx context.Context, IDs []uint32) (periods []model.GamePeriod, err error)
 	RegisterGame(ctx context.Context, game model.Game) (saved *model.Game, err error)
 	RegisterGameMaster(ctx context.Context, gameID uint32, playerID uint32, isProducer bool) (gameMaster *model.GameMaster, err error)
-	UpdateGameMaster(ctx context.Context, gameMaster model.GameMaster) (err error)
-	DeleteGameMaster(ctx context.Context, gameMasterID uint32) (err error)
+	UpdateGameMaster(ctx context.Context, gameID uint32, gameMaster model.GameMaster) (err error)
+	DeleteGameMaster(ctx context.Context, gameID uint32, gameMasterID uint32) (err error)
 	UpdateGameStatus(ctx context.Context, gameID uint32, status model.GameStatus) (err error)
 	UpdateGamePeriod(ctx context.Context, gameID uint32, period model.GamePeriod) (err error)
 	DeleteGamePeriod(ctx context.Context, gameID uint32, targetPeriodID uint32, destPeriodID uint32) (err error)
@@ -93,12 +93,12 @@ func (g *gameService) RegisterGameMaster(ctx context.Context, gameID uint32, pla
 	})
 }
 
-func (g *gameService) UpdateGameMaster(ctx context.Context, gameMaster model.GameMaster) (err error) {
-	return g.gameRepository.UpdateGameMaster(ctx, gameMaster)
+func (g *gameService) UpdateGameMaster(ctx context.Context, gameID uint32, gameMaster model.GameMaster) (err error) {
+	return g.gameRepository.UpdateGameMaster(ctx, gameID, gameMaster)
 }
 
-func (g *gameService) DeleteGameMaster(ctx context.Context, gameMasterID uint32) (err error) {
-	return g.gameRepository.DeleteGameMaster(ctx, gameMasterID)
+func (g *gameService) DeleteGameMaster(ctx context.Context, gameID uint32, gameMasterID uint32) (err error) {
+	return g.gameRepository.DeleteGameMaster(ctx, gameID, gameMasterID)
 }
 
 func (g *gameService) UpdateGameStatus(ctx context.Context, gameID uint32, status model.GameStatus) (err error) {
