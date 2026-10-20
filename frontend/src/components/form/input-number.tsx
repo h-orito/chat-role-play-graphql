@@ -38,7 +38,8 @@ const InputNumber = <
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      field.onChange(e)
+      // イベントをそのまま渡すと文字列で保持されるため、数値に変換して渡す
+      field.onChange(e.target.value === '' ? '' : e.target.valueAsNumber)
       if (onChange) onChange(e)
     },
     [field, onChange]
