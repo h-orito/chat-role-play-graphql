@@ -1,5 +1,8 @@
 version: "3"
 
+# ディレクトリ名 (docker-compose) 由来のプロジェクト名だと、同名ディレクトリを使う他プロジェクトと衝突するため固定する
+name: chat-role-play
+
 services:
   mysql:
     container_name: chat-role-play-mysql
@@ -15,3 +18,5 @@ services:
 
 volumes:
   crp-mysql-db-data:
+    # プロジェクト名変更前に作成された既存ボリュームを引き続き使う
+    name: docker-compose_crp-mysql-db-data

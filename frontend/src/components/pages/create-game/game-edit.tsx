@@ -466,7 +466,7 @@ export default function GameEdit(props: Props) {
                 className='w-16'
                 control={control}
                 rules={{
-                  maxLength: {
+                  max: {
                     value: 59,
                     message: `59分以内で入力してください`
                   }
