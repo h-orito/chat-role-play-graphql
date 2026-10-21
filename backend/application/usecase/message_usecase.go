@@ -14,10 +14,10 @@ import (
 type MessageUsecase interface {
 	FindMessages(ctx context.Context, gameID uint32, query model.MessagesQuery, user *model.User) (model.Messages, error)
 	FindMessagesLatestUnixTimeMilli(ctx context.Context, gameID uint32, query model.MessagesQuery, user *model.User) (uint64, error)
-	FindMessage(ctx context.Context, gameID uint32, ID uint64) (*model.Message, error)
+	FindMessage(ctx context.Context, gameID uint32, ID uint64, user *model.User) (*model.Message, error)
 	FindMessageReplies(ctx context.Context, gameID uint32, messageID uint64, user *model.User) ([]model.Message, error)
 	FindThreadMessages(ctx context.Context, gameID uint32, messageID uint64, user *model.User) ([]model.Message, error)
-	FindMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, messageID uint64) (model.GameParticipants, error)
+	FindMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, messageID uint64, user *model.User) (model.GameParticipants, error)
 	RegisterMessage(ctx context.Context, gameID uint32, user model.User, message model.Message) error
 	RegisterMessageDryRun(ctx context.Context, gameID uint32, user model.User, message model.Message) (*model.Message, error)
 	RegisterMessageFavorite(ctx context.Context, gameID uint32, user model.User, messageID uint64) error
@@ -93,6 +93,9 @@ func (s *messageUsecase) MergeQuery(ctx context.Context, gameID uint32, query mo
 	game, err := s.gameService.FindGame(ctx, gameID)
 	if err != nil {
 		return nil, nil, err
+	}
+	if game == nil {
+		return nil, nil, nil
 	}
 	var myself *model.GameParticipant = nil
 	var player *model.Player = nil
@@ -209,42 +212,121 @@ func shouldIncludeSecret(
 }
 
 // FindMessage implements MessageService.
-func (s *messageUsecase) FindMessage(ctx context.Context, gameID uint32, ID uint64) (*model.Message, error) {
-	return s.messageService.FindMessage(ctx, gameID, ID)
+// FindMessage は閲覧できない発言 (他人の独り言・秘話など) なら nil を返す
+func (s *messageUsecase) FindMessage(ctx context.Context, gameID uint32, ID uint64, user *model.User) (*model.Message, error) {
+	message, err := s.messageService.FindMessage(ctx, gameID, ID)
+	if err != nil || message == nil {
+		return nil, err
+	}
+	isViewable, err := s.viewableMessageFilter(ctx, gameID, user)
+	if err != nil {
+		return nil, err
+	}
+	if !isViewable(*message) {
+		return nil, nil
+	}
+	return message, nil
 }
 
-// FindMessageReplies implements MessageService.
 func (s *messageUsecase) FindMessageReplies(ctx context.Context, gameID uint32, messageID uint64, user *model.User) ([]model.Message, error) {
-	var myself *model.GameParticipant = nil
-	if user != nil {
-		m, err := s.findMyGameParticipant(ctx, gameID, *user)
-		if err != nil {
-			return nil, err
-		}
-		myself = m
+	isViewable, myself, err := s.viewableMessageFilterWithMyself(ctx, gameID, user)
+	if err != nil {
+		return nil, err
 	}
-	return s.messageService.FindMessageReplies(ctx, gameID, messageID, myself)
+	// 閲覧できない発言への返信一覧は返さない
+	message, err := s.messageService.FindMessage(ctx, gameID, messageID)
+	if err != nil {
+		return nil, err
+	}
+	if message == nil || !isViewable(*message) {
+		// スキーマ上 null にできないので空のリストを返す
+		return []model.Message{}, nil
+	}
+	replies, err := s.messageService.FindMessageReplies(ctx, gameID, messageID, myself)
+	if err != nil {
+		return nil, err
+	}
+	return array.Filter(replies, isViewable), nil
 }
 
-// FindThreadMessages implements MessageService.
 func (s *messageUsecase) FindThreadMessages(ctx context.Context, gameID uint32, messageID uint64, user *model.User) ([]model.Message, error) {
-	var myself *model.GameParticipant = nil
-	if user != nil {
-		m, err := s.findMyGameParticipant(ctx, gameID, *user)
-		if err != nil {
-			return nil, err
-		}
-		myself = m
+	isViewable, myself, err := s.viewableMessageFilterWithMyself(ctx, gameID, user)
+	if err != nil {
+		return nil, err
 	}
-	return s.messageService.FindThreadMessages(ctx, gameID, messageID, myself)
+	// 閲覧できない発言のスレッドは返さない
+	message, err := s.messageService.FindMessage(ctx, gameID, messageID)
+	if err != nil {
+		return nil, err
+	}
+	if message == nil || !isViewable(*message) {
+		// スキーマ上 null にできないので空のリストを返す
+		return []model.Message{}, nil
+	}
+	messages, err := s.messageService.FindThreadMessages(ctx, gameID, messageID, myself)
+	if err != nil {
+		return nil, err
+	}
+	// リプライ元・リプライ先のうち閲覧できない発言を除く
+	return array.Filter(messages, isViewable), nil
 }
 
-// FindMessageFavoriteGameParticipants implements MessageService.
-func (s *messageUsecase) FindMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, messageID uint64) (model.GameParticipants, error) {
+func (s *messageUsecase) FindMessageFavoriteGameParticipants(ctx context.Context, gameID uint32, messageID uint64, user *model.User) (model.GameParticipants, error) {
+	message, err := s.FindMessage(ctx, gameID, messageID, user)
+	if err != nil {
+		return model.GameParticipants{}, err
+	}
+	if message == nil {
+		return model.GameParticipants{}, fmt.Errorf("message not found")
+	}
 	return s.messageService.FindMessageFavoriteGameParticipants(ctx, gameID, messageID)
 }
 
-// RegisterMessage implements MessageService.
+// viewableMessageFilter は発言一覧 (MergeQuery) と同じルールで、発言を 1 件ずつ閲覧できるか判定する関数を返す
+func (s *messageUsecase) viewableMessageFilter(ctx context.Context, gameID uint32, user *model.User) (func(model.Message) bool, error) {
+	isViewable, _, err := s.viewableMessageFilterWithMyself(ctx, gameID, user)
+	return isViewable, err
+}
+
+func (s *messageUsecase) viewableMessageFilterWithMyself(
+	ctx context.Context,
+	gameID uint32,
+	user *model.User,
+) (func(model.Message) bool, *model.GameParticipant, error) {
+	query, myself, err := s.MergeQuery(ctx, gameID, model.MessagesQuery{}, user)
+	if err != nil {
+		return nil, nil, err
+	}
+	if query == nil {
+		return func(model.Message) bool { return false }, nil, nil
+	}
+	return func(m model.Message) bool {
+		return isViewableMessage(m, *query, myself)
+	}, myself, nil
+}
+
+// isViewableMessage は MergeQuery で組み立てた条件 (DB クエリの setMessageTypeDbQuery と同じ判定) を 1 件の発言に適用する
+func isViewableMessage(m model.Message, query model.MessagesQuery, myself *model.GameParticipant) bool {
+	if query.Types == nil {
+		return true
+	}
+	if array.Any(*query.Types, func(t model.MessageType) bool { return t == m.Type }) {
+		return true
+	}
+	if myself == nil {
+		return false
+	}
+	isSender := m.Sender != nil && m.Sender.GameParticipantID == myself.ID
+	isReceiver := m.Receiver != nil && m.Receiver.GameParticipantID == myself.ID
+	if query.IncludeMonologue != nil && *query.IncludeMonologue && m.Type == model.MessageTypeMonologue && isSender {
+		return true
+	}
+	if query.IncludeSecret != nil && *query.IncludeSecret && m.Type == model.MessageTypeSecret && (isSender || isReceiver) {
+		return true
+	}
+	return false
+}
+
 func (s *messageUsecase) RegisterMessage(
 	ctx context.Context,
 	gameID uint32,
@@ -261,7 +343,8 @@ func (s *messageUsecase) RegisterMessage(
 			return nil, err
 		}
 		if message.ReplyTo != nil {
-			replyToMessage, err := s.messageService.FindMessage(ctx, gameID, message.ReplyTo.MessageID)
+			// 閲覧できない発言には返信できない (返信の宛先から他人の秘話・独り言の発言者が分かってしまうため)
+			replyToMessage, err := s.FindMessage(ctx, gameID, message.ReplyTo.MessageID, &user)
 			if err != nil {
 				return nil, err
 			}
