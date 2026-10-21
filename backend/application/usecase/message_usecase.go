@@ -234,7 +234,7 @@ func (s *messageUsecase) FindMessage(ctx context.Context, gameID uint32, ID uint
 	}
 	// 誰でも見られる種別なら判定を省く。判定 (MergeQuery) はゲーム全体を読み込んで重く、
 	// 画面は返信先のプレビューのために返信 1 件ごとにこの API を呼ぶため
-	if array.Any(model.MesssageTypeEveryoneViewableValues(), func(t model.MessageType) bool { return t == message.Type }) {
+	if message.Type.IsEveryoneViewable() {
 		return message, nil
 	}
 	isViewable, err := s.viewableMessageFilter(ctx, gameID, user)

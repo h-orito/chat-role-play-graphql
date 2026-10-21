@@ -93,6 +93,16 @@ func MessageTypeValues() []MessageType {
 	}
 }
 
+// IsEveryoneViewable は、ゲームの状態や閲覧者に関わらず誰でも見られる種別か
+func (mt MessageType) IsEveryoneViewable() bool {
+	for _, t := range MesssageTypeEveryoneViewableValues() {
+		if t == mt {
+			return true
+		}
+	}
+	return false
+}
+
 func MesssageTypeEveryoneViewableValues() []MessageType {
 	return []MessageType{
 		MessageTypeTalkNormal,
