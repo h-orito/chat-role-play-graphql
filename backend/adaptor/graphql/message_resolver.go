@@ -396,7 +396,8 @@ func (r *queryResolver) message(ctx context.Context, gameID string, messageID st
 	if err != nil {
 		return nil, err
 	}
-	message, err := r.messageUsecase.FindMessage(ctx, gID, mID)
+	user := auth.GetUser(ctx)
+	message, err := r.messageUsecase.FindMessage(ctx, gID, mID, user)
 	if err != nil {
 		return nil, err
 	}
@@ -450,7 +451,8 @@ func (r *queryResolver) messageFavoriteGameParticipants(ctx context.Context, gam
 	if err != nil {
 		return nil, err
 	}
-	pts, err := r.messageUsecase.FindMessageFavoriteGameParticipants(ctx, gID, mID)
+	user := auth.GetUser(ctx)
+	pts, err := r.messageUsecase.FindMessageFavoriteGameParticipants(ctx, gID, mID, user)
 	if err != nil {
 		return nil, err
 	}

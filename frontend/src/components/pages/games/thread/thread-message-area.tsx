@@ -12,6 +12,7 @@ import {
   shouldShowAd,
   talkableGameStatuses,
   useGameValue,
+  useMyPlayerValue,
   useMyselfValue
 } from '../game-hook'
 import { useLazyQuery } from '@apollo/client'
@@ -29,6 +30,7 @@ type Props = {
 const ThreadMessageArea = (props: Props) => {
   const game = useGameValue()
   const myself = useMyselfValue()
+  const myPlayer = useMyPlayerValue()
   const { reply } = useTalkPanel()
   const [fetchMessages] = useLazyQuery<
     ThreadMessagesQuery,
@@ -57,6 +59,14 @@ const ThreadMessageArea = (props: Props) => {
     }
     setMessages(msgs)
   }, [game.id, props.messageId, fetchMessages, userPagingSettings.isDesc])
+
+  // 初期表示はサーバー側でログインなしに取得しているため、自分の秘話・独り言が含まれない。
+  // ログイン中は取得し直して、自分が見られる発言をすべて表示する
+  // (参加していない GM・管理者も全発言を見られる場合があるので、参加者かどうかではなくログインしているかで判定する)
+  const myPlayerId = myPlayer?.id
+  useEffect(() => {
+    if (myPlayerId) search()
+  }, [myPlayerId, search])
 
   const canTalk = useMemo(() => {
     return !!myself && talkableGameStatuses.includes(game.status)

@@ -13,11 +13,19 @@ import (
 type MessageDomainService interface {
 	AssertRegisterMessage(game model.Game, player model.Player, message model.Message) error
 	AssertRegisterDirectMessage(game model.Game, player model.Player, message model.DirectMessage) error
-	GetViewableMessageTypes(game model.Game, authorities []model.PlayerAuthority) []model.MessageType
+	GetViewableMessageTypes(game model.Game, player *model.Player, authorities []model.PlayerAuthority) []model.MessageType
+	CanViewMessage(
+		game model.Game,
+		message model.Message,
+		myself *model.GameParticipant,
+		player *model.Player,
+		authorities []model.PlayerAuthority,
+	) bool
 	ReplaceRandomMessageText(game model.Game, message model.MessageContent) (model.MessageContent, error)
 }
 
 type messageDomainService struct {
+	gameMasterDomainService GameMasterDomainService
 }
 
 // AssertRegisterDirectMessage implements MessageDomainService.
@@ -40,15 +48,54 @@ func (*messageDomainService) AssertRegisterMessage(
 	return nil
 }
 
-// GetViewableMessageTypes implements MessageDomainService.
-func (*messageDomainService) GetViewableMessageTypes(game model.Game, authorities []model.PlayerAuthority) []model.MessageType {
+// GetViewableMessageTypes は種別だけで見られる発言種別を返す (誰の発言か・誰宛てかは問わない)。
+// player が nil なら、ログインしていない人 (誰でも) が見られる種別を返す。
+func (s *messageDomainService) GetViewableMessageTypes(
+	game model.Game,
+	player *model.Player,
+	authorities []model.PlayerAuthority,
+) []model.MessageType {
 	// 管理者またはエピローグを迎えていたら全部見られる
 	if game.Status.ShouldSpoiler() || array.Any(authorities, func(a model.PlayerAuthority) bool {
 		return a.IsAdmin()
 	}) {
 		return model.MessageTypeValues()
 	}
+	// GM 全発言閲覧設定が ON のゲームでは、GM は独り言・秘話を含む全種別を見られる
+	if game.Settings.Rule.IsGameMasterViewAllMessages && player != nil &&
+		s.gameMasterDomainService.IsGameMaster(game, *player, authorities) {
+		return model.MessageTypeValues()
+	}
 	return model.MesssageTypeEveryoneViewableValues()
+}
+
+// CanViewMessage は発言 1 件を見られるか判定する。
+// 種別で見られなくても、自分の独り言と、自分が送った・受け取った秘話は見られる。
+func (s *messageDomainService) CanViewMessage(
+	game model.Game,
+	message model.Message,
+	myself *model.GameParticipant,
+	player *model.Player,
+	authorities []model.PlayerAuthority,
+) bool {
+	if array.Any(s.GetViewableMessageTypes(game, player, authorities), func(t model.MessageType) bool {
+		return t == message.Type
+	}) {
+		return true
+	}
+	if myself == nil {
+		return false
+	}
+	isSender := message.Sender != nil && message.Sender.GameParticipantID == myself.ID
+	isReceiver := message.Receiver != nil && message.Receiver.GameParticipantID == myself.ID
+	switch message.Type {
+	case model.MessageTypeMonologue:
+		return isSender
+	case model.MessageTypeSecret:
+		return isSender || isReceiver
+	default:
+		return false
+	}
 }
 
 // ReplaceRandomMessageText implements MessageDomainService.
@@ -66,8 +113,8 @@ func (*messageDomainService) ReplaceRandomMessageText(
 	return message, nil
 }
 
-func NewMessageDomainService() MessageDomainService {
-	return &messageDomainService{}
+func NewMessageDomainService(gameMasterDomainService GameMasterDomainService) MessageDomainService {
+	return &messageDomainService{gameMasterDomainService: gameMasterDomainService}
 }
 
 // -------

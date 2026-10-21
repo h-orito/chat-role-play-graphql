@@ -11,7 +11,7 @@ func newMergeQueryTestUsecase(status model.GameStatus) *messageUsecase {
 	return &messageUsecase{
 		gameService:             &fakeGameService{game: model.Game{ID: dmTestGameID, Status: status}},
 		playerService:           &fakePlayerService{},
-		messageDomainService:    dom_service.NewMessageDomainService(),
+		messageDomainService:    dom_service.NewMessageDomainService(dom_service.NewGameMasterDomainService()),
 		gameMasterDomainService: dom_service.NewGameMasterDomainService(),
 	}
 }

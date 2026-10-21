@@ -64,7 +64,7 @@ func injectResolver(
 	// domain service
 	gameMasterDomainService := injectGameMasterDomainService()
 	participateDomainService := injectParticipateDomainService(gameMasterDomainService)
-	messageDomainService := injectMessageDomainService()
+	messageDomainService := injectMessageDomainService(gameMasterDomainService)
 	// application service
 	charaService := injectCharaService(charaRepository)
 	notifyService := injectNotifyService(notificationRepository, gameParticipantRepository, messageRepository, messageDomainService)
@@ -196,8 +196,10 @@ func injectParticipateDomainService(
 	return dom_service.NewParticipateDomainService(gmDomainService)
 }
 
-func injectMessageDomainService() dom_service.MessageDomainService {
-	return dom_service.NewMessageDomainService()
+func injectMessageDomainService(
+	gmDomainService dom_service.GameMasterDomainService,
+) dom_service.MessageDomainService {
+	return dom_service.NewMessageDomainService(gmDomainService)
 }
 
 // repository

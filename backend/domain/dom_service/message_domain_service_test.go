@@ -17,7 +17,7 @@ func TestReplaceRandomMessageText(t *testing.T) {
 		Text:              text,
 		IsConvertDisabled: false,
 	}
-	svc := dom_service.NewMessageDomainService()
+	svc := dom_service.NewMessageDomainService(dom_service.NewGameMasterDomainService())
 	got, err := svc.ReplaceRandomMessageText(game, mes)
 	if err != nil {
 		t.Errorf("failed to replace random message text: %s", err)
