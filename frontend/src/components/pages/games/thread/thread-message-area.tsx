@@ -58,6 +58,13 @@ const ThreadMessageArea = (props: Props) => {
     setMessages(msgs)
   }, [game.id, props.messageId, fetchMessages, userPagingSettings.isDesc])
 
+  // 初期表示はサーバー側でログインなしに取得しているため、自分の秘話・独り言が含まれない。
+  // ログイン中は取得し直して、自分が見られる発言をすべて表示する
+  const myselfId = myself?.id
+  useEffect(() => {
+    if (myselfId) search()
+  }, [myselfId, search])
+
   const canTalk = useMemo(() => {
     return !!myself && talkableGameStatuses.includes(game.status)
   }, [myself, game.status])

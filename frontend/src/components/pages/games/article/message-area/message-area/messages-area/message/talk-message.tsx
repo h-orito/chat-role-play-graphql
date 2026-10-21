@@ -278,6 +278,8 @@ const Replies = ({ replies, handleReply }: RepliesProps) => {
 const ReplyToMessage = ({ message }: { message: Message }) => {
   const game = useGameValue()
   const [replyToMessage, setReplyToMessage] = useState<Message | null>(null)
+  // 返信先が見られない発言 (他人の秘話・独り言など) の場合
+  const [isReplyToUnavailable, setIsReplyToUnavailable] = useState(false)
   const senderName = game.participants.find(
     (p) => p.id === message.replyTo!.participantId
   )?.name
@@ -294,13 +296,24 @@ const ReplyToMessage = ({ message }: { message: Message }) => {
           messageId: message.replyTo!.messageId
         }
       })
-      if (data?.message == null) return
+      if (data?.message == null) {
+        setIsReplyToUnavailable(true)
+        return
+      }
       setReplyToMessage(data.message as Message)
     }
     fetch()
     // mount 時のみ返信元メッセージを取得すれば十分なため、fetchMessage は依存に含めない
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  if (isReplyToUnavailable) {
+    return (
+      <div className='flex text-xs text-gray-500'>
+        <p>返信先の発言は表示できません</p>
+      </div>
+    )
+  }
 
   if (!replyToMessage) {
     return (

@@ -88,7 +88,7 @@ func newMessageVisibilityTestUsecase(status model.GameStatus, viewAll bool) *mes
 		playerService: &fakePlayerService{
 			players: map[string]model.Player{
 				"member":   {ID: 1},
-				"outsider": {ID: 2},
+				"member2": {ID: 2},
 				"gm":       {ID: 3},
 				"admin":    {ID: 4},
 			},
@@ -117,7 +117,7 @@ func visibilityCases() []struct {
 	}{
 		{"未ログインは通常発言だけ", nil, model.GameStatusProgress, true, []uint64{msgTalk}},
 		{"参加者は自分の独り言と自分が送った秘話も見られる", &model.User{UserName: "member"}, model.GameStatusProgress, false, []uint64{msgTalk, msgMyMonologue, msgSecretTo2}},
-		{"参加者は自分宛て・自分が送った秘話と自分の独り言を見られる", &model.User{UserName: "outsider"}, model.GameStatusProgress, false, []uint64{msgTalk, msgSecretTo2, msgSecretTo9, msgOtherMonologue}},
+		{"参加者は自分宛て・自分が送った秘話と自分の独り言を見られる", &model.User{UserName: "member2"}, model.GameStatusProgress, false, []uint64{msgTalk, msgSecretTo2, msgSecretTo9, msgOtherMonologue}},
 		{"GM でも全発言閲覧 OFF なら通常発言だけ", &model.User{UserName: "gm"}, model.GameStatusProgress, false, []uint64{msgTalk}},
 		{"GM は全発言閲覧 ON なら全部見られる", &model.User{UserName: "gm"}, model.GameStatusProgress, true, allTestMessageIDs},
 		{"管理者は全部見られる", &model.User{UserName: "admin"}, model.GameStatusProgress, false, allTestMessageIDs},
