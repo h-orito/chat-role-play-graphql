@@ -92,8 +92,11 @@ func TestRestrictMessagesQueryGameMasterViewAll(t *testing.T) {
 	game := model.Game{Status: model.GameStatusProgress, GameMasters: []model.GameMaster{{PlayerID: 3}}}
 	game.Settings.Rule.IsGameMasterViewAllMessages = true
 	// 全種別が見られるので type フィルタ自体が外れ、独り言・秘話の「自分の分だけ」の拡張も不要
-	got := svc.RestrictMessagesQuery(game, model.MessagesQuery{}, nil, &model.Player{ID: 3}, nil)
-	if got.Types != nil || *got.IncludeMonologue || *got.IncludeSecret {
-		t.Errorf("want no type filter, got types=%v monologue=%v secret=%v", got.Types, *got.IncludeMonologue, *got.IncludeSecret)
+	// GM が参加者でもある場合 (myself あり) も同じ
+	for _, myself := range []*model.GameParticipant{nil, {ID: 1}} {
+		got := svc.RestrictMessagesQuery(game, model.MessagesQuery{}, myself, &model.Player{ID: 3}, nil)
+		if got.Types != nil || *got.IncludeMonologue || *got.IncludeSecret {
+			t.Errorf("myself=%v: want no type filter, got types=%v monologue=%v secret=%v", myself, got.Types, *got.IncludeMonologue, *got.IncludeSecret)
+		}
 	}
 }

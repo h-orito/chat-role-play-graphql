@@ -141,7 +141,6 @@ func (s *messageUsecase) MergeQuery(ctx context.Context, gameID uint32, query mo
 	return &restricted, viewer.myself, nil
 }
 
-
 // FindMessage implements MessageService.
 // FindMessage は閲覧できない発言 (他人の独り言・秘話など) なら nil を返す
 func (s *messageUsecase) FindMessage(ctx context.Context, gameID uint32, ID uint64, user *model.User) (*model.Message, error) {

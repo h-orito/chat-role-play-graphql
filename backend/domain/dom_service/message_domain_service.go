@@ -86,7 +86,7 @@ func (s *messageDomainService) RestrictMessagesQuery(
 	player *model.Player,
 	authorities []model.PlayerAuthority,
 ) model.MessagesQuery {
-	// merge message types
+	// リクエストされた種別 (指定がなければ全種別)
 	requestMessageTypes := model.MessageTypeValues()
 	if query.Types != nil {
 		requestMessageTypes = *query.Types
