@@ -87,10 +87,10 @@ func newMessageVisibilityTestUsecase(status model.GameStatus, viewAll bool) *mes
 		},
 		playerService: &fakePlayerService{
 			players: map[string]model.Player{
-				"member":   {ID: 1},
+				"member":  {ID: 1},
 				"member2": {ID: 2},
-				"gm":       {ID: 3},
-				"admin":    {ID: 4},
+				"gm":      {ID: 3},
+				"admin":   {ID: 4},
 			},
 			authorities: map[uint32][]model.PlayerAuthority{4: {model.AuthorityAdmin}},
 		},
@@ -212,5 +212,35 @@ func TestFindMessageRepliesAndThreadVisibility(t *testing.T) {
 				t.Errorf("hidden root returned replies=%v thread=%v", messageIDs(hiddenReplies), messageIDs(hiddenThread))
 			}
 		})
+	}
+}
+
+// 誰でも見られる種別の発言は、閲覧判定のためにゲームを読み込まない (返信プレビューで返信ごとに呼ばれるため)
+type countingGameService struct {
+	*fakeGameService
+	findGameCount int
+}
+
+func (f *countingGameService) FindGame(ctx context.Context, ID uint32) (*model.Game, error) {
+	f.findGameCount++
+	return f.fakeGameService.FindGame(ctx, ID)
+}
+
+func TestFindMessageSkipsVisibilityCheckForPublicTypes(t *testing.T) {
+	u := newMessageVisibilityTestUsecase(model.GameStatusProgress, false)
+	gs := &countingGameService{fakeGameService: u.gameService.(*fakeGameService)}
+	u.gameService = gs
+
+	if m, _ := u.FindMessage(context.Background(), dmTestGameID, msgTalk, nil); m == nil {
+		t.Fatal("public message must be returned")
+	}
+	if gs.findGameCount != 0 {
+		t.Errorf("FindGame called %d times for a public message", gs.findGameCount)
+	}
+	if m, _ := u.FindMessage(context.Background(), dmTestGameID, msgSecretTo9, nil); m != nil {
+		t.Fatal("secret message must be hidden")
+	}
+	if gs.findGameCount == 0 {
+		t.Errorf("FindGame must be called to check a hidden-type message")
 	}
 }
