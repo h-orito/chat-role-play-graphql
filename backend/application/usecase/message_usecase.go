@@ -89,46 +89,60 @@ func (s *messageUsecase) FindMessagesLatestUnixTimeMilli(ctx context.Context, ga
 	return s.messageService.FindMessagesLatestUnixTimeMilli(ctx, gameID, *mergedQuery, myself)
 }
 
-func (s *messageUsecase) MergeQuery(ctx context.Context, gameID uint32, query model.MessagesQuery, user *model.User) (*model.MessagesQuery, *model.GameParticipant, error) {
+// messageViewer は発言の閲覧可否の判定に必要な、閲覧者とゲームの情報
+type messageViewer struct {
+	game        model.Game
+	myself      *model.GameParticipant
+	player      *model.Player
+	authorities []model.PlayerAuthority
+}
+
+// findMessageViewer はゲームが存在しなければ nil を返す
+func (s *messageUsecase) findMessageViewer(ctx context.Context, gameID uint32, user *model.User) (*messageViewer, error) {
 	game, err := s.gameService.FindGame(ctx, gameID)
+	if err != nil {
+		return nil, err
+	}
+	if game == nil {
+		return nil, nil
+	}
+	viewer := messageViewer{game: *game, authorities: []model.PlayerAuthority{}}
+	if user == nil {
+		return &viewer, nil
+	}
+	viewer.myself, err = s.findMyGameParticipant(ctx, gameID, *user)
+	if err != nil {
+		return nil, err
+	}
+	viewer.player, err = s.playerService.FindByUserName(ctx, user.UserName)
+	if err != nil {
+		return nil, err
+	}
+	if viewer.player != nil {
+		viewer.authorities, err = s.playerService.FindAuthorities(ctx, viewer.player.ID)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &viewer, nil
+}
+
+func (s *messageUsecase) MergeQuery(ctx context.Context, gameID uint32, query model.MessagesQuery, user *model.User) (*model.MessagesQuery, *model.GameParticipant, error) {
+	viewer, err := s.findMessageViewer(ctx, gameID, user)
 	if err != nil {
 		return nil, nil, err
 	}
-	if game == nil {
+	if viewer == nil {
 		return nil, nil, nil
 	}
-	var myself *model.GameParticipant = nil
-	var player *model.Player = nil
-	authorities := []model.PlayerAuthority{}
-	if user != nil {
-		myself, err = s.findMyGameParticipant(ctx, gameID, *user)
-		if err != nil {
-			return nil, nil, err
-		}
-		player, err = s.playerService.FindByUserName(ctx, user.UserName)
-		if err != nil {
-			return nil, nil, err
-		}
-		if player != nil {
-			authorities, err = s.playerService.FindAuthorities(ctx, player.ID)
-			if err != nil {
-				return nil, nil, err
-			}
-		}
-	}
+	myself := viewer.myself
 	// merge message types
 	requestMessageTypes := model.MessageTypeValues()
 	if query.Types != nil {
 		requestMessageTypes = *query.Types
 	}
-	viewableMessageTypes := s.messageDomainService.GetViewableMessageTypes(*game, authorities)
-	// GM 全発言閲覧設定が ON のゲームでは、GM は monologue / secret を含む全タイプを閲覧可能。
-	// これにより以降の type フィルタが自然に全タイプを許容し、独り言/秘話の "自分宛のみ" 拡張も不要になる。
-	// Admin も GM 扱いとするため gameMasterDomainService.IsGameMaster を使用する。
-	if game.Settings.Rule.IsGameMasterViewAllMessages && player != nil &&
-		s.gameMasterDomainService.IsGameMaster(*game, *player, authorities) {
-		viewableMessageTypes = model.MessageTypeValues()
-	}
+	// 種別で見られる発言種別はドメインのルールで決まる (GM 全発言閲覧 ON の GM は全種別。この場合 type フィルタ自体が外れる)
+	viewableMessageTypes := s.messageDomainService.GetViewableMessageTypes(viewer.game, viewer.player, viewer.authorities)
 	// viewable 側を基準に絞り込むことで、リクエストに同じタイプが重複していても結果は重複しない
 	// (重複を残すと下の件数判定で全タイプ扱いになり、type フィルタが外れてしまう)
 	types := array.Filter(viewableMessageTypes, func(v model.MessageType) bool {
@@ -287,7 +301,7 @@ func (s *messageUsecase) FindMessageFavoriteGameParticipants(ctx context.Context
 	return s.messageService.FindMessageFavoriteGameParticipants(ctx, gameID, messageID)
 }
 
-// viewableMessageFilter は発言一覧 (MergeQuery) と同じルールで、発言を 1 件ずつ閲覧できるか判定する関数を返す
+// viewableMessageFilter は発言を 1 件ずつ閲覧できるか判定する関数を返す (判定のルールはドメインサービス)
 func (s *messageUsecase) viewableMessageFilter(ctx context.Context, gameID uint32, user *model.User) (func(model.Message) bool, error) {
 	isViewable, _, err := s.viewableMessageFilterWithMyself(ctx, gameID, user)
 	return isViewable, err
@@ -298,38 +312,16 @@ func (s *messageUsecase) viewableMessageFilterWithMyself(
 	gameID uint32,
 	user *model.User,
 ) (func(model.Message) bool, *model.GameParticipant, error) {
-	query, myself, err := s.MergeQuery(ctx, gameID, model.MessagesQuery{}, user)
+	viewer, err := s.findMessageViewer(ctx, gameID, user)
 	if err != nil {
 		return nil, nil, err
 	}
-	if query == nil {
+	if viewer == nil {
 		return func(model.Message) bool { return false }, nil, nil
 	}
 	return func(m model.Message) bool {
-		return isViewableMessage(m, *query, myself)
-	}, myself, nil
-}
-
-// isViewableMessage は MergeQuery で組み立てた条件 (DB クエリの setMessageTypeDbQuery と同じ判定) を 1 件の発言に適用する
-func isViewableMessage(m model.Message, query model.MessagesQuery, myself *model.GameParticipant) bool {
-	if query.Types == nil {
-		return true
-	}
-	if array.Any(*query.Types, func(t model.MessageType) bool { return t == m.Type }) {
-		return true
-	}
-	if myself == nil {
-		return false
-	}
-	isSender := m.Sender != nil && m.Sender.GameParticipantID == myself.ID
-	isReceiver := m.Receiver != nil && m.Receiver.GameParticipantID == myself.ID
-	if query.IncludeMonologue != nil && *query.IncludeMonologue && m.Type == model.MessageTypeMonologue && isSender {
-		return true
-	}
-	if query.IncludeSecret != nil && *query.IncludeSecret && m.Type == model.MessageTypeSecret && (isSender || isReceiver) {
-		return true
-	}
-	return false
+		return s.messageDomainService.CanViewMessage(viewer.game, m, viewer.myself, viewer.player, viewer.authorities)
+	}, viewer.myself, nil
 }
 
 func (s *messageUsecase) RegisterMessage(

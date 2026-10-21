@@ -94,7 +94,7 @@ func newMessageVisibilityTestUsecase(status model.GameStatus, viewAll bool) *mes
 			},
 			authorities: map[uint32][]model.PlayerAuthority{4: {model.AuthorityAdmin}},
 		},
-		messageDomainService:    dom_service.NewMessageDomainService(),
+		messageDomainService:    dom_service.NewMessageDomainService(dom_service.NewGameMasterDomainService()),
 		gameMasterDomainService: dom_service.NewGameMasterDomainService(),
 	}
 }
@@ -115,13 +115,12 @@ func visibilityCases() []struct {
 		viewAll  bool
 		viewable []uint64
 	}{
+		// 判定ルールの細かいケースはドメインサービスのテスト (message_domain_service_view_test.go) で確認する。
+		// ここでは閲覧者の情報 (参加者・プレイヤー・権限・ゲーム) が判定に渡っていることを確認する
 		{"未ログインは通常発言だけ", nil, model.GameStatusProgress, true, []uint64{msgTalk}},
 		{"参加者は自分の独り言と自分が送った秘話も見られる", &model.User{UserName: "member"}, model.GameStatusProgress, false, []uint64{msgTalk, msgMyMonologue, msgSecretTo2}},
-		{"参加者は自分宛て・自分が送った秘話と自分の独り言を見られる", &model.User{UserName: "member2"}, model.GameStatusProgress, false, []uint64{msgTalk, msgSecretTo2, msgSecretTo9, msgOtherMonologue}},
-		{"GM でも全発言閲覧 OFF なら通常発言だけ", &model.User{UserName: "gm"}, model.GameStatusProgress, false, []uint64{msgTalk}},
 		{"GM は全発言閲覧 ON なら全部見られる", &model.User{UserName: "gm"}, model.GameStatusProgress, true, allTestMessageIDs},
 		{"管理者は全部見られる", &model.User{UserName: "admin"}, model.GameStatusProgress, false, allTestMessageIDs},
-		{"エピローグなら未ログインでも全部見られる", nil, model.GameStatusEpilogue, false, allTestMessageIDs},
 	}
 }
 

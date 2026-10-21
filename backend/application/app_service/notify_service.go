@@ -71,8 +71,8 @@ func (s *notifyService) NotifyMessage(ctx context.Context, game model.Game, mess
 		}
 		pIDs = ids
 	}
-	// 見られない場合は通知しない
-	viewableTypes := s.messageDomainService.GetViewableMessageTypes(game, []model.PlayerAuthority{})
+	// 誰でも見られる種別でなければ通知しない
+	viewableTypes := s.messageDomainService.GetViewableMessageTypes(game, nil, []model.PlayerAuthority{})
 	if array.None(viewableTypes, func(t model.MessageType) bool {
 		return t == message.Type
 	}) {
