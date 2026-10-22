@@ -21,6 +21,13 @@ type MessageDomainService interface {
 		player *model.Player,
 		authorities []model.PlayerAuthority,
 	) bool
+	RestrictMessagesQuery(
+		game model.Game,
+		query model.MessagesQuery,
+		myself *model.GameParticipant,
+		player *model.Player,
+		authorities []model.PlayerAuthority,
+	) model.MessagesQuery
 	ReplaceRandomMessageText(game model.Game, message model.MessageContent) (model.MessageContent, error)
 }
 
@@ -67,6 +74,47 @@ func (s *messageDomainService) GetViewableMessageTypes(
 		return model.MessageTypeValues()
 	}
 	return model.MesssageTypeEveryoneViewableValues()
+}
+
+// RestrictMessagesQuery は発言一覧の検索条件を、閲覧者が見られる範囲に制限する。
+// 判定のルールは CanViewMessage と同じ (見られる種別 + 自分の独り言・自分が送った/受け取った秘話) で、
+// それを検索条件 (Types / IncludeMonologue / IncludeSecret) の形にしたもの。
+func (s *messageDomainService) RestrictMessagesQuery(
+	game model.Game,
+	query model.MessagesQuery,
+	myself *model.GameParticipant,
+	player *model.Player,
+	authorities []model.PlayerAuthority,
+) model.MessagesQuery {
+	// リクエストされた種別 (指定がなければ全種別)
+	requestMessageTypes := model.MessageTypeValues()
+	if query.Types != nil {
+		requestMessageTypes = *query.Types
+	}
+	// 種別で見られる発言種別はドメインのルールで決まる (GM 全発言閲覧 ON の GM は全種別。この場合 type フィルタ自体が外れる)
+	viewableMessageTypes := s.GetViewableMessageTypes(game, player, authorities)
+	// viewable 側を基準に絞り込むことで、リクエストに同じタイプが重複していても結果は重複しない
+	// (重複を残すと下の件数判定で全タイプ扱いになり、type フィルタが外れてしまう)
+	types := array.Filter(viewableMessageTypes, func(v model.MessageType) bool {
+		return array.Any(requestMessageTypes, func(t model.MessageType) bool {
+			return v == t
+		})
+	})
+	// 全タイプが viewable な場合は query.Types を nil にし、type フィルタ自体を無効化する。
+	// （GM 全発言閲覧 ON 時はここで全タイプが残るため、後段の DB クエリで type 制約が付かない）
+	// それ以外は必ず絞り込んだ結果で上書きする (クライアント指定のリストを残さない)
+	if len(types) == len(model.MessageTypeValues()) {
+		query.Types = nil
+	} else {
+		query.Types = &types
+	}
+	// 独り言を取得するか
+	shouldIncludeMonologue := shouldIncludeMonologue(query, requestMessageTypes, myself)
+	query.IncludeMonologue = &shouldIncludeMonologue
+	shouldIncludeSecret := shouldIncludeSecret(query, requestMessageTypes, myself)
+	query.IncludeSecret = &shouldIncludeSecret
+
+	return query
 }
 
 // CanViewMessage は発言 1 件を見られるか判定する。
@@ -265,4 +313,62 @@ func replaceWho(game model.Game, s string) string {
 		name,
 		result[0],
 	)
+}
+
+func shouldIncludeMonologue(
+	query model.MessagesQuery,
+	requestMessageTypes []model.MessageType,
+	myself *model.GameParticipant,
+) bool {
+	// 既に独り言が取得対象になっていたら不要
+	if query.Types == nil || array.Any(*query.Types, func(mt model.MessageType) bool {
+		return mt == model.MessageTypeMonologue
+	}) {
+		return false
+	}
+	// 自分が取得対象になっていなければ不要
+	if myself == nil {
+		return false
+	}
+	if query.SenderIDs != nil && array.None(*query.SenderIDs, func(id uint32) bool {
+		return id == myself.ID
+	}) {
+		return false
+	}
+	// 求めていなければ不要
+	if array.None(requestMessageTypes, func(mt model.MessageType) bool {
+		return mt == model.MessageTypeMonologue
+	}) {
+		return false
+	}
+	return true
+}
+
+func shouldIncludeSecret(
+	query model.MessagesQuery,
+	requestMessageTypes []model.MessageType,
+	myself *model.GameParticipant,
+) bool {
+	// 既に秘話が取得対象になっていたら不要
+	if query.Types == nil || array.Any(*query.Types, func(mt model.MessageType) bool {
+		return mt == model.MessageTypeSecret
+	}) {
+		return false
+	}
+	// 自分が取得対象になっていなければ不要
+	if myself == nil {
+		return false
+	}
+	if query.SenderIDs != nil && array.None(*query.SenderIDs, func(id uint32) bool {
+		return id == myself.ID
+	}) {
+		return false
+	}
+	// 求めていなければ不要
+	if array.None(requestMessageTypes, func(mt model.MessageType) bool {
+		return mt == model.MessageTypeSecret
+	}) {
+		return false
+	}
+	return true
 }
