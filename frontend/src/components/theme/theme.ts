@@ -145,6 +145,41 @@ export const themeMap: Map<string, Theme> = new Map<string, Theme>([
   ['dark', darkTheme]
 ])
 
+const themeColorRegex =
+  /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+// ゲームのテーマ (JSON) を Theme にする。
+// 足りない項目はライトテーマの色で補う。色 (#rgb / #rrggbb など) として正しくない値があれば、
+// 配色が崩れないようテーマ全体をライトテーマにする。
+export const parseGameTheme = (json: string | null | undefined): Theme => {
+  if (json == null || json === '') return lightTheme
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(json)
+  } catch {
+    return lightTheme
+  }
+  if (!isPlainObject(parsed)) return lightTheme
+  const theme: Record<string, Record<string, string>> = {}
+  for (const [groupName, fallback] of Object.entries(lightTheme)) {
+    const group = parsed[groupName] ?? {}
+    if (!isPlainObject(group)) return lightTheme
+    theme[groupName] = { ...fallback }
+    for (const key of Object.keys(fallback)) {
+      const color = group[key]
+      if (color === undefined) continue
+      if (typeof color !== 'string' || !themeColorRegex.test(color)) {
+        return lightTheme
+      }
+      theme[groupName][key] = color
+    }
+  }
+  return theme as Theme
+}
+
 export const getThemeCSS = (themeName: string = 'light'): string => {
   const theme = themeMap.get(themeName)!
   return convertThemeToCSS(theme)

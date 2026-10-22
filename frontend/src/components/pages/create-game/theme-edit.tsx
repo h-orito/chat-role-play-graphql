@@ -7,7 +7,7 @@ import {
   SidebarTheme,
   Theme,
   TypeTheme,
-  lightTheme
+  parseGameTheme
 } from '@/components/theme/theme'
 
 type Props = {
@@ -16,10 +16,7 @@ type Props = {
 }
 
 export default function ThemeEdit({ theme, setTheme }: Props) {
-  const currentTheme =
-    theme != null && theme.length > 0
-      ? (JSON.parse(theme) as Theme)
-      : lightTheme
+  const currentTheme = parseGameTheme(theme)
 
   const setThemeJson = (json: Theme) => setTheme(JSON.stringify(json))
   const setPrimary = (typeTheme: TypeTheme) => {
