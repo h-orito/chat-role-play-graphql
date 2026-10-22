@@ -6,6 +6,7 @@ import (
 	"chat-role-play/domain/model"
 	"context"
 	"errors"
+	"sync"
 	"testing"
 	"time"
 )
@@ -22,43 +23,83 @@ func newTestLimiter() (*passwordAttemptLimiter, *fakeClock) {
 	return l, clock
 }
 
+// 1 回試して失敗する
+func fail(l *passwordAttemptLimiter, playerID, gameID uint32) bool {
+	if !l.Acquire(playerID, gameID) {
+		return false
+	}
+	l.Release(playerID, gameID, true)
+	return true
+}
+
 func TestPasswordAttemptLimiterLocksAfterMaxFailures(t *testing.T) {
 	l, clock := newTestLimiter()
-	for i := 0; i < passwordAttemptMaxFailures-1; i++ {
-		l.RecordFailure(1, 10)
+	for i := 0; i < passwordAttemptMaxFailures; i++ {
+		if !fail(l, 1, 10) {
+			t.Fatalf("attempt %d was refused before reaching max failures", i+1)
+		}
 		clock.advance(time.Minute)
 	}
-	if l.IsLocked(1, 10) {
-		t.Fatalf("locked before reaching max failures")
-	}
-	l.RecordFailure(1, 10)
-	if !l.IsLocked(1, 10) {
+	if l.Acquire(1, 10) {
 		t.Fatalf("not locked after max failures")
 	}
 	// 他のプレイヤー・他のゲームには影響しない
-	if l.IsLocked(2, 10) || l.IsLocked(1, 11) {
+	if !l.Acquire(2, 10) || !l.Acquire(1, 11) {
 		t.Errorf("lock leaked to another key")
 	}
 	// 最後の失敗からロック期間が過ぎるまでは解除されない
-	clock.advance(passwordAttemptLockDuration - time.Second)
-	if !l.IsLocked(1, 10) {
+	clock.advance(passwordAttemptLockDuration - time.Minute - time.Second)
+	if l.Acquire(1, 10) {
 		t.Errorf("unlocked before lock duration")
 	}
 	clock.advance(time.Second)
-	if l.IsLocked(1, 10) {
+	if !l.Acquire(1, 10) {
 		t.Errorf("still locked after lock duration")
+	}
+}
+
+func TestPasswordAttemptLimiterSuccessIsNotCounted(t *testing.T) {
+	l, _ := newTestLimiter()
+	for i := 0; i < passwordAttemptMaxFailures*2; i++ {
+		if !l.Acquire(1, 10) {
+			t.Fatalf("attempt %d was refused", i+1)
+		}
+		l.Release(1, 10, false)
+	}
+}
+
+// 結果が出る前の試行も数え、同時に送られたリクエストで上限を超えて試せないこと
+func TestPasswordAttemptLimiterCountsInFlightAttempts(t *testing.T) {
+	l, _ := newTestLimiter()
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	acquired := 0
+	for i := 0; i < 50; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if l.Acquire(1, 10) {
+				mu.Lock()
+				acquired++
+				mu.Unlock()
+			}
+		}()
+	}
+	wg.Wait()
+	if acquired != passwordAttemptMaxFailures {
+		t.Errorf("acquired %d attempts at once, want %d", acquired, passwordAttemptMaxFailures)
 	}
 }
 
 func TestPasswordAttemptLimiterForgetsOldFailures(t *testing.T) {
 	l, clock := newTestLimiter()
 	for i := 0; i < passwordAttemptMaxFailures-1; i++ {
-		l.RecordFailure(1, 10)
+		fail(l, 1, 10)
 	}
 	// 数え始めから時間が経った失敗は数えない
 	clock.advance(passwordAttemptWindow)
-	l.RecordFailure(1, 10)
-	if l.IsLocked(1, 10) {
+	fail(l, 1, 10)
+	if !l.Acquire(1, 10) {
 		t.Errorf("old failures were counted")
 	}
 }
@@ -66,10 +107,10 @@ func TestPasswordAttemptLimiterForgetsOldFailures(t *testing.T) {
 func TestPasswordAttemptLimiterSweepsExpiredRecords(t *testing.T) {
 	l, clock := newTestLimiter()
 	for i := uint32(0); i <= passwordAttemptSweepThreshold; i++ {
-		l.RecordFailure(i, 10)
+		fail(l, i, 10)
 	}
 	clock.advance(passwordAttemptWindow)
-	l.RecordFailure(9999, 10)
+	fail(l, 9999, 10)
 	if len(l.attempts) != 1 {
 		t.Errorf("expired records were not swept: %d", len(l.attempts))
 	}

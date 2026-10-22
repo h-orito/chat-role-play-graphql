@@ -444,12 +444,13 @@ func (g *gameUsecase) Participate(
 				canChangeName = charachip.CanChangeName
 			}
 		}
-		if game.Settings.Password.HasPassword && g.passwordAttemptLimiter.IsLocked(player.ID, gameID) {
+		hasPassword := game.Settings.Password.HasPassword
+		if hasPassword && !g.passwordAttemptLimiter.Acquire(player.ID, gameID) {
 			return nil, model.NewErrBusiness("パスワードを続けて間違えたため、しばらく参加できません。時間をおいてから再度お試しください")
 		}
 		err = g.participateDomainService.AssertParticipate(*game, *player, authorities, password, participant.CharaID)
-		if errors.Is(err, model.ErrWrongGamePassword) {
-			g.passwordAttemptLimiter.RecordFailure(player.ID, gameID)
+		if hasPassword {
+			g.passwordAttemptLimiter.Release(player.ID, gameID, errors.Is(err, model.ErrWrongGamePassword))
 		}
 		if err != nil {
 			return nil, err

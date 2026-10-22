@@ -23,6 +23,8 @@ type passwordAttemptKey struct {
 type passwordAttempt struct {
 	failures    []time.Time
 	lockedUntil time.Time
+	// 結果がまだ出ていない試行の数
+	inFlight int
 }
 
 // passwordAttemptLimiter はゲームの参加パスワードの失敗回数を、プレイヤー×ゲームごとにメモリで数える。
@@ -40,16 +42,9 @@ func newPasswordAttemptLimiter() *passwordAttemptLimiter {
 	}
 }
 
-// IsLocked は失敗が続いたため、今は参加できない状態か返す
-func (l *passwordAttemptLimiter) IsLocked(playerID, gameID uint32) bool {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	a, ok := l.attempts[passwordAttemptKey{playerID, gameID}]
-	return ok && l.now().Before(a.lockedUntil)
-}
-
-// RecordFailure はパスワードの失敗を記録する
-func (l *passwordAttemptLimiter) RecordFailure(playerID, gameID uint32) {
+// Acquire は試行を 1 回分予約する。ロック中、または失敗回数と結果待ちの試行の合計が上限に達していれば false を返す。
+// (確認と予約を 1 回のロックの中で行い、同時に送られたリクエストで上限を超えて試せないようにする)
+func (l *passwordAttemptLimiter) Acquire(playerID, gameID uint32) bool {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	now := l.now()
@@ -62,6 +57,27 @@ func (l *passwordAttemptLimiter) RecordFailure(playerID, gameID uint32) {
 		a = &passwordAttempt{}
 		l.attempts[key] = a
 	}
+	a.failures = recentFailures(a.failures, now)
+	if now.Before(a.lockedUntil) || len(a.failures)+a.inFlight >= passwordAttemptMaxFailures {
+		return false
+	}
+	a.inFlight++
+	return true
+}
+
+// Release は Acquire で予約した試行を終える。failed ならパスワードの失敗として数える
+func (l *passwordAttemptLimiter) Release(playerID, gameID uint32, failed bool) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	a, ok := l.attempts[passwordAttemptKey{playerID, gameID}]
+	if !ok {
+		return
+	}
+	a.inFlight--
+	if !failed {
+		return
+	}
+	now := l.now()
 	a.failures = append(recentFailures(a.failures, now), now)
 	if len(a.failures) >= passwordAttemptMaxFailures {
 		a.lockedUntil = now.Add(passwordAttemptLockDuration)
@@ -70,7 +86,7 @@ func (l *passwordAttemptLimiter) RecordFailure(playerID, gameID uint32) {
 
 func (l *passwordAttemptLimiter) sweep(now time.Time) {
 	for key, a := range l.attempts {
-		if len(recentFailures(a.failures, now)) == 0 && !now.Before(a.lockedUntil) {
+		if a.inFlight == 0 && len(recentFailures(a.failures, now)) == 0 && !now.Before(a.lockedUntil) {
 			delete(l.attempts, key)
 		}
 	}
