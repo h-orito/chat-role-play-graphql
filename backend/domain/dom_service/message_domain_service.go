@@ -167,57 +167,45 @@ func NewMessageDomainService(gameMasterDomainService GameMasterDomainService) Me
 
 // -------
 
+// maxReplacedTextLength は置換後の本文の上限 (文字数)。
+// [AorB] を入れ子にすると置換のたびに本文が倍近くに伸びるため、これを超える置換は行わない。
+const maxReplacedTextLength = 10000
+
+// replaceRandomKeywords は本文中の [2d6] などを、内側の括弧から順に置換する。
+// 1 回の走査で、開き括弧の位置をスタックに積みながら処理する。
 func replaceRandomKeywords(game model.Game, input string) string {
-	stack := []rune{}
+	result := make([]rune, 0, len(input))
+	// 対応する "]" がまだ出てきていない "[" の result 上の位置
+	openIndexes := []int{}
 
 	for _, char := range input {
-		if char == ']' {
-			// スタックから "[" までの部分を取得
-			// ネストしている場合があるので、戻る最中に"]"が出てきたらさらに前まで戻る
-			lastCount := 1
-			startCount := 0
-			inner := "]"
-			shouldReplace := false
-			for len(stack) > 0 {
-				last := stack[len(stack)-1]
-				if last == '[' {
-					startCount++
-					inner = string(last) + inner
-					if lastCount == startCount {
-						stack = stack[:len(stack)-1]
-						shouldReplace = true
-						break
-					}
-				} else {
-					if last == ']' {
-						lastCount++
-					}
-					inner = string(last) + inner
-				}
-				stack = stack[:len(stack)-1]
+		switch {
+		case char == '[':
+			openIndexes = append(openIndexes, len(result))
+			result = append(result, char)
+		case char == ']' && len(openIndexes) > 0:
+			start := openIndexes[len(openIndexes)-1]
+			openIndexes = openIndexes[:len(openIndexes)-1]
+			inner := string(result[start:]) + "]"
+			replaced := []rune(replaceRandomKeyword(game, inner))
+			if start+len(replaced) > maxReplacedTextLength {
+				// 長くなりすぎる場合は置換しない
+				replaced = []rune(inner)
 			}
-
-			// "[" と "]" で囲まれた部分を解析して結果に追加
-			if shouldReplace {
-				inner = replaceRandomKeyword(game, inner)
-				stack = append(stack, []rune(inner)...)
-			} else {
-				stack = append(stack, []rune(inner+"]")...)
-			}
-		} else {
-			// 通常の文字はスタックに追加
-			stack = append(stack, char)
+			result = append(result[:start], replaced...)
+		default:
+			result = append(result, char)
 		}
 	}
 
-	return string(stack)
+	return string(result)
 }
 
-const (
-	diceRegex    = `^\[(\d)d(\d{1,5})\]$`
-	fortuneRegex = `^\[fortune\]$`
-	orRegex      = `^\[(.*or.*)\]$`
-	whoRegex     = `^\[who\]$`
+var (
+	diceRegex    = regexp.MustCompile(`^\[(\d)d(\d{1,5})\]$`)
+	fortuneRegex = regexp.MustCompile(`^\[fortune\]$`)
+	orRegex      = regexp.MustCompile(`^\[(.*or.*)\]$`)
+	whoRegex     = regexp.MustCompile(`^\[who\]$`)
 )
 
 func replaceRandomKeyword(game model.Game, input string) string {
@@ -230,8 +218,7 @@ func replaceRandomKeyword(game model.Game, input string) string {
 
 // [2d6]を5(1,4)[2d6]に置換する
 func replaceDice(s string) string {
-	rep := regexp.MustCompile(diceRegex)
-	result := rep.FindStringSubmatch(s)
+	result := diceRegex.FindStringSubmatch(s)
 	if len(result) != 3 {
 		return s
 	}
@@ -266,8 +253,7 @@ func replaceDice(s string) string {
 
 // [fortune]を99[fortune]に置換する（1~100）
 func replaceFortune(s string) string {
-	rep := regexp.MustCompile(fortuneRegex)
-	result := rep.FindStringSubmatch(s)
+	result := fortuneRegex.FindStringSubmatch(s)
 	if len(result) <= 0 {
 		return s
 	}
@@ -281,8 +267,7 @@ func replaceFortune(s string) string {
 func replaceOr(s string) string {
 	// fortuneを分割したくないので、いったんfortuneを使われなさそうな文字列に変換する
 	input := strings.ReplaceAll(s, "fortune", "fOrTuNe")
-	rep := regexp.MustCompile(orRegex)
-	result := rep.FindStringSubmatch(input)
+	result := orRegex.FindStringSubmatch(input)
 	if len(result) < 2 {
 		return s
 	}
@@ -295,8 +280,7 @@ func replaceOr(s string) string {
 
 // [who]をなまえ[who]に置換する
 func replaceWho(game model.Game, s string) string {
-	rep := regexp.MustCompile(whoRegex)
-	result := rep.FindStringSubmatch(s)
+	result := whoRegex.FindStringSubmatch(s)
 	if len(result) <= 0 {
 		return s
 	}
