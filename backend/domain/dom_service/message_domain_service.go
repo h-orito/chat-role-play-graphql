@@ -11,8 +11,21 @@ import (
 )
 
 type MessageDomainService interface {
-	AssertRegisterMessage(game model.Game, player model.Player, message model.Message) error
-	AssertRegisterDirectMessage(game model.Game, player model.Player, message model.DirectMessage) error
+	AssertRegisterMessage(
+		game model.Game,
+		player model.Player,
+		authorities []model.PlayerAuthority,
+		myself *model.GameParticipant,
+		message model.Message,
+	) error
+	AssertRegisterDirectMessage(
+		game model.Game,
+		player model.Player,
+		authorities []model.PlayerAuthority,
+		myself *model.GameParticipant,
+		group *model.GameParticipantGroup,
+		message model.DirectMessage,
+	) error
 	GetViewableMessageTypes(game model.Game, player *model.Player, authorities []model.PlayerAuthority) []model.MessageType
 	CanViewMessage(
 		game model.Game,
@@ -35,22 +48,60 @@ type messageDomainService struct {
 	gameMasterDomainService GameMasterDomainService
 }
 
-// AssertRegisterDirectMessage implements MessageDomainService.
-func (*messageDomainService) AssertRegisterDirectMessage(game model.Game, player model.Player, message model.DirectMessage) error {
-	if !message.Type.IsSystem() && !game.Status.IsNotFinished() {
+// AssertRegisterDirectMessage は秘話グループへの発言を登録できるか判定する。
+// システム発言は GM (Admin 含む) だけ、それ以外は進行中のゲームでグループのメンバーだけが発言できる。
+// group は対象ゲームから探したもの (見つからなければ nil) を渡す。
+func (s *messageDomainService) AssertRegisterDirectMessage(
+	game model.Game,
+	player model.Player,
+	authorities []model.PlayerAuthority,
+	myself *model.GameParticipant,
+	group *model.GameParticipantGroup,
+	message model.DirectMessage,
+) error {
+	if group == nil {
+		return fmt.Errorf("group not found")
+	}
+	if message.Type.IsSystem() {
+		if !s.gameMasterDomainService.IsGameMaster(game, player, authorities) {
+			return fmt.Errorf("only game masters can send system messages")
+		}
+		return nil
+	}
+	if !game.Status.IsNotFinished() {
 		return fmt.Errorf("game is not in progress")
+	}
+	if myself == nil {
+		return fmt.Errorf("not participating in this game")
+	}
+	if array.None(group.MemberIDs, func(id uint32) bool {
+		return id == myself.ID
+	}) {
+		return fmt.Errorf("not a member of this group")
 	}
 	return nil
 }
 
-// AssertRegisterMessage implements MessageDomainService.
-func (*messageDomainService) AssertRegisterMessage(
+// AssertRegisterMessage は発言を登録できるか判定する。
+// システム発言は GM (Admin 含む) だけ、それ以外は進行中のゲームの参加者だけが発言できる。
+func (s *messageDomainService) AssertRegisterMessage(
 	game model.Game,
 	player model.Player,
+	authorities []model.PlayerAuthority,
+	myself *model.GameParticipant,
 	message model.Message,
 ) error {
-	if !message.Type.IsSystem() && !game.Status.IsNotFinished() {
+	if message.Type.IsSystem() {
+		if !s.gameMasterDomainService.IsGameMaster(game, player, authorities) {
+			return fmt.Errorf("only game masters can send system messages")
+		}
+		return nil
+	}
+	if !game.Status.IsNotFinished() {
 		return fmt.Errorf("game is not in progress")
+	}
+	if myself == nil {
+		return fmt.Errorf("not participating in this game")
 	}
 	return nil
 }
