@@ -109,6 +109,7 @@ type GameParticipant struct {
 func (p GameParticipant) ToModel() *model.GameParticipant {
 	return &model.GameParticipant{
 		ID:             p.ID,
+		GameID:         p.GameID,
 		PlayerID:       p.PlayerID,
 		CharaID:        p.CharaID,
 		Name:           p.GameParticipantName,

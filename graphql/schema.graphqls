@@ -96,7 +96,7 @@ type GameParticipant {
   id: ID!
   name: String!
   entryNumber: Int!
-  player: Player!
+  player: Player
   chara: Chara
   memo: String
   profileIcon: GameParticipantIcon

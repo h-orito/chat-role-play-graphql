@@ -114,6 +114,7 @@ type GameParticipantsQuery struct {
 
 type GameParticipant struct {
 	ID             uint32
+	GameID         uint32
 	Name           string
 	EntryNumber    uint32
 	PlayerID       uint32
