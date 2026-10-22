@@ -2,12 +2,15 @@ package repository
 
 import (
 	"bytes"
+	"chat-role-play/domain/model"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -17,11 +20,20 @@ const notifyTimeout = 10 * time.Second
 
 type NotificationRepository struct {
 	client *http.Client
+	// isAllowedURL は送信してよい宛先か判定する (保存時の確認より前に登録された宛先にも送らないため)
+	isAllowedURL func(string) bool
 }
 
 func NewNotificationRepository() *NotificationRepository {
 	return &NotificationRepository{
-		client: &http.Client{Timeout: notifyTimeout},
+		client: &http.Client{
+			Timeout: notifyTimeout,
+			// 許可した宛先以外に送らないよう、リダイレクトには従わない
+			CheckRedirect: func(*http.Request, []*http.Request) error {
+				return http.ErrUseLastResponse
+			},
+		},
+		isAllowedURL: model.IsValidDiscordWebhookURL,
 	}
 }
 
@@ -33,9 +45,16 @@ func (nr *NotificationRepository) Notify(
 	shouldContainUrl bool,
 ) error {
 	// NOTE: 通知は本質的な処理ではないので、エラーはログに残して握りつぶす
+	// NOTE: webhook URL はトークンを含むため、ログには出さない
+	if !nr.isAllowedURL(webhookUrl) {
+		log.Printf("skip discord notification: webhook url is not allowed (game %d)", gameID)
+		return nil
+	}
 	var discord Discord
 	discord.Username = fmt.Sprintf("ロールをプレイ！ ゲーム%d通知", gameID)
 	discord.Content = text
+	// メンションは一切解釈させない
+	discord.AllowedMentions = AllowedMentions{Parse: []string{}}
 
 	if shouldContainUrl {
 		discord.Content += fmt.Sprintf("\nhttps://wolfort.dev/chat-role-play/games/%d", gameID)
@@ -48,13 +67,13 @@ func (nr *NotificationRepository) Notify(
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhookUrl, bytes.NewBuffer(discordJson))
 	if err != nil {
-		log.Printf("failed to create discord notification request: %v", err)
+		log.Printf("failed to create discord notification request (game %d)", gameID)
 		return nil
 	}
 	req.Header.Set("Content-Type", "application/json")
 	res, err := nr.client.Do(req)
 	if err != nil {
-		log.Printf("failed to notify discord: %v", err)
+		log.Printf("failed to notify discord (game %d): %v", gameID, withoutURL(err))
 		return nil
 	}
 	defer res.Body.Close()
@@ -67,8 +86,22 @@ func (nr *NotificationRepository) Notify(
 	return nil
 }
 
+// withoutURL は *url.Error から URL を除いたエラーを返す (Error() が URL 全体を含むため)
+func withoutURL(err error) error {
+	var urlErr *url.Error
+	if errors.As(err, &urlErr) {
+		return fmt.Errorf("%s: %w", urlErr.Op, urlErr.Err)
+	}
+	return err
+}
+
 type Discord struct {
-	Username  string `json:"username"`
-	AvatarUrl string `json:"avatar_url"`
-	Content   string `json:"content"`
+	Username        string          `json:"username"`
+	AvatarUrl       string          `json:"avatar_url"`
+	Content         string          `json:"content"`
+	AllowedMentions AllowedMentions `json:"allowed_mentions"`
+}
+
+type AllowedMentions struct {
+	Parse []string `json:"parse"`
 }

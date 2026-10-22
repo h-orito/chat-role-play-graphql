@@ -128,7 +128,7 @@ func (s *notifyService) notifySecret(
 		ctx,
 		*setting.DiscordWebhookUrl,
 		game.ID,
-		fmt.Sprintf("%sから秘話が届きました。", message.Sender.SenderName),
+		fmt.Sprintf("%sから秘話が届きました。", escapeDiscordMarkdown(message.Sender.SenderName)),
 		false,
 	)
 	return []uint32{}, nil
@@ -159,7 +159,7 @@ func (s *notifyService) notifyMessageKeyword(
 	}), func(ns model.GameParticipantNotification) uint32 {
 		var text = "発言に指定キーワードが含まれています。"
 		if message.Sender != nil {
-			text = fmt.Sprintf("%sの%s", message.Sender.SenderName, text)
+			text = fmt.Sprintf("%sの%s", escapeDiscordMarkdown(message.Sender.SenderName), text)
 		}
 		s.notificationRepository.Notify(
 			ctx,
@@ -196,8 +196,8 @@ func (s *notifyService) notifyDirectMessageKeyword(
 		return ns.DiscordWebhookUrl != nil && s.includeAnyKeyword(message.Content.Text, ns.Message.Keywords)
 	}), func(ns model.GameParticipantNotification) uint32 {
 		text := fmt.Sprintf("%sのDMグループ[%s]へのDMに指定キーワードが含まれています。",
-			message.Sender.SenderName,
-			group.Name,
+			escapeDiscordMarkdown(message.Sender.SenderName),
+			escapeDiscordMarkdown(group.Name),
 		)
 		s.notificationRepository.Notify(
 			ctx,
@@ -241,7 +241,7 @@ func (s *notifyService) notifyReply(
 		ctx,
 		*settings.DiscordWebhookUrl,
 		game.ID,
-		fmt.Sprintf("%sがあなたの発言に返信しました。", message.Sender.SenderName),
+		fmt.Sprintf("%sがあなたの発言に返信しました。", escapeDiscordMarkdown(message.Sender.SenderName)),
 		false,
 	)
 	return nil
@@ -277,7 +277,7 @@ func (s *notifyService) notifyDirectMessage(
 			*ns.DiscordWebhookUrl,
 			game.ID,
 			fmt.Sprintf("%sがDMグループ[%s]にDMを送信しました。",
-				message.Sender.SenderName, group.Name),
+				escapeDiscordMarkdown(message.Sender.SenderName), escapeDiscordMarkdown(group.Name)),
 			false,
 		)
 	})
@@ -289,4 +289,29 @@ func (s *notifyService) includeAnyKeyword(text string, keywords []string) bool {
 	return array.Any(keywords, func(keyword string) bool {
 		return len(keyword) > 0 && strings.Contains(text, keyword)
 	})
+}
+
+// discordMarkdownEscaper はユーザーが決めた名前の中の Discord の書式記号を、そのまま表示されるようエスケープする
+// (メンションは送信時に allowed_mentions で無効にしている)
+var discordMarkdownEscaper = strings.NewReplacer(
+	`\`, `\\`,
+	"*", `\*`,
+	"_", `\_`,
+	"~", `\~`,
+	"`", "\\`",
+	"|", `\|`,
+	">", `\>`,
+	"<", `\<`,
+	"[", `\[`,
+	"]", `\]`,
+	"(", `\(`,
+	")", `\)`,
+	"#", `\#`,
+	"-", `\-`,
+	"@", `\@`,
+	":", `\:`,
+)
+
+func escapeDiscordMarkdown(s string) string {
+	return discordMarkdownEscaper.Replace(s)
 }
