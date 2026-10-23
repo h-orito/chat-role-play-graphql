@@ -28,7 +28,10 @@ import ParticipantGroupEdit from './participant-group-edit'
 import { useUserPagingSettings } from '../../../user-settings'
 import DirectFooterMenu from './direct-footer-menu'
 import Portal from '@/components/modal/portal'
-import { useGameValue } from '@/components/pages/games/game-hook'
+import {
+  useGameValue,
+  useMyselfValue
+} from '@/components/pages/games/game-hook'
 import Panel from '@/components/panel/panel'
 import TalkDirect from '../../../talk/talk-direct'
 import { base64ToId } from '@/components/graphql/convert'
@@ -43,6 +46,7 @@ type Props = {
 export default function DirectMessageArea(props: Props) {
   const { close, group } = props
   const game = useGameValue()
+  const myself = useMyselfValue()
   const [pagingSettings] = useUserPagingSettings()
   const defaultQuery: DirectMessagesQuery = {
     participantGroupId: group.id,
@@ -107,6 +111,10 @@ export default function DirectMessageArea(props: Props) {
     game.status
   )
 
+  // 発言できるのはグループのメンバーだけ (GM 全発言閲覧で他人のグループを開いた場合は閲覧のみ)
+  const isMember =
+    myself != null && group.participants.some((p) => p.id === myself.id)
+
   const talkAreaId = `talk-direct-${base64ToId(group.id)}`
 
   return (
@@ -133,11 +141,13 @@ export default function DirectMessageArea(props: Props) {
               search={search}
               talkAreaId={talkAreaId}
             />
-            <DirectTalkArea
-              search={search}
-              group={group}
-              talkAreaId={talkAreaId}
-            />
+            {isMember && (
+              <DirectTalkArea
+                search={search}
+                group={group}
+                talkAreaId={talkAreaId}
+              />
+            )}
           </div>
         </div>
       </>

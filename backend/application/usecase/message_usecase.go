@@ -301,16 +301,11 @@ func (s *messageUsecase) assertRegisterMessage(
 	user model.User,
 	message model.Message,
 ) (*model.Message, error) {
-	game, err := s.gameService.FindGame(ctx, gameID)
+	game, player, authorities, myself, err := s.findRegisterMessageActor(ctx, gameID, user)
 	if err != nil {
 		return nil, err
 	}
-	player, err := s.playerService.FindByUserName(ctx, user.UserName)
-	if err != nil {
-		return nil, err
-	}
-	myself, err := s.findMyGameParticipant(ctx, gameID, user)
-	if err != nil {
+	if err := s.messageDomainService.AssertRegisterMessage(*game, *player, authorities, myself, message); err != nil {
 		return nil, err
 	}
 	latestPeriod := game.Periods[len(game.Periods)-1]
@@ -332,25 +327,54 @@ func (s *messageUsecase) assertRegisterMessage(
 		if err != nil {
 			return nil, err
 		}
+		if receiverParticipant == nil {
+			return nil, errors.New("receiver not found")
+		}
 		receiver = &model.MessageReceiver{
 			GameParticipantID:   receiverParticipant.ID,
 			ReceiverName:        receiverParticipant.Name,
 			ReceiverEntryNumber: receiverParticipant.EntryNumber,
 		}
 	}
-	msg := model.Message{
+	return &model.Message{
 		GamePeriodID: latestPeriod.ID,
 		Type:         message.Type,
 		Sender:       sender,
 		Receiver:     receiver,
 		ReplyTo:      message.ReplyTo,
 		Content:      message.Content,
-	}
-	err = s.messageDomainService.AssertRegisterMessage(*game, *player, msg)
+	}, nil
+}
+
+// findRegisterMessageActor は発言登録の判定に使う、ゲーム・発言者・権限・自分の参加者 (未参加なら nil) を取得する。
+func (s *messageUsecase) findRegisterMessageActor(
+	ctx context.Context,
+	gameID uint32,
+	user model.User,
+) (*model.Game, *model.Player, []model.PlayerAuthority, *model.GameParticipant, error) {
+	game, err := s.gameService.FindGame(ctx, gameID)
 	if err != nil {
-		return nil, err
+		return nil, nil, nil, nil, err
 	}
-	return &msg, nil
+	if game == nil {
+		return nil, nil, nil, nil, errors.New("game not found")
+	}
+	player, err := s.playerService.FindByUserName(ctx, user.UserName)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	if player == nil {
+		return nil, nil, nil, nil, errors.New("player not found")
+	}
+	authorities, err := s.playerService.FindAuthorities(ctx, player.ID)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	myself, err := s.findMyGameParticipant(ctx, gameID, user)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	return game, player, authorities, myself, nil
 }
 
 // RegisterMessageFavorite implements MessageService.
@@ -649,16 +673,23 @@ func (s *messageUsecase) assertRegisterDirectMessage(
 	user model.User,
 	message model.DirectMessage,
 ) (*model.DirectMessage, error) {
-	game, err := s.gameService.FindGame(ctx, gameID)
+	game, player, authorities, myself, err := s.findRegisterMessageActor(ctx, gameID, user)
 	if err != nil {
 		return nil, err
 	}
-	player, err := s.playerService.FindByUserName(ctx, user.UserName)
+	// 他ゲームのグループに書き込めないよう、対象ゲームの中から探す
+	groups, err := s.messageService.FindGameParticipantGroups(ctx, model.GameParticipantGroupsQuery{
+		GameID: gameID,
+		IDs:    &[]uint32{message.GameParticipantGroupID},
+	})
 	if err != nil {
 		return nil, err
 	}
-	myself, err := s.findMyGameParticipant(ctx, gameID, user)
-	if err != nil {
+	var group *model.GameParticipantGroup
+	if len(groups) > 0 {
+		group = &groups[0]
+	}
+	if err := s.messageDomainService.AssertRegisterDirectMessage(*game, *player, authorities, myself, group, message); err != nil {
 		return nil, err
 	}
 	latestPeriod := game.Periods[len(game.Periods)-1]
@@ -671,19 +702,13 @@ func (s *messageUsecase) assertRegisterDirectMessage(
 			SenderEntryNumber: myself.EntryNumber,
 		}
 	}
-	msg := model.DirectMessage{
-		GameParticipantGroupID: message.GameParticipantGroupID,
+	return &model.DirectMessage{
+		GameParticipantGroupID: group.ID,
 		GamePeriodID:           latestPeriod.ID,
 		Type:                   message.Type,
 		Sender:                 sender,
 		Content:                message.Content,
-	}
-	err = s.messageDomainService.AssertRegisterDirectMessage(*game, *player, msg)
-	if err != nil {
-		return nil, err
-	}
-
-	return &msg, nil
+	}, nil
 }
 
 // RegisterDirectMessageFavorite implements MessageService.
