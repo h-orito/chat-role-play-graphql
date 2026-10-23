@@ -37,6 +37,7 @@ func InjectServer() Handlers {
 			},
 		),
 	)
+	srv.AroundOperations(graphql.LimitParticipationPerOperation)
 	handler := auth.AuthMiddleware(srv, userRepository)
 	sqlDB, err := database.Connection.DB()
 	if err != nil {

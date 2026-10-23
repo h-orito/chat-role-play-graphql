@@ -3,6 +3,7 @@ package dom_service
 import (
 	"chat-role-play/domain/model"
 	"chat-role-play/util/array"
+	"crypto/subtle"
 )
 
 type ParticipateDomainService interface {
@@ -50,8 +51,8 @@ func (s *participateDomainService) AssertParticipate(
 	}
 
 	if game.Settings.Password.HasPassword {
-		if password == nil || *game.Settings.Password.Password != *password {
-			return model.NewErrBusiness("パスワードが違います")
+		if password == nil || subtle.ConstantTimeCompare([]byte(*game.Settings.Password.Password), []byte(*password)) != 1 {
+			return model.ErrWrongGamePassword
 		}
 	}
 
