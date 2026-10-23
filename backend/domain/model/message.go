@@ -3,7 +3,9 @@ package model
 import (
 	"chat-role-play/util/array"
 	"context"
+	"fmt"
 	"time"
+	"unicode/utf8"
 )
 
 type Messages struct {
@@ -133,6 +135,16 @@ type MessageReceiver struct {
 type MessageReplyTo struct {
 	MessageID         uint64
 	GameParticipantID uint32
+}
+
+// MessageTextMaxLength は発言本文の上限 (文字数)。画面の入力欄の上限と同じ。
+const MessageTextMaxLength = 1000
+
+func AssertMessageText(text string) error {
+	if utf8.RuneCountInString(text) > MessageTextMaxLength {
+		return NewErrBusiness(fmt.Sprintf("本文は%d文字以内で入力してください", MessageTextMaxLength))
+	}
+	return nil
 }
 
 type MessageContent struct {

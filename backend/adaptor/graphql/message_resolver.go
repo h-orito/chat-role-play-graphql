@@ -54,6 +54,9 @@ func (r *mutationResolver) registerMessage(ctx context.Context, input gqlmodel.N
 }
 
 func mapNewMessageToMessage(input gqlmodel.NewMessage) (*model.Message, error) {
+	if err := model.AssertMessageText(input.Text); err != nil {
+		return nil, err
+	}
 	messageType := model.MessageTypeValueOf(input.Type.String())
 	var sender *model.MessageSender
 	if messageType.IsTalk() {
@@ -188,6 +191,9 @@ func (r *mutationResolver) registerDirectMessage(ctx context.Context, input gqlm
 }
 
 func MapNewDirectMessageToDirectMessage(input gqlmodel.NewDirectMessage) (*model.DirectMessage, error) {
+	if err := model.AssertMessageText(input.Text); err != nil {
+		return nil, err
+	}
 	gameParticipantGroupID, err := idToUint32(input.GameParticipantGroupID)
 	if err != nil {
 		return nil, err
