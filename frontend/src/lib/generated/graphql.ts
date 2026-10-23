@@ -269,7 +269,7 @@ export type GameParticipant = {
   lastAccessedAt: Scalars['DateTime']['output'];
   memo?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  player: Player;
+  player?: Maybe<Player>;
   profileIcon?: Maybe<GameParticipantIcon>;
 };
 
@@ -1756,7 +1756,7 @@ export type MyGameParticipantQueryVariables = Exact<{
 }>;
 
 
-export type MyGameParticipantQuery = { __typename?: 'Query', myGameParticipant?: { __typename?: 'GameParticipant', id: string, name: string, entryNumber: number, canChangeName: boolean, followParticipantIds: Array<string>, followerParticipantIds: Array<string>, player: { __typename?: 'Player', id: string }, profileIcon?: { __typename?: 'GameParticipantIcon', id: string, url: string } | null, chara?: { __typename?: 'Chara', id: string } | null } | null };
+export type MyGameParticipantQuery = { __typename?: 'Query', myGameParticipant?: { __typename?: 'GameParticipant', id: string, name: string, entryNumber: number, canChangeName: boolean, followParticipantIds: Array<string>, followerParticipantIds: Array<string>, player?: { __typename?: 'Player', id: string } | null, profileIcon?: { __typename?: 'GameParticipantIcon', id: string, url: string } | null, chara?: { __typename?: 'Chara', id: string } | null } | null };
 
 export type MyPlayerQueryVariables = Exact<{ [key: string]: never; }>;
 

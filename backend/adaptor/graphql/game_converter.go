@@ -191,8 +191,13 @@ func MapToGameParticipant(p model.GameParticipant) *gqlmodel.GameParticipant {
 func MapToGameParticipantProfile(
 	p model.GameParticipantProfile,
 	participant model.GameParticipant,
-	player model.Player,
+	player *model.Player,
 ) *gqlmodel.GameParticipantProfile {
+	// プレイヤーを見せてよくない場合、player は nil で渡される
+	var playerName *string
+	if player != nil {
+		playerName = &player.Name
+	}
 	return &gqlmodel.GameParticipantProfile{
 		ParticipantID:   intIdToBase64(p.GameParticipantID, "GameParticipant"),
 		Name:            participant.Name,
@@ -203,7 +208,7 @@ func MapToGameParticipantProfile(
 		FollowsCount:    p.FollowsCount,
 		FollowersCount:  p.FollowersCount,
 		IsPlayerOpen:    p.IsPlayerOpen,
-		PlayerName:      &player.Name,
+		PlayerName:      playerName,
 	}
 }
 

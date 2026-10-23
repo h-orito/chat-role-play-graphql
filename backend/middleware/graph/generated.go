@@ -3230,7 +3230,7 @@ type GameParticipant {
   id: ID!
   name: String!
   entryNumber: Int!
-  player: Player!
+  player: Player
   chara: Chara
   memo: String
   profileIcon: GameParticipantIcon
@@ -9851,14 +9851,11 @@ func (ec *executionContext) _GameParticipant_player(ctx context.Context, field g
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*gqlmodel.Player)
 	fc.Result = res
-	return ec.marshalNPlayer2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayer(ctx, field.Selections, res)
+	return ec.marshalOPlayer2ᚖchatᚑroleᚑplayᚋmiddlewareᚋgraphᚋgqlmodelᚐPlayer(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_GameParticipant_player(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -27580,16 +27577,13 @@ func (ec *executionContext) _GameParticipant(ctx context.Context, sel ast.Select
 		case "player":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._GameParticipant_player(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 

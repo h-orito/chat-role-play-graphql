@@ -603,11 +603,11 @@ func (r *queryResolver) gameParticipantProfile(ctx context.Context, participantI
 	if err != nil {
 		return nil, err
 	}
-	profile, participant, player, err := r.gameUsecase.FindParticipantProfile(ctx, participantId)
+	profile, participant, player, err := r.gameUsecase.FindParticipantProfile(ctx, participantId, auth.GetUser(ctx))
 	if err != nil {
 		return nil, err
 	}
-	return MapToGameParticipantProfile(*profile, *participant, *player), nil
+	return MapToGameParticipantProfile(*profile, *participant, player), nil
 }
 
 func (r *queryResolver) gameParticipantFollows(ctx context.Context, participantID string) ([]*gqlmodel.GameParticipant, error) {

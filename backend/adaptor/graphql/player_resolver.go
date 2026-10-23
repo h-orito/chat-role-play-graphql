@@ -21,13 +21,19 @@ func (r *gameMasterResolver) player(ctx context.Context, obj *gqlmodel.GameMaste
 	return MapToPlayer(player, nil, []model.PlayerAuthority{}), nil
 }
 
+// player はプレイヤーを見せてよい場合だけ返す (プレイヤー非公開の参加者は、本人・GM 以外には nil)
 func (r *gameParticipantResolver) player(ctx context.Context, obj *gqlmodel.GameParticipant) (*gqlmodel.Player, error) {
-	thunk := r.loaders.PlayerLoader.Load(ctx, dataloader.StringKey(obj.PlayerID))
-	p, err := thunk()
+	participantID, err := idToUint32(obj.ID)
 	if err != nil {
 		return nil, err
 	}
-	player := p.(*model.Player)
+	player, err := r.gameUsecase.FindParticipantPlayer(ctx, participantID, auth.GetUser(ctx))
+	if err != nil {
+		return nil, err
+	}
+	if player == nil {
+		return nil, nil
+	}
 	return MapToPlayer(player, nil, []model.PlayerAuthority{}), nil
 }
 

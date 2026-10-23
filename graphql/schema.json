@@ -2282,13 +2282,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Player",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "Player",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

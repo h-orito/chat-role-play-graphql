@@ -7,6 +7,13 @@ import (
 
 type ParticipateDomainService interface {
 	AssertParticipate(game model.Game, player model.Player, authorities []model.PlayerAuthority, password *string, charaID *uint32) error
+	CanViewParticipantPlayer(
+		game model.Game,
+		participant model.GameParticipant,
+		profile model.GameParticipantProfile,
+		viewer *model.Player,
+		authorities []model.PlayerAuthority,
+	) bool
 }
 
 type participateDomainService struct {
@@ -58,4 +65,24 @@ func (s *participateDomainService) AssertParticipate(
 	}
 
 	return nil
+}
+
+// CanViewParticipantPlayer は参加者を操作しているプレイヤーを閲覧者に見せてよいか判定する。
+// 見せてよいのは、参加者がプレイヤーを公開している場合、エピローグ以降、本人、GM (Admin 含む) のとき。
+// viewer が nil なら未ログイン。
+func (s *participateDomainService) CanViewParticipantPlayer(
+	game model.Game,
+	participant model.GameParticipant,
+	profile model.GameParticipantProfile,
+	viewer *model.Player,
+	authorities []model.PlayerAuthority,
+) bool {
+	if profile.IsPlayerOpen || game.Status.ShouldSpoiler() {
+		return true
+	}
+	if viewer == nil {
+		return false
+	}
+	return viewer.ID == participant.PlayerID ||
+		s.gameMasterDomainService.IsGameMaster(game, *viewer, authorities)
 }

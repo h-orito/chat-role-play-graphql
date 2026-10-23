@@ -32,7 +32,8 @@ type GameUsecase interface {
 	Participate(ctx context.Context, gameID uint32, user model.User, participant model.GameParticipant, password *string) (saved *model.GameParticipant, err error)
 	Leave(ctx context.Context, gameID uint32, user model.User) (err error)
 	// game participant profile
-	FindParticipantProfile(ctx context.Context, participantID uint32) (profile *model.GameParticipantProfile, participant *model.GameParticipant, player *model.Player, err error)
+	FindParticipantProfile(ctx context.Context, participantID uint32, user *model.User) (profile *model.GameParticipantProfile, participant *model.GameParticipant, player *model.Player, err error)
+	FindParticipantPlayer(ctx context.Context, participantID uint32, user *model.User) (*model.Player, error)
 	UpdateParticipantProfile(ctx context.Context, gameID uint32, user model.User, name string, memo *string, iconId *uint32, profile model.GameParticipantProfile) (err error)
 	// game participant icon
 	FindGameParticipantIcons(ctx context.Context, query model.GameParticipantIconsQuery) (icons []model.GameParticipantIcon, err error)
@@ -527,7 +528,9 @@ func (g *gameUsecase) Leave(ctx context.Context, gameID uint32, user model.User)
 	return nil
 }
 
-func (g *gameUsecase) FindParticipantProfile(ctx context.Context, participantID uint32) (
+// FindParticipantProfile は参加者のプロフィールを返す。
+// プレイヤーは閲覧者に見せてよい場合だけ返し、それ以外は nil を返す。
+func (g *gameUsecase) FindParticipantProfile(ctx context.Context, participantID uint32, user *model.User) (
 	profile *model.GameParticipantProfile,
 	participant *model.GameParticipant,
 	player *model.Player,
@@ -543,14 +546,69 @@ func (g *gameUsecase) FindParticipantProfile(ctx context.Context, participantID 
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	if participant == nil {
-		return profile, participant, nil, nil
+	if profile == nil || participant == nil {
+		return nil, nil, nil, fmt.Errorf("game participant not found")
 	}
-	player, err = g.playerService.Find(ctx, participant.PlayerID)
+	player, err = g.findViewableParticipantPlayer(ctx, *participant, *profile, user)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 	return profile, participant, player, nil
+}
+
+// FindParticipantPlayer は参加者を操作しているプレイヤーを、閲覧者に見せてよい場合だけ返す。
+func (g *gameUsecase) FindParticipantPlayer(ctx context.Context, participantID uint32, user *model.User) (*model.Player, error) {
+	participant, err := g.gameService.FindGameParticipant(ctx, model.GameParticipantQuery{
+		ID: &participantID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if participant == nil {
+		return nil, nil
+	}
+	profile, err := g.gameService.FindGameParticipantProfile(ctx, participantID)
+	if err != nil {
+		return nil, err
+	}
+	if profile == nil {
+		// プロフィールが無ければプレイヤー非公開として扱う
+		profile = &model.GameParticipantProfile{GameParticipantID: participantID}
+	}
+	return g.findViewableParticipantPlayer(ctx, *participant, *profile, user)
+}
+
+func (g *gameUsecase) findViewableParticipantPlayer(
+	ctx context.Context,
+	participant model.GameParticipant,
+	profile model.GameParticipantProfile,
+	user *model.User,
+) (*model.Player, error) {
+	game, err := g.gameService.FindGame(ctx, participant.GameID)
+	if err != nil {
+		return nil, err
+	}
+	if game == nil {
+		return nil, fmt.Errorf("game not found")
+	}
+	var viewer *model.Player
+	authorities := []model.PlayerAuthority{}
+	if user != nil {
+		viewer, err = g.playerService.FindByUserName(ctx, user.UserName)
+		if err != nil {
+			return nil, err
+		}
+		if viewer != nil {
+			authorities, err = g.playerService.FindAuthorities(ctx, viewer.ID)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	if !g.participateDomainService.CanViewParticipantPlayer(*game, participant, profile, viewer, authorities) {
+		return nil, nil
+	}
+	return g.playerService.Find(ctx, participant.PlayerID)
 }
 
 func (g *gameUsecase) UpdateParticipantProfile(
