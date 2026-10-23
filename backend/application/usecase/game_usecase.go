@@ -95,6 +95,9 @@ func (g *gameUsecase) FindGamePeriods(ctx context.Context, IDs []uint32) (period
 }
 
 func (g *gameUsecase) RegisterGame(ctx context.Context, user model.User, game model.Game) (registered *model.Game, err error) {
+	if err := model.AssertGameTheme(game.Settings.Rule.Theme); err != nil {
+		return nil, err
+	}
 	gm, err := g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
 		player, err := g.playerService.FindByUserName(ctx, user.UserName)
 		if err != nil {
@@ -273,6 +276,9 @@ func (g *gameUsecase) UpdateGameSetting(
 	labels []model.GameLabel,
 	settings model.GameSettings,
 ) (err error) {
+	if err := model.AssertGameTheme(settings.Rule.Theme); err != nil {
+		return err
+	}
 	_, err = g.transaction.DoInTx(ctx, func(ctx context.Context) (interface{}, error) {
 		game, err := g.gameService.FindGame(ctx, gameID)
 		if err != nil {

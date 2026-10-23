@@ -13,7 +13,12 @@ import {
 } from '@/lib/generated/graphql'
 import { ReactElement } from 'react'
 import { useUserDisplaySettings } from '@/components/pages/games/user-settings'
-import { Theme, convertThemeToCSS, themeMap } from '@/components/theme/theme'
+import {
+  Theme,
+  convertThemeToCSS,
+  parseGameTheme,
+  themeMap
+} from '@/components/theme/theme'
 import Layout from '@/components/layout/layout'
 import RatingWarningModal from '@/components/pages/games/rating-warning-modal'
 import {
@@ -111,11 +116,7 @@ const ThemeCSS = () => {
   const themeName = displaySettings.themeName
   let theme: Theme
   if (themeName === 'original') {
-    if (game.settings.rule.theme != null && game.settings.rule.theme !== '') {
-      theme = JSON.parse(game.settings.rule.theme)
-    } else {
-      theme = themeMap.get('light')!
-    }
+    theme = parseGameTheme(game.settings.rule.theme)
   } else {
     theme = themeMap.get(themeName)!
   }
