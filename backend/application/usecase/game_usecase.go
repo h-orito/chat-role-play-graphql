@@ -738,6 +738,11 @@ func (g *gameUsecase) UpdateParticipantSetting(
 		if myself == nil {
 			return nil, fmt.Errorf("not found")
 		}
+		// 空文字は通知なし
+		if setting.DiscordWebhookUrl != nil && *setting.DiscordWebhookUrl != "" &&
+			!model.IsValidDiscordWebhookURL(*setting.DiscordWebhookUrl) {
+			return nil, model.NewErrBusiness("Discord の Webhook URL を指定してください")
+		}
 		return nil, g.gameService.UpdateGameParticipantNotificationSetting(ctx, myself.ID, setting)
 	})
 	return err

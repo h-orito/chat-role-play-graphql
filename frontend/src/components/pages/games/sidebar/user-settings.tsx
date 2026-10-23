@@ -276,7 +276,18 @@ const NotificationSettings = () => {
         <FormLabel label='通知' />
       </div>
       <FormLabel label='Discord Webhook URL' />
-      <InputText name='webhookUrl' control={control} />
+      <InputText
+        name='webhookUrl'
+        control={control}
+        rules={{
+          pattern: {
+            // サーバー側 (model.IsValidDiscordWebhookURL) と同じホスト・パス
+            value:
+              /^https:\/\/(discord\.com|discordapp\.com|ptb\.discord\.com|canary\.discord\.com)\/api\/webhooks\//i,
+            message: 'Discord の Webhook URL を入力してください'
+          }
+        }}
+      />
       <div className='my-2'>
         <input
           type='checkbox'
