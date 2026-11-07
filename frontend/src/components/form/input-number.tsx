@@ -63,7 +63,7 @@ const InputNumber = <
         type='number'
         className={`${
           className ?? ''
-        } rounded border ${borderClass} px-2 py-1 text-right`}
+        } rounded border ${borderClass} px-2 py-1 text-right text-gray-700`}
         name={field.name}
         ref={field.ref}
         value={field.value}
